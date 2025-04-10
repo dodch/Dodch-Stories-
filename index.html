@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dodch Stories</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
-<style>
+<style id="base-styles">
 /* Loading Screen Styles */
 @import url(https://fonts.googleapis.com/css?family=Quattrocento+Sans);
 .loading {
@@ -142,8 +142,8 @@ footer {
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    width: 80%;
-    max-width: 600px;
+    width: 80%; /* Reduced width */
+    max-width: 600px; /* Reduced max-width */
     z-index: 1000;
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(10px);
@@ -338,13 +338,13 @@ footer:hover {
 /* Favorites Section Title */
 .favorites-title {
     position: fixed;
-    top: -100px;
+    top: -100px; /* Hidden by default */
     left: 50%;
     transform: translateX(-50%);
     font-family: 'Poppins', sans-serif;
     font-size: 2.5rem;
     font-weight: bold;
-    color: #8a2be2;
+    color: #8a2be2; /* Purple color */
     text-align: center;
     text-shadow: 
         0 0 15px rgba(138, 43, 226, 0.8),
@@ -357,6 +357,210 @@ footer:hover {
     will-change: transform;
 }
 .favorites-title.show {
+    top: 80px; /* Below the header */
+    opacity: 1;
+}
+.favorites-title.minimized {
+    top: 90px; /* Just below the header */
+    left: 20px; /* Move to the left */
+    transform: none; /* Remove center alignment */
+    font-size: 1.2rem;
+    padding: 5px 10px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    text-align: left; /* Align text to the left */
+    color: #8a2be2; /* Purple color */
+}
+</style>
+<style id="simplified-styles" disabled>
+/* Simplified Styles for Low-End Android Devices */
+body {
+    margin: 0;
+    background-image: url('https://i.ibb.co/gLRXnhbX/IMG-9913.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+header {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    max-width: 250px;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 30px;
+    color: #fff;
+    text-align: center;
+    padding: 8px 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+footer {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: 600px;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 30px;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3);
+}
+.share-link-button {
+    background: rgba(135, 206, 250, 0.2);
+    border: none;
+    border-radius: 50%;
+    padding: 12px;
+    color: #87ceeb;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+.favorites-button {
+    background: rgba(255, 99, 71, 0.2);
+    border: none;
+    border-radius: 50%;
+    padding: 12px;
+    color: #ff6347;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    padding: 100px 20px;
+    box-sizing: border-box;
+}
+.grid-item {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 20px;
+    color: #fff;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    max-width: 250px;
+    height: 250px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+}
+.grid-item.hidden {
+    opacity: 0;
+    transform: scale(0.8);
+    pointer-events: none;
+}
+.grid-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+.grid-item h2 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #fff;
+    text-align: center;
+}
+.grid-item p {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.8rem;
+    color: #fff;
+    text-align: center;
+}
+.favorite-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+.favorite-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+.favorite-btn.active {
+    background: rgba(255, 0, 0, 0.3);
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+}
+.added-to-favorites-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    color: #fff;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+    transform: translateY(-20px);
+}
+.added-to-favorites-notification.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+.favorites-title {
+    position: fixed;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #8a2be2;
+    text-align: center;
+    opacity: 0;
+    transition: all 0.5s ease;
+    z-index: 1000;
+}
+.favorites-title.show {
     top: 80px;
     opacity: 1;
 }
@@ -367,11 +571,51 @@ footer:hover {
     font-size: 1.2rem;
     padding: 5px 10px;
     background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(10px);
     border-radius: 20px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     text-align: left;
     color: #8a2be2;
+}
+</style>
+<style id="loading-styles">
+/* Loading Screen Styles */
+@import url(https://fonts.googleapis.com/css?family=Quattrocento+Sans);
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 9999;
+}
+.loading-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-family: "Quattrocento Sans", sans-serif;
+    font-size: 2rem;
+    letter-spacing: 5px;
+    line-height: 1;
+}
+.loading-text span {
+    display: inline-block;
+    margin: 0 2px;
+    color: #fff;
+    animation: blur-text 1.5s infinite linear alternate;
+}
+.loading-text span:nth-child(1) { animation-delay: 0s; }
+.loading-text span:nth-child(2) { animation-delay: 0.2s; }
+.loading-text span:nth-child(3) { animation-delay: 0.4s; }
+.loading-text span:nth-child(4) { animation-delay: 0.6s; }
+.loading-text span:nth-child(5) { animation-delay: 0.8s; }
+.loading-text span:nth-child(6) { animation-delay: 1s; }
+.loading-text span:nth-child(7) { animation-delay: 1.2s; }
+@keyframes blur-text {
+    0% { filter: blur(0px); }
+    100% { filter: blur(4px); }
 }
 </style>
 </head>
@@ -390,13 +634,13 @@ footer:hover {
 </div>
 <!-- Header -->
 <header class="dodch-header">
-    <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙</button>
+    <button class="dark-mode-toggle" onclick="toggleDarkMode()">☀️</button>
     <h1>Dodch Stories</h1>
 </header>
 <!-- Favorites Section Title -->
 <h1 class="favorites-title">Favorites Section</h1>
 <!-- Grid of Stories -->
-<div class="grid-container" id="storyGrid" onscroll="requestTick()"></div>
+<div class="grid-container" id="storyGrid"></div>
 <!-- Footer -->
 <footer>
     <button class="share-link-button" onclick="shareContent()">🔗</button>
@@ -405,6 +649,12 @@ footer:hover {
 </footer>
 <!-- Scripts -->
 <script>
+// Function to detect low-end Android devices
+function isLowEndAndroid() {
+    const userAgent = navigator.userAgent.toLowerCase();
+    return /android/i.test(userAgent) && !/chrome|firefox|opera|safari/i.test(userAgent);
+}
+
 // Function to load stories from JSON
 async function loadStories() {
     try {
@@ -415,6 +665,7 @@ async function loadStories() {
         return [];
     }
 }
+
 // Function to generate grid items
 async function generateStoryGrid() {
     const storyGrid = document.getElementById("storyGrid");
@@ -433,8 +684,15 @@ async function generateStoryGrid() {
         storyGrid.appendChild(gridItem);
     });
 }
+
 // Call the function to handle the page load
 window.onload = async () => {
+    // Detect low-end Android devices
+    if (isLowEndAndroid()) {
+        document.getElementById("base-styles").disabled = true;
+        document.getElementById("simplified-styles").disabled = false;
+    }
+
     // Simulate a delay for loading content
     setTimeout(async () => {
         // Hide the loading screen
@@ -443,6 +701,7 @@ window.onload = async () => {
         await generateStoryGrid();
     }, 2000); // 2-second delay for demonstration purposes
 };
+
 // Toggle Favorite
 const favorites = new Set();
 function toggleFavorite(event, index) {
@@ -460,6 +719,7 @@ function toggleFavorite(event, index) {
         setTimeout(() => notification.classList.remove("show"), 2000); // Hide after 2 seconds
     }
 }
+
 // Toggle Favorites View
 let isFavoritesSectionActive = false;
 function toggleFavorites() {
@@ -487,7 +747,7 @@ function toggleFavorites() {
             }
         });
         // Add scroll event listener to minimize/maximize the title
-        gridContainer.addEventListener("scroll", requestTick);
+        gridContainer.addEventListener("scroll", handleScroll);
     } else {
         favoritesButton.classList.remove("active");
         favoritesTitle.classList.remove("show");
@@ -496,30 +756,19 @@ function toggleFavorites() {
             item.classList.remove("hidden");
         });
         // Remove scroll event listener when leaving favorites section
-        gridContainer.removeEventListener("scroll", requestTick);
+        gridContainer.removeEventListener("scroll", handleScroll);
     }
 }
-// Throttling with requestAnimationFrame
-let lastKnownScrollPosition = 0;
-let ticking = false;
 
+// Handle Scroll Event
 function handleScroll() {
     const favoritesTitle = document.querySelector(".favorites-title");
     const gridContainer = document.getElementById("storyGrid");
-    lastKnownScrollPosition = gridContainer.scrollTop;
-    if (lastKnownScrollPosition > 10) {
+    if (gridContainer.scrollTop > 10) {
         favoritesTitle.classList.add("minimized");
     } else {
         favoritesTitle.classList.remove("minimized");
     }
-    ticking = false;
-}
-
-function requestTick() {
-    if (!ticking) {
-        requestAnimationFrame(handleScroll);
-    }
-    ticking = true;
 }
 
 // Dark Mode Toggle
@@ -533,7 +782,7 @@ function toggleDarkMode() {
     darkModeToggle.style.transform = "rotate(180deg)";
     setTimeout(() => {
         isDarkMode = !isDarkMode;
-        darkModeToggle.textContent = isDarkMode ? "☀️" : "🌙";
+        darkModeToggle.textContent = isDarkMode ? "🌙" : "☀️";
         darkModeToggle.style.transform = "rotate(0deg)";
         body.style.backgroundColor = isDarkMode ? "#121212" : "";
         body.style.color = isDarkMode ? "#fff" : "";
@@ -543,10 +792,11 @@ function toggleDarkMode() {
             item.style.background = isDarkMode ? "rgba(0, 0, 0, 0.7)" : "rgba(255, 255, 255, 0.2)";
             item.style.color = isDarkMode ? "#fff" : "#000";
             item.querySelector("h2").style.color = isDarkMode ? "#fff" : "#000";
-            item.querySelector("p").style.color = isDarkMode ? "#ccc" : "#fff";
+            item.querySelector("p").style.color = isDarkMode ? "#ccc" : "#000"; // Ensure contrast
         });
     }, 300); // Added a small delay for better animation visibility.
 }
+
 // Share Content Using Web Share API
 function shareContent() {
     if (navigator.share) {
