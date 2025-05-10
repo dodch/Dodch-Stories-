@@ -57,8 +57,8 @@
         line-height: 1.8;
       }
 
-     /* Back Button Styles */
-      .back-button {
+      /* Home Button Styles */
+      .home-button {
         position: fixed;
         top: 20px;
         left: 20px;
@@ -73,11 +73,11 @@
         transition: background-color 0.3s, transform 0.3s;
         z-index: 1000;
       }
-      .back-button:hover {
+      .home-button:hover {
         background-color: rgba(255, 255, 255, 1);
         transform: scale(1.1);
       }
-      .back-button .back-icon {
+      .home-button .home-icon {
         font-size: 1.5rem;
       }
       /* Responsive Design */
@@ -367,10 +367,9 @@
     </style>
   </head>
   <body>
-    <!-- Back Button -->
-    <button class="back-button" onclick="goBack()">
-      <span class="back-icon">🔙</span>
-    </button>
+    <a class="home-button" href="index.html">
+  <span class="home-icon">🏠</span>
+</a>
     <!-- Stars Container -->
     <div class="stars-container"></div>
     <!-- Progress Bar -->
