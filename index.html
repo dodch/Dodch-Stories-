@@ -279,15 +279,29 @@ footer:hover {
 /* Media query for landscape mode on smaller devices */
 @media (max-width: 767px) and (orientation: landscape) {
     .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Even smaller for landscape */
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Use auto-fill to prevent stretching */
+        grid-auto-rows: min-content; /* Adjust row height to content */
         gap: 15px; /* Reduce gap for landscape on small devices */
         padding: 15px; /* Reduce padding */
         padding-top: 80px; /* Adjust for header */
         padding-bottom: 80px; /* Adjust for footer */
+        max-height: 100%;
+        height: auto;
     }
     
     body {
         overflow-y: auto; /* Ensure body can scroll in landscape */
+        height: auto;
+        min-height: 100vh;
+    }
+    
+    .grid-item {
+        height: auto;
+        min-height: 140px; /* Match the minmax value from the grid */
+        max-height: none;
+        aspect-ratio: auto; /* Remove fixed aspect ratio */
+        width: 100%;
+        box-sizing: border-box;
     }
 }
 
@@ -780,19 +794,36 @@ function handleOrientationChange() {
     const isLandscape = window.innerWidth > window.innerHeight;
     const isSmallScreen = window.innerHeight < 500;
     
-    if (isAndroid() && isLandscape && isSmallScreen) {
+    if (isAndroid() && isLandscape) {
         document.body.classList.add('android-landscape');
         
         // Force recalculation of grid layout
         const grid = document.getElementById('storyGrid');
         if (grid) {
+            // Set explicit height for better visibility
+            grid.style.height = (window.innerHeight - 160) + 'px'; // Account for header and footer
+            
+            // Force layout recalculation
             grid.style.display = 'none';
             setTimeout(() => {
                 grid.style.display = 'grid';
             }, 50);
+            
+            // Ensure grid items don't stretch inappropriately
+            const gridItems = document.querySelectorAll('.grid-item');
+            gridItems.forEach(item => {
+                item.style.maxWidth = '100%';
+                item.style.aspectRatio = 'auto';
+            });
         }
     } else {
         document.body.classList.remove('android-landscape');
+        
+        // Reset grid height
+        const grid = document.getElementById('storyGrid');
+        if (grid) {
+            grid.style.height = '';
+        }
     }
 }
 
