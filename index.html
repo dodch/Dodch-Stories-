@@ -217,13 +217,14 @@ footer:hover {
 /* Grid Container Styling */
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Flexible columns */
     gap: 20px;
     justify-content: center;
     align-items: center;
     width: 100vw;
     height: 100vh;
     overflow-y: auto;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
     scrollbar-width: thin;
     scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
     position: absolute;
@@ -231,8 +232,17 @@ footer:hover {
     left: 0;
     z-index: 1;
     padding: 100px 20px;
-    box-sizing: border-box;
+    box-sizing: border-box; /* Include padding and border in size */
     transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+/* Add a media query for landscape mode */
+@media (orientation: landscape) and (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adjust column size for smaller landscape screens */
+        gap: 10px; /* Reduce gap for smaller screens */
+        padding: 80px 10px; /* Adjust padding */
+    }
 }
 .grid-item {
     background: rgba(255, 255, 255, 0.2);
