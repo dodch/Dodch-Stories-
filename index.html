@@ -279,15 +279,31 @@ footer:hover {
 /* Media query for landscape mode on smaller devices */
 @media (max-width: 767px) and (orientation: landscape) {
     .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Even smaller for landscape */
-        gap: 15px; /* Reduce gap for landscape on small devices */
-        padding: 15px; /* Reduce padding */
-        padding-top: 80px; /* Adjust for header */
-        padding-bottom: 80px; /* Adjust for footer */
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Smaller size for landscape */
+        gap: 12px; /* Reduced gap for landscape on small devices */
+        padding: 10px; /* Reduced overall padding */
+        padding-top: 70px; /* Adjusted for header */
+        padding-bottom: 70px; /* Adjusted for footer */
+        height: auto; /* Allow container to expand as needed */
+        max-height: none; /* Remove max-height constraint */
     }
     
     body {
         overflow-y: auto; /* Ensure body can scroll in landscape */
+        min-height: auto; /* Allow body to size naturally */
+        justify-content: flex-start; /* Align content to the top */
+        padding-top: 60px; /* Add padding for fixed header */
+    }
+    
+    .grid-item {
+        min-height: 120px; /* Set minimum height */
+        height: auto; /* Let height adjust to content */
+        max-height: 150px; /* Limit maximum height */
+        width: 100%; /* Ensure width is responsive */
+        max-width: 150px; /* Limit maximum width */
+        aspect-ratio: auto; /* Let aspect ratio adjust naturally */
+        padding: 10px; /* Reduce padding */
+        margin-bottom: 10px; /* Add bottom margin for spacing */
     }
 }
 
@@ -373,8 +389,8 @@ footer:hover {
 /* Better text handling for landscape mode on small screens */
 @media (orientation: landscape) and (max-height: 500px) {
     .grid-item h2 {
-        font-size: 1rem;
-        margin-bottom: 6px;
+        font-size: 0.9rem;
+        margin-bottom: 4px;
     }
     
     .grid-item p {
@@ -382,17 +398,54 @@ footer:hover {
         margin-bottom: 0;
         /* Use line clamp to prevent text overflow */
         display: -webkit-box;
-        -webkit-line-clamp: 3;
+        -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
     
     .grid-item {
-        padding: 12px;
+        padding: 10px;
         height: auto;
-        min-height: 180px;
-        max-height: 200px;
+        min-height: 120px;
+        max-height: 150px;
     }
+    
+    /* Adjust footer positioning */
+    footer {
+        bottom: 5px;
+        padding: 5px 15px;
+    }
+    
+    /* Adjust header sizing */
+    header {
+        padding: 5px 12px;
+    }
+}
+
+/* Android-specific landscape fixes */
+body.android-landscape {
+    background-attachment: scroll !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow-y: auto !important;
+}
+
+body.android-landscape .grid-container {
+    position: relative !important;
+    top: auto !important;
+    padding-top: 80px !important;
+    padding-bottom: 80px !important;
+    height: auto !important;
+    max-height: none !important;
+}
+
+body.android-landscape .grid-item {
+    transform: none !important;
+    transition: background-color 0.3s ease !important;
+}
+
+body.android-landscape .grid-item:hover {
+    transform: none !important;
 }
 /* Favorite Button */
 .favorite-btn {
@@ -780,19 +833,39 @@ function handleOrientationChange() {
     const isLandscape = window.innerWidth > window.innerHeight;
     const isSmallScreen = window.innerHeight < 500;
     
-    if (isAndroid() && isLandscape && isSmallScreen) {
+    if (isAndroid() && isLandscape) {
         document.body.classList.add('android-landscape');
         
         // Force recalculation of grid layout
         const grid = document.getElementById('storyGrid');
         if (grid) {
+            // More robust grid refresh for Android landscape
             grid.style.display = 'none';
+            
+            // Fix viewport and layout issues
+            document.querySelector('meta[name="viewport"]').setAttribute(
+                'content', 
+                'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'
+            );
+            
+            // Apply landscape-specific styles
+            document.documentElement.style.height = '100%';
+            document.body.style.height = 'auto';
+            
             setTimeout(() => {
                 grid.style.display = 'grid';
-            }, 50);
+                // Allow scrolling behavior to settle
+                window.scrollTo(0, 0);
+            }, 100);
         }
     } else {
         document.body.classList.remove('android-landscape');
+        document.querySelector('meta[name="viewport"]').setAttribute(
+            'content', 
+            'width=device-width, initial-scale=1.0'
+        );
+        document.documentElement.style.height = '';
+        document.body.style.height = '';
     }
 }
 
