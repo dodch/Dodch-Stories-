@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  
+
   <!-- Google site verification -->
   <meta name="google-site-verification" content="WPsemouAlOQyJaztzjjtf6afzzagtg6WWPZh7gd3T8A" />
 
@@ -66,14 +66,28 @@ body {
     background-attachment: fixed;
     color: #fff;
     font-family: 'Poppins', sans-serif;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
     position: relative;
     transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+/* Landscape mode specific adjustments */
+@media (orientation: landscape) {
+    body {
+        overflow-y: auto; /* Allow vertical scrolling in landscape */
+    }
+}
+
+/* Small screen landscape specific fixes */
+@media (orientation: landscape) and (max-height: 500px) {
+    body {
+        justify-content: flex-start;
+        padding-top: 60px; /* Add padding to account for fixed header */
+    }
 }
 /* Header Styling */
 header {
@@ -99,6 +113,19 @@ header {
 header:hover {
     backdrop-filter: blur(20px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* Landscape mode adjustments for header */
+@media (orientation: landscape) and (max-height: 500px) {
+    header {
+        top: 10px;
+        padding: 6px 12px;
+        max-width: 220px;
+    }
+    
+    header h1 {
+        font-size: 0.9rem;
+    }
 }
 /* Dark Mode Toggle */
 .dark-mode-toggle {
@@ -171,6 +198,22 @@ footer {
 footer:hover {
     box-shadow: 0 -6px 15px rgba(0, 0, 0, 0.4);
 }
+
+/* Landscape mode adjustments for footer */
+@media (orientation: landscape) and (max-height: 500px) {
+    footer {
+        bottom: 10px;
+        padding: 6px 15px;
+        width: 70%;
+        font-size: 0.9em;
+    }
+    
+    .share-link-button,
+    .favorites-button {
+        padding: 8px;
+        font-size: 1.2rem;
+    }
+}
 /* Share Link Button */
 .share-link-button {
     background: rgba(135, 206, 250, 0.2);
@@ -217,52 +260,77 @@ footer:hover {
 /* Grid Container Styling */
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Flexible columns */
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Smaller minimum size for better fit */
+    gap: 20px; /* Space between items */
     justify-content: center;
     align-items: center;
-    width: 100vw;
-    height: 100vh;
-    overflow-y: auto;
-    overflow-x: hidden; /* Prevent horizontal scrolling */
-    scrollbar-width: thin;
-    scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
-    padding: 100px 20px;
-    box-sizing: border-box; /* Include padding and border in size */
-    transition: background-color 0.5s ease, color 0.5s ease;
+    width: 100%; /* Full width */
+    padding: 20px; /* Add padding for better layout */
+    box-sizing: border-box; /* Include padding in size calculation */
+    overflow-y: auto; /* Allow vertical scrolling */
+    overflow-x: hidden; /* Prevent horizontal overflow */
+    position: relative;
+    height: 100%;
+    max-height: 100vh;
+    padding-top: 100px; /* Add padding for header */
+    padding-bottom: 100px; /* Add padding for footer */
 }
 
-/* Add a media query for landscape mode */
-@media (orientation: landscape) and (max-width: 768px) {
+/* Media query for landscape mode on smaller devices */
+@media (max-width: 767px) and (orientation: landscape) {
     .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adjust column size for smaller landscape screens */
-        gap: 10px; /* Reduce gap for smaller screens */
-        padding: 80px 10px; /* Adjust padding */
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Even smaller for landscape */
+        gap: 15px; /* Reduce gap for landscape on small devices */
+        padding: 15px; /* Reduce padding */
+        padding-top: 80px; /* Adjust for header */
+        padding-bottom: 80px; /* Adjust for footer */
+    }
+    
+    body {
+        overflow-y: auto; /* Ensure body can scroll in landscape */
     }
 }
+
+/* Media query for larger screens */
+@media (min-width: 768px) {
+    .grid-container {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Adjusted size */
+        gap: 25px; /* Appropriate gap for medium screens */
+    }
+}
+
+/* Media query for very large screens */
+@media (min-width: 1024px) {
+    .grid-container {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Larger screens get larger items */
+        gap: 35px; /* More space between items */
+    }
+}
+
+/* Grid item base styles */
 .grid-item {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 20px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 20px;
+    padding: 15px;
     color: #fff;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, opacity 0.5s ease, background-color 0.5s ease;
     cursor: pointer;
     position: relative;
     overflow: hidden;
+    width: 100%; /* Make width responsive */
     max-width: 250px;
-    height: 250px;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 1 / 1; /* Maintain square aspect ratio */
+    height: auto; /* Let height be determined by aspect ratio */
     margin: 0 auto;
     animation: fadeIn 0.5s ease-in-out;
     transform-origin: center;
-    contain: paint; /* Added for performance optimization */
+    contain: content; /* Improve performance while allowing size changes */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 .grid-item.hidden {
     opacity: 0;
@@ -300,6 +368,31 @@ footer:hover {
     color: #fff;
     text-align: center;
     transition: color 0.5s ease;
+}
+
+/* Better text handling for landscape mode on small screens */
+@media (orientation: landscape) and (max-height: 500px) {
+    .grid-item h2 {
+        font-size: 1rem;
+        margin-bottom: 6px;
+    }
+    
+    .grid-item p {
+        font-size: 0.7rem;
+        margin-bottom: 0;
+        /* Use line clamp to prevent text overflow */
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .grid-item {
+        padding: 12px;
+        height: auto;
+        min-height: 180px;
+        max-height: 200px;
+    }
 }
 /* Favorite Button */
 .favorite-btn {
@@ -677,6 +770,32 @@ function isLowEndAndroid() {
     return /android/i.test(userAgent) && !/chrome|firefox|opera|safari/i.test(userAgent);
 }
 
+// Function to detect Android devices
+function isAndroid() {
+    return /android/i.test(navigator.userAgent.toLowerCase());
+}
+
+// Function to handle orientation changes
+function handleOrientationChange() {
+    const isLandscape = window.innerWidth > window.innerHeight;
+    const isSmallScreen = window.innerHeight < 500;
+    
+    if (isAndroid() && isLandscape && isSmallScreen) {
+        document.body.classList.add('android-landscape');
+        
+        // Force recalculation of grid layout
+        const grid = document.getElementById('storyGrid');
+        if (grid) {
+            grid.style.display = 'none';
+            setTimeout(() => {
+                grid.style.display = 'grid';
+            }, 50);
+        }
+    } else {
+        document.body.classList.remove('android-landscape');
+    }
+}
+
 // Function to load stories from JSON
 async function loadStories() {
     try {
@@ -715,12 +834,21 @@ window.onload = async () => {
         document.getElementById("simplified-styles").disabled = false;
     }
 
+    // Handle orientation - check initial orientation
+    handleOrientationChange();
+    
+    // Add orientation change and resize listeners
+    window.addEventListener('orientationchange', handleOrientationChange);
+    window.addEventListener('resize', handleOrientationChange);
+
     // Simulate a delay for loading content
     setTimeout(async () => {
         // Hide the loading screen
         document.querySelector(".loading").style.display = "none";
         // Generate the story grid
         await generateStoryGrid();
+        // Check orientation again after grid is loaded
+        handleOrientationChange();
     }, 2000); // 2-second delay for demonstration purposes
 };
 
