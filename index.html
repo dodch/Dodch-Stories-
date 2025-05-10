@@ -217,7 +217,7 @@ footer:hover {
 /* Grid Container Styling */
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Flexible columns */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Increase minimum width to 250px */
     gap: 20px; /* Space between items */
     justify-content: center;
     align-items: center;
@@ -227,29 +227,32 @@ footer:hover {
     box-sizing: border-box; /* Include padding in size calculation */
 }
 
-/* Media query for larger screens */
-@media (min-width: 768px) {
+/* Media query for portrait mode on smaller screens (Android or others) */
+@media (orientation: portrait) and (max-width: 768px) {
     .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Larger grid items */
-        gap: 30px; /* Increase gap for larger screens */
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Increase minimum width to 300px */
+        gap: 25px; /* Increase gap for better spacing */
+        padding: 20px; /* Add consistent padding */
+    }
+
+    .grid-item {
+        max-width: 300px; /* Limit the maximum width */
+        width: 100%; /* Ensure items are responsive */
+        margin: 0 auto; /* Center items */
     }
 }
 
-/* Media query for very large screens */
-@media (min-width: 1024px) {
+/* General media query for larger portrait screens */
+@media (orientation: portrait) and (min-width: 769px) {
     .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Even larger grid items */
-        gap: 40px; /* More space between items */
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Further increase grid item size */
+        gap: 30px; /* Add more spacing for larger screens */
+        padding: 30px; /* Add more padding for better layout */
     }
-}
 
-/* Ensure grid items don't break */
-.grid-item {
-    max-width: 300px; /* Limit width of items */
-    width: 100%; /* Make items responsive */
-    margin: 0 auto; /* Center items */
-    overflow: hidden; /* Avoid content overflow */
-    box-sizing: border-box; /* Include padding and border in size */
+    .grid-item {
+        max-width: 350px; /* Increase max-width for larger screens */
+    }
 }
 /* Add a media query for landscape mode */
 @media (orientation: landscape) and (max-width: 768px) {
