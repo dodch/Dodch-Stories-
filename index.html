@@ -218,59 +218,80 @@ footer:hover {
 /* Default Grid Container */
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Default for most screens */
-    gap: 20px; /* Space between items */
+    grid-template-columns: repeat(auto-fit, minmax(clamp(200px, 25%, 350px), 1fr)); /* Dynamic sizing with clamp */
+    gap: clamp(10px, 2vw, 30px); /* Dynamic gap */
     justify-content: center;
     align-items: center;
     width: 100%; /* Full width */
+    padding: clamp(10px, 5vw, 40px); /* Dynamic padding */
+    box-sizing: border-box; /* Include padding in size */
     overflow: hidden; /* Prevent overflow */
-    padding: 20px;
-    box-sizing: border-box; /* Include padding in size calculation */
 }
 
-/* Portrait - Small Screens (Phones) */
+/* Custom Styling for Grid Items */
+.grid-item {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 20px;
+    color: #fff;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s, opacity 0.5s;
+    cursor: pointer;
+    max-width: 100%; /* Ensure items never exceed container width */
+    margin: 0 auto; /* Center items */
+    overflow: hidden;
+}
+
+.grid-item:hover {
+    transform: scale(1.05); /* Slight zoom effect on hover */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Portrait Mode - Small Screens (Phones) */
 @media (orientation: portrait) and (max-width: 768px) {
     .grid-container {
-        grid-template-columns: repeat(2, 1fr); /* Force 2 grid items side by side */
-        gap: 15px; /* Reduce gap slightly for smaller screens */
-        padding: 10px; /* Add compact padding */
+        grid-template-columns: repeat(2, 1fr); /* Force two items per row */
+        gap: 15px; /* Compact gap */
+        padding: 10px;
     }
 
     .grid-item {
-        max-width: none; /* Remove any hard width limits */
-        width: 100%; /* Grid items take full width in their column */
+        max-width: none; /* Remove size restrictions for small portrait screens */
+        height: auto; /* Allow flexible height */
     }
 }
 
-/* Portrait - Medium Screens (Tablets) */
+/* Portrait Mode - Medium Screens (Tablets) */
 @media (orientation: portrait) and (min-width: 769px) and (max-width: 1024px) {
     .grid-container {
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Slightly larger items */
-        gap: 25px;
-        padding: 20px;
-    }
-
-    .grid-item {
-        max-width: 300px; /* Limit the maximum size */
-        margin: 0 auto; /* Center grid items */
+        gap: 25px; /* Increase space for better readability */
     }
 }
 
-/* Landscape Mode - Small and Medium Screens */
-@media (orientation: landscape) and (max-width: 1024px) {
+/* Landscape Mode - Small Screens (Phones) */
+@media (orientation: landscape) and (max-width: 768px) {
     .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Consistent item size */
-        gap: 30px; /* Increase spacing for landscape */
-        padding: 20px;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Ensure proper wrapping */
+        gap: 15px; /* Compact spacing for small landscape screens */
     }
 }
 
-/* Landscape Mode - Large Screens */
+/* Landscape Mode - Medium Screens (Tablets) */
+@media (orientation: landscape) and (min-width: 769px) and (max-width: 1024px) {
+    .grid-container {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Larger grid items */
+        gap: 20px;
+    }
+}
+
+/* Landscape Mode - Large Screens (Desktops or Large Tablets) */
 @media (orientation: landscape) and (min-width: 1025px) {
     .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Larger items for big screens */
-        gap: 40px; /* Ample spacing */
-        padding: 30px;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Largest grid items */
+        gap: 30px; /* Increase gap for large screens */
     }
 }
 .grid-item {
