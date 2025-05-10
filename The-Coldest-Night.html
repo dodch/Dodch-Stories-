@@ -57,8 +57,8 @@
         line-height: 1.8;
       }
 
-      /* Home Button Styles */
-      .home-button {
+     /* Back Button Styles */
+      .back-button {
         position: fixed;
         top: 20px;
         left: 20px;
@@ -73,16 +73,16 @@
         transition: background-color 0.3s, transform 0.3s;
         z-index: 1000;
       }
-      .home-button:hover {
+      .back-button:hover {
         background-color: rgba(255, 255, 255, 1);
         transform: scale(1.1);
       }
-      .home-button .home-icon {
+      .back-button .back-icon {
         font-size: 1.5rem;
       }
       /* Responsive Design */
       @media (max-width: 768px) {
-        .home-button {
+        .back-button {
           font-size: 16px;
           padding: 8px 12px;
         }
@@ -367,10 +367,10 @@
     </style>
   </head>
   <body>
-    <!-- Home Button -->
-<a class="home-button" href="index.html">
-  <span class="home-icon">🏠</span>
-</a>
+    <!-- Back Button -->
+    <button class="back-button" onclick="goBack()">
+      <span class="back-icon">🔙</span>
+    </button>
     <!-- Stars Container -->
     <div class="stars-container"></div>
     <!-- Progress Bar -->
