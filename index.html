@@ -111,12 +111,6 @@ header {
     align-items: center;
 }
 
-body.search-active header {
-    background: transparent;
-    backdrop-filter: none;
-    box-shadow: none;
-}
-
 /* Ensure smooth transitions for header elements */
 header h1, .dark-mode-toggle {
     transition: opacity 0.3s ease, transform 0.3s ease;
@@ -175,53 +169,6 @@ header h1, .dark-mode-toggle {
     width: 150px;
     padding: 8px 15px;
     opacity: 1;
-}
-
-/* Overlay for search mode */
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.3);
-    z-index: 900;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.5s ease, visibility 0.5s ease;
-    pointer-events: none;
-}
-
-body.search-active::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('https://i.ibb.co/gLRXnhbX/IMG-9913.jpg');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    filter: blur(5px);
-    z-index: -1;
-    pointer-events: none;
-    transition: filter 0.5s ease;
-}
-
-/* Hide footer in search mode */
-body.search-active footer {
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(20px);
-    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
-}
-
-body.search-active::before {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto; /* Make overlay clickable to exit search */
 }
 
 .search-container.active .search-button {
@@ -465,11 +412,7 @@ footer:hover {
     border: 1px solid rgba(255, 255, 255, 0.3);
     padding: 15px;
     color: #fff;
-    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), 
-                box-shadow 0.4s ease, 
-                opacity 0.5s ease, 
-                background-color 0.5s ease,
-                filter 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, opacity 0.5s ease, background-color 0.5s ease;
     cursor: pointer;
     position: relative;
     overflow: hidden;
@@ -478,112 +421,62 @@ footer:hover {
     aspect-ratio: 1 / 1; /* Maintain square aspect ratio */
     height: auto; /* Let height be determined by aspect ratio */
     margin: 0 auto;
-    animation: fadeInUp 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
+    animation: fadeIn 0.5s ease-in-out;
     transform-origin: center;
     contain: content; /* Improve performance while allowing size changes */
     display: flex;
     flex-direction: column;
     justify-content: center;
-    animation-delay: calc(var(--i, 0) * 0.1s);
 }
 .grid-item.hidden {
     opacity: 0;
-    transform: scale(0.8) translateY(30px);
+    transform: scale(0.8);
     pointer-events: none;
 }
 .grid-item:hover {
-    transform: scale(1.05) translateY(-8px) rotate(1deg);
-    box-shadow: 0 18px 35px rgba(0, 0, 0, 0.5);
-    filter: brightness(1.15) contrast(1.05);
+    transform: scale(1.05) translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.5);
+    filter: brightness(1.1);
 }
 /* Fade-In Animation for Grid Items */
-@keyframes fadeInUp {
+@keyframes fadeIn {
     0% {
         opacity: 0;
-        transform: scale(0.9) translateY(40px);
-    }
-    60% {
-        opacity: 1;
+        transform: scale(0.8);
     }
     100% {
         opacity: 1;
-        transform: scale(1) translateY(0);
+        transform: scale(1);
     }
 }
-
-/* Staggered animation effect for grid items */
-.grid-container .grid-item:nth-child(1) { --i: 0; }
-.grid-container .grid-item:nth-child(2) { --i: 1; }
-.grid-container .grid-item:nth-child(3) { --i: 2; }
-.grid-container .grid-item:nth-child(4) { --i: 3; }
-.grid-container .grid-item:nth-child(5) { --i: 4; }
-.grid-container .grid-item:nth-child(6) { --i: 5; }
-.grid-container .grid-item:nth-child(7) { --i: 6; }
-.grid-container .grid-item:nth-child(8) { --i: 7; }
-.grid-container .grid-item:nth-child(9) { --i: 8; }
-.grid-container .grid-item:nth-child(10) { --i: 9; }
-.grid-container .grid-item:nth-child(n+11) { --i: 10; }
 
 /* Search Highlight Animation */
 @keyframes searchHighlight {
-    0% { 
-        box-shadow: 0 0 0 rgba(135, 206, 250, 0);
-        transform: scale(1);
-    }
-    25% { 
-        box-shadow: 0 0 30px rgba(135, 206, 250, 0.8);
-        transform: scale(1.03);
-    }
-    50% { 
-        box-shadow: 0 0 20px rgba(135, 206, 250, 0.6);
-        transform: scale(1.02);
-    }
-    75% { 
-        box-shadow: 0 0 15px rgba(135, 206, 250, 0.4);
-        transform: scale(1.01);
-    }
-    100% { 
-        box-shadow: 0 0 0 rgba(135, 206, 250, 0);
-        transform: scale(1);
-    }
+    0% { box-shadow: 0 0 0 rgba(135, 206, 250, 0); }
+    50% { box-shadow: 0 0 30px rgba(135, 206, 250, 0.8); }
+    100% { box-shadow: 0 0 0 rgba(135, 206, 250, 0); }
 }
 
 .search-highlight {
-    animation: searchHighlight 2s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: searchHighlight 1.5s ease-out;
 }
 
 /* Highlighted text in search results */
 .highlight-text {
-    background-color: rgba(255, 255, 0, 0.2);
+    background-color: rgba(255, 255, 0, 0.4);
     border-radius: 3px;
     padding: 0 2px;
-    color: #fff;
+    color: #000;
     font-weight: bold;
+    text-shadow: none;
     display: inline-block;
-    position: relative;
-    border-bottom: 1px solid rgba(255, 255, 0, 0.5);
+    animation: pulse-highlight 1.5s infinite;
 }
 
-.highlight-text::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: rgba(255, 255, 0, 0.7);
-    animation: highlight-line 1.5s infinite alternate;
-}
-
-@keyframes highlight-line {
-    0% {
-        opacity: 0.5;
-        transform: scaleX(0.8);
-    }
-    100% {
-        opacity: 1;
-        transform: scaleX(1);
-    }
+@keyframes pulse-highlight {
+    0% { background-color: rgba(255, 255, 0, 0.4); }
+    50% { background-color: rgba(255, 255, 0, 0.7); }
+    100% { background-color: rgba(255, 255, 0, 0.4); }
 }
 .grid-item h2 {
     font-family: 'Poppins', sans-serif;
@@ -593,44 +486,14 @@ footer:hover {
     color: #fff;
     text-align: center;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-    transition: color 0.5s ease, text-shadow 0.5s ease, transform 0.3s ease;
-    position: relative;
-    overflow: hidden;
+    transition: color 0.5s ease, text-shadow 0.5s ease;
 }
-
-.grid-item:hover h2 {
-    transform: translateY(-2px);
-    text-shadow: 0 0 15px rgba(255, 255, 255, 1), 0 0 25px rgba(255, 255, 255, 0.8);
-}
-
-.grid-item h2::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-    transition: width 0.5s ease, left 0.5s ease;
-}
-
-.grid-item:hover h2::after {
-    width: 80%;
-    left: 10%;
-}
-
 .grid-item p {
     font-family: 'Poppins', sans-serif;
     font-size: 0.8rem;
     color: #fff;
     text-align: center;
-    transition: color 0.5s ease, opacity 0.5s ease, transform 0.3s ease;
-    opacity: 0.8;
-}
-
-.grid-item:hover p {
-    opacity: 1;
-    transform: translateY(2px);
+    transition: color 0.5s ease;
 }
 
 /* Better text handling for landscape mode on small screens */
@@ -1135,16 +998,10 @@ async function loadStories() {
 async function generateStoryGrid() {
     const storyGrid = document.getElementById("storyGrid");
     const stories = await loadStories();
-    
-    // Clear the grid first to prevent duplicates
-    storyGrid.innerHTML = '';
-    
-    // Create and append all items with staggered animation
     stories.forEach((story, index) => {
         const gridItem = document.createElement("div");
         gridItem.classList.add("grid-item");
         gridItem.dataset.index = index;
-        gridItem.style.setProperty('--i', index); // Set animation delay variable
         gridItem.onclick = () => window.open(story.file, '_blank');
         gridItem.innerHTML = `
             <h2>${story.title}</h2>
@@ -1152,44 +1009,34 @@ async function generateStoryGrid() {
             <button class="favorite-btn" onclick="toggleFavorite(event, ${index})">❤️</button>
             <div class="added-to-favorites-notification">Added to Favorites</div>
         `;
-        
-        // Add to DOM
         storyGrid.appendChild(gridItem);
-        
-        // Force a reflow/repaint to ensure animations work
-        void gridItem.offsetWidth;
     });
 }
 
 // Call the function to handle the page load
 window.onload = async () => {
-    try {
-        // Detect low-end Android devices
-        if (isLowEndAndroid()) {
-            document.getElementById("base-styles").disabled = true;
-            document.getElementById("simplified-styles").disabled = false;
-        }
+    // Detect low-end Android devices
+    if (isLowEndAndroid()) {
+        document.getElementById("base-styles").disabled = true;
+        document.getElementById("simplified-styles").disabled = false;
+    }
 
-        // Handle orientation - check initial orientation
-        handleOrientationChange();
+    // Handle orientation - check initial orientation
+    handleOrientationChange();
 
-        // Add orientation change and resize listeners
-        window.addEventListener('orientationchange', handleOrientationChange);
-        window.addEventListener('resize', handleOrientationChange);
+    // Add orientation change and resize listeners
+    window.addEventListener('orientationchange', handleOrientationChange);
+    window.addEventListener('resize', handleOrientationChange);
 
-        // Generate the story grid immediately
-        await generateStoryGrid();
-        
+    // Simulate a delay for loading content
+    setTimeout(async () => {
         // Hide the loading screen
         document.querySelector(".loading").style.display = "none";
-        
+        // Generate the story grid
+        await generateStoryGrid();
         // Check orientation again after grid is loaded
         handleOrientationChange();
-    } catch (error) {
-        console.error("Error during initialization:", error);
-        // Ensure loading screen is hidden even if there's an error
-        document.querySelector(".loading").style.display = "none";
-    }
+    }, 2000); // 2-second delay for demonstration purposes
 };
 
 // Toggle Favorite
@@ -1307,73 +1154,35 @@ function toggleSearch() {
     const searchContainer = document.querySelector('.search-container');
     const headerTitle = document.querySelector('header h1');
     const darkModeToggle = document.querySelector('.dark-mode-toggle');
-    const body = document.body;
-    const gridContainer = document.getElementById('storyGrid');
 
     searchContainer.classList.toggle('active');
-    body.classList.toggle('search-active');
-    
-    // Enable scrolling in search mode
+
     if (searchContainer.classList.contains('active')) {
-        gridContainer.style.overflow = 'auto';
-        gridContainer.style.pointerEvents = 'auto';
-        
-        // Hide header elements with animation
-        headerTitle.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        // Hide header elements smoothly
+        headerTitle.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
         headerTitle.style.opacity = '0';
-        headerTitle.style.transform = 'translateX(-30px) scale(0.9)';
+        headerTitle.style.transform = 'translateX(-20px)';
 
-        darkModeToggle.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        darkModeToggle.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
         darkModeToggle.style.opacity = '0';
-        darkModeToggle.style.transform = 'translateX(-30px) scale(0.9)';
+        darkModeToggle.style.transform = 'translateX(-20px)';
 
-        // Add text appearance animation for search input
-        const searchInput = document.querySelector('.search-input');
-        searchInput.style.transform = 'translateX(20px)';
-        
         // Focus the input after animation completes
         setTimeout(() => {
-            searchInput.style.transition = 'all 0.3s ease-out';
-            searchInput.style.transform = 'translateX(0)';
-            searchInput.focus();
-        }, 300);
-
-        // Add click event to overlay to exit search
-        document.addEventListener('click', closeSearchOnClickOutside);
+            document.querySelector('.search-input').focus();
+        }, 500);
     } else {
-        // Show header elements with animation
+        // Show header elements smoothly
         headerTitle.style.opacity = '1';
-        headerTitle.style.transform = 'translateX(0) scale(1)';
+        headerTitle.style.transform = 'translateX(0)';
 
         darkModeToggle.style.opacity = '1';
-        darkModeToggle.style.transform = 'translateX(0) scale(1)';
+        darkModeToggle.style.transform = 'translateX(0)';
 
         // Clear the input
         document.querySelector('.search-input').value = '';
         // Reset search results
         resetSearchResults();
-        
-        // Remove click event
-        document.removeEventListener('click', closeSearchOnClickOutside);
-        
-        // Reset grid container scrolling settings
-        const gridContainer = document.getElementById('storyGrid');
-        gridContainer.style.overflow = '';
-        gridContainer.style.pointerEvents = '';
-    }
-}
-
-// Close search when clicking outside
-function closeSearchOnClickOutside(event) {
-    const searchContainer = document.querySelector('.search-container');
-    const searchInput = document.querySelector('.search-input');
-    const searchButton = document.querySelector('.search-button');
-    
-    // If click is outside search elements
-    if (!searchContainer.contains(event.target) && 
-        event.target !== searchInput && 
-        event.target !== searchButton) {
-        toggleSearch();
     }
 }
 
