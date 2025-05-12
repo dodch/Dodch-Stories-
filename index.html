@@ -1127,52 +1127,21 @@ function handleOrientationChange() {
 }
 
 // Function to load stories from JSON
-async function loadStories() {
-    try {
-        const response = await fetch('stories.json');
-        return await response.json();
-    } catch (error) {
-        console.error('Error loading stories:', error);
-        return [];
-    }
+if (story.file && story.file.trim().length > 5 && story.file.includes(".html")) {
+    gridItem.innerHTML = `
+        <a href="${story.file}">
+            <h3>${story.title}</h3>
+            <p>${story.description}</p>
+        </a>
+    `;
+} else {
+    gridItem.innerHTML = `
+        <div class="unclickable">
+            <h3>${story.title}</h3>
+            <p>${story.description}</p>
+        </div>
+    `;
 }
-
-// Function to display stories in the grid
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    fetch('stories.json') // Adjust the path if the JSON file is in a different directory
-        .then(response => response.json())
-        .then(stories => {
-            const gridContainer = document.querySelector(".grid-container");
-
-            stories.forEach(story => {
-                const gridItem = document.createElement("div");
-                gridItem.classList.add("grid-item");
-
-                if (!story.file) {
-                    gridItem.classList.add("unclickable");
-                } else {
-                    gridItem.addEventListener("click", () => {
-                        window.location.href = story.file;
-                    });
-                }
-
-                gridItem.innerHTML = `
-                    <h2>${story.title}</h2>
-                    <p>${story.description}</p>
-                `;
-                gridContainer.appendChild(gridItem);
-            });
-        })
-        .catch(error => console.error("Error fetching stories:", error));
-});
-
-        container.appendChild(gridItem);
-    });
-}
-
-// Call the function when the page loads
-displayStories();
 
 // Function to generate grid items
 async function generateStoryGrid() {
