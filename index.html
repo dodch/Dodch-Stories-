@@ -1142,21 +1142,21 @@ async function displayStories() {
         gridItem.className = 'grid-item';
 
         // Check if story has a valid file to make it clickable
-        if (story.file && story.file.trim() !== "") {
-            gridItem.innerHTML = `
-                <a href="${story.file}">
-                    <h3>${story.title}</h3>
-                    <p>${story.description}</p>
-                </a>
-            `;
-        } else {
-            gridItem.innerHTML = `
-                <div class="unclickable">
-                    <h3>${story.title}</h3>
-                    <p>${story.description}</p>
-                </div>
-            `;
-        }
+        if (story.file && story.file.trim().length > 5 && story.file.includes(".html")) {
+    gridItem.innerHTML = `
+        <a href="${story.file}">
+            <h3>${story.title}</h3>
+            <p>${story.description}</p>
+        </a>
+    `;
+} else {
+    gridItem.innerHTML = `
+        <div class="unclickable">
+            <h3>${story.title}</h3>
+            <p>${story.description}</p>
+        </div>
+    `;
+}
 
         container.appendChild(gridItem);
     });
