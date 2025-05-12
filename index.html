@@ -991,6 +991,11 @@ footer {
     text-align: left;
     color: #8a2be2;
 }
+.unclickable {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}
 </style>
 <style id="loading-styles">
 /* Loading Screen Styles */
@@ -1121,14 +1126,20 @@ function handleOrientationChange() {
 }
 
 // Function to load stories from JSON
-async function loadStories() {
-    try {
-        const response = await fetch('stories.json');
-        return await response.json();
-    } catch (error) {
-        console.error('Error loading stories:', error);
-        return [];
-    }
+if (story.file && story.file.trim().length > 5 && story.file.includes(".html")) {
+    gridItem.innerHTML = `
+        <a href="${story.file}">
+            <h3>${story.title}</h3>
+            <p>${story.description}</p>
+        </a>
+    `;
+} else {
+    gridItem.innerHTML = `
+        <div class="unclickable">
+            <h3>${story.title}</h3>
+            <p>${story.description}</p>
+        </div>
+    `;
 }
 
 // Function to generate grid items
