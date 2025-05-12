@@ -1132,6 +1132,39 @@ async function loadStories() {
     }
 }
 
+// Function to display stories in the grid
+async function displayStories() {
+    const stories = await loadStories();
+    const container = document.getElementById('grid-container');
+
+    stories.forEach(story => {
+        const gridItem = document.createElement('div');
+        gridItem.className = 'grid-item';
+
+        // Check if story has a valid file to make it clickable
+        if (story.file && story.file.trim() !== "") {
+            gridItem.innerHTML = `
+                <a href="${story.file}">
+                    <h3>${story.title}</h3>
+                    <p>${story.description}</p>
+                </a>
+            `;
+        } else {
+            gridItem.innerHTML = `
+                <div class="unclickable">
+                    <h3>${story.title}</h3>
+                    <p>${story.description}</p>
+                </div>
+            `;
+        }
+
+        container.appendChild(gridItem);
+    });
+}
+
+// Call the function when the page loads
+displayStories();
+
 // Function to generate grid items
 async function generateStoryGrid() {
     const storyGrid = document.getElementById("storyGrid");
