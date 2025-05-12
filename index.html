@@ -1157,7 +1157,11 @@ async function displayStories() {
         </div>
     `;
 }
-
+.unclickable {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}
         container.appendChild(gridItem);
     });
 }
