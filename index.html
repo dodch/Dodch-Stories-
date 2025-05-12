@@ -1032,15 +1032,9 @@ footer {
     0% { filter: blur(0px); }
     100% { filter: blur(4px); }
 }
-.grid-item.unclickable {
-    pointer-events: none; /* Disable clicks */
-    opacity: 0.5; /* Optional: Dim the appearance for inactive items */
-    cursor: not-allowed; /* Optional: Show a "not-allowed" cursor */
-}
 </style>
 </head>
 <body>
-<h1>Dodch Stories</h1>
 <!-- Loading Screen -->
 <div class="loading">
     <div class="loading-text">
@@ -1127,20 +1121,14 @@ function handleOrientationChange() {
 }
 
 // Function to load stories from JSON
-if (story.file && story.file.trim().length > 5 && story.file.includes(".html")) {
-    gridItem.innerHTML = `
-        <a href="${story.file}">
-            <h3>${story.title}</h3>
-            <p>${story.description}</p>
-        </a>
-    `;
-} else {
-    gridItem.innerHTML = `
-        <div class="unclickable">
-            <h3>${story.title}</h3>
-            <p>${story.description}</p>
-        </div>
-    `;
+async function loadStories() {
+    try {
+        const response = await fetch('stories.json');
+        return await response.json();
+    } catch (error) {
+        console.error('Error loading stories:', error);
+        return [];
+    }
 }
 
 // Function to generate grid items
