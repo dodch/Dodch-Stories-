@@ -65,27 +65,37 @@
   left: 15px;
   background-color: rgba(0, 0, 0, 0.7); /* Subtle dark background */
   color: #fff; /* White text for contrast */
-  font-size: 14px; /* Smaller font size */
+  font-size: 14px; /* Base font size */
   font-weight: 500; /* Medium weight for a clean look */
-  padding: 8px 12px; /* Reduced padding */
+  padding: 8px 12px; /* Base padding */
   border-radius: 20px; /* Pill shape */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
   border: none;
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s; /* Smooth transitions */
+  transition: all 0.3s ease; /* Smooth transition for all properties */
   z-index: 1000; /* Ensures it stays on top */
   display: flex; /* Center the icon and text */
   align-items: center;
   gap: 5px; /* Space between the arrow and the text */
 }
+
+.home-button.small {
+  padding: 4px 8px; /* Smaller padding when minimized */
+  font-size: 12px; /* Smaller font size */
+  opacity: 0.8; /* Slightly dimmed */
+  transform: scale(0.9); /* Slightly smaller size */
+}
+
 .home-button:hover {
   background-color: rgba(255, 255, 255, 0.2); /* Lighten on hover */
   transform: translateY(-2px); /* Lift effect */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Enhanced shadow */
 }
+
 .home-button:active {
   transform: translateY(0); /* Reset lift effect */
 }
+
 .home-icon {
   font-size: 1rem; /* Medium arrow size */
   font-weight: bold;
@@ -731,6 +741,24 @@
         }
         checkVisibility();
       });
+      // JavaScript to toggle the "small" class on scrolling
+document.addEventListener("DOMContentLoaded", () => {
+  const homeButton = document.getElementById("homeButton");
+  let lastScrollTop = 0;
+
+  window.addEventListener("scroll", () => {
+    const currentScroll = window.scrollY;
+
+    if (currentScroll > lastScrollTop) {
+      // Scrolling down: minimize button
+      homeButton.classList.add("small");
+    } else {
+      // Scrolling up: expand button
+      homeButton.classList.remove("small");
+    }
+
+    lastScrollTop = currentScroll <= 0 ? 0 : currentScroll; // Avoid negative values
+  });
     </script>
   </body>
 </html>
