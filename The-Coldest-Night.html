@@ -414,39 +414,6 @@
     <button class="dark-mode-toggle" onclick="toggleDarkMode()">☀️</button>
     <button class="save-progress-toggle" onclick="showSavedProgress()">📥</button>
     <script defer>
-  document.addEventListener("DOMContentLoaded", function () {
-    console.log("DOM fully loaded and parsed.");
-
-    // Select the Home Button
-    const homeButton = document.querySelector(".home-button");
-    if (!homeButton) {
-      console.error("Home button not found. Check the .home-button selector.");
-      return;
-    }
-
-    let lastScrollTop = 0;
-    let ticking = false;
-
-    // Function to adjust the Home Button size and opacity
-    function checkHomeButtonVisibility() {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercent = (scrollTop / docHeight) * 100;
-
-      console.log(`Scroll Position: ${scrollTop}, Scroll Percent: ${scrollPercent}%`);
-
-      // Minimize the button when close to the bottom and restore it near the top
-      if (scrollPercent > 80) {
-        console.log("Minimizing the Home Button...");
-        homeButton.style.transform = "scale(0.6)";
-        homeButton.style.opacity = "0.5";
-      } else {
-        console.log("Restoring the Home Button...");
-        homeButton.style.transform = "scale(1)";
-        homeButton.style.opacity = "1";
-      }
-    }
-
     // Add Scroll Event Listener
     window.addEventListener(
       "scroll",
