@@ -61,32 +61,33 @@
 /* Home Button Styles */
 .home-button {
   position: fixed;
-  top: 20px;
-  left: 20px;
+  top: 15px;
+  left: 15px;
   background-color: rgba(0, 0, 0, 0.7); /* Subtle dark background */
   color: #fff; /* White text for contrast */
-  font-size: 20px;
-  padding: 10px;
-  border-radius: 50%; /* Circular button */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Soft shadow */
+  font-size: 14px; /* Smaller font size */
+  font-weight: 500; /* Medium weight for a clean look */
+  padding: 8px 12px; /* Reduced padding */
+  border-radius: 20px; /* Pill shape */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
   border: none;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s; /* Smooth transitions */
   z-index: 1000; /* Ensures it stays on top */
-  display: flex; /* Center the icon */
-  justify-content: center;
+  display: flex; /* Center the icon and text */
   align-items: center;
+  gap: 5px; /* Space between the arrow and the text */
 }
 .home-button:hover {
-  background-color: rgba(255, 255, 255, 0.3); /* Lighten on hover */
-  transform: scale(1.1); /* Slight zoom effect */
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); /* Enhanced shadow */
+  background-color: rgba(255, 255, 255, 0.2); /* Lighten on hover */
+  transform: translateY(-2px); /* Lift effect */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Enhanced shadow */
 }
 .home-button:active {
-  transform: scale(0.95); /* Shrink slightly on click */
+  transform: translateY(0); /* Reset lift effect */
 }
 .home-icon {
-  font-size: 1.5rem; /* Bigger arrow */
+  font-size: 1rem; /* Medium arrow size */
   font-weight: bold;
 }
       .scroll-text,
@@ -370,7 +371,7 @@
   </head>
   <body>
 <a class="home-button" href="index.html">
-  <span class="home-icon">←</span>
+  <span class="home-icon">← Back</span>
 </a>
     <!-- Stars Container -->
     <div class="stars-container"></div>
