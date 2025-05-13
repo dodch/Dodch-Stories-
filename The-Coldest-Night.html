@@ -414,21 +414,6 @@
     <button class="dark-mode-toggle" onclick="toggleDarkMode()">☀️</button>
     <button class="save-progress-toggle" onclick="showSavedProgress()">📥</button>
     <script defer>
-    // Add Scroll Event Listener
-    window.addEventListener(
-      "scroll",
-      () => {
-        if (!ticking) {
-          window.requestAnimationFrame(() => {
-            checkHomeButtonVisibility();
-            ticking = false;
-          });
-          ticking = true;
-        }
-      },
-      { passive: true }
-    );
-  });
       // Cache DOM elements to reduce lookup overhead
       const progressBar = document.getElementById("progress-bar");
       const backToTopButton = document.getElementById("back-to-top");
