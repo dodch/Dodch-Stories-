@@ -741,24 +741,6 @@
         }
         checkVisibility();
       });
-      // JavaScript to toggle the "small" class on scrolling
-document.addEventListener("DOMContentLoaded", () => {
-  const homeButton = document.getElementById("homeButton");
-  let lastScrollTop = 0;
-
-  window.addEventListener("scroll", () => {
-    const currentScroll = window.scrollY;
-
-    if (currentScroll > lastScrollTop) {
-      // Scrolling down: minimize button
-      homeButton.classList.add("small");
-    } else {
-      // Scrolling up: expand button
-      homeButton.classList.remove("small");
-    }
-
-    lastScrollTop = currentScroll <= 0 ? 0 : currentScroll; // Avoid negative values
-  });
     </script>
   </body>
 </html>
