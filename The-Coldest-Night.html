@@ -414,38 +414,6 @@
     <button class="dark-mode-toggle" onclick="toggleDarkMode()">☀️</button>
     <button class="save-progress-toggle" onclick="showSavedProgress()">📥</button>
     <script defer>
-  const homeButton = document.querySelector(".home-button");
-  let lastScrollTop = 0;
-  let ticking = false;
-
-  function checkHomeButtonVisibility() {
-    const scrollTop = window.scrollY;
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const scrollPercent = (scrollTop / docHeight) * 100;
-
-    // Minimize the button when close to the bottom and restore it near the top
-    if (scrollPercent > 80) {
-      homeButton.style.transform = "scale(0.6)";
-      homeButton.style.opacity = "0.5";
-    } else {
-      homeButton.style.transform = "scale(1)";
-      homeButton.style.opacity = "1";
-    }
-  }
-
-  window.addEventListener(
-    "scroll",
-    () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          checkHomeButtonVisibility();
-          ticking = false;
-        });
-        ticking = true;
-      }
-    },
-    { passive: true }
-  );
       // Cache DOM elements to reduce lookup overhead
       const progressBar = document.getElementById("progress-bar");
       const backToTopButton = document.getElementById("back-to-top");
@@ -773,6 +741,41 @@
         }
         checkVisibility();
       });
+      <script defer>
+  document.addEventListener("DOMContentLoaded", function () {
+    const homeButton = document.querySelector(".home-button");
+    let lastScrollTop = 0;
+    let ticking = false;
+
+    function checkHomeButtonVisibility() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPercent = (scrollTop / docHeight) * 100;
+
+      // Minimize the button when close to the bottom and restore it near the top
+      if (scrollPercent > 80) {
+        homeButton.style.transform = "scale(0.6)";
+        homeButton.style.opacity = "0.5";
+      } else {
+        homeButton.style.transform = "scale(1)";
+        homeButton.style.opacity = "1";
+      }
+    }
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!ticking) {
+          window.requestAnimationFrame(() => {
+            checkHomeButtonVisibility();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      },
+      { passive: true }
+    );
+  });
     </script>
   </body>
 </html>
