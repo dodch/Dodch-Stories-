@@ -669,6 +669,9 @@ I felt a little bit lighter —
 waiting for the next time
 I’ll set more pains free from their cage.
 
+
+
+What is the weakest part of our bodies ? Probably the tong it’s just a pace of muscles and meat that has no bones , it can’t punch you physically but it’s words can punch you harder in your soul , strong enough to ruin someone’s day or break his heart strong enough to change his look into himself
     </div>
     <div class="fixed top-0 left-0 right-0 flex justify-center p-4 space-x-4 z-50">
         <button
@@ -737,481 +740,424 @@ I’ll set more pains free from their cage.
         </button>
     </div>
 
-    <script>
-        let currentLanguage = 'en';
-        let savedWord = '';
-        let highlightedWordElement = null;
-        let tempSavedWord = '';
-        let isDarkMode = false;
+<script>
+    let currentLanguage = 'en';
+    let savedWord = '';
+    let highlightedWordElement = null;
+    let tempSavedWord = '';
+    let isDarkMode = false;
 
-        const contentMap = {
-            ar: {
-                title: 'ضائع لأوجد',
-                // *** We use 'rawTextId' to point to the hidden div where you paste your text ***
-                rawTextId: 'raw-ar-text',
-                saveProgress: 'حفظ التقدم',
-                savePosition: 'حفظ الموضع',
-                save: 'حفظ',
-                exit: 'خروج',
-                atWord: 'كلمة',
-                positionSaved: 'الموقع محفوظ',
-                forWord: 'للكلمة',
-                noWordSaved: 'لم يتم حفظ أي كلمة بعد',
-            },
-            fr: {
-                title: 'Perdu à trouver',
-                // *** Use 'rawTextId' to point to the hidden div ***
-                rawTextId: 'raw-fr-text',
-                saveProgress: 'Enregistrer le progrès',
-                savePosition: 'Enregistrer la position',
-                save: 'Enregistrer',
-                exit: 'Sortir',
-                atWord: 'mot',
-                positionSaved: 'La position est enregistrée',
-                forWord: 'pour le mot',
-                noWordSaved: 'Aucun word n\'a été enregistré encore',
-            },
-            en: {
-                title: 'lost to be found',
-                // *** Use 'rawTextId' to point to the hidden div ***
-                rawTextId: 'raw-en-text',
-                saveProgress: 'Saved Progress',
-                savePosition: 'Save Position',
-                save: 'Save',
-                exit: 'Exit',
-                atWord: 'word',
-                positionSaved: 'Position saved',
-                forWord: 'for the word',
-                noWordSaved: 'No word has been saved yet',
-            },
-        };
+    const contentMap = {
+        ar: {
+            title: 'ضائع لأوجد',
+            rawTextId: 'raw-ar-text',
+            saveProgress: 'حفظ التقدم',
+            savePosition: 'حفظ الموضع',
+            save: 'حفظ',
+            exit: 'خروج',
+            atWord: 'كلمة',
+            positionSaved: 'الموقع محفوظ',
+            forWord: 'للكلمة',
+            noWordSaved: 'لم يتم حفظ أي كلمة بعد',
+        },
+        fr: {
+            title: 'Perdu à trouver',
+            rawTextId: 'raw-fr-text',
+            saveProgress: 'Enregistrer le progrès',
+            savePosition: 'Enregistrer la position',
+            save: 'Enregistrer',
+            exit: 'Sortir',
+            atWord: 'mot',
+            positionSaved: 'La position est enregistrée',
+            forWord: 'pour le mot',
+            noWordSaved: 'Aucun word n\'a été enregistré encore',
+        },
+        en: {
+            title: 'lost to be found',
+            rawTextId: 'raw-en-text',
+            saveProgress: 'Saved Progress',
+            savePosition: 'Save Position',
+            save: 'Save',
+            exit: 'Exit',
+            atWord: 'word',
+            positionSaved: 'Position saved',
+            forWord: 'for the word',
+            noWordSaved: 'No word has been saved yet',
+        },
+    };
 
-        const lightBackgroundDiv = document.querySelector('.fixed-background.light-background');
-        const darkBackgroundDiv = document.querySelector('.fixed-background.dark-background');
-        const contentDiv = document.getElementById('content');
-        // Changed textElement to refer to the div
-        const textElement = document.getElementById('text');
-        const titleElement = document.getElementById('title');
+    const lightBackgroundDiv = document.querySelector('.fixed-background.light-background');
+    const darkBackgroundDiv = document.querySelector('.fixed-background.dark-background');
+    const contentDiv = document.getElementById('content');
+    const textElement = document.getElementById('text');
+    const titleElement = document.getElementById('title');
 
 
-        function applyTextEffects() {
-             // This function applies base text effects (shadow/color) to non-highlighted words.
-            // Select spans within paragraphs inside the textElement div
-            const textSpans = textElement.querySelectorAll('p span');
-            const isDarkModeActive = document.body.classList.contains('dark-mode');
+    function applyTextEffects() {
+        const textSpans = textElement.querySelectorAll('p span');
+        const isDarkModeActive = document.body.classList.contains('dark-mode');
 
-            textSpans.forEach(span => {
-                if (!span.classList.contains('glow-word')) {
-                    if (isDarkModeActive) {
-                        span.style.textShadow = '0 0 1px rgba(255, 255, 255, 0.5)';
-                        span.style.webkitTextStroke = 'none';
-                        span.style.textStroke = 'none';
-                        span.style.webkitTextFillColor = 'white';
-                        span.style.color = 'white';
-                    } else {
-                        span.style.textShadow = '0 0 1px rgba(0, 0, 0, 0.5)';
-                        span.style.webkitTextStroke = 'none';
-                        span.style.textStroke = 'none';
-                        span.style.webkitTextFillColor = 'initial';
-                        span.style.color = 'inherit';
-                    }
+        textSpans.forEach(span => {
+            if (!span.classList.contains('glow-word')) {
+                if (isDarkModeActive) {
+                    span.style.textShadow = '0 0 1px rgba(255, 255, 255, 0.5)';
+                    span.style.webkitTextStroke = 'none';
+                    span.style.textStroke = 'none';
+                    span.style.webkitTextFillColor = 'white';
+                    span.style.color = 'white';
+                } else {
+                    span.style.textShadow = '0 0 1px rgba(0, 0, 0, 0.5)';
+                    span.style.webkitTextStroke = 'none';
+                    span.style.textStroke = 'none';
+                    span.style.webkitTextFillColor = 'initial';
+                    span.style.color = 'inherit';
                 }
-            });
+            }
+        });
+    }
+
+
+    function changeLanguage(lang, fromLoad = false) { // Added fromLoad parameter
+        if (currentLanguage === lang && !contentDiv.classList.contains('content-fading') && !fromLoad) {
+             return;
         }
 
+        currentLanguage = lang;
 
-        function changeLanguage(lang) {
-            if (currentLanguage === lang && !contentDiv.classList.contains('content-fading')) {
-                 return;
+        // Save language to localStorage unless called from initial load
+        if (!fromLoad) {
+             localStorage.setItem('savedLanguage', lang);
+        }
+
+        const content = contentMap[lang];
+
+        contentDiv.classList.add('content-fading');
+
+        const rawTextElement = document.getElementById(content.rawTextId);
+        const rawText = rawTextElement ? rawTextElement.textContent : '';
+
+        setTimeout(() => {
+            titleElement.textContent = content.title;
+
+            if (lang === 'ar') {
+                contentDiv.dir = 'rtl';
+                textElement.style.textAlign = 'right';
+            } else {
+                contentDiv.dir = 'ltr';
+                textElement.style.textAlign = 'left';
             }
 
-            currentLanguage = lang;
-            const content = contentMap[lang];
+            textElement.innerHTML = '';
 
-            contentDiv.classList.add('content-fading');
+            if (rawText) {
+                const lines = rawText.split('\n');
 
-            // *** Get the raw text from the hidden div specified by rawTextId ***
-            const rawTextElement = document.getElementById(content.rawTextId);
-            // Use textContent to get the plain text inside the div, preserve line breaks
-            const rawText = rawTextElement ? rawTextElement.textContent : '';
+                lines.forEach(line => {
+                     const trimmedLine = line.trim();
 
-
-            // Use a timeout to wait for the fade out before changing content
-            setTimeout(() => {
-                titleElement.textContent = content.title;
-
-                if (lang === 'ar') {
-                    contentDiv.dir = 'rtl';
-                    textElement.style.textAlign = 'right';
-                } else {
-                    contentDiv.dir = 'ltr';
-                    textElement.style.textAlign = 'left';
-                }
-
-                // Clear previous content
-                textElement.innerHTML = '';
-
-                 // *** Process the single rawText string line by line ***
-                if (rawText) {
-                    // Split the raw text into lines, including empty lines
-                    const lines = rawText.split('\n');
-
-                    lines.forEach(line => {
-                         // Trim whitespace from the start and end of the line
-                         const trimmedLine = line.trim();
-
-                         if (trimmedLine === '') {
-                             // If the trimmed line is empty, it's a blank line/newline
-                             // Append a break element or an empty paragraph for spacing
-                              const br = document.createElement('br');
-                              textElement.appendChild(br);
-                         } else {
-                             // If the line has content, create a paragraph for it
-                             const pElement = document.createElement('p');
-                             // Add Tailwind classes for spacing and text styles
-                             pElement.classList.add('mb-4', 'text-lg', 'leading-relaxed');
-
-                             // Split the line into words by one or more whitespace characters
-                             const words = trimmedLine.split(/\s+/).filter(word => word !== ''); // Filter out any empty word strings
-
-                             words.forEach((word, index, array) => {
-                                 const span = document.createElement('span');
-                                 // Trim leading/trailing punctuation/symbols if needed, but keep apostrophes/hyphens within words
-                                 // Use trimmed word for display and click handling
-                                 span.textContent = word.trim();
-                                 span.classList.add('cursor-pointer', 'hover:text-purple-600');
-
-                                 // Add click listener to the span
-                                 span.onclick = () => handleWordClick(span.textContent); // Use the actual trimmed text content
-
-                                 pElement.appendChild(span); // Append span to the paragraph element
-
-                                 // Add a space text node after the span, unless it's the last word in the line
-                                 if (index < array.length - 1) {
-                                     pElement.appendChild(document.createTextNode(' '));
-                                 }
-                             });
-                             // Append the completed paragraph element for this line to the main text container
-                             textElement.appendChild(pElement);
-                         }
-                    });
-                } else {
-                    // Display a message if raw text is empty for the selected language
-                     const noTextElement = document.createElement('p');
-                     noTextElement.classList.add('text-center', 'text-xl', 'text-gray-500'); // Add appropriate styling
-                     noTextElement.textContent = `No text available for ${lang.toUpperCase()}. Please add content to the raw text div.`;
-                     textElement.appendChild(noTextElement);
-                     console.warn(`No raw text found for language: ${lang}`);
-                }
-
-
-                // Update other language-dependent text
-                document.getElementById('save-progress-button').textContent = content.saveProgress;
-                document.getElementById('popup-title').textContent = content.savePosition;
-                document.getElementById('popup').querySelector('.bg-green-500').textContent = content.save;
-                document.getElementById('popup').querySelector('.bg-red-500').textContent = content.exit;
-
-                // Update language button glow
-                document.getElementById('ar-button').classList.remove('glow');
-                document.getElementById('fr-button').classList.remove('glow');
-                document.getElementById('en-button').classList.remove('glow');
-                document.getElementById(`${lang}-button`).classList.add('glow');
-
-                 highlightedWordElement = null; // Reset reference
-
-                 // Apply base text effects immediately after spans are created
-                 applyTextEffects();
-                 if (savedWord) {
-                     // If a word was saved, re-highlight it in the new language
-                     // Only try to highlight if the word exists in the new text
-                     // Select spans within paragraphs inside the textElement div
-                     const wordsInNewText = Array.from(textElement.querySelectorAll('p span')).map(span => span.textContent.trim());
-                     if (wordsInNewText.includes(savedWord)) {
-                         highlightWord(savedWord);
+                     if (trimmedLine === '') {
+                          const br = document.createElement('br');
+                          textElement.appendChild(br);
                      } else {
-                         console.warn(`Saved word "${savedWord}" not found in the new ${lang} text.`);
-                         savedWord = ''; // Clear saved word if not found
+                         const pElement = document.createElement('p');
+                         pElement.classList.add('mb-4', 'text-lg', 'leading-relaxed');
+
+                         const words = trimmedLine.split(/\s+/).filter(word => word !== '');
+
+                         words.forEach((word, index, array) => {
+                             const span = document.createElement('span');
+                             span.textContent = word.trim();
+                             span.classList.add('cursor-pointer', 'hover:text-purple-600');
+
+                             span.onclick = () => handleWordClick(span.textContent);
+
+                             pElement.appendChild(span);
+
+                             if (index < array.length - 1) {
+                                 pElement.appendChild(document.createTextNode(' '));
+                             }
+                         });
+                         textElement.appendChild(pElement);
                      }
-                 }
-
-
-                // Remove fading class to start the fade in transition for the content area
-                contentDiv.classList.remove('content-fading');
-
-
-                 if (isDarkMode) {
-                     titleElement.style.color = 'white';
-                 } else {
-                      titleElement.style.color = 'inherit'; // Revert to default inherited color
-                 }
-
-            }, 500); // Match this duration to the #content opacity transition
-        }
-
-        function handleWordClick(word) {
-            tempSavedWord = word; // Save the clicked word temporarily
-             // Construct the popup text using the correct language strings
-            document.getElementById('popup-text').textContent = `${contentMap[currentLanguage].savePosition} ${contentMap[currentLanguage].atWord}: "${word}"?`;
-            document.getElementById('popup').classList.remove('hidden');
-            document.getElementById('popup').classList.remove('fade-out');
-            document.getElementById('popup').classList.add('fade-in');
-        }
-
-        function closePopup() {
-            document.getElementById('popup').classList.remove('fade-in');
-            document.getElementById('popup').classList.add('fade-out');
-            setTimeout(() => {
-                document.getElementById('popup').classList.add('hidden');
-            }, 300); // Match this duration to the fade-out animation
-        }
-
-        function savePosition() {
-            if (tempSavedWord) {
-                savedWord = tempSavedWord; // Confirm save from temp
-                console.log(`${contentMap[currentLanguage].positionSaved} ${contentMap[currentLanguage].forWord}: "${savedWord}"`);
-                highlightWord(savedWord); // Highlight the word after saving
+                });
+            } else {
+                 const noTextElement = document.createElement('p');
+                 noTextElement.classList.add('text-center', 'text-xl', 'text-gray-500');
+                 noTextElement.textContent = `No text available for ${lang.toUpperCase()}. Please add content to the raw text div.`;
+                 textElement.appendChild(noTextElement);
+                 console.warn(`No raw text found for language: ${lang}`);
             }
-            closePopup();
-        }
 
-        function scrollToSavedWord() {
-            if (savedWord) {
-                // Select spans within paragraphs inside the textElement div
-                const words = textElement.querySelectorAll('p span');
-                 let targetElement = null;
-                 for (const wordElement of words) {
-                    // Check text content of the span to find the exact saved word
-                    if (wordElement.textContent.trim() === savedWord.trim()) {
-                       targetElement = wordElement;
-                       break;
-                    }
-                 }
+            document.getElementById('save-progress-button').textContent = content.saveProgress;
+            document.getElementById('popup-title').textContent = content.savePosition;
+            document.getElementById('popup').querySelector('.bg-green-500').textContent = content.save;
+            document.getElementById('popup').querySelector('.bg-red-500').textContent = content.exit;
 
-                if (targetElement) {
-                     // Highlight the target element
+            document.getElementById('ar-button').classList.remove('glow');
+            document.getElementById('fr-button').classList.remove('glow');
+            document.getElementById('en-button').classList.remove('glow');
+            document.getElementById(`${lang}-button`).classList.add('glow');
+
+             highlightedWordElement = null;
+
+             applyTextEffects();
+
+             // Re-highlight the saved word in the new text if it exists
+             if (savedWord) {
+                 const wordsInNewText = Array.from(textElement.querySelectorAll('p span')).map(span => span.textContent.trim());
+                 if (wordsInNewText.includes(savedWord)) {
                      highlightWord(savedWord);
+                     // If loading from storage, auto-scroll to the word
+                     if(fromLoad) {
+                         scrollToSavedWord(false); // Pass false to prevent infinite loop
+                     }
+                 } else {
+                     console.warn(`Saved word "${savedWord}" not found in the new ${lang} text. Clearing saved progress.`);
+                     savedWord = ''; // Clear saved word if not found
+                     localStorage.removeItem('savedWord'); // Also clear from localStorage
+                 }
+             }
 
-                     // Use requestAnimationFrame to ensure highlight styles are applied before scrolling
-                     requestAnimationFrame(() => {
-                        // Scroll the target element into view
-                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                     });
 
-                } else {
+            contentDiv.classList.remove('content-fading');
+
+
+             if (isDarkMode) {
+                 titleElement.style.color = 'white';
+             } else {
+                  titleElement.style.color = 'inherit';
+             }
+
+        }, 500);
+    }
+
+    function handleWordClick(word) {
+        tempSavedWord = word;
+        document.getElementById('popup-text').textContent = `${contentMap[currentLanguage].savePosition} ${contentMap[currentLanguage].atWord}: "${word}"?`;
+        document.getElementById('popup').classList.remove('hidden');
+        document.getElementById('popup').classList.remove('fade-out');
+        document.getElementById('popup').classList.add('fade-in');
+    }
+
+    function closePopup() {
+        document.getElementById('popup').classList.remove('fade-in');
+        document.getElementById('popup').classList.add('fade-out');
+        setTimeout(() => {
+            document.getElementById('popup').classList.add('hidden');
+        }, 300);
+    }
+
+    function savePosition() {
+        if (tempSavedWord) {
+            savedWord = tempSavedWord;
+            console.log(`${contentMap[currentLanguage].positionSaved} ${contentMap[currentLanguage].forWord}: "${savedWord}"`);
+            localStorage.setItem('savedWord', savedWord); // Save to localStorage
+            localStorage.setItem('savedLanguage', currentLanguage); // Also save current language
+            highlightWord(savedWord);
+        }
+        closePopup();
+    }
+
+    function scrollToSavedWord(checkIfFound = true) { // Added check parameter
+        if (savedWord) {
+            const words = textElement.querySelectorAll('p span');
+             let targetElement = null;
+             for (const wordElement of words) {
+                if (wordElement.textContent.trim() === savedWord.trim()) {
+                   targetElement = wordElement;
+                   break;
+                }
+             }
+
+            if (targetElement) {
+                 highlightWord(savedWord);
+
+                 requestAnimationFrame(() => {
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                 });
+
+            } else {
+                // Only show warning and clear if not specifically told to skip check (i.e., during initial load where changeLanguage already warned)
+                if (checkIfFound) {
                     console.warn(`Saved word "${savedWord}" not found in current text for language "${currentLanguage}".`);
-                    // Alert the user and clear the saved word if not found in the *current* text
                     alert(`${contentMap[currentLanguage].noWordSaved} ("${savedWord}")`);
                     savedWord = '';
-                     // Ensure no word is highlighted if the saved word is cleared
-                    if (highlightedWordElement) {
+                    localStorage.removeItem('savedWord'); // Clear from localStorage
+                     if (highlightedWordElement) {
                         highlightedWordElement.classList.remove('bg-yellow-200', 'bg-yellow-600', 'rounded', 'glow-word');
-                        applyTextEffects(); // Re-apply base effects
+                        applyTextEffects();
                         highlightedWordElement = null;
                     }
                 }
-
-            } else {
-                alert(contentMap[currentLanguage].noWordSaved);
             }
+
+        } else {
+            alert(contentMap[currentLanguage].noWordSaved);
         }
+    }
 
-       function highlightWord(wordToHighlight) {
-           // If there was a previous highlighted word element
-           if (highlightedWordElement) {
-               // Remove glow and related overrides from the *previous* word
-               highlightedWordElement.classList.remove('bg-yellow-200', 'bg-yellow-600', 'rounded', 'glow-word');
-               // Re-apply base text effects (shadow/color) to the previously highlighted word
-               applyTextEffects();
-               highlightedWordElement = null; // Clear the reference immediately
-           }
+   function highlightWord(wordToHighlight) {
+       if (highlightedWordElement) {
+           highlightedWordElement.classList.remove('bg-yellow-200', 'bg-yellow-600', 'rounded', 'glow-word');
+           applyTextEffects();
+           highlightedWordElement = null;
+       }
 
-           if (!wordToHighlight) return; // Do nothing if wordToHighlight is empty
+       if (!wordToHighlight) return;
 
-           // Select spans within paragraphs inside the textElement div
-           const words = textElement.querySelectorAll('p span');
-           let found = false;
-           for (const wordElement of words) {
-               if (wordElement.textContent.trim() === wordToHighlight.trim()) {
-                   highlightedWordElement = wordElement; // Set the reference to the new element
-                   highlightedWordElement.classList.add('rounded', 'glow-word');
+       const words = textElement.querySelectorAll('p span');
+       let found = false;
+       for (const wordElement of words) {
+           if (wordElement.textContent.trim() === wordToHighlight.trim()) {
+               highlightedWordElement = wordElement;
+               highlightedWordElement.classList.add('rounded', 'glow-word');
 
-                   // Apply correct highlight background color based on mode
-                   if (document.body.classList.contains('dark-mode')) {
-                       highlightedWordElement.classList.remove('bg-yellow-200');
-                       highlightedWordElement.classList.add('bg-yellow-600');
-                   } else {
-                       highlightedWordElement.classList.remove('bg-yellow-600');
-                       highlightedWordElement.classList.add('bg-yellow-200');
-                   }
-
-                   // Apply glow-word specific text effects (handled by .glow-word CSS)
-                   // These styles override the base text effects
-                   highlightedWordElement.style.textShadow = 'none';
-                   highlightedWordElement.style.webkitTextStroke = 'none';
-                   highlightedWordElement.style.textStroke = 'none';
-                   highlightedWordElement.style.webkitTextFillColor = 'initial';
-                   highlightedWordElement.style.color = 'initial';
-
-
-                   found = true;
-                   // Do NOT break here if you want to highlight all instances of the word
-                   // If you only want to highlight the first instance, keep the 'break;'
-                    break; // Keep break to only highlight the first instance found
+               if (document.body.classList.contains('dark-mode')) {
+                   highlightedWordElement.classList.remove('bg-yellow-200');
+                   highlightedWordElement.classList.add('bg-yellow-600');
+               } else {
+                   highlightedWordElement.classList.remove('bg-yellow-600');
+                   highlightedWordElement.classList.add('bg-yellow-200');
                }
-           }
 
-           if (!found) {
-               console.warn(`Word "${wordToHighlight}" not found for highlighting.`);
-               // No need to clear highlightedWordElement here, it was cleared at the start.
-               applyTextEffects(); // Ensure base effects are applied to all spans if no word is found
+               highlightedWordElement.style.textShadow = 'none';
+               highlightedWordElement.style.webkitTextStroke = 'none';
+               highlightedWordElement.style.textStroke = 'none';
+               highlightedWordElement.style.webkitTextFillColor = 'initial';
+               highlightedWordElement.style.color = 'initial';
+
+               found = true;
+               break;
            }
        }
 
-        function toggleDarkMode() {
-            isDarkMode = !isDarkMode;
-            const body = document.body;
-            const languageButtons = document.querySelectorAll('#ar-button, #fr-button, #en-button');
-            const saveButton = document.getElementById('save-progress-button');
-            const darkModeToggleBtn = document.querySelector('.fixed.bottom-4.right-4 button');
-            const popupDivInner = document.getElementById('popup').querySelector('div');
-            const contentTitle = document.getElementById('title');
-            // Select spans within paragraphs inside the textElement div
-            const textSpans = textElement.querySelectorAll('p span');
+       if (!found) {
+           console.warn(`Word "${wordToHighlight}" not found for highlighting.`);
+           applyTextEffects();
+       }
+   }
+
+    function toggleDarkMode() {
+        isDarkMode = !isDarkMode;
+        const body = document.body;
+        const languageButtons = document.querySelectorAll('#ar-button, #fr-button, #en-button');
+        const saveButton = document.getElementById('save-progress-button');
+        const darkModeToggleBtn = document.querySelector('.fixed.bottom-4.right-4 button');
+        const popupDivInner = document.getElementById('popup').querySelector('div');
+        const contentTitle = document.getElementById('title');
+        const textSpans = textElement.querySelectorAll('p span');
+
+        // Save dark mode state
+        localStorage.setItem('darkModeEnabled', isDarkMode);
 
 
-            if (isDarkMode) {
-                body.classList.add('dark-mode');
-                lightBackgroundDiv.style.opacity = 0;
-                darkBackgroundDiv.style.opacity = 1;
+        if (isDarkMode) {
+            body.classList.add('dark-mode');
+            lightBackgroundDiv.style.opacity = 0;
+            darkBackgroundDiv.style.opacity = 1;
 
-                languageButtons.forEach(button => {
-                     button.classList.remove('text-purple-600'); // Keep bg-white or blur-effect handling separate
-                     button.classList.add('text-purple-300');
-                });
-                 saveButton.classList.remove('text-purple-600'); // Keep bg-white or blur-effect handling separate
-                 saveButton.classList.add('text-purple-300');
+            languageButtons.forEach(button => {
+                 button.classList.remove('text-purple-600');
+                 button.classList.add('text-purple-300');
+            });
+             saveButton.classList.remove('text-purple-600');
+             saveButton.classList.add('text-purple-300');
 
+            darkModeToggleBtn.classList.remove('text-gray-600');
+            darkModeToggleBtn.classList.add('text-gray-400');
 
-                darkModeToggleBtn.classList.remove('text-gray-600'); // Keep bg-white or blur-effect handling separate
-                darkModeToggleBtn.classList.add('text-gray-400');
+            document.getElementById('dark-mode-icon').textContent = '🌙';
 
-                document.getElementById('dark-mode-icon').textContent = '🌙';
+            popupDivInner.classList.remove('text-gray-800');
+            popupDivInner.classList.add('text-white');
 
-                popupDivInner.classList.remove('text-gray-800');
-                popupDivInner.classList.add('text-white');
+            contentTitle.style.color = 'white';
 
-                contentTitle.style.color = 'white';
+            applyTextEffects();
 
-                // Re-apply text effects based on the new mode
-                applyTextEffects();
-
-                // Re-highlight the saved word if it exists, to apply dark mode highlight styles
-                if (savedWord && highlightedWordElement) {
-                     highlightWord(savedWord); // Calling highlightWord will update its colors
-                 }
-
-            } else { // Revert to light mode
-                body.classList.remove('dark-mode');
-                lightBackgroundDiv.style.opacity = 1;
-                darkBackgroundDiv.style.opacity = 0;
-
-                 languageButtons.forEach(button => {
-                     button.classList.remove('text-purple-300');
-                     button.classList.add('text-purple-600');
-                 });
-                 saveButton.classList.remove('text-purple-300');
-                 saveButton.classList.add('text-purple-600');
-
-                darkModeToggleBtn.classList.remove('text-gray-400');
-                darkModeToggleBtn.classList.add('text-gray-600');
-
-                popupDivInner.classList.remove('text-white');
-                popupDivInner.classList.add('text-gray-800');
-
-                 contentTitle.style.color = 'inherit'; // Revert to default inherited color
-
-                 // Re-apply text effects based on the new mode
-                 applyTextEffects();
-
-                 // Re-highlight the saved word if it exists, to apply light mode highlight styles
-                 if (savedWord && highlightedWordElement) {
-                      highlightWord(savedWord); // Calling highlightWord will update its colors
-                 }
-            }
-        }
-
-        // Add tap effect on button click
-        const allButtons = document.querySelectorAll('button'); // Select all buttons
-        allButtons.forEach(button => {
-            // Prevent tap effect on the popup save/exit buttons
-            if (!button.closest('#popup')) {
-                 button.addEventListener('click', function() {
-                     this.classList.add('tapped');
-                     setTimeout(() => {
-                         this.classList.remove('tapped');
-                     }, 100); // Duration of the tap animation
-                 });
-            }
-        });
-
-
-        // --- Initial Setup ---
-
-        // Initialize with English. changeLanguage handles populating content
-        // It's better to call this after the DOM is fully loaded
-        document.addEventListener('DOMContentLoaded', () => {
-             changeLanguage('en');
-
-             // Set initial background visibility based on initial dark mode state (if any)
-             if(document.body.classList.contains('dark-mode')) {
-                 lightBackgroundDiv.style.opacity = 0;
-                 darkBackgroundDiv.style.opacity = 1;
-                 isDarkMode = true; // Sync JS variable with initial body class if set externally
-                 document.getElementById('dark-mode-icon').textContent = '🌙';
-                 // Apply dark mode text colors/shadows initially
-                 applyTextEffects();
-                  // Update initial button colors for dark mode if needed
-                  const languageButtons = document.querySelectorAll('#ar-button, #fr-button, #en-button');
-                  const saveButton = document.getElementById('save-progress-button');
-                  const darkModeToggleBtn = document.querySelector('.fixed.bottom-4.right-4 button');
-                   languageButtons.forEach(button => {
-                       button.classList.remove('text-purple-600');
-                       button.classList.add('text-purple-300');
-                   });
-                    saveButton.classList.remove('text-purple-600');
-                    saveButton.classList.add('text-purple-300');
-                    darkModeToggleBtn.classList.remove('text-gray-600');
-                    darkModeToggleBtn.classList.add('text-gray-400');
-                    document.getElementById('title').style.color = 'white';
-                     document.getElementById('popup').querySelector('div').classList.add('text-white'); // Also update initial popup text color
-
-             } else {
-                 lightBackgroundDiv.style.opacity = 1;
-                 darkBackgroundDiv.style.opacity = 0;
-                 isDarkMode = false; // Sync JS variable
-                 document.getElementById('dark-mode-icon').textContent = '☀️';
-                  // Apply light mode text colors/shadows initially
-                 applyTextEffects();
-                  // Update initial button colors for light mode if needed
-                  const languageButtons = document.querySelectorAll('#ar-button, #fr-button, #en-button');
-                  const saveButton = document.getElementById('save-progress-button');
-                  const darkModeToggleBtn = document.querySelector('.fixed.bottom-4.right-4 button');
-                   languageButtons.forEach(button => {
-                       button.classList.remove('text-purple-300');
-                       button.classList.add('text-purple-600');
-                   });
-                   saveButton.classList.remove('text-purple-300');
-                   saveButton.classList.add('text-purple-600');
-                   darkModeToggleBtn.classList.remove('text-gray-400');
-                   darkModeToggleBtn.classList.add('text-gray-600');
-                   document.getElementById('title').style.color = 'inherit';
-                   document.getElementById('popup').querySelector('div').classList.remove('text-white'); // Also update initial popup text color
-
-
+            if (savedWord && highlightedWordElement) {
+                 highlightWord(savedWord);
              }
-        });
+
+        } else { // Revert to light mode
+            body.classList.remove('dark-mode');
+            lightBackgroundDiv.style.opacity = 1;
+            darkBackgroundDiv.style.opacity = 0;
+
+             languageButtons.forEach(button => {
+                 button.classList.remove('text-purple-300');
+                 button.classList.add('text-purple-600');
+             });
+             saveButton.classList.remove('text-purple-300');
+             saveButton.classList.add('text-purple-600');
+
+            darkModeToggleBtn.classList.remove('text-gray-400');
+            darkModeToggleBtn.classList.add('text-gray-600');
+
+            popupDivInner.classList.remove('text-white');
+            popupDivInner.classList.add('text-gray-800');
+
+             contentTitle.style.color = 'inherit';
+
+             applyTextEffects();
+
+             if (savedWord && highlightedWordElement) {
+                  highlightWord(savedWord);
+             }
+        }
+    }
+
+    const allButtons = document.querySelectorAll('button');
+    allButtons.forEach(button => {
+        if (!button.closest('#popup')) {
+             button.addEventListener('click', function() {
+                 this.classList.add('tapped');
+                 setTimeout(() => {
+                     this.classList.remove('tapped');
+                 }, 100);
+             });
+        }
+    });
 
 
-    </script>
+    // --- Initial Setup ---
+
+    document.addEventListener('DOMContentLoaded', () => {
+         // Load dark mode state first
+         const savedDarkMode = localStorage.getItem('darkModeEnabled');
+         if (savedDarkMode !== null) {
+             isDarkMode = JSON.parse(savedDarkMode); // localStorage stores strings, parse back to boolean
+             const body = document.body;
+             if (isDarkMode) {
+                 body.classList.add('dark-mode');
+             } else {
+                 body.classList.remove('dark-mode');
+             }
+             // Call toggleDarkMode to apply initial styles based on loaded state
+             // Pass true as a second argument to avoid re-saving on load
+             toggleDarkMode();
+         } else {
+             // Default to light mode if no state saved
+             isDarkMode = false;
+             const body = document.body;
+             body.classList.remove('dark-mode');
+             toggleDarkMode(); // Apply default light mode styles
+         }
+
+
+         // Load saved language
+         const savedLanguage = localStorage.getItem('savedLanguage');
+         if (savedLanguage && contentMap[savedLanguage]) {
+             // Load saved word before changing language so changeLanguage can highlight it
+             savedWord = localStorage.getItem('savedWord') || '';
+             changeLanguage(savedLanguage, true); // Pass true to indicate loading from storage
+
+         } else {
+             // Default to English if no language saved
+             changeLanguage('en', true); // Pass true to indicate initial load
+         }
+    });
+
+</script>
 </body>
 </html>
