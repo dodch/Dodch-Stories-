@@ -1,8 +1,8 @@
 [
-{
+    {
         "title": "lost to be found",
-        "description": "عربي français english"                           a life of a villain ",
-        "lost-to-be-found.html"
+        "description": "عربي français english",
+        "file": "lost-to-be-found.html"
     },
     {
         "title": "The Coldest Night",
@@ -11,12 +11,12 @@
     },
     {
         "title": "behind the fog",
-        "description": "(coming soon)                           when the fog clears out, a new life begin  ...",
+        "description": "(coming soon) when the fog clears out, a new life begin  ...",
         "file": ""
     },
     {
         "title": "villain",
-        "description": "(coming soon)                             a life of a villain ",
+        "description": "(coming soon) a life of a villain ",
         "file": ""
     }
 ]
