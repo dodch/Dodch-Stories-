@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Base</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+            transition: color 0.5s ease;
+        }
+
+        .fixed-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -1;
+            transition: opacity 0.5s ease;
+        }
+
+        .fixed-background.light-background {
+             background-image: url('https://i.ibb.co/W4PTCf4P/F59-EDCDE-25-A7-4-E02-BEBF-16-F94-CEE075-E.png');
+             opacity: 1;
+        }
+
+        .fixed-background.dark-background {
+             background-image: url("https://i.ibb.co/4Z82GLJt/EF83-F245-8482-467-E-AA8-A-AA50-CB9-E7778.png");
+             opacity: 0;
+        }
+
+        body.dark-mode .fixed-background.light-background {
+            opacity: 0;
+        }
+         body.dark-mode .fixed-background.dark-background {
+            opacity: 1;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+        }
+
+        .blur-effect {
+            backdrop-filter: blur(4px);
+            transition: background-color 0.5s ease;
+        }
+
+        /* Light mode semi-transparent background for blur elements */
+        .blur-effect {
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Dark mode semi-transparent background for blur elements */
+        body.dark-mode .blur-effect {
+            background-color: rgba(31, 41, 55, 0.9);
+        }
+
+        /* Default glow color (Light Mode) */
+        body:not(.dark-mode) .glow {
+            box-shadow: 0 0 15px 3px rgba(255, 215, 0, 0.9);
+             transition: box-shadow 0.3s ease;
+        }
+
+        /* Dark mode glow color */
+        body.dark-mode .glow {
+            box-shadow: 0 0 10px rgba(192, 132, 252, 0.8);
+             transition: box-shadow 0.3s ease;
+        }
+
+        /* Add transitions to buttons */
+        button {
+             transition: color 0.3s ease, background-color 0.3s ease, transform 0.1s ease-out, box-shadow 0.3s ease;
+        }
+
+        /* Style for the tapped state */
+        button.tapped {
+            transform: scale(0.97);
+        }
+
+        .shadow-lg-custom {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .fade-out {
+            animation: fadeOut 0.3s ease-in-out;
+        }
+        .glow-word {
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+        }
+
+        /* Style for the main content area */
+       #content {
+            padding: 2rem;
+            padding-top: 6rem;
+            position: relative;
+            z-index: 1;
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 800px;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            background-color: transparent;
+            transition: opacity 0.5s ease-in-out;
+            opacity: 1;
+        }
+
+        #content.content-fading {
+            opacity: 0;
+        }
+
+        /* --- Text Span Styles (without scroll reveal animation) --- */
+        #text span {
+            cursor: pointer;
+            display: inline; /* Use display: inline for standard text flow */
+
+            /* Keep text effects transitions */
+            transition: text-shadow 0.3s ease, color 0.3s ease, -webkit-text-fill-color 0.3s ease;
+            /* Default state is now visible immediately */
+            opacity: 1;
+            transform: none;
+        }
+
+
+         /* Ensure hover effect still works */
+        #text span:hover {
+             color: #9333EA; /* Example hover color */
+        }
+
+        /* Text shadow/color styles based on mode */
+        body:not(.dark-mode) #text span:not(.glow-word) {
+             text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
+             -webkit-text-stroke: none;
+             text-stroke: none;
+             -webkit-text-fill-color: initial;
+             color: inherit;
+        }
+
+        body.dark-mode #text span:not(.glow-word) {
+            text-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+             -webkit-text-stroke: none;
+             text-stroke: none;
+             -webkit-text-fill-color: white;
+             color: white;
+        }
+
+        /* Remove text shadow/stroke from the highlighted word */
+        #text span.glow-word {
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+            text-shadow: none !important;
+             -webkit-text-stroke: none !important;
+             text-stroke: none !important;
+             -webkit-text-fill-color: initial !important;
+             color: initial !important;
+             /* Ensure highlighted word is always visible and in its final state */
+             opacity: 1 !important;
+             transform: none !important;
+             transition-delay: 0ms !important; /* No delay for highlighted word appearance */
+             transition-duration: 0.3s !important; /* Standard transition speed for highlighting */
+        }
+        /* --- End Text Span Styles --- */
+
+
+        /* Ensure the save progress button is on top */
+        #save-progress-button {
+            z-index: 60;
+        }
+
+
+         body.dark-mode #content h1 {
+             color: white;
+             transition: color 0.5s ease;
+        }
+
+         body:not(.dark-mode) #content h1 {
+             color: inherit;
+             transition: color 0.5s ease;
+        }
+
+
+        /* Transition for the popup background */
+        #popup > div {
+             transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Add some bottom margin to paragraphs to separate them */
+        #text p {
+            margin-bottom: 1rem; /* Adjust as needed */
+        }
+
+    </style>
+</head>
+<body>
+    <div class="fixed-background light-background"></div>
+    <div class="fixed-background dark-background"></div>
+
+    <div id="raw-ar-text" style="display: none;">
+        كنت أتمنى لو كنت شخصًا مميزًا. كنت أتمنى لو كنت أكثر من مجرد ما أنا عليه.
+واقفا أمام مرآة الحمّام، أحدّق في انعكاسي المغلق كأنّي أبحث عني بداخله، هامسا لنفسي بتلك الكلمات.
+أحيانًا أحاول أن أنظر إلى وجهي بعين لا تشبه عينيّ، بعين ربما تستطيع أن ترى ما فيّ مثل ما أرى في الآخرين…
+لعلّي أكتشف كيف يراني الناس، وكيف يقرأون هذا الوجه الذي لا أكاد أستوعبه بنفسي.
+أحدّق طويلاً، ومع ذلك تظل صورتي مبهمة، ضبابية، كأنّها انعكاس في ماءٍ راكد.
+جسدي، وجودي، وحتى صوتي أحيانًا… كلّها تبدو لي كأشياء أعرفها من بعيد.
+كأنني لم أرَ نفسي قط، كما يراها الآخرون.
+
+أتساءل كثيرًا… عندما ينظرون إلي، هل يلاحظون تلك التفاصيل الدقيقة التي أغفل عنها؟
+هل يرون ما أراه أنا فيهم، حين أتأمل وجوههم، وأشعر بأشياء لا تُقال؟
+هل يستطيع أحدهم أن يفهم تلك التعبيرات الصامتة التي لا أفهمها حتى أنا؟
+
+غريب هو هذا التناقض… أستطيع أن أرى بوضوح ما يخفيه الناس خلف نظراتهم،
+وأشعر بأحزانهم حتى إن لم يتحدثوا،
+لكنني حين أنظر إلى نفسي، لا أرى إلا فراغًا… ظلًّا باهتًا بلا ملامح.
+
+أحيانًا أتمنى لو استطعت أن أخرج من جسدي ليومٍ واحد فقط.
+أعيش في جسدٍ آخر،
+أجلس قبالتي،
+أنظر في عينيّ، كما أنظر في أعين شخص أحبه،
+وأحادث نفسي كما لو كنت صديقًا حقيقيًا لي.
+أتمنى أن أعرف كيف هو شعور أن أكون أنا… من الخارج.
+لأنني مهما حاولت، لا أصدق ما يقال لي.
+لا أصدق المديح،
+أبتسم، أهز رأسي،
+لكن قلبي يهمس: “لستُ كما يقولون”.
+لأنني ببساطة… لم أرني بعد.
+
+خيالي واسع، مشاعري تتضخم يومًا بعد يوم،
+حساسيّتي تجاه ما حولي تتجاوز ما يمكنني تحمله أحيانًا،
+وكلما كبرت، شعرت أنني أضيع أكثر.
+العمر قصير… وأنا بالكاد أفهم نفسي،
+فكيف لي أن أفهم غيري؟
+
+أكثر ما يؤلمني هو هذا الشعور العميق بعدم الفَهم.
+لا أحد يفهمني.
+بل حتى أنا لا أفهمني.
+أسيء الظن بنفسي،
+أحاكم نواياي،
+أجلد قلبي،
+وأغضب من روحي.
+عالمي الداخلي يزداد اتساعًا،
+لكن المسافة بيني وبين من حولي تتّسع هي الأخرى.
+وفي لحظات كثيرة، أشعر أنني… أطفو بعيدًا عن كل شيء.
+
+لكن حين يشعر بي أحدهم حقًا، حين ينظر في عيني ويراني،
+أشعر بسعادة عارمة.
+أتعلّق به،
+أتمسك به بقوة،
+كأنه الضوء الوحيد في عتمتي.
+لكنّهم دائما ما يكونون هشّين، كمصباح من الزجاج…
+وحين أضمّهم بشدة،
+ينكسرون.
+و ينطفئ معهم الضوء،
+ويتبعثر الزجاج.
+ويصيبني الشظى.
+أنزف.
+وأبقى مع الندوب.
+ندوب لا تندمل.
+ندوب لا تُنسى.
+ندوب تذكرني بما مضى.
+
+لكنني رغم ذلك… لم أتوقف عن الحب.
+حتى وإن لم يكن قدري أن أُحَب كما أحِب،
+لم أتوقّف عن الزراعة —
+كنت أزرع القلوب كزهور في بستان روحي، كلّ يوم.
+لكن مؤخرًا، لم تعد تنمو.
+لم أعد أرى قلوبًا متفتّحة.
+وهنا أدركت… ربما لأنها لم تُترك لتنمو.
+كنت أقطفها دائمًا،
+وأقدّمها، إما لمن أحببت،
+أو كإثبات أنني أستحق الحب،
+أن مشاعري صادقة، رغم كل ما يُقال.
+
+لكن أغلب الزهور — كما نعلم —
+إما تموت ببطئ في إناءٍ زجاجي على رفٍّ منسي،
+أو تُطوى بين صفحات كتاب لا يُقرأ،
+تمامًا كالكلمات التي أقولها، والتي لا يسمعها أحد.
+وانتهى بي الأمر في بستانٍ جاف، بقلبٍ فارغ،
+وعطر الحب تبخّر مع الريح —
+يحضر للحظة، ثم يغيب.
+
+ولكن…
+هل هذا ما ينبغي أن يكون ؟
+ربما لا.
+
+ربما عليّ أن أترك زهور قلبي تنمو من أجلي أنا.
+أعتني بها،
+أرويها،
+أتركها تتفتّح داخلي،
+حتى يأتي من يراها،
+ويقدّرها،
+ولا يقطفها،
+بل يجلس إلى جانبي،
+ويزرع معي…
+حتى يصير القلب حديقة، والحديقة حقلاً لا نهاية له.
+
+⸻
+
+وحين قابلت الألم أخيرًا،
+أمسكته بين يداي،
+كان خائفًا، وقال:
+
+“أترجاك… أنا آسف.
+أعلم أنني جرحتك كثيرًا،
+أعلم أنني كنت أنانيًّا،
+لم أفكر إلا بنفسي،
+وتحدثت عنك بسوء،
+وأظهرت نفسي دائمًا كأنني الضحية.”
+
+قاطعته، بصوتٍ هادئ:
+
+“اهدأ…
+لا تخف.
+لن أؤذيك.
+لا تقلق،
+لن أفضح أسرارك،
+حتى بعد كلّ ما فعلت.
+لقد اخترتَ قلبي ليكون خزنةً لكلماتك،
+ولن أخذلك… حتى و إن خذلتني.”
+
+فقال بدهشة:
+“لكن — لماذا؟
+كيف يمكنك أن تكون بهذا البرود؟!”
+
+“لم أقل إنني هادئ،
+لكن حتى عند خروجك من حياتي،
+بعد أن تركت حفرة عميقة في صدري،
+حتى بعد أن الكلمات التي كسرتني خرجت من فم شخصٍ
+ظننت أنه سكني وسندي…
+حتى حين رميتني كأنني لا شيء،
+وأنا كنت أراك شيئًا نادرًا لا يتكرّر،
+أنا ما زلت أدعو الله لك،
+أن تكون بخير،
+لأنك كنت يومًا قريبًا مني،
+جزءًا من عائلةٍ حلمت بها طويلاً.
+ضحكنا معًا،
+تقاسمنا الخبز،
+عشنا لحظات جميلة.
+كنت أتجاوز السيئ،
+لأني أؤمن أن ما هو جميل سيبزغ منه.
+
+لكنني… تُركت.
+من أجل خلافاتٍ تافهة،
+لا معنى لها،
+تركت وحدي في معركة مع المجهول،
+في الظلام،
+مع بضع لمحات نورٍ من إيماني كي أواصل.
+لقد سقطت،
+إصطدمت بجدران الواقع القاسية،
+لكنني واصلت.
+
+ما زلت أذكر حديثك عن أحلامك،
+وكم كنتُ متحمسًا لها كأنها لي،
+وكم دعوت الله أن أراك تحققها.
+لكن حين طلبت منك أن تدعو لي،
+قلت ببساطة: لا يهمني أمرك.”
+
+صمت عارم…
+
+أكملت:
+"ورغم كل ذلك مازلت أريد أن أراك بخير، حتى ولو من بعيد، أحياناً مازلت أتمنى رؤيتك تحقق ما تريد."
+
+سكتُّ قليلاً.
+ثم قلت:
+“يمكنك الذهاب الآن.
+اعتنِ بنفسك.”
+
+وحين أطلقتُ سراح الألم من زنزانة قلبي،
+شعرت بأنني أخف قليلا …
+بانتظار المرّة القادمة
+التي سأحرّر فيها آلاما أخرى .
+
+    </div>
+    <div id="raw-fr-text" style="display: none;">
+        J’aimerais être spécial. J’aimerais être plus que ce que je suis.
+Fixant le miroir verrouillé de la salle de bain, je me suis murmuré cela à moi-même.
+Il y a des moments où j’essaie de regarder mon visage avec des yeux qui ne sont pas les miens — en espérant que peut-être, juste peut-être, je comprendrai comment les autres me voient.
+Parce que peu importe combien de temps je fixe mon reflet, je n’arrive jamais à vraiment saisir l’image complète de moi-même.
+Mon corps, ma présence — tout ça me semble flou.
+Je ne me suis jamais vraiment vu.
+
+Je me demande toujours… quand ils me regardent, est-ce qu’ils remarquent les choses délicates, belles, que je néglige — tout comme moi, je remarque souvent ces choses cachées chez eux ?
+Est-ce qu’ils lisent mes expressions silencieuses, celles que même moi je ne comprends pas ?
+
+C’est étrange… comme je peux ressentir les émotions enfouies profondément chez les autres, même quand ils font de leur mieux pour les cacher…
+Mais quand il s’agit de moi, je ne vois que des ombres ternes et sans forme.
+
+Parfois, je souhaiterais juste pouvoir sortir de moi-même.
+Vivre dans un autre corps, ne serait-ce qu’un jour.
+M’asseoir en face de moi.
+Me parler.
+Me voir.
+Savoir ce que ça fait d’exister dans cette peau — vue de l’extérieur.
+Parce que peu importe à quel point j’essaie, je n’arrive pas à croire aux compliments.
+Je hoche la tête, je souris… mais au fond, je ne les crois pas. Pas tant que je ne me verrai pas vraiment.
+Pas tant que je ne pourrai pas plonger dans mes propres yeux comme je le fais avec les yeux de quelqu’un que j’aime.
+
+Mon imagination, mes émotions, ma sensibilité — elles grandissent chaque jour, sans fin.
+Et plus elles grandissent, plus je me perds en moi-même.
+La vie semble trop courte. J’essaie encore de comprendre qui je suis,
+alors comprendre les autres… c’est encore plus loin.
+
+Ce qui fait le plus mal, c’est à quel point je me sens incompris.
+Même par moi-même.
+Je me trompe sur mes propres intentions, je me blâme,
+je me punis,
+je me mets en colère contre moi.
+Mon monde intérieur grandit, alors que l’espace entre moi et les autres s’élargit lui aussi.
+Parfois, j’ai l’impression de flotter au loin.
+
+Alors quand quelqu’un me voit enfin, me voit vraiment — je me sens incroyablement excité et heureux.
+Je m’accroche à lui comme s’il était la seule lumière que j’ai.
+Mais ils sont toujours fragiles, comme une ampoule en verre —
+et je serre trop fort.
+Et quand je fais ça, je les brise.
+La lumière s’éteint.
+Le verre se brise.
+Et en se brisant, il me coupe — me fait saigner.
+Laisse des cicatrices qui ne disparaissent jamais.
+Des cicatrices qui restent.
+Des cicatrices qui me rappellent.
+Des cicatrices que je ne peux pas oublier.
+
+Mais ça ne m’a jamais empêché d’aimer.
+Même si l’amour ne semble pas écrit dans mon destin, j’ai toujours essayé d’en donner —
+plantant des cœurs comme des graines dans le jardin de mon âme, jour après jour.
+Mais ces derniers temps, ils ne semblent plus pousser. Je ne vois presque plus de fleurs en forme de cœur.
+Et là, j’ai compris — peut-être que c’est parce que je les ai toujours cueillies.
+Je les offrais à ceux que je chérissais, ou peut-être comme preuve que je mérite d’être aimé…
+que j’ai des sentiments profonds et sincères.
+
+Mais la plupart des fleurs, comme on le sait, finissent dans des vases où leurs couleurs fanent lentement,
+ou pressées entre les pages oubliées d’un vieux livre —
+tout comme les mots de celui qui les a offertes, restés sans lecture.
+Et je me suis retrouvé avec un jardin vide, un cœur vide,
+et le parfum de l’amour emporté par le vent — là un instant, puis disparu à nouveau.
+
+Mais… est-ce que c’est censé être ainsi ?
+
+Peut-être pas.
+Peut-être qu’au lieu d’arracher mon amour et de l’offrir trop tôt, je vais le laisser éclore pour moi.
+Je vais en prendre soin doucement, le garder vivant en moi —
+jusqu’au jour où quelqu’un viendra, qui verra sa valeur.
+Quelqu’un qui ne prendra pas juste une fleur pour partir,
+mais qui s’agenouillera à mes côtés,
+et m’aidera à les faire pousser —
+jusqu’à ce que, ensemble, on ait planté un champ sans fin.
+
+⸻
+
+Quand j’ai enfin rencontré la douleur,
+je l’avais entre mes mains.
+Elle m’a supplié :
+
+« S’il te plaît… je suis désolé. Je sais que je t’ai fait tellement de mal.
+Je sais que je n’ai pensé qu’à moi, sans me soucier de toi.
+Je sais que j’ai dit de mauvaises choses sur toi…
+et que j’ai agi comme si j’étais la victime. »
+
+Je l’ai interrompue, la voix calme :
+
+« Chut… n’aie pas peur.
+Je ne vais pas te faire de mal.
+C’est bon.
+Je ne vais rien te faire.
+Je ne vais pas exposer tes secrets — même après tout ça.
+Tu as choisi mon cœur comme coffre-fort pour tes mots,
+et je ne te trahirai pas… même si toi tu l’as fait. »
+
+« Mais — pourquoi ?
+Comment peux-tu être si calme face à tout ça ?! »
+
+« Je n’ai jamais dit que j’étais calme.
+Même si tu es sorti de ma vie —
+après avoir laissé une grande cicatrice sur ma poitrine, profondément ancrée dans mon cœur…
+Même si les mots qui m’ont brisé sont venus de celui
+qui était censé être mon soutien et mon espoir…
+Même si tu m’as jeté
+comme un gros morceau de rien,
+alors que je pensais que tu étais une partie précieuse et permanente de ma vie…
+Je continue parfois à espérer que tu vas bien.
+Parce qu’un jour, tu étais quelqu’un de très proche de moi —
+un nouveau membre d’une famille que j’ai toujours rêvé d’avoir.
+Tu as déjà ri avec moi.
+Tu as partagé des repas avec moi.
+Tu as vécu de beaux moments avec moi.
+Je ne me souciais pas trop des moments amers,
+parce que j’ai toujours cru que quelque chose de bon en sortirait.
+J’ai appris à m’accrocher à ceux qui comptent pour moi,
+même dans les pires conditions.
+
+Mais moi ?
+J’ai été laissé…
+Pour des disputes insignifiantes.
+Laissé seul dans la bataille.
+Laissé dans l’obscurité,
+guidé seulement par quelques lueurs de ma foi.
+Je suis tombé —
+je me suis cogné aux murs de la dureté —
+mais j’ai continué.
+
+Je me souviens encore de toi me parlant de tes rêves —
+et moi, enthousiaste pour toi comme s’ils étaient les miens.
+Je me souviens des nuits où je priais pour qu’un jour,
+je puisse te voir vivre ces rêves.
+Mais quand je te demande de prier pour moi,
+tu me dis que tu t’en fiches. »
+
+Une pause.
+« Tu peux y aller maintenant.
+Prends soin de toi. »
+
+Et alors que je libérais la douleur de la prison de ma poitrine,
+je me suis senti un peu plus léger —
+en attendant la prochaine fois
+où je libérerai encore d’autres douleurs de leur cage.
+    </div>
+    <div id="raw-en-text" style="display: none;">
+        I wish I were special. I wish I were more than what I am.
+Staring into the locked bathroom mirror, I whispered that to myself.
+There are moments when I try to look at my face with eyes that aren’t mine—hoping maybe then, just maybe, I’ll understand how others see me.
+Because no matter how long I stare, I can never truly grasp the whole image of myself. My body, my presence—it’s a blur to me. I’ve never really seen me.
+I always wonder… when they look at me, do they catch the delicate, beautiful things I overlook—just as I often notice those hidden things in them?
+Can they read my quiet expressions, the ones I don’t even understand myself?
+
+It’s strange—how I can feel the emotions buried deep inside others, even when they try so hard to hide them…
+But when it comes to me, all I see are dim, shapeless shadows.
+
+Sometimes, I just wish I could step out of myself.
+To live in another body for a day.
+To sit across from me.
+To talk to me.
+To see me.
+To know what it feels like to exist in this skin—from the outside.
+Because no matter how hard I try, I can’t accept the compliments.
+I nod, I smile… but deep down, I don’t believe them. Not until I truly see myself.
+Not until I can gaze into my own eyes the way I gaze into the eyes of someone I love.
+
+My imagination, my emotions, my sensitivity—they expand every day, endlessly.
+And the more they grow, the more lost I become within myself.
+Life feels too short. I’m still trying to understand who I am,
+let alone trying to understand everyone else.
+
+What truly hurts is how deeply I feel misunderstood.
+Even by myself.
+I misread my own intentions, I blame myself,
+punish myself,
+get angry at myself.
+My inner world grows larger, while the space between me and others grows too.
+Sometimes, it feels like I’m floating away.
+
+So when someone finally sees me, truly sees me—i feel really excited and happy .
+I cling to them like they’re the only light I’ve got.
+But they’re always fragile, like a lone light bulb made of glass—
+and I grip too hard.
+And when I do, I break them.
+The light goes out.
+The glass shatters.
+And as it breaks, it cuts into me—makes me bleed.
+Leaves scars that never fade.
+Scars that stay.
+Scars that remind me.
+
+Scars I can’t forget.
+
+But that never stopped me from loving. Even if love doesn’t seem to be written in my fate, I’ve always tried to give it—planting hearts like seeds in the garden of my soul, day after day. Yet lately, they don’t seem to grow. I hardly see any heart-shaped blooms anymore. Then it hit me—maybe it’s because I kept picking them. I’d offer them as gifts to the ones I cherished, or maybe as proof that I am someone worthy of being loved… someone with feelings that run deep and true.
+
+But most flowers, as we know, end up in jars where their colors slowly fade, or pressed between the forgotten pages of an old book—just like the words of the one who gave them, left unread. And so, I found myself with an empty garden, an empty heart, and the scent of love carried off by the wind—there for just a moment before disappearing again.
+
+But… is that how it’s meant to be?
+
+Maybe not. Maybe instead of plucking my love and handing it away too soon, I’ll let it bloom for me. I’ll tend to it gently, keep it alive within me—until the day someone comes along who sees its worth. Someone who won’t just take a flower and leave, but who will kneel beside me, and help me grow them—until together, we’ve planted a field that never ends.
+
+
+When I finally met the pain,
+I had him between my hands.
+He begged:
+
+“Please… I’m sorry. I know I hurt you so much.
+I know I only thought about myself, without caring about you.
+I know I said bad things about you… and acted like I was the victim.”
+
+I interrupted, my voice calm:
+
+“Shhh… don’t be afraid.
+I’m not going to hurt you.
+It’s okay.
+I won’t do any harm to you.
+I won’t expose your secrets — not even after all of that.
+You chose my heart as a secret vault for your words,
+and I won’t let you down… even when you did.”
+
+“But—why?
+How can you be so cool about it?!”
+
+“I never said I was cool.
+Even though you’re out of my life —
+after leaving a big scar on my chest that runs deep into my heart…
+Even though the words that broke me came from the one
+who was supposed to be my support and my hope…
+Even though you threw me away
+like a big chunk of nothing
+when I thought you were a permanent, valuable part of my life…
+I still sometimes hope you’re okay.
+Because one day, you were someone really close to me —
+a new member of a family I always wished I had.
+You once laughed with me.
+Shared food with me.
+Lived some beautiful moments with me.
+I didn’t care much about the bitter moments we had,
+because I always believed something good would come out of them.
+I learned to hold on to the ones who matter to me,
+even in the worst conditions.
+
+But me?
+I was left…
+Over the most trivial fights.
+Left alone in the battle.
+Left in the darkness,
+guided only by faint glimpses of my faith.
+I fell —
+bumped into walls of hardness —
+but I kept going.
+
+I still remember you telling me your dreams —
+and me getting excited for you like they were my own.
+I remember the nights I prayed that one day
+I could watch you live those dreams.
+But when I ask you to pray for me,
+you say you don’t care.”
+
+A pause.
+“You can go now.
+Take care of yourself.”
+
+And as I freed the pain from the prison of my chest,
+I felt a little bit lighter —
+waiting for the next time
+I’ll set more pains free from their cage.
+
+
+
+What is the weakest part of our bodies ? Probably the tong it’s just a pace of muscles and meat that has no bones , it can’t punch you physically but it’s words can punch you harder in your soul , strong enough to ruin someone’s day or break his heart strong enough to change his look into himself
+    </div>
+    <div class="fixed top-0 left-0 right-0 flex justify-center p-4 space-x-4 z-50">
+        <button
+            id="ar-button"
+            onclick="changeLanguage('ar')"
+            class="text-purple-600 px-6 py-2 rounded-full shadow-lg-custom transition duration-300 ease-in-out transform hover:scale-105 hover:text-purple-700 focus:outline-none blur-effect"
+        >
+            العربية
+        </button>
+        <button
+            id="fr-button"
+            onclick="changeLanguage('fr')"
+            class="text-purple-600 px-6 py-2 rounded-full shadow-lg-custom transition duration-300 ease-in-out transform hover:scale-105 hover:text-purple-700 focus:outline-none blur-effect"
+        >
+            Français
+        </button>
+        <button
+            id="en-button"
+            onclick="changeLanguage('en')"
+            class="text-purple-600 px-6 py-2 rounded-full shadow-lg-custom transition duration-300 ease-in-out transform hover:scale-105 hover:text-purple-700 focus:outline-none blur-effect"
+        >
+            English
+        </button>
+    </div>
+
+    <div id="content" class="rounded-lg mx-auto content-fading">
+        <h1 id="title" class="text-3xl font-bold mb-4"></h1>
+        <div id="text" class="text-lg leading-relaxed"></div> </div>
+
+    <button
+        id="save-progress-button"
+        onclick="scrollToSavedWord()"
+        class="fixed bottom-4 left-4 text-purple-600 px-6 py-2 rounded-full shadow-lg-custom transition duration-300 ease-in-out transform hover:scale-105 hover:text-purple-700 focus:outline-none blur-effect"
+        style="z-index: 60;"
+    >
+        Saved Progress
+    </button>
+
+    <div id="popup" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div class="p-4 rounded-lg shadow-lg w-64 blur-effect fade-in">
+            <h2 id="popup-title" class="text-lg font-bold mb-2">Save Position</h2>
+            <p id="popup-text" class="mb-4 text-sm"></p>
+            <div class="flex justify-end space-x-2">
+                <button
+                    onclick="savePosition()"
+                    class="bg-green-500 text-white px-4 py-2 rounded-full focus:outline-none"
+                >
+                    Save
+                </button>
+                <button
+                    onclick="closePopup()"
+                    class="bg-red-500 text-white px-4 py-2 rounded-full focus:outline-none"
+                >
+                    Exit
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed bottom-4 right-4 z-50">
+        <button
+            onclick="toggleDarkMode()"
+            class="text-gray-600 w-10 h-10 flex items-center justify-center rounded-full shadow-lg-custom transition duration-300 ease-in-out transform hover:scale-105 hover:text-gray-700 focus:outline-none blur-effect"
+        >
+            <span id="dark-mode-icon">☀️</span>
+        </button>
+    </div>
+
+    <script>
+        let currentLanguage = 'en';
+        let savedWord = '';
+        let highlightedWordElement = null;
+        let tempSavedWord = '';
+        let isDarkMode = false;
+
+        const contentMap = {
+            ar: {
+                title: 'ضائع لأوجد',
+                // *** We use 'rawTextId' to point to the hidden div where you paste your text ***
+                rawTextId: 'raw-ar-text',
+                saveProgress: 'حفظ التقدم',
+                savePosition: 'حفظ الموضع',
+                save: 'حفظ',
+                exit: 'خروج',
+                atWord: 'كلمة',
+                positionSaved: 'الموقع محفوظ',
+                forWord: 'للكلمة',
+                noWordSaved: 'لم يتم حفظ أي كلمة بعد',
+            },
+            fr: {
+                title: 'Perdu à trouver',
+                // *** Use 'rawTextId' to point to the hidden div ***
+                rawTextId: 'raw-fr-text',
+                saveProgress: 'Enregistrer le progrès',
+                savePosition: 'Enregistrer la position',
+                save: 'Enregistrer',
+                exit: 'Sortir',
+                atWord: 'mot',
+                positionSaved: 'La position est enregistrée',
+                forWord: 'pour le mot',
+                noWordSaved: 'Aucun word n\'a été enregistré encore',
+            },
+            en: {
+                title: 'lost to be found',
+                // *** Use 'rawTextId' to point to the hidden div ***
+                rawTextId: 'raw-en-text',
+                saveProgress: 'Saved Progress',
+                savePosition: 'Save Position',
+                save: 'Save',
+                exit: 'Exit',
+                atWord: 'word',
+                positionSaved: 'Position saved',
+                forWord: 'for the word',
+                noWordSaved: 'No word has been saved yet',
+            },
+        };
+
+        const lightBackgroundDiv = document.querySelector('.fixed-background.light-background');
+        const darkBackgroundDiv = document.querySelector('.fixed-background.dark-background');
+        const contentDiv = document.getElementById('content');
+        // Changed textElement to refer to the div
+        const textElement = document.getElementById('text');
+        const titleElement = document.getElementById('title');
+
+
+        function applyTextEffects() {
+             // This function applies base text effects (shadow/color) to non-highlighted words.
+            // Select spans within paragraphs inside the textElement div
+            const textSpans = textElement.querySelectorAll('p span');
+            const isDarkModeActive = document.body.classList.contains('dark-mode');
+
+            textSpans.forEach(span => {
+                if (!span.classList.contains('glow-word')) {
+                    if (isDarkModeActive) {
+                        span.style.textShadow = '0 0 1px rgba(255, 255, 255, 0.5)';
+                        span.style.webkitTextStroke = 'none';
+                        span.style.textStroke = 'none';
+                        span.style.webkitTextFillColor = 'white';
+                        span.style.color = 'white';
+                    } else {
+                        span.style.textShadow = '0 0 1px rgba(0, 0, 0, 0.5)';
+                        span.style.webkitTextStroke = 'none';
+                        span.style.textStroke = 'none';
+                        span.style.webkitTextFillColor = 'initial';
+                        span.style.color = 'inherit';
+                    }
+                }
+            });
+        }
+
+
+        function changeLanguage(lang) {
+            if (currentLanguage === lang && !contentDiv.classList.contains('content-fading')) {
+                 return;
+            }
+
+            currentLanguage = lang;
+            const content = contentMap[lang];
+
+            contentDiv.classList.add('content-fading');
+
+            // *** Get the raw text from the hidden div specified by rawTextId ***
+            const rawTextElement = document.getElementById(content.rawTextId);
+            // Use textContent to get the plain text inside the div, preserve line breaks
+            const rawText = rawTextElement ? rawTextElement.textContent : '';
+
+
+            // Use a timeout to wait for the fade out before changing content
+            setTimeout(() => {
+                titleElement.textContent = content.title;
+
+                if (lang === 'ar') {
+                    contentDiv.dir = 'rtl';
+                    textElement.style.textAlign = 'right';
+                } else {
+                    contentDiv.dir = 'ltr';
+                    textElement.style.textAlign = 'left';
+                }
+
+                // Clear previous content
+                textElement.innerHTML = '';
+
+                 // *** Process the single rawText string line by line ***
+                if (rawText) {
+                    // Split the raw text into lines, including empty lines
+                    const lines = rawText.split('\n');
+
+                    lines.forEach(line => {
+                         // Trim whitespace from the start and end of the line
+                         const trimmedLine = line.trim();
+
+                         if (trimmedLine === '') {
+                             // If the trimmed line is empty, it's a blank line/newline
+                             // Append a break element or an empty paragraph for spacing
+                              const br = document.createElement('br');
+                              textElement.appendChild(br);
+                         } else {
+                             // If the line has content, create a paragraph for it
+                             const pElement = document.createElement('p');
+                             // Add Tailwind classes for spacing and text styles
+                             pElement.classList.add('mb-4', 'text-lg', 'leading-relaxed');
+
+                             // Split the line into words by one or more whitespace characters
+                             const words = trimmedLine.split(/\s+/).filter(word => word !== ''); // Filter out any empty word strings
+
+                             words.forEach((word, index, array) => {
+                                 const span = document.createElement('span');
+                                 // Trim leading/trailing punctuation/symbols if needed, but keep apostrophes/hyphens within words
+                                 // Use trimmed word for display and click handling
+                                 span.textContent = word.trim();
+                                 span.classList.add('cursor-pointer', 'hover:text-purple-600');
+
+                                 // Add click listener to the span
+                                 span.onclick = () => handleWordClick(span.textContent); // Use the actual trimmed text content
+
+                                 pElement.appendChild(span); // Append span to the paragraph element
+
+                                 // Add a space text node after the span, unless it's the last word in the line
+                                 if (index < array.length - 1) {
+                                     pElement.appendChild(document.createTextNode(' '));
+                                 }
+                             });
+                             // Append the completed paragraph element for this line to the main text container
+                             textElement.appendChild(pElement);
+                         }
+                    });
+                } else {
+                    // Display a message if raw text is empty for the selected language
+                     const noTextElement = document.createElement('p');
+                     noTextElement.classList.add('text-center', 'text-xl', 'text-gray-500'); // Add appropriate styling
+                     noTextElement.textContent = `No text available for ${lang.toUpperCase()}. Please add content to the raw text div.`;
+                     textElement.appendChild(noTextElement);
+                     console.warn(`No raw text found for language: ${lang}`);
+                }
+
+
+                // Update other language-dependent text
+                document.getElementById('save-progress-button').textContent = content.saveProgress;
+                document.getElementById('popup-title').textContent = content.savePosition;
+                document.getElementById('popup').querySelector('.bg-green-500').textContent = content.save;
+                document.getElementById('popup').querySelector('.bg-red-500').textContent = content.exit;
+
+                // Update language button glow
+                document.getElementById('ar-button').classList.remove('glow');
+                document.getElementById('fr-button').classList.remove('glow');
+                document.getElementById('en-button').classList.remove('glow');
+                document.getElementById(`${lang}-button`).classList.add('glow');
+
+                 highlightedWordElement = null; // Reset reference
+
+                 // Apply base text effects immediately after spans are created
+                 applyTextEffects();
+                 if (savedWord) {
+                     // If a word was saved, re-highlight it in the new language
+                     // Only try to highlight if the word exists in the new text
+                     // Select spans within paragraphs inside the textElement div
+                     const wordsInNewText = Array.from(textElement.querySelectorAll('p span')).map(span => span.textContent.trim());
+                     if (wordsInNewText.includes(savedWord)) {
+                         highlightWord(savedWord);
+                     } else {
+                         console.warn(`Saved word "${savedWord}" not found in the new ${lang} text.`);
+                         savedWord = ''; // Clear saved word if not found
+                     }
+                 }
+
+
+                // Remove fading class to start the fade in transition for the content area
+                contentDiv.classList.remove('content-fading');
+
+
+                 if (isDarkMode) {
+                     titleElement.style.color = 'white';
+                 } else {
+                      titleElement.style.color = 'inherit'; // Revert to default inherited color
+                 }
+
+            }, 500); // Match this duration to the #content opacity transition
+        }
+
+        function handleWordClick(word) {
+            tempSavedWord = word; // Save the clicked word temporarily
+             // Construct the popup text using the correct language strings
+            document.getElementById('popup-text').textContent = `${contentMap[currentLanguage].savePosition} ${contentMap[currentLanguage].atWord}: "${word}"?`;
+            document.getElementById('popup').classList.remove('hidden');
+            document.getElementById('popup').classList.remove('fade-out');
+            document.getElementById('popup').classList.add('fade-in');
+        }
+
+        function closePopup() {
+            document.getElementById('popup').classList.remove('fade-in');
+            document.getElementById('popup').classList.add('fade-out');
+            setTimeout(() => {
+                document.getElementById('popup').classList.add('hidden');
+            }, 300); // Match this duration to the fade-out animation
+        }
+
+        function savePosition() {
+            if (tempSavedWord) {
+                savedWord = tempSavedWord; // Confirm save from temp
+                console.log(`${contentMap[currentLanguage].positionSaved} ${contentMap[currentLanguage].forWord}: "${savedWord}"`);
+                highlightWord(savedWord); // Highlight the word after saving
+            }
+            closePopup();
+        }
+
+        function scrollToSavedWord() {
+            if (savedWord) {
+                // Select spans within paragraphs inside the textElement div
+                const words = textElement.querySelectorAll('p span');
+                 let targetElement = null;
+                 for (const wordElement of words) {
+                    // Check text content of the span to find the exact saved word
+                    if (wordElement.textContent.trim() === savedWord.trim()) {
+                       targetElement = wordElement;
+                       break;
+                    }
+                 }
+
+                if (targetElement) {
+                     // Highlight the target element
+                     highlightWord(savedWord);
+
+                     // Use requestAnimationFrame to ensure highlight styles are applied before scrolling
+                     requestAnimationFrame(() => {
+                        // Scroll the target element into view
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                     });
+
+                } else {
+                    console.warn(`Saved word "${savedWord}" not found in current text for language "${currentLanguage}".`);
+                    // Alert the user and clear the saved word if not found in the *current* text
+                    alert(`${contentMap[currentLanguage].noWordSaved} ("${savedWord}")`);
+                    savedWord = '';
+                     // Ensure no word is highlighted if the saved word is cleared
+                    if (highlightedWordElement) {
+                        highlightedWordElement.classList.remove('bg-yellow-200', 'bg-yellow-600', 'rounded', 'glow-word');
+                        applyTextEffects(); // Re-apply base effects
+                        highlightedWordElement = null;
+                    }
+                }
+
+            } else {
+                alert(contentMap[currentLanguage].noWordSaved);
+            }
+        }
+
+       function highlightWord(wordToHighlight) {
+           // If there was a previous highlighted word element
+           if (highlightedWordElement) {
+               // Remove glow and related overrides from the *previous* word
+               highlightedWordElement.classList.remove('bg-yellow-200', 'bg-yellow-600', 'rounded', 'glow-word');
+               // Re-apply base text effects (shadow/color) to the previously highlighted word
+               applyTextEffects();
+               highlightedWordElement = null; // Clear the reference immediately
+           }
+
+           if (!wordToHighlight) return; // Do nothing if wordToHighlight is empty
+
+           // Select spans within paragraphs inside the textElement div
+           const words = textElement.querySelectorAll('p span');
+           let found = false;
+           for (const wordElement of words) {
+               if (wordElement.textContent.trim() === wordToHighlight.trim()) {
+                   highlightedWordElement = wordElement; // Set the reference to the new element
+                   highlightedWordElement.classList.add('rounded', 'glow-word');
+
+                   // Apply correct highlight background color based on mode
+                   if (document.body.classList.contains('dark-mode')) {
+                       highlightedWordElement.classList.remove('bg-yellow-200');
+                       highlightedWordElement.classList.add('bg-yellow-600');
+                   } else {
+                       highlightedWordElement.classList.remove('bg-yellow-600');
+                       highlightedWordElement.classList.add('bg-yellow-200');
+                   }
+
+                   // Apply glow-word specific text effects (handled by .glow-word CSS)
+                   // These styles override the base text effects
+                   highlightedWordElement.style.textShadow = 'none';
+                   highlightedWordElement.style.webkitTextStroke = 'none';
+                   highlightedWordElement.style.textStroke = 'none';
+                   highlightedWordElement.style.webkitTextFillColor = 'initial';
+                   highlightedWordElement.style.color = 'initial';
+
+
+                   found = true;
+                   // Do NOT break here if you want to highlight all instances of the word
+                   // If you only want to highlight the first instance, keep the 'break;'
+                    break; // Keep break to only highlight the first instance found
+               }
+           }
+
+           if (!found) {
+               console.warn(`Word "${wordToHighlight}" not found for highlighting.`);
+               // No need to clear highlightedWordElement here, it was cleared at the start.
+               applyTextEffects(); // Ensure base effects are applied to all spans if no word is found
+           }
+       }
+
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            const body = document.body;
+            const languageButtons = document.querySelectorAll('#ar-button, #fr-button, #en-button');
+            const saveButton = document.getElementById('save-progress-button');
+            const darkModeToggleBtn = document.querySelector('.fixed.bottom-4.right-4 button');
+            const popupDivInner = document.getElementById('popup').querySelector('div');
+            const contentTitle = document.getElementById('title');
+            // Select spans within paragraphs inside the textElement div
+            const textSpans = textElement.querySelectorAll('p span');
+
+
+            if (isDarkMode) {
+                body.classList.add('dark-mode');
+                lightBackgroundDiv.style.opacity = 0;
+                darkBackgroundDiv.style.opacity = 1;
+
+                languageButtons.forEach(button => {
+                     button.classList.remove('text-purple-600'); // Keep bg-white or blur-effect handling separate
+                     button.classList.add('text-purple-300');
+                });
+                 saveButton.classList.remove('text-purple-600'); // Keep bg-white or blur-effect handling separate
+                 saveButton.classList.add('text-purple-300');
+
+
+                darkModeToggleBtn.classList.remove('text-gray-600'); // Keep bg-white or blur-effect handling separate
+                darkModeToggleBtn.classList.add('text-gray-400');
+
+                document.getElementById('dark-mode-icon').textContent = '🌙';
+
+                popupDivInner.classList.remove('text-gray-800');
+                popupDivInner.classList.add('text-white');
+
+                contentTitle.style.color = 'white';
+
+                // Re-apply text effects based on the new mode
+                applyTextEffects();
+
+                // Re-highlight the saved word if it exists, to apply dark mode highlight styles
+                if (savedWord && highlightedWordElement) {
+                     highlightWord(savedWord); // Calling highlightWord will update its colors
+                 }
+
+            } else { // Revert to light mode
+                body.classList.remove('dark-mode');
+                lightBackgroundDiv.style.opacity = 1;
+                darkBackgroundDiv.style.opacity = 0;
+
+                 languageButtons.forEach(button => {
+                     button.classList.remove('text-purple-300');
+                     button.classList.add('text-purple-600');
+                 });
+                 saveButton.classList.remove('text-purple-300');
+                 saveButton.classList.add('text-purple-600');
+
+                darkModeToggleBtn.classList.remove('text-gray-400');
+                darkModeToggleBtn.classList.add('text-gray-600');
+
+                popupDivInner.classList.remove('text-white');
+                popupDivInner.classList.add('text-gray-800');
+
+                 contentTitle.style.color = 'inherit'; // Revert to default inherited color
+
+                 // Re-apply text effects based on the new mode
+                 applyTextEffects();
+
+                 // Re-highlight the saved word if it exists, to apply light mode highlight styles
+                 if (savedWord && highlightedWordElement) {
+                      highlightWord(savedWord); // Calling highlightWord will update its colors
+                 }
+            }
+        }
+
+        // Add tap effect on button click
+        const allButtons = document.querySelectorAll('button'); // Select all buttons
+        allButtons.forEach(button => {
+            // Prevent tap effect on the popup save/exit buttons
+            if (!button.closest('#popup')) {
+                 button.addEventListener('click', function() {
+                     this.classList.add('tapped');
+                     setTimeout(() => {
+                         this.classList.remove('tapped');
+                     }, 100); // Duration of the tap animation
+                 });
+            }
+        });
+
+
+        // --- Initial Setup ---
+
+        // Initialize with English. changeLanguage handles populating content
+        // It's better to call this after the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+             changeLanguage('en');
+
+             // Set initial background visibility based on initial dark mode state (if any)
+             if(document.body.classList.contains('dark-mode')) {
+                 lightBackgroundDiv.style.opacity = 0;
+                 darkBackgroundDiv.style.opacity = 1;
+                 isDarkMode = true; // Sync JS variable with initial body class if set externally
+                 document.getElementById('dark-mode-icon').textContent = '🌙';
+                 // Apply dark mode text colors/shadows initially
+                 applyTextEffects();
+                  // Update initial button colors for dark mode if needed
+                  const languageButtons = document.querySelectorAll('#ar-button, #fr-button, #en-button');
+                  const saveButton = document.getElementById('save-progress-button');
+                  const darkModeToggleBtn = document.querySelector('.fixed.bottom-4.right-4 button');
+                   languageButtons.forEach(button => {
+                       button.classList.remove('text-purple-600');
+                       button.classList.add('text-purple-300');
+                   });
+                    saveButton.classList.remove('text-purple-600');
+                    saveButton.classList.add('text-purple-300');
+                    darkModeToggleBtn.classList.remove('text-gray-600');
+                    darkModeToggleBtn.classList.add('text-gray-400');
+                    document.getElementById('title').style.color = 'white';
+                     document.getElementById('popup').querySelector('div').classList.add('text-white'); // Also update initial popup text color
+
+             } else {
+                 lightBackgroundDiv.style.opacity = 1;
+                 darkBackgroundDiv.style.opacity = 0;
+                 isDarkMode = false; // Sync JS variable
+                 document.getElementById('dark-mode-icon').textContent = '☀️';
+                  // Apply light mode text colors/shadows initially
+                 applyTextEffects();
+                  // Update initial button colors for light mode if needed
+                  const languageButtons = document.querySelectorAll('#ar-button, #fr-button, #en-button');
+                  const saveButton = document.getElementById('save-progress-button');
+                  const darkModeToggleBtn = document.querySelector('.fixed.bottom-4.right-4 button');
+                   languageButtons.forEach(button => {
+                       button.classList.remove('text-purple-300');
+                       button.classList.add('text-purple-600');
+                   });
+                   saveButton.classList.remove('text-purple-300');
+                   saveButton.classList.add('text-purple-600');
+                   darkModeToggleBtn.classList.remove('text-gray-400');
+                   darkModeToggleBtn.classList.add('text-gray-600');
+                   document.getElementById('title').style.color = 'inherit';
+                   document.getElementById('popup').querySelector('div').classList.remove('text-white'); // Also update initial popup text color
+
+
+             }
+        });
+
+
+    </script>
+</body>
+</html>
