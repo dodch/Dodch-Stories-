@@ -8,8 +8,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet"> <style>
+        /* --- Basic Styling --- */
+        * {
+            box-sizing: border-box;
+        }
 
-    <style>
         body {
             margin: 0;
             padding: 0;
@@ -19,6 +23,93 @@
             z-index: 1;
             transition: color 0.5s ease;
         }
+
+        /* --- LOADING SCREEN OVERLAY (fixed on top) --- */
+        #loading-screen {
+          position: fixed; /* Position over the content */
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.9); /* Darker overlay for contrast */
+          display: flex;
+          flex-direction: column; /* Stack hearts and percentage vertically */
+          align-items: center;
+          justify-content: center;
+          z-index: 10000; /* MUCH HIGHER Z-INDEX: Ensures this element is on top of EVERYTHING else */
+          transition: opacity 0.5s ease; /* Smooth fade-out effect for the screen itself */
+        }
+
+        #loading-screen.hidden {
+          opacity: 0; /* Fade out */
+          pointer-events: none; /* Prevent interaction with hidden element after it's faded */
+        }
+
+        /* --- LOADING INDICATOR CONTAINER (holds hearts) --- */
+        .loading-indicator {
+            display: flex; /* Arrange hearts horizontally */
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px; /* Space between hearts and percentage */
+        }
+
+        /* --- LOADING HEART ANIMATION --- */
+        .loading-indicator span {
+            display: inline-block; /* Treat spans as individual elements */
+            width: 15px; /* Size of the heart container */
+            height: 15px;
+            margin: 0 5px; /* Space between hearts */
+            color: white; /* Color of the heart glyph */
+            font-size: 15px; /* Size of the heart glyph */
+            opacity: 0; /* Start hidden */
+            transform: scale(0.5); /* Start small */
+            animation: pulse-heart 1.4s ease-in-out infinite; /* Animation properties */
+        }
+
+        /* Add delays to create the trailing effect */
+        .loading-indicator span:nth-child(1) { animation-delay: 0s; }
+        .loading-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        .loading-indicator span:nth-child(4) { animation-delay: 0.6s; }
+        .loading-indicator span:nth-child(5) { animation-delay: 0.8s; }
+
+
+        @keyframes pulse-heart {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 0; transform: scale(0.5); }
+        }
+
+
+        /* --- LOADING PERCENTAGE TEXT --- */
+        .loading-percentage {
+          color: #fff;
+          font-size: 24px; /* Smaller size than the old loading text */
+          font-family: "Ubuntu", sans-serif;
+          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Optional: Add text shadow */
+        }
+
+
+         /* --- Wrapper for main page content --- */
+        /* This container holds all your main page's visible content */
+        #page-content-wrapper {
+            /* THIS IS KEY: Transition the filter property */
+            transition: filter 0.5s ease-in-out; /* Blur disappears faster */
+            position: relative; /* Creates a stacking context */
+            z-index: 0; /* Ensures it's below the loading screen */
+            width: 100%; /* Take full width */
+            min-height: 100vh; /* Ensure wrapper takes full height */
+            /* Existing padding and other styles for content layout are handled by the elements inside this wrapper */
+        }
+
+        /* --- Apply blur to the content wrapper when the body has the 'loading' class --- */
+        /* This rule applies initially because the body starts with class="loading" */
+        body.loading #page-content-wrapper {
+            filter: blur(15px); /* Adjust the initial max blur amount as needed */
+            pointer-events: none; /* Prevent interaction with blurred content */
+        }
+
+        /* --- Existing Styles Below --- */
 
         .fixed-background {
             position: fixed;
@@ -232,186 +323,192 @@
 
     </style>
 </head>
-<body>
+<body class="loading"> <div id="loading-screen">
+        <div class="loading-indicator">
+            <span>❤️</span> <span>❤️</span> <span>❤️</span> <span>❤️</span> <span>❤️</span> </div>
+        <div class="loading-percentage">0%</div> </div>
+
     <div class="fixed-background light-background"></div>
     <div class="fixed-background dark-background"></div>
 
-    <div id="raw-ar-text" style="display: none;">
-‎        أتمنى لو كنت شخصًا مميزًا. أتمنى لو كنت أكثر من مجرد ما أنا عليه.
-‎واقفا أمام مرآة الحمّام المغلق، أحدّق في انعكاسي  كأنّي أبحث عني بداخله، هامسا لنفسي بتلك الكلمات.
-‎أحيانًا أحاول أن أنظر إلى وجهي بعين لا تشبه عينيّ، بعين ربما تستطيع أن ترى ما فيّ مثل ما أرى في الآخرين…
-‎لعلّي أكتشف كيف يراني الناس، وكيف يقرأون هذا الوجه الذي لا أكاد أستوعبه بنفسي.
-‎أحدّق طويلاً، ومع ذلك تظل صورتي مبهمة، ضبابية، كأنّها انعكاس في ماءٍ راكد.
-‎جسدي، وجودي، وحتى صوتي أحيانًا… كلّها تبدو لي كأشياء أعرفها من بعيد.
-‎كأنني لم أرَ نفسي قط، كما يراها الآخرون.
+    <div id="page-content-wrapper">
 
-‎أتساءل كثيرًا… عندما ينظرون إلي، هل يلاحظون تلك التفاصيل الدقيقة التي أغفل عنها؟
-‎هل يرون ما أراه أنا فيهم، حين أتأمل وجوههم، وأشعر بأشياء لا تُقال؟
-‎هل يستطيع أحدهم أن يفهم تعابيري الصامتة التي لا أفهمها حتى أنا؟
+        <div id="raw-ar-text" style="display: none;">
+    ‎ أتمنى لو كنت شخصًا مميزًا. أتمنى لو كنت أكثر من مجرد ما أنا عليه.
+‎ واقفا أمام مرآة الحمّام المغلق، أحدّق في انعكاسي كأنّي أبحث عني بداخله، هامسا لنفسي بتلك الكلمات.
+‎ أحيانًا أحاول أن أنظر إلى وجهي بعين لا تشبه عينيّ، بعين ربما تستطيع أن ترى ما فيّ مثل ما أرى في الآخرين…
+‎ لعلّي أكتشف كيف يراني الناس، وكيف يقرأون هذا الوجه الذي لا أكاد أستوعبه بنفسي.
+‎ أحدّق طويلاً، ومع ذلك تظل صورتي مبهمة، ضبابية، كأنّها انعكاس في ماءٍ راكد.
+‎ جسدي، وجودي، وحتى صوتي أحيانًا… كلّها تبدو لي كأشياء أعرفها من بعيد.
+‎ كأنني لم أرَ نفسي قط، كما يراها الآخرون.
 
-‎غريب هو هذا التناقض… أستطيع أن أرى بوضوح ما يخفيه الناس خلف نظراتهم،
-‎وأشعر بأحزانهم حتى إن لم يتحدثوا،
-‎لكنني حين أنظر إلى نفسي، لا أرى إلا فراغًا… ظلًّا باهتًا بلا ملامح.
+‎ أتساءل كثيرًا… عندما ينظرون إلي، هل يلاحظون تلك التفاصيل الدقيقة التي أغفل عنها؟
+‎ هل يرون ما أراه أنا فيهم، حين أتأمل وجوههم، وأشعر بأشياء لا تُقال؟
+‎ هل يستطيع أحدهم أن يفهم تعابيري الصامتة التي لا أفهمها حتى أنا؟
 
-‎أحيانًا أتمنى لو استطعت أن أخرج من جسدي ليومٍ واحد فقط.
-‎أعيش في جسدٍ آخر،
-‎أجلس قبالتي،
-‎أنظر في عينيّ، كما أنظر في أعين شخص أحبه،
-‎وأحادث نفسي كما لو كنت صديقًا حقيقيًا لي.
-‎أتمنى أن أعرف كيف هو شعور أن أكون أنا… من الخارج.
-‎لأنني مهما حاولت، لا أصدق ما يقال لي.
-‎لا أصدق المديح،
-‎أبتسم، أهز رأسي،
-‎لكن قلبي يهمس: “لستُ كما يقولون”.
-‎لأنني ببساطة… لم أرني بعد.
+‎ غريب هو هذا التناقض… أستطيع أن أرى بوضوح ما يخفيه الناس خلف نظراتهم،
+‎ وأشعر بأحزانهم حتى إن لم يتحدثوا،
+‎ لكنني حين أنظر إلى نفسي، لا أرى إلا فراغًا… ظلًّا باهتًا بلا ملامح.
 
-‎خيالي واسع، مشاعري تتضخم يومًا بعد يوم،
-‎حساسيّتي تجاه ما حولي تتجاوز ما يمكنني تحمله أحيانًا،
-‎وكلما كبرت، شعرت أنني أضيع أكثر.
-‎العمر قصير… وأنا بالكاد أفهم نفسي،
-‎فكيف لي أن أفهم غيري؟
+‎ أحيانًا أتمنى لو استطعت أن أخرج من جسدي ليومٍ واحد فقط.
+‎ أعيش في جسدٍ آخر،
+‎ أجلس قبالتي،
+‎ أنظر في عينيّ، كما أنظر في أعين شخص أحبه،
+‎ وأحادث نفسي كما لو كنت صديقًا حقيقيًا لي.
+‎ أتمنى أن أعرف كيف هو شعور أن أكون أنا… من الخارج.
+‎ لأنني مهما حاولت، لا أصدق ما يقال لي.
+‎ لا أصدق المديح،
+‎ أبتسم، أهز رأسي،
+‎ لكن قلبي يهمس: “لستُ كما يقولون”.
+‎ لأنني ببساطة… لم أرني بعد.
 
-‎أكثر ما يؤلمني هو هذا الشعور العميق بعدم الفَهم.
-‎لا أحد يفهمني.
-‎بل حتى أنا لا أفهمني.
-‎أسيء الظن بنفسي،
-‎أحاكم نواياي،
-‎أجلد قلبي،
-‎وأغضب من روحي.
-‎عالمي الداخلي يزداد اتساعًا،
-‎لكن المسافة بيني وبين من حولي تتّسع هي الأخرى.
-‎وفي لحظات كثيرة، أشعر أنني… أطفو بعيدًا عن كل شيء.
+‎ خيالي واسع، مشاعري تتضخم يومًا بعد يوم،
+‎ حساسيّتي تجاه ما حولي تتجاوز ما يمكنني تحمله أحيانًا،
+‎ وكلما كبرت، شعرت أنني أضيع أكثر.
+‎ العمر قصير… وأنا بالكاد أفهم نفسي،
+‎ فكيف لي أن أفهم غيري؟
 
-‎لكن حين يشعر بي أحدهم حقًا، حين ينظر في عيني ويراني،
-‎أشعر بسعادة عارمة.
-‎أتعلّق به،
-‎أتمسك به بقوة،
-‎كأنه الضوء الوحيد في عتمتي.
-‎لكنّهم دائما ما يكونون هشّين، كمصباح من الزجاج…
-‎وحين أضمّهم بشدة،
-‎ينكسرون.
-‎و ينطفئ معهم الضوء،
-‎ويتبعثر الزجاج.
-‎ويصيبني الشظى.
-‎أنزف.
-‎وأبقى مع الندوب.
-‎ندوب لا تندمل.
-‎ندوب لا تُنسى.
-‎ندوب تذكرني بما مضى.
+‎ أكثر ما يؤلمني هو هذا الشعور العميق بعدم الفَهم.
+‎ لا أحد يفهمني.
+‎ بل حتى أنا لا أفهمني.
+‎ أسيء الظن بنفسي،
+‎ أحاكم نواياي،
+‎ أجلد قلبي،
+‎ وأغضب من روحي.
+‎ عالمي الداخلي يزداد اتساعًا،
+‎ لكن المسافة بيني وبين من حولي تتّسع هي الأخرى.
+‎ وفي لحظات كثيرة، أشعر أنني… أطفو بعيدًا عن كل شيء.
 
-‎لكنني رغم ذلك… لم أتوقف عن الحب.
-‎حتى وإن لم يكن قدري أن أُحَب كما أحِب،
-‎لم أتوقّف عن الزراعة —
-‎كنت أزرع القلوب كزهور في بستان روحي، كلّ يوم.
-‎لكن مؤخرًا، لم تعد تنمو.
-‎لم أعد أرى قلوبًا متفتّحة.
-‎وهنا أدركت… ربما لأنها لم تُترك لتنمو.
-‎كنت أقطفها دائمًا،
-‎وأقدّمها، إما لمن أحببت،
-‎أو كإثبات أنني أستحق الحب،
-‎أن مشاعري صادقة، رغم كل ما يُقال.
+‎ لكن حين يشعر بي أحدهم حقًا، حين ينظر في عيني ويراني،
+‎ أشعر بسعادة عارمة.
+‎ أتعلّق به،
+‎ أتمسك به بقوة،
+‎ كأنه الضوء الوحيد في عتمتي.
+‎ لكنّهم دائما ما يكونون هشّين، كمصباح من الزجاج…
+‎ وحين أضمّهم بشدة،
+‎ ينكسرون.
+‎ و ينطفئ معهم الضوء،
+‎ ويتبعثر الزجاج.
+‎ ويصيبني الشظى.
+‎ أنزف.
+‎ وأبقى مع الندوب.
+‎ ندوب لا تندمل.
+‎ ندوب لا تُنسى.
+‎ ندوب تذكرني بما مضى.
 
-‎لكن أغلب الزهور — كما نعلم —
-‎إما تموت ببطئ في إناءٍ زجاجي على رفٍّ منسي،
-‎أو تُطوى بين صفحات كتاب لا يُقرأ،
-‎تمامًا كالكلمات التي أقولها، والتي لا يسمعها أحد.
-‎وانتهى بي الأمر في بستانٍ جاف، بقلبٍ فارغ،
-‎وعطر الحب تبخّر مع الريح —
-‎يحضر للحظة، ثم يغيب.
+‎ لكنني رغم ذلك… لم أتوقف عن الحب.
+‎ حتى وإن لم يكن قدري أن أُحَب كما أحِب،
+‎ لم أتوقّف عن الزراعة —
+‎ كنت أزرع القلوب كزهور في بستان روحي، كلّ يوم.
+‎ لكن مؤخرًا، لم تعد تنمو.
+‎ لم أعد أرى قلوبًا متفتّحة.
+‎ وهنا أدركت… ربما لأنها لم تُترك لتنمو.
+‎ كنت أقطفها دائمًا،
+‎ وأقدّمها، إما لمن أحببت،
+‎ أو كإثبات أنني أستحق الحب،
+‎ أن مشاعري صادقة، رغم كل ما يُقال.
 
-‎ولكن…
-‎هل هذا ما ينبغي أن يكون ؟
-‎ربما لا.
+‎ لكن أغلب الزهور — كما نعلم —
+‎ إما تموت ببطئ في إناءٍ زجاجي على رفٍّ منسي،
+‎ أو تُطوى بين صفحات كتاب لا يُقرأ،
+‎ تمامًا كالكلمات التي أقولها، والتي لا يسمعها أحد.
+‎ وانتهى بي الأمر في بستانٍ جاف، بقلبٍ فارغ،
+‎ وعطر الحب تبخّر مع الريح —
+‎ يحضر للحظة، ثم يغيب.
 
-‎ربما عليّ أن أترك زهور قلبي تنمو من أجلي أنا.
-‎أعتني بها،
-‎أرويها،
-‎أتركها تتفتّح داخلي،
-‎حتى يأتي من يراها،
-‎ويقدّرها،
-‎ولا يقطفها،
-‎بل يجلس إلى جانبي،
-‎ويزرع معي…
-‎حتى يصير القلب حديقة، والحديقة حقلاً لا نهاية له.
+‎ ولكن…
+‎ هل هذا ما ينبغي أن يكون ؟
+‎ ربما لا.
+
+‎ ربما عليّ أن أترك زهور قلبي تنمو من أجلي أنا.
+‎ أعتني بها،
+‎ أرويها،
+‎ أتركها تتفتّح داخلي،
+‎ حتى يأتي من يراها،
+‎ ويقدّرها،
+‎ ولا يقطفها،
+‎ بل يجلس إلى جانبي،
+‎ ويزرع معي…
+‎ حتى يصير القلب حديقة، والحديقة حقلاً لا نهاية له.
 
 ⸻
 
-‎وحين قابلت الألم أخيرًا،
-‎أمسكته بين يداي،
-‎كان خائفًا، وقال:
+‎ وحين قابلت الألم أخيرًا،
+‎ أمسكته بين يداي،
+‎ كان خائفًا، وقال:
 
-‎“أترجاك… أنا آسف.
-‎أعلم أنني جرحتك كثيرًا،
-‎أعلم أنني كنت أنانيًّا،
-‎لم أفكر إلا بنفسي،
-‎وتحدثت عنك بسوء،
-‎وأظهرت نفسي دائمًا كأنني الضحية.”
+‎ “ آسف…
+‎ أعلم أنني جرحتك كثيرًا،
+‎ أعلم أنني كنت أنانيًّا،
+‎ لم أفكر إلا بنفسي،
+‎ وتحدثت عنك بسوء،
+‎ وأظهرت نفسي دائمًا كأنني الضحية.”
 
-‎قاطعته، بصوتٍ هادئ:
+‎ قاطعته، بصوتٍ هادئ:
 
-‎“اهدأ…
-‎لا تخف.
-‎لن أؤذيك.
-‎لا تقلق،
-‎لن أفضح أسرارك،
-‎حتى بعد كلّ ما فعلت.
-‎لقد اخترتَ قلبي ليكون خزنةً لكلماتك،
-‎ولن أخذلك… حتى و إن خذلتني.”
+‎ “اهدأ…
+‎ لا تخف.
+‎ لن أؤذيك.
+‎ لا تقلق،
+‎ لن أفضح أسرارك،
+‎ حتى بعد كلّ ما فعلت.
+‎ لقد اخترتَ قلبي ليكون خزنةً لكلماتك،
+‎ ولن أخذلك… حتى و إن خذلتني.”
 
-‎فقال بدهشة:
-‎“لكن — لماذا؟
-‎كيف يمكنك أن تكون بهذا البرود؟!”
+‎ فقال بدهشة:
+‎ “لكن — لماذا؟
+‎ كيف يمكنك أن تكون بهذا البرود؟!”
 
-‎“لم أقل إنني هادئ،
-‎لكن حتى عند خروجك من حياتي،
-‎بعد أن تركت حفرة عميقة في صدري،
-‎حتى بعد أن الكلمات التي كسرتني خرجت من فم شخصٍ
-‎ظننت أنه سكني وسندي…
-‎حتى حين رميتني كأنني لا شيء،
-‎وأنا كنت أراك شيئًا نادرًا لا يتكرّر،
-‎أنا ما زلت أدعو الله لك،
-‎أن تكون بخير،
-‎لأنك كنت يومًا قريبًا مني،
-‎جزءًا من عائلةٍ حلمت بها طويلاً.
-‎ضحكنا معًا،
-‎تقاسمنا الخبز،
-‎عشنا لحظات جميلة.
-‎كنت أتجاوز السيئ،
-‎لأني أؤمن أن ما هو جميل سيبزغ منه.
+‎ “لم أقل إنني هادئ،
+‎ لكن حتى عند خروجك من حياتي،
+‎ بعد أن تركت حفرة عميقة في صدري،
+‎ حتى بعد أن الكلمات التي كسرتني خرجت من فم شخصٍ
+‎ ظننت أنه سكني وسندي…
+‎ حتى حين رميتني كأنني لا شيء،
+‎ وأنا كنت أراك شيئًا نادرًا لا يتكرّر،
+‎ أنا ما زلت أدعو الله لك،
+‎ أن تكون بخير،
+‎ لأنك كنت يومًا قريبًا مني،
+‎ جزءًا من عائلةٍ حلمت بها طويلاً.
+‎ ضحكنا معًا،
+‎ تقاسمنا الخبز،
+‎ عشنا لحظات جميلة.
+‎ كنت أتجاوز السيئ،
+‎ لأني أؤمن أن ما هو جميل سيبزغ منه.
 
-‎لكنني… تُركت.
-‎من أجل خلافاتٍ تافهة،
-‎لا معنى لها،
-‎تركت وحدي في معركة مع المجهول،
-‎في الظلام،
-‎مع بضع لمحات نورٍ من إيماني كي أواصل.
-‎لقد سقطت،
-‎إصطدمت بجدران الواقع القاسية،
-‎لكنني واصلت.
+‎ لكنني… تُركت.
+‎ من أجل خلافاتٍ تافهة،
+‎ لا معنى لها،
+‎ تركت وحدي في معركة مع المجهول،
+‎ في الظلام،
+‎ مع بضع لمحات نورٍ من إيماني كي أواصل.
+‎ لقد سقطت،
+‎ إصطدمت بجدران الواقع القاسية،
+‎ لكنني واصلت.
 
-‎ما زلت أذكر حديثك عن أحلامك،
-‎وكم كنتُ متحمسًا لها كأنها لي،
-‎وكم دعوت الله أن أراك تحققها.
-‎لكن حين طلبت منك أن تدعو لي،
-‎قلت ببساطة: لا يهمني أمرك.”
+‎ ما زلت أذكر حديثك عن أحلامك،
+‎ وكم كنتُ متحمسًا لها كأنها لي،
+‎ وكم دعوت الله أن أراك تحققها.
+‎ لكن حين طلبت منك أن تدعو لي،
+‎ قلت ببساطة: لا يهمني أمرك.”
 
-‎صمت عارم…
+‎ صمت عارم…
 
-‎أكملت:
-‎"ورغم كل ذلك مازلت أريد أن أراك بخير، حتى ولو من بعيد، أحياناً مازلت أتمنى رؤيتك تحقق ما تريد."
+‎ أكملت:
+‎ "ورغم كل ذلك مازلت أريد أن أراك بخير، حتى ولو من بعيد، أحياناً مازلت أتمنى رؤيتك تحقق ما تريد."
 
-‎سكتُّ قليلاً.
-‎ثم قلت:
-‎“يمكنك الذهاب الآن.
-‎اعتنِ بنفسك.”
+‎ سكتُّ قليلاً.
+‎ ثم قلت:
+‎ “يمكنك الذهاب الآن.
+‎ اعتنِ بنفسك.”
 
-‎وحين أطلقتُ سراح الألم من زنزانة قلبي،
-‎شعرت بأنني أخف قليلا …
-‎بانتظار المرّة القادمة
-‎التي سأحرّر فيها آلاما أخرى .
-    </div>
-    <div id="raw-fr-text" style="display: none;">
-       Je voudrais être quelqu’un de spécial. Je voudrais être plus que ce que je suis.
+‎ وحين أطلقتُ سراح الألم من زنزانة قلبي،
+‎ شعرت بأنني أخف قليلا …
+‎ بانتظار المرّة القادمة
+‎ التي سأحرّر فيها آلاما أخرى .
+        </div>
+        <div id="raw-fr-text" style="display: none;">
+           Je voudrais être quelqu’un de spécial. Je voudrais être plus que ce que je suis.
 Fixant le miroir de la salle de bain verrouillé, je me suis murmuré cela à moi-même.
 Il y a des moments où j’essaie de regarder mon visage avec des yeux qui ne sont pas les miens — espérant qu’ainsi, peut-être, je comprendrai enfin comment les autres me voient.
 Parce que, peu importe combien de temps je fixe mon reflet, je n’arrive jamais à saisir l’image complète de moi-même. Mon corps, ma présence — tout cela est flou pour moi. Je ne me suis jamais vraiment vu.
@@ -477,7 +574,8 @@ Quand j’ai enfin rencontré la douleur,
 je l’avais entre mes mains.
 Il suppliait :
 
-« S’il te plaît… je suis désolé. Je sais que je t’ai tellement fait souffrir.
+« je suis désolé...
+ Je sais que je t’ai tellement fait souffrir.
 Je sais que je n’ai pensé qu’à moi, sans me soucier de toi.
 Je sais que j’ai dit de mauvaises choses sur toi… et agi comme si j’étais la victime. »
 
@@ -538,209 +636,215 @@ Et en libérant la douleur de la prison de ma poitrine,
 je me suis senti un peu plus léger —
 en attendant la prochaine fois
 où je libérerai d’autres douleurs de leur cage.
+        </div>
+        <div id="raw-en-text" style="display: none;">
+            I wish I were special. I wish I were more than what I am.
+    Staring into the locked bathroom mirror, I whispered that to myself.
+    There are moments when I try to look at my face with eyes that aren’t mine—hoping maybe then, just maybe, I’ll understand how others see me.
+    Because no matter how long I stare, I can never truly grasp the whole image of myself. My body, my presence—it’s a blur to me. I’ve never really seen me.
+    I always wonder… when they look at me, do they catch the delicate, beautiful things I overlook—just as I often notice those hidden things in them?
+    Can they read my quiet expressions, the ones I don’t even understand myself?
 
-    </div>
-    <div id="raw-en-text" style="display: none;">
-        I wish I were special. I wish I were more than what I am.
-Staring into the locked bathroom mirror, I whispered that to myself.
-There are moments when I try to look at my face with eyes that aren’t mine—hoping maybe then, just maybe, I’ll understand how others see me.
-Because no matter how long I stare, I can never truly grasp the whole image of myself. My body, my presence—it’s a blur to me. I’ve never really seen me.
-I always wonder… when they look at me, do they catch the delicate, beautiful things I overlook—just as I often notice those hidden things in them?
-Can they read my quiet expressions, the ones I don’t even understand myself?
+    It’s strange—how I can feel the emotions buried deep inside others, even when they try so hard to hide them…
+    But when it comes to me, all I see are dim, shapeless shadows.
 
-It’s strange—how I can feel the emotions buried deep inside others, even when they try so hard to hide them…
-But when it comes to me, all I see are dim, shapeless shadows.
+    Sometimes, I just wish I could step out of myself.
+    To live in another body for a day.
+    To sit across from me.
+    To talk to me.
+    To see me.
+    To know what it feels like to exist in this skin—from the outside.
+    Because no matter how hard I try, I can’t accept the compliments.
+    I nod, I smile… but deep down, I don’t believe them. Not until I truly see myself.
+    Not until I can gaze into my own eyes the way I gaze into the eyes of someone I love.
 
-Sometimes, I just wish I could step out of myself.
-To live in another body for a day.
-To sit across from me.
-To talk to me.
-To see me.
-To know what it feels like to exist in this skin—from the outside.
-Because no matter how hard I try, I can’t accept the compliments.
-I nod, I smile… but deep down, I don’t believe them. Not until I truly see myself.
-Not until I can gaze into my own eyes the way I gaze into the eyes of someone I love.
+    My imagination, my emotions, my sensitivity—they expand every day, endlessly.
+    And the more they grow, the more lost I become within myself.
+    Life feels too short. I’m still trying to understand who I am,
+    let alone trying to understand everyone else.
 
-My imagination, my emotions, my sensitivity—they expand every day, endlessly.
-And the more they grow, the more lost I become within myself.
-Life feels too short. I’m still trying to understand who I am,
-let alone trying to understand everyone else.
+    What truly hurts is how deeply I feel misunderstood.
+    Even by myself.
+    I misread my own intentions, I blame myself,
+    punish myself,
+    get angry at myself.
+    My inner world grows larger, while the space between me and others grows too.
+    Sometimes, it feels like I’m floating away.
 
-What truly hurts is how deeply I feel misunderstood.
-Even by myself.
-I misread my own intentions, I blame myself,
-punish myself,
-get angry at myself.
-My inner world grows larger, while the space between me and others grows too.
-Sometimes, it feels like I’m floating away.
+    So when someone finally sees me, truly sees me—i feel really excited and happy .
+    I cling to them like they’re the only light I’ve got.
+    But they’re always fragile, like a lone light bulb made of glass—
+    and I grip too hard.
+    And when I do, I break them.
+    The light goes out.
+    The glass shatters.
+    And as it breaks, it cuts into me—makes me bleed.
+    Leaves scars that never fade.
+    Scars that stay.
+    Scars that remind me.
 
-So when someone finally sees me, truly sees me—i feel really excited and happy .
-I cling to them like they’re the only light I’ve got.
-But they’re always fragile, like a lone light bulb made of glass—
-and I grip too hard.
-And when I do, I break them.
-The light goes out.
-The glass shatters.
-And as it breaks, it cuts into me—makes me bleed.
-Leaves scars that never fade.
-Scars that stay.
-Scars that remind me.
+    Scars I can’t forget.
 
-Scars I can’t forget.
+    But that never stopped me from loving. Even if love doesn’t seem to be written in my fate, I’ve always tried to give it—planting hearts like seeds in the garden of my soul, day after day. Yet lately, they don’t seem to grow. I hardly see any heart-shaped blooms anymore. Then it hit me—maybe it’s because I kept picking them. I’d offer them as gifts to the ones I cherished, or maybe as proof that I am someone worthy of being loved… someone with feelings that run deep and true.
 
-But that never stopped me from loving. Even if love doesn’t seem to be written in my fate, I’ve always tried to give it—planting hearts like seeds in the garden of my soul, day after day. Yet lately, they don’t seem to grow. I hardly see any heart-shaped blooms anymore. Then it hit me—maybe it’s because I kept picking them. I’d offer them as gifts to the ones I cherished, or maybe as proof that I am someone worthy of being loved… someone with feelings that run deep and true.
+    But most flowers, as we know, end up in jars where their colors slowly fade, or pressed between the forgotten pages of an old book—just like the words of the one who gave them, left unread. And so, I found myself with an empty garden, an empty heart, and the scent of love carried off by the wind—there for just a moment before disappearing again.
 
-But most flowers, as we know, end up in jars where their colors slowly fade, or pressed between the forgotten pages of an old book—just like the words of the one who gave them, left unread. And so, I found myself with an empty garden, an empty heart, and the scent of love carried off by the wind—there for just a moment before disappearing again.
+    But… is that how it’s meant to be?
 
-But… is that how it’s meant to be?
-
-Maybe not. Maybe instead of plucking my love and handing it away too soon, I’ll let it bloom for me. I’ll tend to it gently, keep it alive within me—until the day someone comes along who sees its worth. Someone who won’t just take a flower and leave, but who will kneel beside me, and help me grow them—until together, we’ve planted a field that never ends.
+    Maybe not. Maybe instead of plucking my love and handing it away too soon, I’ll let it bloom for me. I’ll tend to it gently, keep it alive within me—until the day someone comes along who sees its worth. Someone who won’t just take a flower and leave, but who will kneel beside me, and help me grow them—until together, we’ve planted a field that never ends.
 
 
-When I finally met the pain,
-I had him between my hands.
-He begged:
+    When I finally met the pain,
+    I had him between my hands.
+    He begged:
 
-“Please… I’m sorry. I know I hurt you so much.
-I know I only thought about myself, without caring about you.
-I know I said bad things about you… and acted like I was the victim.”
+    “I’m sorry...
+ I know I hurt you so much.
+    I know I only thought about myself, without caring about you.
+    I know I said bad things about you… and acted like I was the victim.”
 
-I interrupted, my voice calm:
+    I interrupted, my voice calm:
 
-“Shhh… don’t be afraid.
-I’m not going to hurt you.
-It’s okay.
-I won’t do any harm to you.
-I won’t expose your secrets — not even after all of that.
-You chose my heart as a secret vault for your words,
-and I won’t let you down… even when you did.”
+    “Shhh… don’t be afraid.
+    I’m not going to hurt you.
+    It’s okay.
+    I won’t do any harm to you.
+    I won’t expose your secrets — not even after all of that.
+    You chose my heart as a secret vault for your words,
+    and I won’t let you down… even when you did.”
 
-“But—why?
-How can you be so cool about it?!”
+    “But—why?
+    How can you be so cool about it?!”
 
-“I never said I was cool.
-Even though you’re out of my life —
-after leaving a big scar on my chest that runs deep into my heart…
-Even though the words that broke me came from the one
-who was supposed to be my support and my hope…
-Even though you threw me away
-like a big chunk of nothing
-when I thought you were a permanent, valuable part of my life…
-I still sometimes hope you’re okay.
-Because one day, you were someone really close to me —
-a new member of a family I always wished I had.
-You once laughed with me.
-Shared food with me.
-Lived some beautiful moments with me.
-I didn’t care much about the bitter moments we had,
-because I always believed something good would come out of them.
-I learned to hold on to the ones who matter to me,
-even in the worst conditions.
+    “I never said I was cool.
+    Even though you’re out of my life —
+    after leaving a big scar on my chest that runs deep into my heart…
+    Even though the words that broke me came from the one
+    who was supposed to be my support and my hope…
+    Even though you threw me away
+    like a big chunk of nothing
+    when I thought you were a permanent, valuable part of my life…
+    I still sometimes hope you’re okay.
+    Because one day, you were someone really close to me —
+    a new member of a family I always wished I had.
+    You once laughed with me.
+    Shared food with me.
+    Lived some beautiful moments with me.
+    I didn’t care much about the bitter moments we had,
+    because I always believed something good would come out of them.
+    I learned to hold on to the ones who matter to me,
+    even in the worst conditions.
 
-But me?
-I was left…
-Over the most trivial fights.
-Left alone in the battle.
-Left in the darkness,
-guided only by faint glimpses of my faith.
-I fell —
-bumped into walls of hardness —
-but I kept going.
+    But me?
+    I was left…
+    Over the most trivial fights.
+    Left alone in the battle.
+    Left in the darkness,
+    guided only by faint glimpses of my faith.
+    I fell —
+    bumped into walls of hardness —
+    but I kept going.
 
-I still remember you telling me your dreams —
-and me getting excited for you like they were my own.
-I remember the nights I prayed that one day
-I could watch you live those dreams.
-But when I ask you to pray for me,
-you say you don’t care.”
+    I still remember you telling me your dreams —
+    and me getting excited for you like they were my own.
+    I remember the nights I prayed that one day
+    I could watch you live those dreams.
+    But when I ask you to pray for me,
+    you say you don’t care.”
 
-A pause.
-“You can go now.
-Take care of yourself.”
+    A pause.
+    “You can go now.
+    Take care of yourself.”
 
-And as I freed the pain from the prison of my chest,
-I felt a little bit lighter —
-waiting for the next time
-I’ll set more pains free from their cage.
-    </div>
-    <div class="fixed top-0 left-0 right-0 flex flex-col items-start p-4 space-y-2 z-50">
-         <div class="flex justify-center space-x-4 mb-2"> <button
-                id="ar-button"
-                onclick="changeLanguage('ar')"
-                class="text-purple-600 px-6 py-2 rounded-full shadow-lg-custom transition duration-300 ease-in-out transform hover:scale-105 hover:text-purple-700 focus:outline-none blur-effect"
-            >
-‎                العربية
+    And as I freed the pain from the prison of my chest,
+    I felt a little bit lighter —
+    waiting for the next time
+    I’ll set more pains free from their cage.
+        </div>
+        <div class="fixed top-0 left-0 right-0 flex flex-col items-start p-4 space-y-2 z-50">
+             <div class="flex justify-center space-x-4 mb-2"> <button
+                    id="ar-button"
+                    onclick="changeLanguage('ar')"
+                    class="text-purple-600 px-6 py-2 rounded-full shadow-lg-custom transition duration-300 ease-in-out transform hover:scale-105 hover:text-purple-700 focus:outline-none blur-effect"
+                >
+    ‎                العربية
+                </button>
+                <button
+                    id="fr-button"
+                    onclick="changeLanguage('fr')"
+                    class="text-purple-600 px-6 py-2 rounded-full shadow-lg-custom transition duration-300 ease-in-out transform hover:scale-105 hover:text-purple-700 focus:outline-none blur-effect"
+                >
+                    Français
+                </button>
+                <button
+                    id="en-button"
+                    onclick="changeLanguage('en')"
+                    class="text-purple-600 px-6 py-2 rounded-full shadow-lg-custom transition duration-300 ease-in-out transform hover:scale-105 hover:text-purple-700 focus:outline-none blur-effect"
+                >
+                    English
+                </button>
+             </div>
+             <button
+                 id="back-home-button"
+                 onclick="window.location.href='https://dodch.github.io/Dodch-Stories-/index.html'"
+                 class="text-purple-600 px-4 py-1 text-sm rounded-full shadow-lg-custom transition duration-300 ease-in-out transform hover:scale-105 hover:text-purple-700 focus:outline-none blur-effect inline-flex items-center" >
+                <span class="mr-1">&larr;</span> <span id="back-home-text">Back Home</span>
             </button>
-            <button
-                id="fr-button"
-                onclick="changeLanguage('fr')"
-                class="text-purple-600 px-6 py-2 rounded-full shadow-lg-custom transition duration-300 ease-in-out transform hover:scale-105 hover:text-purple-700 focus:outline-none blur-effect"
-            >
-                Français
-            </button>
-            <button
-                id="en-button"
-                onclick="changeLanguage('en')"
-                class="text-purple-600 px-6 py-2 rounded-full shadow-lg-custom transition duration-300 ease-in-out transform hover:scale-105 hover:text-purple-700 focus:outline-none blur-effect"
-            >
-                English
-            </button>
-         </div>
-         <button
-             id="back-home-button"
-             onclick="window.location.href='https://dodch.github.io/Dodch-Stories-/index.html'"
-             class="text-purple-600 px-4 py-1 text-sm rounded-full shadow-lg-custom transition duration-300 ease-in-out transform hover:scale-105 hover:text-purple-700 focus:outline-none blur-effect inline-flex items-center" >
-            <span class="mr-1">&larr;</span> <span id="back-home-text">Back Home</span>
+        </div>
+
+
+        <div id="content" class="rounded-lg mx-auto content-fading">
+            <h1 id="title" class="text-3xl font-bold mb-4"></h1>
+            <div id="text" class="text-lg leading-relaxed"></div>
+        </div>
+
+        <button
+            id="save-progress-button"
+            onclick="scrollToSavedWord()"
+            class="fixed bottom-4 left-4 text-purple-600 px-6 py-2 rounded-full shadow-lg-custom transition duration-300 ease-in-out transform hover:scale-105 hover:text-purple-700 focus:outline-none blur-effect"
+            style="z-index: 60;"
+        >
+            Saved Progress
         </button>
-    </div>
 
-
-    <div id="content" class="rounded-lg mx-auto content-fading">
-        <h1 id="title" class="text-3xl font-bold mb-4"></h1>
-        <div id="text" class="text-lg leading-relaxed"></div>
-    </div>
-
-    <button
-        id="save-progress-button"
-        onclick="scrollToSavedWord()"
-        class="fixed bottom-4 left-4 text-purple-600 px-6 py-2 rounded-full shadow-lg-custom transition duration-300 ease-in-out transform hover:scale-105 hover:text-purple-700 focus:outline-none blur-effect"
-        style="z-index: 60;"
-    >
-        Saved Progress
-    </button>
-
-    <div id="popup" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-        <div class="p-4 rounded-lg shadow-lg w-64 blur-effect fade-in">
-            <h2 id="popup-title" class="text-lg font-bold mb-2">Save Position</h2>
-            <p id="popup-text" class="mb-4 text-sm"></p>
-            <div class="flex justify-end space-x-2">
-                <button
-                    onclick="savePosition()"
-                    class="bg-green-500 text-white px-4 py-2 rounded-full focus:outline-none"
-                >
-                    Save
-                </button>
-                <button
-                    onclick="closePopup()"
-                    class="bg-red-500 text-white px-4 py-2 rounded-full focus:outline-none"
-                >
-                    Exit
-                </button>
+        <div id="popup" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div class="p-4 rounded-lg shadow-lg w-64 blur-effect fade-in">
+                <h2 id="popup-title" class="text-lg font-bold mb-2">Save Position</h2>
+                <p id="popup-text" class="mb-4 text-sm"></p>
+                <div class="flex justify-end space-x-2">
+                    <button
+                        onclick="savePosition()"
+                        class="bg-green-500 text-white px-4 py-2 rounded-full focus:outline-none"
+                    >
+                        Save
+                    </button>
+                    <button
+                        onclick="closePopup()"
+                        class="bg-red-500 text-white px-4 py-2 rounded-full focus:outline-none"
+                    >
+                        Exit
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="fixed bottom-4 right-4 z-50">
-        <button
-            id="dark-mode-toggle-button"
-            onclick="toggleDarkMode()"
-            class="text-gray-600 w-10 h-10 flex items-center justify-center rounded-full shadow-lg-custom transition duration-300 ease-in-out transform hover:scale-105 hover:text-gray-700 focus:outline-none blur-effect"
-        >
-            <span id="dark-mode-icon">☀️</span>
-        </button>
-    </div>
+        <div class="fixed bottom-4 right-4 z-50">
+            <button
+                id="dark-mode-toggle-button"
+                onclick="toggleDarkMode()"
+                class="text-gray-600 w-10 h-10 flex items-center justify-center rounded-full shadow-lg-custom transition duration-300 ease-in-out transform hover:scale-105 hover:text-gray-700 focus:outline-none blur-effect"
+            >
+                <span id="dark-mode-icon">☀️</span>
+            </button>
+        </div>
 
-    <script>
+    </div> <script>
+        const loadingScreen = document.getElementById("loading-screen");
+        // Changed loadText to loadPercentageText for clarity
+        const loadPercentageText = document.querySelector(".loading-percentage");
+        const body = document.body; // Reference to the body element
+
+
         let currentLanguage = 'en';
         // Use an object to store saved progress for each language
         let allSavedProgress = {};
@@ -848,14 +952,23 @@ I’ll set more pains free from their cage.
 
 
         function changeLanguage(lang, fromLoad = false) {
-            // Prevent unnecessary changes if already loading/faded or same language
-            if ((contentDiv.classList.contains('content-fading') || currentLanguage === lang) && !fromLoad) {
+            // Prevent unnecessary changes if already fading or same language
+            // The `fromLoad` flag allows the initial load to proceed even if body has 'loading'
+            if (contentDiv.classList.contains('content-fading') && !fromLoad) {
+                 return;
+            }
+             // Prevent unnecessary changes if the same language is already set, unless it's the initial load
+            if (currentLanguage === lang && !fromLoad) {
                  return;
             }
 
             currentLanguage = lang;
 
-            localStorage.setItem('preferredLanguage', lang);
+            // Only save preferred language after the initial load to avoid overwriting
+            if (!fromLoad) {
+                 localStorage.setItem('preferredLanguage', lang);
+            }
+
 
             const content = contentMap[lang];
 
@@ -1207,7 +1320,54 @@ I’ll set more pains free from their cage.
         });
 
 
-        // --- Initial Setup ---
+        // --- Loading Screen Script (Modified) ---
+        let load = 0;
+        // Interval to update the loading percentage text animation
+        let interval = setInterval(updateLoadingText, 30);
+
+        function updateLoadingText() {
+          load++;
+
+          if (load > 99) {
+            clearInterval(interval);
+            // Update the percentage text to 100%
+            loadPercentageText.innerText = '100%';
+            // The loading screen hiding and un-blurring is triggered by window.load
+          } else {
+             // Only update the percentage text element
+            loadPercentageText.innerText = `${load}%`;
+          }
+        }
+
+        // Wait for the entire page (including all resources like images, stylesheets) to load
+        window.addEventListener('load', () => {
+            // Ensure the percentage text shows 100% before starting to hide
+             if (load < 100) { // Only update if interval didn't finish
+                 loadPercentageText.innerText = '100%';
+             }
+
+            // Add a small delay before hiding the loading screen and un-blurring the content.
+            setTimeout(() => {
+                // Remove the 'loading' class from the body.
+                // This triggers the CSS transition on the #page-content-wrapper filter (blur)
+                // and removes 'pointer-events: none'.
+                body.classList.remove('loading');
+
+                // Start fading out the loading screen (CSS transition handles the fade over 0.5s).
+                // This happens concurrently with the blur transition.
+                loadingScreen.classList.add('hidden');
+
+                 // Optional: Remove the loading screen element completely from the DOM after its transition ends.
+                // Add a delay that is slightly longer than the loading screen's fade-out transition (0.5s).
+                setTimeout(() => {
+                    loadingScreen.remove();
+                 }, 600);
+
+            }, 500); // Delay in milliseconds BEFORE hiding/un-blurring starts
+        });
+
+
+        // --- Initial Setup (Existing Script) ---
 
         document.addEventListener('DOMContentLoaded', () => {
              // --- Load Saved Progress ---
@@ -1219,7 +1379,6 @@ I’ll set more pains free from their cage.
                  allSavedProgress = {}; // Reset if parsing fails
                  localStorage.removeItem('allSavedProgress'); // Clear invalid data
              }
-
 
              // --- Theme Setup ---
              const savedDarkMode = localStorage.getItem('darkModeEnabled');
@@ -1234,7 +1393,6 @@ I’ll set more pains free from their cage.
              isDarkMode = !isDarkMode; // This ensures the first call sets it to the loaded/default value
              toggleDarkMode(); // This will also set the correct initial emoji
 
-
              // --- Language Setup ---
              const preferredLanguage = localStorage.getItem('preferredLanguage');
              let initialLangToLoad = 'en'; // Default language is English
@@ -1246,6 +1404,7 @@ I’ll set more pains free from their cage.
              // If no valid preferred language, initialLangToLoad remains 'en'
 
              // Change language and populate text. Passing true indicates it's the initial load.
+             // This call happens *before* the window.load event, populating content while loading screen is visible.
              changeLanguage(initialLangToLoad, true);
 
         });
