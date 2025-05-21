@@ -2,20 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-
-  <!-- Google site verification -->
   <meta name="google-site-verification" content="WPsemouAlOQyJaztzjjtf6afzzagtg6WWPZh7gd3T8A" />
-
-  <!-- Mobile-friendly scaling -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- SEO: Page title -->
   <title>Dodch Stories | Original Fiction and Creative Writing</title>
-
-  <!-- SEO: Description for search engines -->
   <meta name="description" content="Dodch Stories is a collection of original stories written with emotion, creativity, and depth. Explore fiction that connects to the heart and imagination.">
-
-  <!-- Reset default browser styles -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
   <style id="base-styles">
 /* Loading Screen Styles */
@@ -60,7 +50,6 @@
 /* Base Styles */
 body {
     margin: 0;
-    background-image: url('https://i.ibb.co/gLRXnhbX/IMG-9913.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -72,8 +61,25 @@ body {
     justify-content: center;
     align-items: center;
     position: relative;
-    transition: background-color 0.5s ease, color 0.5s ease;
+    transition: background-color 0.8s ease, color 0.8s ease; /* Smoother transition */
 }
+
+/* --- NEW: Orientation-specific backgrounds --- */
+/* Landscape (Horizontal) Background */
+@media (orientation: landscape) {
+    body {
+        background-image: url('https://i.ibb.co/k2k7tqVs/IMG-0574.jpg');
+        overflow-y: auto; /* Allow vertical scrolling in landscape */
+    }
+}
+
+/* Portrait (Vertical) Background */
+@media (orientation: portrait) {
+    body {
+        background-image: url('https://i.ibb.co/Y72RGqjn/IMG-0573.jpg');
+    }
+}
+/* --- END NEW --- */
 
 /* Landscape mode specific adjustments */
 @media (orientation: landscape) {
@@ -100,26 +106,49 @@ header {
     z-index: 1000;
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Default border for dark mode */
     border-radius: 30px;
     color: #fff;
     text-align: center;
     padding: 8px 16px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
+    transition: all 0.5s ease; /* Smoother transition */
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
+/* Header in Light Mode - More Transparent */
+body.light-mode header {
+    background: rgba(255, 255, 255, 0.3); /* More transparent white */
+    backdrop-filter: blur(15px); /* Slightly more blur for frosted effect */
+    border: 1px solid rgba(255, 255, 255, 0.5); /* Frosted edge */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    color: #333; /* Darker text for light mode */
+}
+/* Header in Dark Mode */
+body.dark-mode header {
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(15px);
+    /* Glass glow effect for dark mode header */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Softer, subtle border */
+    box-shadow: 0 0 20px rgba(135, 206, 250, 0.4), /* Soft blue glow */
+                0 0 30px rgba(135, 206, 250, 0.3),
+                0 4px 10px rgba(0, 0, 0, 0.3); /* Original shadow for depth */
+    color: #fff;
+}
+
+
 body.search-active header {
     background: transparent;
     backdrop-filter: none;
     box-shadow: none;
+    border: none; /* Remove border in search active state */
 }
 
 /* Ensure smooth transitions for header elements */
 header h1, .dark-mode-toggle {
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: opacity 0.5s ease, transform 0.5s ease, color 0.5s ease, text-shadow 0.5s ease; /* Smoother transition */
 }
 
 /* Search Button and Bar */
@@ -151,6 +180,23 @@ header h1, .dark-mode-toggle {
     justify-content: center;
     align-items: center;
 }
+/* Search button in light mode */
+body.light-mode .search-button {
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: #333;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+/* Search button in dark mode */
+body.dark-mode .search-button {
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
 
 .search-button:hover {
     transform: scale(1.1);
@@ -170,6 +216,21 @@ header h1, .dark-mode-toggle {
     opacity: 0;
     margin-right: 5px;
 }
+/* Search input in light mode */
+body.light-mode .search-input {
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: #333;
+}
+/* Search input in dark mode */
+body.dark-mode .search-input {
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+}
+
 
 .search-container.active .search-input {
     width: 150px;
@@ -178,21 +239,6 @@ header h1, .dark-mode-toggle {
 }
 
 /* Overlay for search mode */
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.3);
-    z-index: 900;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.5s ease, visibility 0.5s ease;
-    pointer-events: none;
-}
-
 body.search-active::after {
     content: '';
     position: fixed;
@@ -200,7 +246,8 @@ body.search-active::after {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('https://i.ibb.co/gLRXnhbX/IMG-9913.jpg');
+    /* Keep original image and blur it, instead of changing it to a different image */
+    background-image: var(--original-background-image-landscape, url('https://i.ibb.co/k2k7tqVs/IMG-0574.jpg')); /* Default for landscape */
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -208,6 +255,10 @@ body.search-active::after {
     z-index: -1;
     pointer-events: none;
     transition: filter 0.5s ease;
+    /* Add portrait specific background here for search active */
+    @media (orientation: portrait) {
+        background-image: var(--original-background-image-portrait, url('https://i.ibb.co/Y72RGqjn/IMG-0573.jpg'));
+    }
 }
 
 /* Hide footer in search mode */
@@ -216,12 +267,6 @@ body.search-active footer {
     visibility: hidden;
     transform: translateY(20px);
     transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
-}
-
-body.search-active::before {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto; /* Make overlay clickable to exit search */
 }
 
 .search-container.active .search-button {
@@ -270,6 +315,16 @@ header:hover {
     transition: transform 0.3s ease, color 0.3s ease;
     transform-origin: center;
 }
+/* Dark Mode Toggle in Light Mode */
+body.light-mode .dark-mode-toggle {
+    color: #333;
+}
+/* Dark Mode Toggle in Dark Mode */
+body.dark-mode .dark-mode-toggle {
+    color: #fff;
+}
+
+
 .dark-mode-toggle:hover {
     transform: scale(1.2) rotate(15deg);
 }
@@ -288,7 +343,7 @@ header h1 {
     font-weight: bold;
     margin: 0;
     color: #fff;
-    text-shadow: 
+    text-shadow:
         0 0 10px rgba(255, 255, 255, 0.8),
         0 0 20px rgba(255, 255, 255, 0.8),
         0 0 30px rgba(255, 255, 255, 0.8);
@@ -296,17 +351,25 @@ header h1 {
 }
 @keyframes glow-text {
     0% {
-        text-shadow: 
+        text-shadow:
         0 0 10px rgba(255, 255, 255, 0.8),
         0 0 20px rgba(255, 255, 255, 0.8),
         0 0 30px rgba(255, 255, 255, 0.8);
     }
     100% {
-        text-shadow: 
+        text-shadow:
         0 0 20px rgba(255, 255, 255, 1),
         0 0 30px rgba(255, 255, 255, 1),
         0 0 40px rgba(255, 255, 255, 1);
     }
+}
+/* Adjust text color for light mode */
+body.light-mode header h1 {
+    color: #333; /* Darker text for light mode */
+    text-shadow:
+        0 0 5px rgba(0, 0, 0, 0.1),
+        0 0 10px rgba(0, 0, 0, 0.1),
+        0 0 15px rgba(0, 0, 0, 0.1);
 }
 /* Footer Styling */
 footer {
@@ -319,6 +382,7 @@ footer {
     z-index: 1000;
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Default border for dark mode */
     border-radius: 30px;
     color: #fff;
     display: flex;
@@ -326,8 +390,30 @@ footer {
     align-items: center;
     padding: 10px 20px;
     box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
+    transition: all 0.5s ease; /* Smoother transition */
 }
+
+/* Footer in Light Mode - More Transparent */
+body.light-mode footer {
+    background: rgba(255, 255, 255, 0.3); /* More transparent white */
+    backdrop-filter: blur(15px); /* Slightly more blur for frosted effect */
+    border: 1px solid rgba(255, 255, 255, 0.5); /* Frosted edge */
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+    color: #333; /* Darker text for light mode */
+}
+/* Footer in Dark Mode */
+body.dark-mode footer {
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(15px);
+    /* Glass glow effect for dark mode footer */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Softer, subtle border */
+    box-shadow: 0 0 20px rgba(135, 206, 250, 0.4), /* Soft blue glow */
+                0 0 30px rgba(135, 206, 250, 0.3),
+                0 -4px 10px rgba(0, 0, 0, 0.3); /* Original shadow for depth */
+    color: #fff;
+}
+
+
 footer:hover {
     box-shadow: 0 -6px 15px rgba(0, 0, 0, 0.4);
 }
@@ -360,6 +446,24 @@ footer:hover {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
 }
+/* Share button in light mode */
+body.light-mode .share-link-button {
+    background: rgba(135, 206, 250, 0.1);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(135, 206, 250, 0.3);
+    color: #5c87a6;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+/* Share button in dark mode */
+body.dark-mode .share-link-button {
+    background: rgba(135, 206, 250, 0.2);
+    backdrop-filter: blur(15px);
+    border: none;
+    color: #87ceeb;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+
 .share-link-button:hover {
     transform: scale(1.1);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
@@ -378,6 +482,23 @@ footer:hover {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
 }
+/* Favorites button in light mode */
+body.light-mode .favorites-button {
+    background: rgba(255, 99, 71, 0.1);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 99, 71, 0.3);
+    color: #cc503a;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+/* Favorites button in dark mode */
+body.dark-mode .favorites-button {
+    background: rgba(255, 99, 71, 0.2);
+    backdrop-filter: blur(15px);
+    border: none;
+    color: #ff6347;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
 .favorites-button:hover {
     transform: scale(1.1);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
@@ -407,6 +528,8 @@ footer:hover {
     max-height: 100vh;
     padding-top: 100px; /* Add padding for header */
     padding-bottom: 100px; /* Add padding for footer */
+    /* Added transition for grid layout changes */
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smooth cubic transition */
 }
 
 /* Media query for landscape mode on smaller devices */
@@ -456,20 +579,21 @@ footer:hover {
     }
 }
 
-/* Grid item base styles */
+/* Grid item base styles (Frosted glass effect for all modes) */
 .grid-item {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.2); /* Default for light backgrounds */
     border-radius: 20px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(15px); /* More blur for frosted effect */
+    border: 1px solid rgba(255, 255, 255, 0.5); /* Frosted edge for all modes */
     padding: 15px;
-    color: #fff;
-    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), 
-                box-shadow 0.4s ease, 
-                opacity 0.5s ease, 
-                background-color 0.5s ease,
-                filter 0.3s ease;
+    color: #fff; /* Default text color */
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), /* Bouncy transform */
+                box-shadow 0.4s ease,
+                opacity 0.5s ease,
+                background-color 0.8s ease, /* Smoother transition */
+                filter 0.3s ease,
+                border 0.8s ease; /* Add transition for border */
     cursor: pointer;
     position: relative;
     overflow: hidden;
@@ -486,15 +610,37 @@ footer:hover {
     justify-content: center;
     animation-delay: calc(var(--i, 0) * 0.1s);
 }
+
+/* Light mode specific adjustments for grid items */
+body.light-mode .grid-item {
+    background: rgba(255, 255, 255, 0.3); /* More transparent white */
+    border: 1px solid rgba(255, 255, 255, 0.5); /* Frosted edge */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    color: #333; /* Darker text for light mode */
+}
+
+/* Dark mode specific adjustments for grid items (with glass glow) */
+body.dark-mode .grid-item {
+    background: rgba(0, 0, 0, 0.7); /* Darker background in dark mode */
+    border: 1px solid rgba(0, 0, 0, 0.4); /* Darker frosted edge for contrast */
+    box-shadow: 0 0 15px rgba(135, 206, 250, 0.3), /* Soft blue glow */
+                0 0 25px rgba(135, 206, 250, 0.2),
+                0 4px 15px rgba(255, 255, 255, 0.1); /* Lighter shadow for depth */
+    color: #fff; /* White text for dark mode */
+}
+
+
 .grid-item.hidden {
-    opacity: 0;
-    transform: scale(0.8) translateY(30px);
+    display: none; /* Changed from opacity and transform to display: none */
     pointer-events: none;
 }
 .grid-item:hover {
     transform: scale(1.05) translateY(-8px) rotate(1deg);
-    box-shadow: 0 18px 35px rgba(0, 0, 0, 0.5);
-    filter: brightness(1.15) contrast(1.05);
+    /* Enhanced glow on hover for dark mode */
+    box-shadow: 0 0 25px rgba(135, 206, 250, 0.6), /* More intense blue glow */
+                0 0 40px rgba(135, 206, 250, 0.4),
+                0 18px 35px rgba(0, 0, 0, 0.5); /* Larger, darker shadow for lift */
+    filter: brightness(1.2) saturate(1.1); /* Make it pop and glow more */
 }
 /* Fade-In Animation for Grid Items */
 @keyframes fadeInUp {
@@ -526,23 +672,23 @@ footer:hover {
 
 /* Search Highlight Animation */
 @keyframes searchHighlight {
-    0% { 
+    0% {
         box-shadow: 0 0 0 rgba(135, 206, 250, 0);
         transform: scale(1);
     }
-    25% { 
+    25% {
         box-shadow: 0 0 30px rgba(135, 206, 250, 0.8);
         transform: scale(1.03);
     }
-    50% { 
+    50% {
         box-shadow: 0 0 20px rgba(135, 206, 250, 0.6);
         transform: scale(1.02);
     }
-    75% { 
+    75% {
         box-shadow: 0 0 15px rgba(135, 206, 250, 0.4);
         transform: scale(1.01);
     }
-    100% { 
+    100% {
         box-shadow: 0 0 0 rgba(135, 206, 250, 0);
         transform: scale(1);
     }
@@ -592,15 +738,32 @@ footer:hover {
     margin-bottom: 10px;
     color: #fff;
     text-align: center;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    text-shadow:
+        0 0 10px rgba(255, 255, 255, 0.8),
+        0 0 20px rgba(255, 255, 255, 0.8),
+        0 0 30px rgba(255, 255, 255, 0.8);
     transition: color 0.5s ease, text-shadow 0.5s ease, transform 0.3s ease;
     position: relative;
     overflow: hidden;
 }
 
+/* Adjust text color for light mode */
+body.light-mode .grid-item h2 {
+    color: #333; /* Darker text for light mode */
+    text-shadow:
+        0 0 5px rgba(0, 0, 0, 0.1),
+        0 0 10px rgba(0, 0, 0, 0.1),
+        0 0 15px rgba(0, 0, 0, 0.1);
+}
+
 .grid-item:hover h2 {
     transform: translateY(-2px);
     text-shadow: 0 0 15px rgba(255, 255, 255, 1), 0 0 25px rgba(255, 255, 255, 0.8);
+}
+
+/* Adjust hover text shadow for light mode */
+body.light-mode .grid-item:hover h2 {
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.2), 0 0 15px rgba(0, 0, 0, 0.15);
 }
 
 .grid-item h2::after {
@@ -612,6 +775,11 @@ footer:hover {
     height: 2px;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
     transition: width 0.5s ease, left 0.5s ease;
+}
+
+/* Adjust underline for light mode */
+body.light-mode .grid-item h2::after {
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.3), transparent);
 }
 
 .grid-item:hover h2::after {
@@ -626,6 +794,11 @@ footer:hover {
     text-align: center;
     transition: color 0.5s ease, opacity 0.5s ease, transform 0.3s ease;
     opacity: 0.8;
+}
+
+/* Adjust paragraph text color for light mode */
+body.light-mode .grid-item p {
+    color: #555; /* Darker text for light mode */
 }
 
 .grid-item:hover p {
@@ -712,17 +885,46 @@ body.android-landscape .grid-item:hover {
     font-size: 1.2rem;
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, color 0.5s ease; /* Added color transition */
 }
 .favorite-btn:hover {
     transform: scale(1.1);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
 }
+
+/* Adjust favorite button in light mode */
+body.light-mode .favorite-btn {
+    background: rgba(0, 0, 0, 0.1); /* Darker background in light mode */
+    color: #333; /* Darker icon color */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(15px); /* Ensure blur in light mode */
+    border: 1px solid rgba(0, 0, 0, 0.2); /* Subtle border for light mode glass */
+}
+/* Adjust favorite button in dark mode */
+body.dark-mode .favorite-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(15px);
+    border: none; /* No extra border for dark mode */
+}
+
+
 .favorite-btn.active {
     animation: heartbeat 1.5s; /* Heartbeat lasts for 1.5 seconds */
     background: rgba(255, 0, 0, 0.3);
-    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
 }
+/* Glowing Heart in Light Mode */
+body.light-mode .favorite-btn.active {
+    box-shadow: 0 0 15px rgba(255, 100, 100, 0.8), 0 0 25px rgba(255, 0, 0, 0.5); /* Lighter, more visible glow */
+    color: #ff0000; /* Ensure heart itself is red */
+}
+/* Glowing Heart in Dark Mode */
+body.dark-mode .favorite-btn.active {
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+    color: #ff0000; /* Ensure heart itself is red */
+}
+
 @keyframes heartbeat {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.2); }
@@ -745,6 +947,21 @@ body.android-landscape .grid-item:hover {
     transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
     transform: translateY(-20px);
 }
+/* Notification in Light Mode */
+body.light-mode .added-to-favorites-notification {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: #333;
+}
+/* Notification in Dark Mode */
+body.dark-mode .added-to-favorites-notification {
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(15px);
+    border: none;
+    color: #fff;
+}
+
 .added-to-favorites-notification.show {
     opacity: 1;
     visibility: visible;
@@ -761,7 +978,7 @@ body.android-landscape .grid-item:hover {
     font-weight: bold;
     color: #8a2be2; /* Purple color */
     text-align: center;
-    text-shadow: 
+    text-shadow:
         0 0 15px rgba(138, 43, 226, 0.8),
         0 0 25px rgba(138, 43, 226, 0.8),
         0 0 35px rgba(138, 43, 226, 0.8),
@@ -788,12 +1005,32 @@ body.android-landscape .grid-item:hover {
     text-align: left; /* Align text to the left */
     color: #8a2be2; /* Purple color */
 }
+
+/* Adjust favorites title in light mode */
+body.light-mode .favorites-title {
+    color: #6a0dad; /* Darker purple for light mode */
+    text-shadow:
+        0 0 10px rgba(106, 13, 173, 0.5),
+        0 0 15px rgba(106, 13, 173, 0.4),
+        0 0 20px rgba(106, 13, 173, 0.3);
+}
+
+body.light-mode .favorites-title.minimized {
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Favorites title in Dark Mode */
+body.dark-mode .favorites-title.minimized {
+    background: rgba(0, 0, 0, 0.7);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
 </style>
 <style id="simplified-styles" disabled>
 /* Simplified Styles for Low-End Android Devices */
 body {
     margin: 0;
-    background-image: url('https://i.ibb.co/gLRXnhbX/IMG-9913.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: scroll; /* Changed from fixed to scroll */
@@ -807,6 +1044,23 @@ body {
     overflow: hidden; /* Consider removing this if not essential */
     position: relative;
 }
+
+/* --- NEW: Orientation-specific backgrounds for simplified styles --- */
+/* Landscape (Horizontal) Background */
+@media (orientation: landscape) {
+    body {
+        background-image: url('https://i.ibb.co/k2k7tqVs/IMG-0574.jpg');
+    }
+}
+
+/* Portrait (Vertical) Background */
+@media (orientation: portrait) {
+    body {
+        background-image: url('https://i.ibb.co/Y72RGqjn/IMG-0573.jpg');
+    }
+}
+/* --- END NEW --- */
+
 header {
     position: fixed;
     top: 20px;
@@ -822,6 +1076,22 @@ header {
     padding: 8px 16px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
+
+/* Header in Light Mode - More Transparent */
+body.light-mode header {
+    background: rgba(255, 255, 255, 0.3); /* More transparent white */
+    border: 1px solid rgba(255, 255, 255, 0.5); /* Frosted edge */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+/* Header in Dark Mode (Simplified) */
+body.dark-mode header {
+    background: rgba(0, 0, 0, 0.7);
+    border: none; /* Simplified: no border in dark mode */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    color: #fff;
+}
+
 footer {
     position: fixed;
     bottom: 20px;
@@ -839,6 +1109,22 @@ footer {
     padding: 10px 20px;
     box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3);
 }
+
+/* Footer in Light Mode - More Transparent */
+body.light-mode footer {
+    background: rgba(255, 255, 255, 0.3); /* More transparent white */
+    border: 1px solid rgba(255, 255, 255, 0.5); /* Frosted edge */
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+/* Footer in Dark Mode (Simplified) */
+body.dark-mode footer {
+    background: rgba(0, 0, 0, 0.7);
+    border: none; /* Simplified: no border in dark mode */
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3);
+    color: #fff;
+}
+
 .share-link-button {
     background: rgba(135, 206, 250, 0.2);
     border: none;
@@ -849,6 +1135,21 @@ footer {
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
+/* Share button in light mode (Simplified) */
+body.light-mode .share-link-button {
+    background: rgba(135, 206, 250, 0.1);
+    border: 1px solid rgba(135, 206, 250, 0.3);
+    color: #5c87a6;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+/* Share button in dark mode (Simplified) */
+body.dark-mode .share-link-button {
+    background: rgba(135, 206, 250, 0.2);
+    border: none;
+    color: #87ceeb;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
 .favorites-button {
     background: rgba(255, 99, 71, 0.2);
     border: none;
@@ -859,6 +1160,21 @@ footer {
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
+/* Favorites button in light mode (Simplified) */
+body.light-mode .favorites-button {
+    background: rgba(255, 99, 71, 0.1);
+    border: 1px solid rgba(255, 99, 71, 0.3);
+    color: #cc503a;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+/* Favorites button in dark mode (Simplified) */
+body.dark-mode .favorites-button {
+    background: rgba(255, 99, 71, 0.2);
+    border: none;
+    color: #ff6347;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
 .grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -892,9 +1208,30 @@ footer {
     aspect-ratio: 1 / 1;
     margin: 0 auto;
 }
+
+/* Frosted glass effect for grid items in simplified styles */
+.grid-item {
+    border: 1px solid rgba(255, 255, 255, 0.5); /* Frosted edge for all modes */
+}
+
+/* Light mode specific adjustments for grid items in simplified styles */
+body.light-mode .grid-item {
+    background: rgba(255, 255, 255, 0.3); /* More transparent white */
+    border: 1px solid rgba(255, 255, 255, 0.5); /* Frosted edge */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+
+/* Dark mode specific adjustments for grid items in simplified styles */
+body.dark-mode .grid-item {
+    background: rgba(0, 0, 0, 0.7); /* Darker background in dark mode */
+    border: 1px solid rgba(0, 0, 0, 0.5); /* Darker frosted edge */
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1); /* Lighter shadow for contrast */
+    color: #fff;
+}
+
 .grid-item.hidden {
-    opacity: 0;
-    transform: scale(0.8);
+    display: none; /* Changed from opacity and transform to display: none */
     pointer-events: none;
 }
 .grid-item:hover {
@@ -903,18 +1240,30 @@ footer {
 }
 .grid-item h2 {
     font-family: 'Poppins', sans-serif;
-    font-weight: 900;<previous_generation>```
+    font-weight: 900;
     font-size: 1.2rem;
     margin-bottom: 10px;
     color: #fff;
     text-align: center;
 }
+
+/* Adjust text color for light mode in simplified styles */
+body.light-mode .grid-item h2 {
+    color: #333; /* Darker text for light mode */
+}
+
 .grid-item p {
     font-family: 'Poppins', sans-serif;
     font-size: 0.8rem;
     color: #fff;
     text-align: center;
 }
+
+/* Adjust paragraph text color for light mode in simplified styles */
+body.light-mode .grid-item p {
+    color: #555; /* Darker text for light mode */
+}
+
 .favorite-btn {
     position: absolute;
     top: 10px;
@@ -932,14 +1281,32 @@ footer {
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
+
+/* Adjust favorite button in light mode in simplified styles */
+body.light-mode .favorite-btn {
+    background: rgba(0, 0, 0, 0.1); /* Darker background in light mode */
+    color: #333; /* Darker icon color */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
 .favorite-btn:hover {
     transform: scale(1.1);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
 }
 .favorite-btn.active {
     background: rgba(255, 0, 0, 0.3);
-    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
 }
+/* Glowing Heart in Light Mode (Simplified) */
+body.light-mode .favorite-btn.active {
+    box-shadow: 0 0 15px rgba(255, 100, 100, 0.8), 0 0 25px rgba(255, 0, 0, 0.5); /* Lighter, more visible glow */
+    color: #ff0000;
+}
+/* Glowing Heart in Dark Mode (Simplified) */
+body.dark-mode .favorite-btn.active {
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+    color: #ff0000;
+}
+
 .added-to-favorites-notification {
     position: fixed;
     top: 50%;
@@ -956,6 +1323,19 @@ footer {
     transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
     transform: translateY(-20px);
 }
+/* Notification in Light Mode (Simplified) */
+body.light-mode .added-to-favorites-notification {
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: #333;
+}
+/* Notification in Dark Mode (Simplified) */
+body.dark-mode .added-to-favorites-notification {
+    background: rgba(0, 0, 0, 0.7);
+    border: none;
+    color: #fff;
+}
+
 .added-to-favorites-notification.show {
     opacity: 1;
     visibility: visible;
@@ -990,6 +1370,21 @@ footer {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     text-align: left;
     color: #8a2be2;
+}
+
+/* Adjust favorites title in light mode in simplified styles */
+body.light-mode .favorites-title {
+    color: #6a0dad; /* Darker purple for light mode */
+}
+
+body.light-mode .favorites-title.minimized {
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+/* Favorites title in Dark Mode (Simplified) */
+body.dark-mode .favorites-title.minimized {
+    background: rgba(0, 0, 0, 0.7);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 </style>
 <style id="loading-styles">
@@ -1035,7 +1430,6 @@ footer {
 </style>
 </head>
 <body>
-<!-- Loading Screen -->
 <div class="loading">
     <div class="loading-text">
         <span>L</span>
@@ -1047,7 +1441,6 @@ footer {
         <span>G</span>
     </div>
 </div>
-<!-- Header -->
 <header class="dodch-header">
     <button class="dark-mode-toggle" onclick="toggleDarkMode()">☀️</button>
     <h1>Dodch Stories</h1>
@@ -1056,22 +1449,18 @@ footer {
         <button class="search-button" onclick="toggleSearch()">🔍</button>
     </div>
 </header>
-<!-- Favorites Section Title -->
 <h1 class="favorites-title">Favorites Section</h1>
-<!-- Grid of Stories -->
 <div class="grid-container" id="storyGrid"></div>
-<!-- Footer -->
 <footer>
     <button class="share-link-button" onclick="shareContent()">🔗</button>
     <button class="favorites-button" onclick="toggleFavorites()">❤️</button>
     <span>Made by Adam Dodch</span>
 </footer>
-<!-- Scripts -->
 <script>
 // Function to detect low-end Android devices
 function isLowEndAndroid() {
     const userAgent = navigator.userAgent.toLowerCase();
-    return /android/i.test(userAgent) && !/chrome|firefox|opera|safari/i.test(userAgent);
+    return /android/i.test(userAgent) && !/chrome|firefox|opera|safari|samsungbrowser/i.test(userAgent);
 }
 
 // Function to detect Android devices
@@ -1095,7 +1484,7 @@ function handleOrientationChange() {
 
             // Fix viewport and layout issues
             document.querySelector('meta[name="viewport"]').setAttribute(
-                'content', 
+                'content',
                 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'
             );
 
@@ -1112,7 +1501,7 @@ function handleOrientationChange() {
     } else {
         document.body.classList.remove('android-landscape');
         document.querySelector('meta[name="viewport"]').setAttribute(
-            'content', 
+            'content',
             'width=device-width, initial-scale=1.0'
         );
         document.documentElement.style.height = '';
@@ -1135,10 +1524,10 @@ async function loadStories() {
 async function generateStoryGrid() {
     const storyGrid = document.getElementById("storyGrid");
     const stories = await loadStories();
-    
+
     // Clear the grid first to prevent duplicates
     storyGrid.innerHTML = '';
-    
+
     // Create and append all items with staggered animation
     stories.forEach((story, index) => {
         const gridItem = document.createElement("div");
@@ -1152,10 +1541,10 @@ async function generateStoryGrid() {
             <button class="favorite-btn" onclick="toggleFavorite(event, ${index})">❤️</button>
             <div class="added-to-favorites-notification">Added to Favorites</div>
         `;
-        
+
         // Add to DOM
         storyGrid.appendChild(gridItem);
-        
+
         // Force a reflow/repaint to ensure animations work
         void gridItem.offsetWidth;
     });
@@ -1179,12 +1568,21 @@ window.onload = async () => {
 
         // Generate the story grid immediately
         await generateStoryGrid();
-        
+
         // Hide the loading screen
         document.querySelector(".loading").style.display = "none";
-        
+
         // Check orientation again after grid is loaded
         handleOrientationChange();
+
+        // Initialize dark mode based on user preference or default
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            toggleDarkMode(false); // Call without animation
+        } else {
+            document.body.classList.add('light-mode'); // Set initial light mode class
+            isDarkMode = false; // Ensure this is set correctly
+        }
+
     } catch (error) {
         console.error("Error during initialization:", error);
         // Ensure loading screen is hidden even if there's an error
@@ -1262,29 +1660,35 @@ function handleScroll() {
 }
 
 // Dark Mode Toggle
-let isDarkMode = false;
-function toggleDarkMode() {
+let isDarkMode = false; // Initialize based on actual state, will be updated by localStorage
+function toggleDarkMode(animate = true) {
     const body = document.body;
-    const header = document.querySelector("header");
-    const footer = document.querySelector("footer");
-    const gridItems = document.querySelectorAll(".grid-item");
     const darkModeToggle = document.querySelector(".dark-mode-toggle");
-    darkModeToggle.style.transform = "rotate(180deg)";
+
+    const transitionDuration = animate ? 300 : 0; // Set transition duration
+
+    if (animate) {
+        darkModeToggle.style.transform = "rotate(180deg)";
+    }
+
     setTimeout(() => {
-        isDarkMode = !isDarkMode;
+        isDarkMode = !isDarkMode; // Toggle the state
         darkModeToggle.textContent = isDarkMode ? "🌙" : "☀️";
-        darkModeToggle.style.transform = "rotate(0deg)";
-        body.style.backgroundColor = isDarkMode ? "#121212" : "";
-        body.style.color = isDarkMode ? "#fff" : "";
-        header.style.background = isDarkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.7)";
-        footer.style.background = isDarkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.7)";
-        gridItems.forEach(item => {
-            item.style.background = isDarkMode ? "rgba(0, 0, 0, 0.7)" : "rgba(255, 255, 255, 0.2)";
-            item.style.color = isDarkMode ? "#fff" : "#000";
-            item.querySelector("h2").style.color = isDarkMode ? "#fff" : "#000";
-            item.querySelector("p").style.color = isDarkMode ? "#ccc" : "#000"; // Ensure contrast
-        });
-    }, 300); // Added a small delay for better animation visibility.
+        if (animate) {
+            darkModeToggle.style.transform = "rotate(0deg)";
+        }
+
+        // Toggle body class for light/dark mode
+        if (isDarkMode) {
+            body.classList.remove("light-mode");
+            body.classList.add("dark-mode");
+            localStorage.setItem('darkMode', 'enabled');
+        } else {
+            body.classList.remove("dark-mode");
+            body.classList.add("light-mode");
+            localStorage.setItem('darkMode', 'disabled');
+        }
+    }, transitionDuration);
 }
 
 // Share Content Using Web Share API
@@ -1312,12 +1716,12 @@ function toggleSearch() {
 
     searchContainer.classList.toggle('active');
     body.classList.toggle('search-active');
-    
+
     // Enable scrolling in search mode
     if (searchContainer.classList.contains('active')) {
         gridContainer.style.overflow = 'auto';
         gridContainer.style.pointerEvents = 'auto';
-        
+
         // Hide header elements with animation
         headerTitle.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
         headerTitle.style.opacity = '0';
@@ -1330,16 +1734,13 @@ function toggleSearch() {
         // Add text appearance animation for search input
         const searchInput = document.querySelector('.search-input');
         searchInput.style.transform = 'translateX(20px)';
-        
+
         // Focus the input after animation completes
         setTimeout(() => {
             searchInput.style.transition = 'all 0.3s ease-out';
             searchInput.style.transform = 'translateX(0)';
             searchInput.focus();
         }, 300);
-
-        // Add click event to overlay to exit search
-        document.addEventListener('click', closeSearchOnClickOutside);
     } else {
         // Show header elements with animation
         headerTitle.style.opacity = '1';
@@ -1352,28 +1753,11 @@ function toggleSearch() {
         document.querySelector('.search-input').value = '';
         // Reset search results
         resetSearchResults();
-        
-        // Remove click event
-        document.removeEventListener('click', closeSearchOnClickOutside);
-        
+
         // Reset grid container scrolling settings
         const gridContainer = document.getElementById('storyGrid');
         gridContainer.style.overflow = '';
         gridContainer.style.pointerEvents = '';
-    }
-}
-
-// Close search when clicking outside
-function closeSearchOnClickOutside(event) {
-    const searchContainer = document.querySelector('.search-container');
-    const searchInput = document.querySelector('.search-input');
-    const searchButton = document.querySelector('.search-button');
-    
-    // If click is outside search elements
-    if (!searchContainer.contains(event.target) && 
-        event.target !== searchInput && 
-        event.target !== searchButton) {
-        toggleSearch();
     }
 }
 
