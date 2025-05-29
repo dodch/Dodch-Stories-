@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1724,11 +1723,15 @@ window.onload = async () => {
         window.addEventListener('resize', handleOrientationChange);
 
         // Initialize dark mode based on user preference or default
-        if (localStorage.getItem('darkMode') === 'enabled') {
-            toggleDarkMode(false); // Call without animation
+        const storedDarkMode = localStorage.getItem('darkMode');
+        if (storedDarkMode === 'enabled') {
+            document.body.classList.add('dark-mode');
+            isDarkMode = true;
+            document.querySelector('.dark-mode-toggle').textContent = "🌙";
         } else {
-            document.body.classList.add('light-mode'); // Set initial light mode class
-            isDarkMode = false; // Ensure this is set correctly
+            document.body.classList.add('light-mode');
+            isDarkMode = false;
+            document.querySelector('.dark-mode-toggle').textContent = "☀️";
         }
 
         const storedFavoritesActive = localStorage.getItem('favoritesActive');
