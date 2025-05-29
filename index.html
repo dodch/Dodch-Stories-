@@ -537,7 +537,7 @@ body.dark-mode .favorites-button {
 /* Media query for landscape mode on smaller devices */
 @media (max-width: 767px) and (orientation: landscape) {
     .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Increased minmax for roughly two items */
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); /* Adjusted minmax for potentially more columns */
         gap: 12px; /* Reduced gap for landscape on small devices */
         padding: 10px; /* Reduced overall padding */
         padding-top: 70px; /* Adjusted for header */
@@ -554,11 +554,11 @@ body.dark-mode .favorites-button {
     }
 
     .grid-item {
-        min-height: 120px; /* Set minimum height */
+        min-height: 160px; /* Attempting to match vertical approximate height */
         height: auto; /* Let height adjust to content */
-        max-height: 200px; /* **INCREASED MAX-HEIGHT for better text wrapping** */
+        max-height: 220px; /* Slightly increased max-height */
         width: auto; /* Changed from 100% */
-        max-width: 150px; /* Limit maximum width */
+        max-width: 160px; /* Limit maximum width to aim for similar size */
         aspect-ratio: auto; /* Let aspect ratio adjust naturally */
         padding: 10px; /* Reduce padding */
         margin-bottom: 10px; /* Add bottom margin for spacing */
@@ -568,16 +568,24 @@ body.dark-mode .favorites-button {
 /* Media query for larger screens */
 @media (min-width: 768px) and (orientation: landscape) {
     .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Adjusted size */
-        gap: 25px; /* Appropriate gap for medium screens */
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjusted size */
+        gap: 20px; /* Appropriate gap for medium screens */
+    }
+    .grid-item {
+        max-width: 200px;
+        min-height: 200px;
     }
 }
 
 /* Media query for very large screens */
 @media (min-width: 1024px) and (orientation: landscape) {
     .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Larger screens get larger items */
-        gap: 35px; /* More space between items */
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Larger screens get larger items */
+        gap: 25px; /* More space between items */
+    }
+    .grid-item {
+        max-width: 220px;
+        min-height: 220px;
     }
 }
 
@@ -600,7 +608,7 @@ body.dark-mode .favorites-button {
     position: relative;
     /* REMOVED overflow: hidden; from .grid-item to prevent clipping */
     width: 100%; /* Make width responsive */
-    max-width: 250px;
+    max-width: 250px; /* Default max-width */
     aspect-ratio: 1 / 1; /* Maintain square aspect ratio */
     height: auto; /* Let height be determined by aspect ratio */
     margin: 0 auto;
@@ -831,7 +839,7 @@ body.android-landscape .grid-container {
     height: auto !important;
     max-height: none !important;
     display: grid !important; /* Ensure it's still a grid */
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important; /* Force the grid layout with a minimum width - adjust 200px as needed */
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important; /* Force the grid layout with a minimum width - adjust 160px as needed */
     gap: 12px !important; /* Force the gap */
 }
 
@@ -839,8 +847,9 @@ body.android-landscape .grid-item {
     transform: none !important;
     transition: background-color 0.3s ease !important;
     width: auto !important; /* Override any other width settings */
-    max-width: 200px !important; /* Set a maximum width - should match or be similar to the minmax in grid-template-columns */
+    max-width: 160px !important; /* Set a maximum width - should match or be similar to the minmax in grid-template-columns */
     height: auto !important; /* Let height adjust to content */
+    min-height: 160px !important; /* Attempting to match vertical approximate height */
 }
 
 body.android-landscape .grid-item:hover {
