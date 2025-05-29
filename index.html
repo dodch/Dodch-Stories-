@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -839,17 +840,17 @@ body.android-landscape .grid-container {
     height: auto !important;
     max-height: none !important;
     display: grid !important; /* Ensure it's still a grid */
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important; /* Force the grid layout with a minimum width - adjust 200px as needed */
-    gap: 20px !important; /* Force the gap */
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important; /* Force the grid layout with a minimum width - adjust 160px as needed */
+    gap: 12px !important; /* Force the gap */
 }
 
 body.android-landscape .grid-item {
     transform: none !important;
     transition: background-color 0.3s ease !important;
     width: auto !important; /* Override any other width settings */
-    max-width: 250px !important; /* Increased max-width for potentially wider items */
+    max-width: 160px !important; /* Set a maximum width - should match or be similar to the minmax in grid-template-columns */
     height: auto !important; /* Let height adjust to content */
-    min-height: 180px !important; /* Increased min-height */
+    min-height: 160px !important; /* Attempting to match vertical approximate height */
 }
 
 body.android-landscape .grid-item:hover {
