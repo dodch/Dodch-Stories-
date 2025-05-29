@@ -652,14 +652,11 @@ body.dark-mode .grid-item {
                 0 18px 35px rgba(0, 0, 0, 0.5); /* Larger, darker shadow for lift */
     filter: brightness(1.2) saturate(1.1); /* Make it pop and glow more */
 }
-/* Fade-In Animation for Grid Items */
+/* Fade-In and Zoom-In Animation for Grid Items */
 @keyframes fadeInUp {
     0% {
         opacity: 0;
-        transform: scale(0.9) translateY(40px);
-    }
-    60% {
-        opacity: 1;
+        transform: scale(0.8) translateY(40px);
     }
     100% {
         opacity: 1;
@@ -1693,9 +1690,7 @@ async function generateStoryGrid() {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('is-in-view');
-            } else {
-                // When the item scrolls out of view, remove the class to allow re-animation
-                entry.target.classList.remove('is-in-view');
+                observer.unobserve(entry.target); // Stop observing once in view if you only want the animation to happen once
             }
         });
     }, observerOptions);
@@ -2040,3 +2035,4 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
+
