@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -538,7 +537,7 @@ body.dark-mode .favorites-button {
 /* Media query for landscape mode on smaller devices */
 @media (max-width: 767px) and (orientation: landscape) {
     .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Smaller size for landscape */
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Increased minmax for roughly two items */
         gap: 12px; /* Reduced gap for landscape on small devices */
         padding: 10px; /* Reduced overall padding */
         padding-top: 70px; /* Adjusted for header */
@@ -558,7 +557,7 @@ body.dark-mode .favorites-button {
         min-height: 120px; /* Set minimum height */
         height: auto; /* Let height adjust to content */
         max-height: 200px; /* **INCREASED MAX-HEIGHT for better text wrapping** */
-        width: 100%; /* Ensure width is responsive */
+        width: auto; /* Changed from 100% */
         max-width: 150px; /* Limit maximum width */
         aspect-ratio: auto; /* Let aspect ratio adjust naturally */
         padding: 10px; /* Reduce padding */
@@ -567,7 +566,7 @@ body.dark-mode .favorites-button {
 }
 
 /* Media query for larger screens */
-@media (min-width: 768px) {
+@media (min-width: 768px) and (orientation: landscape) {
     .grid-container {
         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Adjusted size */
         gap: 25px; /* Appropriate gap for medium screens */
@@ -575,7 +574,7 @@ body.dark-mode .favorites-button {
 }
 
 /* Media query for very large screens */
-@media (min-width: 1024px) {
+@media (min-width: 1024px) and (orientation: landscape) {
     .grid-container {
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Larger screens get larger items */
         gap: 35px; /* More space between items */
