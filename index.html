@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -84,20 +83,6 @@ body {
 }
 /* --- END NEW --- */
 
-/* Landscape mode specific adjustments */
-@media (orientation: landscape) {
-    body {
-        overflow-y: auto; /* Allow vertical scrolling in landscape */
-    }
-}
-
-/* Small screen landscape specific fixes */
-@media (orientation: landscape) and (max-height: 500px) {
-    body {
-        justify-content: flex-start;
-        padding-top: 60px; /* Add padding to account for fixed header */
-    }
-}
 /* Header Styling */
 header {
     position: fixed;
@@ -281,33 +266,6 @@ header:hover {
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
 }
 
-/* Landscape mode adjustments for header */
-@media (orientation: landscape) and (max-height: 500px) {
-    header {
-        top: 10px;
-        padding: 6px 12px;
-        max-width: 220px;
-    }
-
-    header h1 {
-        font-size: 0.9rem;
-    }
-
-    .search-container {
-        right: -40px;
-    }
-
-    .search-button {
-        width: 32px;
-        height: 32px;
-        font-size: 1rem;
-    }
-
-    .search-container.active .search-input {
-        width: 120px;
-        padding: 6px 12px;
-    }
-}
 /* Dark Mode Toggle */
 .dark-mode-toggle {
     background: none;
@@ -421,21 +379,6 @@ footer:hover {
     box-shadow: 0 -6px 15px rgba(0, 0, 0, 0.4);
 }
 
-/* Landscape mode adjustments for footer */
-@media (orientation: landscape) and (max-height: 500px) {
-    footer {
-        bottom: 10px;
-        padding: 6px 15px;
-        width: 70%;
-        font-size: 0.9em;
-    }
-
-    .share-link-button,
-    .favorites-button {
-        padding: 8px;
-        font-size: 1.2rem;
-    }
-}
 /* Share Link Button */
 .share-link-button {
     background: rgba(135, 206, 250, 0.2);
@@ -517,7 +460,7 @@ body.dark-mode .favorites-button {
 /* Grid Container Styling */
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Smaller minimum size for better fit */
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Base number of columns for smaller screens */
     gap: 20px; /* Space between items */
     justify-content: center;
     align-items: center;
@@ -535,58 +478,28 @@ body.dark-mode .favorites-button {
     transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smooth cubic transition */
 }
 
-/* Media query for landscape mode on smaller devices */
-@media (max-width: 767px) and (orientation: landscape) {
+/* New Media Queries for Grid Responsiveness */
+@media (min-width: 576px) { /* Small devices (landscape phones, 576px and up) */
     .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); /* Adjusted minmax for potentially more columns */
-        gap: 12px; /* Reduced gap for landscape on small devices */
-        padding: 10px; /* Reduced overall padding */
-        padding-top: 70px; /* Adjusted for header */
-        padding-bottom: 70px; /* Adjusted for footer */
-        height: auto; /* Allow container to expand as needed */
-        max-height: none; /* Remove max-height constraint */
-    }
-
-    body {
-        overflow-y: auto; /* Ensure body can scroll in landscape */
-        min-height: auto; /* Allow body to size naturally */
-        justify-content: flex-start; /* Align content to the top */
-        padding-top: 60px; /* Add padding for fixed header */
-    }
-
-    .grid-item {
-        min-height: 160px; /* Attempting to match vertical approximate height */
-        height: auto; /* Let height adjust to content */
-        max-height: 220px; /* Slightly increased max-height */
-        width: auto; /* Changed from 100% */
-        max-width: 160px; /* Limit maximum width to aim for similar size */
-        aspect-ratio: auto; /* Let aspect ratio adjust naturally */
-        padding: 10px; /* Reduce padding */
-        margin-bottom: 10px; /* Add bottom margin for spacing */
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjust min width for larger items */
     }
 }
 
-/* Media query for larger screens */
-@media (min-width: 768px) and (orientation: landscape) {
+@media (min-width: 768px) { /* Medium devices (tablets, 768px and up) */
     .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjusted size */
-        gap: 20px; /* Appropriate gap for medium screens */
-    }
-    .grid-item {
-        max-width: 200px;
-        min-height: 200px;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* More width for tablets */
     }
 }
 
-/* Media query for very large screens */
-@media (min-width: 1024px) and (orientation: landscape) {
+@media (min-width: 992px) { /* Large devices (desktops, 992px and up) */
     .grid-container {
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Larger screens get larger items */
-        gap: 25px; /* More space between items */
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Wider columns on desktops */
     }
-    .grid-item {
-        max-width: 220px;
-        min-height: 220px;
+}
+
+@media (min-width: 1200px) { /* Extra large devices (large desktops, 1200px and up) */
+    .grid-container {
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Even wider for very large screens */
     }
 }
 
@@ -609,7 +522,7 @@ body.dark-mode .favorites-button {
     position: relative;
     /* REMOVED overflow: hidden; from .grid-item to prevent clipping */
     width: 100%; /* Make width responsive */
-    max-width: 250px; /* Default max-width */
+    max-width: 100%; /* Ensure it doesn't exceed container width */
     aspect-ratio: 1 / 1; /* Maintain square aspect ratio */
     height: auto; /* Let height be determined by aspect ratio */
     margin: 0 auto;
@@ -785,43 +698,6 @@ body.light-mode .grid-item p {
 .grid-item:hover p {
     opacity: 1;
     transform: translateY(2px);
-}
-
-/* Better text handling for landscape mode on small screens */
-@media (orientation: landscape) and (max-height: 500px) {
-    .grid-item h2 {
-        font-size: 0.9rem;
-        margin-bottom: 4px;
-        /* Removed line clamp, as it was causing clipping and not wrapping */
-        display: block; /* Ensure it behaves as a block for wrapping */
-        text-align: center;
-    }
-
-    .grid-item p {
-        font-size: 0.7rem;
-        margin-bottom: 0;
-        /* Removed line clamp, as it was causing clipping and not wrapping */
-        display: block; /* Ensure it behaves as a block for wrapping */
-        text-align: center;
-    }
-
-    .grid-item {
-        padding: 10px;
-        height: auto; /* Allow height to adjust to content */
-        min-height: 120px;
-        max-height: none; /* **REMOVED MAX-HEIGHT to allow content to expand** */
-    }
-
-    /* Adjust footer positioning */
-    footer {
-        bottom: 5px;
-        padding: 5px 15px;
-    }
-
-    /* Adjust header sizing */
-    header {
-        padding: 5px 12px;
-    }
 }
 
 /* Android-specific landscape fixes */
@@ -1630,16 +1506,23 @@ function wrapTitleWithSpans(text) {
 // Function to load stories from JSON
 async function loadStories() {
     try {
+        console.log("loadStories() function has been called."); // Added log
         const response = await fetch('stories.json');
-        return await response.json();
+        if (!response.ok) {
+            console.error('Error loading stories.json:', response.status, response.statusText);
+            return [];
+        }
+        const data = await response.json();
+        return data;
     } catch (error) {
-        console.error('Error loading stories:', error);
+        console.error('Error loading and parsing stories.json:', error);
         return [];
     }
 }
 
 // Function to generate grid items
 async function generateStoryGrid() {
+    console.log("generateStoryGrid() function has been called."); // Added log
     const storyGrid = document.getElementById("storyGrid");
     const stories = await loadStories();
     const storedFavorites = localStorage.getItem('favorites');
@@ -1710,6 +1593,7 @@ async function generateStoryGrid() {
 // Call the function to handle the page load
 window.onload = async () => {
     try {
+        console.log("window.onload event fired."); // Added log
         // Detect low-end Android devices
         if (isLowEndAndroid()) {
             document.getElementById("base-styles").disabled = true;
@@ -1763,6 +1647,7 @@ window.onload = async () => {
 
         // Hide the loading screen
         document.querySelector(".loading").style.display = "none";
+        console.log("Loading screen should be hidden."); // Added log
 
         // Check orientation again after grid is loaded
         handleOrientationChange();
@@ -1772,6 +1657,7 @@ window.onload = async () => {
         console.error("Error during initialization:", error);
         // Ensure loading screen is hidden even if there's an error
         document.querySelector(".loading").style.display = "none";
+        console.log("Error during initialization, loading screen hidden."); // Added log
     }
 };
 
