@@ -1,8 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="google-site-verification" content="WPsemouAlOQyJaztzjjtf6afzzagtg6WWPZh7gd3T8A" />
+  <meta name="google-site-verification" content="WPsemouAlOQyJaztzjjtf6afzzagtg6WWPZh7gd3T8A">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dodch Stories | Original Fiction and Creative Writing</title>
   <meta name="description" content="Dodch Stories is a collection of original stories written with emotion, creativity, and depth. Explore fiction that connects to the heart and imagination.">
@@ -10,6 +11,8 @@
   <style id="base-styles">
 /* Loading Screen Styles */
 @import url(https://fonts.googleapis.com/css?family=Quattrocento+Sans);
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap'); /* Added Poppins */
+
 .loading {
     position: fixed;
     top: 0;
@@ -488,7 +491,7 @@ body.light-mode .favorites-button {
     backdrop-filter: blur(15px);
     border: 1px solid rgba(255, 99, 71, 0.3);
     color: #cc503a;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 44px 10px rgba(0, 0, 0, 0.1);
 }
 /* Favorites button in dark mode */
 body.dark-mode .favorites-button {
@@ -554,7 +557,7 @@ body.dark-mode .favorites-button {
     .grid-item {
         min-height: 120px; /* Set minimum height */
         height: auto; /* Let height adjust to content */
-        max-height: 150px; /* Limit maximum height */
+        max-height: 200px; /* **INCREASED MAX-HEIGHT for better text wrapping** */
         width: 100%; /* Ensure width is responsive */
         max-width: 150px; /* Limit maximum width */
         aspect-ratio: auto; /* Let aspect ratio adjust naturally */
@@ -596,7 +599,7 @@ body.dark-mode .favorites-button {
                 border 0.8s ease; /* Add transition for border */
     cursor: pointer;
     position: relative;
-    overflow: hidden;
+    /* REMOVED overflow: hidden; from .grid-item to prevent clipping */
     width: 100%; /* Make width responsive */
     max-width: 250px;
     aspect-ratio: 1 / 1; /* Maintain square aspect ratio */
@@ -703,34 +706,11 @@ body.dark-mode .grid-item {
     background-color: rgba(255, 255, 0, 0.2);
     border-radius: 3px;
     padding: 0 2px;
-    color: #fff;
+    color: #fff; /* Keep text color for highlight visible */
     font-weight: bold;
-    display: inline-block;
-    position: relative;
-    border-bottom: 1px solid rgba(255, 255, 0, 0.5);
 }
 
-.highlight-text::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: rgba(255, 255, 0, 0.7);
-    animation: highlight-line 1.5s infinite alternate;
-}
-
-@keyframes highlight-line {
-    0% {
-        opacity: 0.5;
-        transform: scaleX(0.8);
-    }
-    100% {
-        opacity: 1;
-        transform: scaleX(1);
-    }
-}
+/* Ensure no highlighting for text in title for cross-fade */
 .grid-item h2 {
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
@@ -738,53 +718,35 @@ body.dark-mode .grid-item {
     margin-bottom: 10px;
     color: #fff;
     text-align: center;
-    text-shadow:
-        0 0 10px rgba(255, 255, 255, 0.8),
-        0 0 20px rgba(255, 255, 255, 0.8),
-        0 0 30px rgba(255, 255, 255, 0.8);
-    transition: color 0.5s ease, text-shadow 0.5s ease, transform 0.3s ease;
+    /* Remove text-shadow and related animations */
+    text-shadow: none;
+    animation: none;
+    transition: color 0.5s ease, transform 0.3s ease;
     position: relative;
-    overflow: hidden;
+    /* CHANGED: Removed overflow hidden from here too, and added word-break/overflow-wrap */
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    word-break: break-word; /* Ensure words break if too long */
+    overflow-wrap: break-word; /* Modern alternative */
+    white-space: normal; /* Allow text to wrap normally */
 }
 
 /* Adjust text color for light mode */
 body.light-mode .grid-item h2 {
-    color: #333; /* Darker text for light mode */
-    text-shadow:
-        0 0 5px rgba(0, 0, 0, 0.1),
-        0 0 10px rgba(0, 0, 0, 0.1),
-        0 0 15px rgba(0, 0, 0, 0.1);
+    color: #333;
+    text-shadow: none;
 }
 
 .grid-item:hover h2 {
     transform: translateY(-2px);
-    text-shadow: 0 0 15px rgba(255, 255, 255, 1), 0 0 25px rgba(255, 255, 255, 0.8);
+    /* Remove hover text-shadow */
+    text-shadow: none;
 }
 
-/* Adjust hover text shadow for light mode */
-body.light-mode .grid-item:hover h2 {
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.2), 0 0 15px rgba(0, 0, 0, 0.15);
-}
-
+/* Remove ::after pseudo-element for underline effect */
 .grid-item h2::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-    transition: width 0.5s ease, left 0.5s ease;
-}
-
-/* Adjust underline for light mode */
-body.light-mode .grid-item h2::after {
-    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.3), transparent);
-}
-
-.grid-item:hover h2::after {
-    width: 80%;
-    left: 10%;
+    content: none;
 }
 
 .grid-item p {
@@ -792,8 +754,19 @@ body.light-mode .grid-item h2::after {
     font-size: 0.8rem;
     color: #fff;
     text-align: center;
-    transition: color 0.5s ease, opacity 0.5s ease, transform 0.3s ease;
+    transition: color 0.5s ease, opacity 0.5s ease, transform 0.3s ease, filter 1s ease-in-out; /* Added filter transition */
     opacity: 0.8;
+    display: flex; /* Use flex to control individual spans */
+    justify-content: center;
+    flex-wrap: wrap; /* Allow words to wrap */
+    word-break: break-word; /* Ensure words break if too long */
+    overflow-wrap: break-word; /* Modern alternative */
+    white-space: normal; /* Allow text to wrap normally */
+    filter: opacity(0); /* Initially hidden */
+}
+
+.grid-item.is-in-view p {
+    filter: opacity(1); /* Fade in when in view */
 }
 
 /* Adjust paragraph text color for light mode */
@@ -811,23 +784,24 @@ body.light-mode .grid-item p {
     .grid-item h2 {
         font-size: 0.9rem;
         margin-bottom: 4px;
+        /* Removed line clamp, as it was causing clipping and not wrapping */
+        display: block; /* Ensure it behaves as a block for wrapping */
+        text-align: center;
     }
 
     .grid-item p {
         font-size: 0.7rem;
         margin-bottom: 0;
-        /* Use line clamp to prevent text overflow */
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
+        /* Removed line clamp, as it was causing clipping and not wrapping */
+        display: block; /* Ensure it behaves as a block for wrapping */
+        text-align: center;
     }
 
     .grid-item {
         padding: 10px;
-        height: auto;
+        height: auto; /* Allow height to adjust to content */
         min-height: 120px;
-        max-height: 150px;
+        max-height: none; /* **REMOVED MAX-HEIGHT to allow content to expand** */
     }
 
     /* Adjust footer positioning */
@@ -1026,6 +1000,110 @@ body.dark-mode .favorites-title.minimized {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
+/* --- NEW: Letter-by-letter animation for grid item titles --- */
+.grid-item h2 {
+    display: flex; /* Use flex to allow spacing between words */
+    justify-content: center;
+    flex-wrap: wrap;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #fff;
+    text-shadow: none;
+    animation: none;
+    transition: color 0.5s ease, transform 0.3s ease;
+    position: relative;
+}
+
+.grid-item h2 .word-span {
+    display: inline-flex; /* Make each word a flex container */
+    margin-right: 0.2em; /* Add some space between words */
+}
+
+.grid-item h2 .word-span:last-child {
+    margin-right: 0; /* Remove margin from the last word */
+}
+
+.grid-item h2 .animated-text-span {
+    display: inline-block;
+    opacity: 0;
+    filter: blur(1rem);
+    transform: translate3d(0, 3rem, 0) rotate3d(0.25, -1, 0, 66.6deg);
+    animation: none; /* Ensure no animation by default */
+    will-change: opacity, filter, transform; /* Optimize for animation */
+}
+
+.grid-item.is-in-view h2 .word-span .animated-text-span {
+    animation-name: cross-fade-blur;
+    animation-duration: 4s;
+    animation-iteration-count: 1; /* Play once */
+    animation-fill-mode: forwards; /* Keep the end state */
+}
+
+/* Animation delays for individual letters within words */
+.grid-item.is-in-view h2 .word-span:nth-child(1) .animated-text-span:nth-child(1) { animation-delay: 0.04s; }
+.grid-item.is-in-view h2 .word-span:nth-child(1) .animated-text-span:nth-child(2) { animation-delay: 0.08s; }
+.grid-item.is-in-view h2 .word-span:nth-child(1) .animated-text-span:nth-child(3) { animation-delay: 0.12s; }
+.grid-item.is-in-view h2 .word-span:nth-child(1) .animated-text-span:nth-child(4) { animation-delay: 0.16s; }
+.grid-item.is-in-view h2 .word-span:nth-child(1) .animated-text-span:nth-child(5) { animation-delay: 0.20s; }
+.grid-item.is-in-view h2 .word-span:nth-child(1) .animated-text-span:nth-child(6) { animation-delay: 0.24s; }
+.grid-item.is-in-view h2 .word-span:nth-child(1) .animated-text-span:nth-child(7) { animation-delay: 0.28s; }
+.grid-item.is-in-view h2 .word-span:nth-child(1) .animated-text-span:nth-child(8) { animation-delay: 0.32s; }
+.grid-item.is-in-view h2 .word-span:nth-child(1) .animated-text-span:nth-child(9) { animation-delay: 0.36s; }
+.grid-item.is-in-view h2 .word-span:nth-child(1) .animated-text-span:nth-child(10) { animation-delay: 0.40s; }
+.grid-item.is-in-view h2 .word-span:nth-child(1) .animated-text-span:nth-child(11) { animation-delay: 0.44s; }
+.grid-item.is-in-view h2 .word-span:nth-child(1) .animated-text-span:nth-child(12) { animation-delay: 0.48s; }
+.grid-item.is-in-view h2 .word-span:nth-child(1) .animated-text-span:nth-child(13) { animation-delay: 0.52s; }
+.grid-item.is-in-view h2 .word-span:nth-child(1) .animated-text-span:nth-child(14) { animation-delay: 0.56s; }
+.grid-item.is-in-view h2 .word-span:nth-child(1) .animated-text-span:nth-child(15) { animation-delay: 0.60s; }
+
+/* Add delays for the letters of the second word */
+.grid-item.is-in-view h2 .word-span:nth-child(2) .animated-text-span:nth-child(1) { animation-delay: 0.3s; }
+.grid-item.is-in-view h2 .word-span:nth-child(2) .animated-text-span:nth-child(2) { animation-delay: 0.34s; }
+.grid-item.is-in-view h2 .word-span:nth-child(2) .animated-text-span:nth-child(3) { animation-delay: 0.38s; }
+.grid-item.is-in-view h2 .word-span:nth-child(2) .animated-text-span:nth-child(4) { animation-delay: 0.42s; }
+.grid-item.is-in-view h2 .word-span:nth-child(2) .animated-text-span:nth-child(5) { animation-delay: 0.46s; }
+.grid-item.is-in-view h2 .word-span:nth-child(2) .animated-text-span:nth-child(6) { animation-delay: 0.50s; }
+.grid-item.is-in-view h2 .word-span:nth-child(2) .animated-text-span:nth-child(7) { animation-delay: 0.54s; }
+.grid-item.is-in-view h2 .word-span:nth-child(2) .animated-text-span:nth-child(8) { animation-delay: 0.58s; }
+.grid-item.is-in-view h2 .word-span:nth-child(2) .animated-text-span:nth-child(9) { animation-delay: 0.62s; }
+
+/* Add delays for the letters of the third word */
+.grid-item.is-in-view h2 .word-span:nth-child(3) .animated-text-span:nth-child(1) { animation-delay: 0.6s; }
+.grid-item.is-in-view h2 .word-span:nth-child(3) .animated-text-span:nth-child(2) { animation-delay: 0.64s; }
+.grid-item.is-in-view h2 .word-span:nth-child(3) .animated-text-span:nth-child(3) { animation-delay: 0.68s; }
+.grid-item.is-in-view h2 .word-span:nth-child(3) .animated-text-span:nth-child(4) { animation-delay: 0.72s; }
+.grid-item.is-in-view h2 .word-span:nth-child(3) .animated-text-span:nth-child(5) { animation-delay: 0.76s; }
+.grid-item.is-in-view h2 .word-span:nth-child(3) .animated-text-span:nth-child(6) { animation-delay: 0.80s; }
+.grid-item.is-in-view h2 .word-span:nth-child(3) .animated-text-span:nth-child(7) { animation-delay: 0.84s; }
+
+/* Define the cross-fade-blur keyframes */
+@keyframes cross-fade-blur {
+    0% {
+        opacity: 0;
+        filter: blur(1rem);
+        transform: translate3d(0, 3rem, 0) rotate3d(0.25, -1, 0, 66.6deg);
+    }
+    20%,
+    60% {
+        opacity: 1;
+        filter: blur(0px);
+        transform: translate3d(0, 0, 0);
+    }
+    80%,
+    100% {
+        opacity: 1; /* Stay visible */
+        filter: blur(0px); /* Stay clear */
+        transform: translate3d(0, 0, 0); /* Stay in final position */
+    }
+}
+/* --- END NEW --- */
+
 </style>
 <style id="simplified-styles" disabled>
 /* Simplified Styles for Low-End Android Devices */
@@ -1202,10 +1280,11 @@ body.dark-mode .favorites-button {
     color: #fff;
     cursor: pointer;
     position: relative;
-    overflow: hidden;
+    /* REMOVED overflow: hidden; from .grid-item to prevent clipping */
     max-width: 250px;
-    height: 250px;
-    aspect-ratio: 1 / 1;
+    height: auto; /* Changed to auto to allow content to dictate height */
+    min-height: 200px; /* Added a min-height for consistent sizing */
+    aspect-ratio: auto; /* Let content dictate aspect ratio */
     margin: 0 auto;
 }
 
@@ -1224,9 +1303,9 @@ body.light-mode .grid-item {
 
 /* Dark mode specific adjustments for grid items in simplified styles */
 body.dark-mode .grid-item {
-    background: rgba(0, 0, 0, 0.7); /* Darker background in dark mode */
-    border: 1px solid rgba(0, 0, 0, 0.5); /* Darker frosted edge */
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1); /* Lighter shadow for contrast */
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
     color: #fff;
 }
 
@@ -1245,6 +1324,16 @@ body.dark-mode .grid-item {
     margin-bottom: 10px;
     color: #fff;
     text-align: center;
+    /* Remove text-shadow and related animations in simplified styles */
+    text-shadow: none;
+    animation: none;
+    /* Add flexbox for individual letter spans in simplified styles */
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    word-break: break-word; /* Ensure words break if too long */
+    overflow-wrap: break-word; /* Modern alternative */
+    white-space: normal; /* Allow text to wrap normally */
 }
 
 /* Adjust text color for light mode in simplified styles */
@@ -1257,6 +1346,14 @@ body.light-mode .grid-item h2 {
     font-size: 0.8rem;
     color: #fff;
     text-align: center;
+    /* --- NEW: Add flexbox for individual letter spans in simplified styles --- */
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    /* --- END NEW --- */
+    word-break: break-word; /* Ensure words break if too long */
+    overflow-wrap: break-word; /* Modern alternative */
+    white-space: normal; /* Allow text to wrap normally */
 }
 
 /* Adjust paragraph text color for light mode in simplified styles */
@@ -1509,6 +1606,13 @@ function handleOrientationChange() {
     }
 }
 
+// Function to wrap text with spans for animation (word-based)
+function wrapTitleWithSpans(text) {
+    return text.split(' ').map(word => {
+        return `<span class="word-span">${word.split('').map(char => `<span class="animated-text-span">${char}</span>`).join('')}</span>`;
+    }).join(' '); // Join words with a space
+}
+
 // Function to load stories from JSON
 async function loadStories() {
     try {
@@ -1524,21 +1628,36 @@ async function loadStories() {
 async function generateStoryGrid() {
     const storyGrid = document.getElementById("storyGrid");
     const stories = await loadStories();
+    const storedFavorites = localStorage.getItem('favorites');
+    const favoritesSet = storedFavorites ? new Set(JSON.parse(storedFavorites)) : new Set();
+    favorites.clear();
+    favoritesSet.forEach(fav => favorites.add(parseInt(fav)));
 
     // Clear the grid first to prevent duplicates
     storyGrid.innerHTML = '';
 
-    // Create and append all items with staggered animation
+    // Create and append all items
     stories.forEach((story, index) => {
         const gridItem = document.createElement("div");
         gridItem.classList.add("grid-item");
         gridItem.dataset.index = index;
         gridItem.style.setProperty('--i', index); // Set animation delay variable
         gridItem.onclick = () => window.open(story.file, '_blank');
+
+        // Store original title and description for search functionality
+        gridItem.dataset.originalTitle = story.title;
+        gridItem.dataset.originalDescription = story.description;
+
+        // Wrap title with spans for animation, description remains plain text
+        const animatedTitle = `<h2>${wrapTitleWithSpans(story.title)}</h2>`;
+        const plainDescription = `<p>${story.description}</p>`;
+
+        const isFavorite = favorites.has(index);
+
         gridItem.innerHTML = `
-            <h2>${story.title}</h2>
-            <p>${story.description}</p>
-            <button class="favorite-btn" onclick="toggleFavorite(event, ${index})">❤️</button>
+            ${animatedTitle}
+            ${plainDescription}
+            <button class="favorite-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavorite(event, ${index})">❤️</button>
             <div class="added-to-favorites-notification">Added to Favorites</div>
         `;
 
@@ -1548,6 +1667,30 @@ async function generateStoryGrid() {
         // Force a reflow/repaint to ensure animations work
         void gridItem.offsetWidth;
     });
+
+    // --- NEW: Initialize Intersection Observer for grid items ---
+    const gridItems = document.querySelectorAll('.grid-item');
+    const observerOptions = {
+        root: null, /* Use the viewport as the root */
+        rootMargin: '0px',
+        threshold: 0.1 /* Trigger when at least 10% of the item is visible */
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-in-view');
+            } else {
+                // When the item scrolls out of view, remove the class to allow re-animation
+                entry.target.classList.remove('is-in-view');
+            }
+        });
+    }, observerOptions);
+
+    gridItems.forEach(item => {
+        observer.observe(item);
+    });
+    // --- END NEW ---
 }
 
 // Call the function to handle the page load
@@ -1566,15 +1709,6 @@ window.onload = async () => {
         window.addEventListener('orientationchange', handleOrientationChange);
         window.addEventListener('resize', handleOrientationChange);
 
-        // Generate the story grid immediately
-        await generateStoryGrid();
-
-        // Hide the loading screen
-        document.querySelector(".loading").style.display = "none";
-
-        // Check orientation again after grid is loaded
-        handleOrientationChange();
-
         // Initialize dark mode based on user preference or default
         if (localStorage.getItem('darkMode') === 'enabled') {
             toggleDarkMode(false); // Call without animation
@@ -1582,6 +1716,39 @@ window.onload = async () => {
             document.body.classList.add('light-mode'); // Set initial light mode class
             isDarkMode = false; // Ensure this is set correctly
         }
+
+        const storedFavoritesActive = localStorage.getItem('favoritesActive');
+        isFavoritesSectionActive = storedFavoritesActive === 'true';
+        if (isFavoritesSectionActive) {
+            document.querySelector('.favorites-button').classList.add('active');
+            document.querySelector('.favorites-title').classList.add('show');
+        }
+
+        // Generate the story grid immediately
+        await generateStoryGrid();
+
+        // If favorites were active, filter the grid
+        if (isFavoritesSectionActive) {
+            const gridContainer = document.getElementById("storyGrid");
+            const gridItems = document.querySelectorAll(".grid-item");
+            const topOffset = 120;
+            gridContainer.scrollTo({ top: topOffset, behavior: 'smooth' });
+            gridItems.forEach(item => {
+                const index = parseInt(item.dataset.index);
+                if (!favorites.has(index)) {
+                    item.classList.add("hidden");
+                }
+            });
+            gridContainer.addEventListener("scroll", handleScroll);
+        }
+
+
+        // Hide the loading screen
+        document.querySelector(".loading").style.display = "none";
+
+        // Check orientation again after grid is loaded
+        handleOrientationChange();
+
 
     } catch (error) {
         console.error("Error during initialization:", error);
@@ -1606,10 +1773,11 @@ function toggleFavorite(event, index) {
         notification.classList.add("show");
         setTimeout(() => notification.classList.remove("show"), 2000); // Hide after 2 seconds
     }
+    localStorage.setItem('favorites', JSON.stringify(Array.from(favorites)));
 }
 
 // Toggle Favorites View
-let isFavoritesSectionActive = false;
+let isFavoritesSectionActive = localStorage.getItem('favoritesActive') === 'true' || false;
 function toggleFavorites() {
     const favoritesButton = document.querySelector(".favorites-button");
     const favoritesTitle = document.querySelector(".favorites-title");
@@ -1617,6 +1785,7 @@ function toggleFavorites() {
     const gridItems = document.querySelectorAll(".grid-item");
     const topOffset = 120; // Space for title
     isFavoritesSectionActive = !isFavoritesSectionActive;
+    localStorage.setItem('favoritesActive', isFavoritesSectionActive);
     if (isFavoritesSectionActive) {
         favoritesButton.classList.add("active");
         favoritesTitle.classList.add("show");
@@ -1660,7 +1829,7 @@ function handleScroll() {
 }
 
 // Dark Mode Toggle
-let isDarkMode = false; // Initialize based on actual state, will be updated by localStorage
+let isDarkMode = localStorage.getItem('darkMode') === 'enabled' || false;
 function toggleDarkMode(animate = true) {
     const body = document.body;
     const darkModeToggle = document.querySelector(".dark-mode-toggle");
@@ -1772,39 +1941,47 @@ function searchStories() {
     }
 
     gridItems.forEach(item => {
-        const title = item.querySelector('h2').textContent.toLowerCase();
-        const description = item.querySelector('p').textContent.toLowerCase();
+        const originalTitle = item.dataset.originalTitle.toLowerCase();
+        const originalDescription = item.dataset.originalDescription.toLowerCase();
 
-        // Store original content if not already stored
-        if (!item.dataset.originalTitle) {
-            item.dataset.originalTitle = item.querySelector('h2').innerHTML;
-            item.dataset.originalDescription = item.querySelector('p').innerHTML;
-        }
-
-        if (title.includes(searchTerm) || description.includes(searchTerm)) {
+        if (originalTitle.includes(searchTerm) || originalDescription.includes(searchTerm)) {
             item.classList.remove('hidden');
-            // Add highlight animation
             item.classList.add('search-highlight');
 
             // Highlight matching text in title and description
-            const highlightedTitle = highlightText(item.dataset.originalTitle, searchTerm);
-            const highlightedDescription = highlightText(item.dataset.originalDescription, searchTerm);
+            // For titles, we need to apply the highlight within the animated spans
+            const titleElement = item.querySelector('h2');
+            const descriptionElement = item.querySelector('p');
 
-            item.querySelector('h2').innerHTML = highlightedTitle;
-            item.querySelector('p').innerHTML = highlightedDescription;
+            // Temporarily remove animation spans to apply highlight, then re-wrap title
+            titleElement.innerHTML = highlightText(item.dataset.originalTitle, searchTerm);
+            descriptionElement.innerHTML = highlightText(item.dataset.originalDescription, searchTerm);
+
+            // Re-wrap title with animation spans AFTER highlighting, except for the highlight-text itself
+            titleElement.innerHTML = wrapTitleWithSpans(item.dataset.originalTitle);
+
+
+            // Re-trigger animation if already in view (or if it comes into view)
+            if (item.classList.contains('is-in-view')) {
+                item.classList.remove('is-in-view'); // Remove to reset
+                void item.offsetWidth; // Force reflow
+                item.classList.add('is-in-view'); // Add back to re-trigger
+            }
+
         } else {
             item.classList.add('hidden');
         }
     });
 }
 
-// Helper function to highlight text
+
+// Helper function to highlight text (returns HTML with highlight spans)
 function highlightText(text, term) {
     if (!text) return '';
 
     // Case insensitive search
     const regex = new RegExp(`(${term})`, 'gi');
-    return text.replace(regex, '<span class="highlight-text">$1</span>');
+    return text.replace(regex, '<span class="highlight-text">$&</span>');
 }
 
 // Reset Search Results
@@ -1814,12 +1991,19 @@ function resetSearchResults() {
         item.classList.remove('hidden');
         item.classList.remove('search-highlight');
 
-        // Restore original content
+        // Restore original content from dataset and re-apply title animation spans
         if (item.dataset.originalTitle) {
-            item.querySelector('h2').innerHTML = item.dataset.originalTitle;
+            item.querySelector('h2').innerHTML = wrapTitleWithSpans(item.dataset.originalTitle);
         }
         if (item.dataset.originalDescription) {
-            item.querySelector('p').innerHTML = item.dataset.originalDescription;
+            item.querySelector('p').textContent = item.dataset.originalDescription; // Direct textContent for descriptions
+        }
+
+        // Ensure current item is re-animated if it was already in view before search
+        if (item.classList.contains('is-in-view')) {
+            item.classList.remove('is-in-view'); // Remove to reset
+            void item.offsetWidth; // Force reflow
+            item.classList.add('is-in-view'); // Add back to re-trigger
         }
     });
 }
