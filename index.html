@@ -817,7 +817,7 @@ body.light-mode .grid-item p {
 
 /* Android-specific landscape fixes */
 body.android-landscape {
-    background-attachment: scroll !important;
+    background-attachment: fixed !important; /* Make background stationary on Android landscape */
     height: auto !important;
     min-height: auto !important;
     overflow-y: auto !important;
@@ -830,11 +830,17 @@ body.android-landscape .grid-container {
     padding-bottom: 80px !important;
     height: auto !important;
     max-height: none !important;
+    display: grid !important; /* Ensure it's still a grid */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important; /* Force the grid layout with a minimum width - adjust 200px as needed */
+    gap: 12px !important; /* Force the gap */
 }
 
 body.android-landscape .grid-item {
     transform: none !important;
     transition: background-color 0.3s ease !important;
+    width: auto !important; /* Override any other width settings */
+    max-width: 200px !important; /* Set a maximum width - should match or be similar to the minmax in grid-template-columns */
+    height: auto !important; /* Let height adjust to content */
 }
 
 body.android-landscape .grid-item:hover {
@@ -940,7 +946,6 @@ body.dark-mode .added-to-favorites-notification {
     visibility: visible;
     transform: translateY(0);
 }
-/* Favorites Section Title */
 .favorites-title {
     position: fixed;
     top: -100px; /* Hidden by default */
