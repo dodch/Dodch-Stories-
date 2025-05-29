@@ -434,7 +434,7 @@ body.light-mode .favorites-button {
     backdrop-filter: blur(15px);
     border: 1px solid rgba(255, 99, 71, 0.3);
     color: #cc503a;
-    box-shadow: 0 44px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 /* Favorites button in dark mode */
 body.dark-mode .favorites-button {
@@ -460,7 +460,7 @@ body.dark-mode .favorites-button {
 /* Grid Container Styling */
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Base number of columns for smaller screens */
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Reduced minimum width to 150px */
     gap: 20px; /* Space between items */
     justify-content: center;
     align-items: center;
@@ -468,7 +468,7 @@ body.dark-mode .favorites-button {
     padding: 20px; /* Add padding for better layout */
     box-sizing: border-box; /* Include padding in size calculation */
     overflow-y: auto; /* Allow vertical scrolling */
-    overflow-x: hidden; /* Prevent horizontal overflow */
+    /* overflow-x: hidden; */ /* Commented out overflow-x: hidden */
     position: relative;
     height: 100%;
     max-height: 100vh;
