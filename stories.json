@@ -12,11 +12,11 @@
     {
         "title": "Villain",
         "description": "(preview) a story of a villain's perspective",
-        "villain.html",
-        "file": ""
+        "file": "villain.html"
     },
     {
         "title": "Behind the fog",
-        "description": "(coming soon) ": "it's not the end of the story, but a new beginning "
+        "description": "(coming soon) it's not the end of the story, but a new beginning",
+        "file": "behind-the-fog.html" 
     }
 ]
