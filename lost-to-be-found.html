@@ -15,7 +15,6 @@
             box-sizing: border-box;
         }
 
-        /* Crucial: HTML takes full height and allows body to define scrollable area */
         html {
             height: 100%; /* Ensures html fills the viewport */
         }
@@ -102,7 +101,9 @@
             position: relative;
             z-index: 0;
             width: 100%;
-            min-height: 100vh; /* Important: Ensures the wrapper stretches to at least viewport height */
+            min-height: 100vh; /* Important: Ensures the wrapper stretches to at least viewport height and grows */
+            display: flex; /* Use flexbox to organize content vertically */
+            flex-direction: column; /* Stack children vertically */
         }
 
         body.loading #page-content-wrapper {
@@ -123,25 +124,6 @@
             z-index: -1; /* Place behind other content */
             transition: opacity 0.5s ease;
         }
-
-        /* For the background to expand under content, we'll make the page-content-wrapper
-           effectively control the *scrollable height*, and the fixed-background
-           will simply cover the *viewport*. This is the nature of `position: fixed`.
-           If you truly want the FIXED background to expand with the CONTENT,
-           you cannot use `position: fixed`. Instead, you'd apply the background
-           to the highest common parent that holds ALL content, and ensure
-           that parent is large enough. However, this means the background would scroll.
-
-           If the goal is to have the background *visually appear* to cover the entire
-           scrollable content area, but remain fixed relative to the viewport,
-           then the current `fixed` approach for the images is correct.
-           The "white part at the bottom" could be due to small content,
-           or other elements covering the bottom.
-
-           Let's assume you want the image to always fill the viewport (fixed)
-           and handle the "white part" by ensuring content pushes the height.
-        */
-
 
         .fixed-background.light-background {
              background-image: url('https://i.ibb.co/W4PTCf4P/F59-EDCDE-25-A7-4-E02-BEBF-16-F94-CEE075-E.png');
@@ -227,7 +209,7 @@
 
        #content {
             padding: 2rem;
-            padding-top: 6rem;
+            padding-top: 10rem; /* INCREASED PADDING TOP TO ACCOUNT FOR FIXED HEADER */
             position: relative;
             z-index: 1;
             margin-left: auto;
@@ -239,6 +221,8 @@
             background-color: transparent;
             transition: opacity 0.5s ease-in-out;
             opacity: 1;
+            /* REMOVED ANY FIXED HEIGHTS OR OVERFLOW-Y HIDDEN */
+            flex-grow: 1; /* Allow content to take up available space and push footer down */
         }
 
         #content.content-fading {
@@ -316,6 +300,21 @@
           animation: spin-once 0.5s ease-in-out;
         }
 
+        /* Adjust footer positioning to prevent overlap, if it's not fixed */
+        /* If these are fixed, they also need sufficient Z-index */
+        .fixed.bottom-4.left-4, .fixed.bottom-4.right-4 {
+            z-index: 50; /* Ensure these are above the background */
+        }
+
+        /* IMPORTANT: If you want content to scroll and footer to stick,
+           the main content area needs to be Scrollable, and the footer
+           needs to be outside of that scrollable area or positioned carefully.
+           With fixed header/footer, content needs enough padding top/bottom.
+        */
+        .fixed.top-0.left-0.right-0 {
+             z-index: 50; /* Ensure header is above content */
+        }
+
     </style>
 </head>
 <body class="loading">
@@ -332,183 +331,40 @@
     <div id="page-content-wrapper">
 
         <div id="raw-ar-text" style="display: none;">
-
-‎ واقفا أمام مرآة الحمّام المغلق، أحدّق في انعكاسي كأنّي أبحث عني بداخله، هامسا لنفسي بتلك الكلمات.
-‎ أحيانًا أحاول أن أنظر إلى وجهي بعين لا تشبه عينيّ، بعين ربما تستطيع أن ترى ما فيّ مثل ما أرى في الآخرين…
-‎ لعلّي أكتشف كيف يراني الناس، وكيف يقرأون هذا الوجه الذي لا أكاد أستوعبه بنفسي.
-‎ أحدّق طويلاً، ومع ذلك تظل صورتي مبهمة، ضبابية، كأنّها انعكاس في ماءٍ راكد.
-‎ جسدي، وجودي، وحتى صوتي أحيانًا… كلّها تبدو لي كأشياء أعرفها من بعيد.
-‎ كأنني لم أرَ نفسي قط، كما يراها الآخرون.
-
-‎ أتساءل كثيرًا… عندما ينظرون إلي، هل يلاحظون تلك التفاصيل الدقيقة التي أغفل عنها؟
-‎ هل يرون ما أراه أنا فيهم، حين أتأمل وجوههم، وأشعر بأشياء لا تُقال؟
-‎ هل يستطيع أحدهم أن يفهم تعابيري الصامتة التي لا أفهمها حتى أنا؟
-
-‎ غريب هو هذا التناقض… أستطيع أن أرى بوضوح ما يخفيه الناس خلف نظراتهم،
-‎ وأشعر بأحزانهم حتى إن لم يتحدثوا،
-‎ لكنني حين أنظر إلى نفسي، لا أرى إلا فراغًا… ظلًّا باهتًا بلا ملامح.
-
-‎ أحيانًا أتمنى لو استطعت أن أخرج من جسدي ليومٍ واحد فقط.
-‎ أعيش في جسدٍ آخر،
-‎ أجلس قبالتي،
-‎ أنظر في عينيّ، كما أنظر في أعين شخص أحبه،
-‎ وأحادث نفسي كما لو كنت صديقًا حقيقيًا لي.
-‎ أتمنى أن أعرف كيف هو شعور أن أكون أنا… من الخارج.
-‎ لأنني مهما حاولت، لا أصدق ما يقال لي.
-‎ لا أصدق المديح،
-‎ أبتسم، أهز رأسي،
-‎ لكن قلبي يهمس: “لستُ كما يقولون”.
-‎ لأنني ببساطة… لم أرني بعد.
-
-‎ خيالي واسع، مشاعري تتضخم يومًا بعد يوم،
-‎ حساسيّتي تجاه ما حولي تتجاوز ما يمكنني تحمله أحيانًا،
-‎ وكلما كبرت، شعرت أنني أضيع أكثر.
-‎ العمر قصير… وأنا بالكاد أفهم نفسي،
-‎ فكيف لي أن أفهم غيري؟
-
-‎ أكثر ما يؤلمني هو هذا الشعور العميق بعدم الفَهم.
-‎ لا أحد يفهمني.
-‎ بل حتى أنا لا أفهمني.
-‎ أسيء الظن بنفسي،
-‎ أحاكم نواياي،
-‎ أجلد قلبي،
-‎ وأغضب من روحي.
-‎ عالمي الداخلي يزداد اتساعًا،
-‎ لكن المسافة بيني وبين من حولي تتّسع هي الأخرى.
-‎ وفي لحظات كثيرة، أشعر أنني… أطفو بعيدًا عن كل شيء.
-
-‎ لكن حين يشعر بي أحدهم حقًا، حين ينظر في عيني ويراني،
-‎ أشعر بسعادة عارمة.
-‎ أتعلّق به،
-‎ أتمسك به بقوة،
-‎ كأنه الضوء الوحيد في عتمتي.
-‎ لكنّهم دائما ما يكونون هشّين، كمصباح من الزجاج…
-‎ وحين أضمّهم بشدة،
-‎ ينكسرون.
-‎ و ينطفئ معهم الضوء،
-‎ ويتبعثر الزجاج.
-‎ ويصيبني الشظى.
-‎ أنزف.
-‎ وأبقى مع الندوب.
-‎ ندوب لا تندمل.
-‎ ندوب لا تُنسى.
-‎ ندوب تذكرني بما مضى.
-
-‎ لكنني رغم ذلك… لم أتوقف عن الحب.
-‎ حتى وإن لم يكن قدري أن أُحَب كما أحِب،
-‎ لم أتوقّف عن الزراعة 
-‎ كنت أزرع القلوب كزهور في بستان روحي، كلّ يوم.
-‎ لكن مؤخرًا، لم تعد تنمو.
-‎ لم أعد أرى قلوبًا متفتّحة.
-‎ وهنا أدركت… ربما لأنها لم تُترك لتنمو.
-‎ كنت أقطفها دائمًا،
-‎ وأقدّمها، إما لمن أحببت،
-‎ أو كإثبات أنني أستحق الحب،
-‎ أن مشاعري صادقة، رغم كل ما يُقال.
-
-‎ لكن أغلب الزهور  كما نعلم 
-‎ إما تموت ببطئ في إناءٍ زجاجي على رفٍّ منسي،
-‎ أو تُطوى بين صفحات كتاب لا يُقرأ،
-‎ تمامًا كالكلمات التي أقولها، والتي لا يسمعها أحد.
-‎ وانتهى بي الأمر في بستانٍ جاف، بقلبٍ فارغ،
-‎ وعطر الحب تبخّر مع الريح 
-‎ يحضر للحظة، ثم يغيب.
-
-‎ ولكن…
-‎ هل هذا ما ينبغي أن يكون ؟
-‎ ربما لا.
-
-‎ ربما عليّ أن أترك زهور قلبي تنمو من أجلي أنا.
-‎ أعتني بها،
-‎ أرويها،
-‎ أتركها تتفتّح داخلي،
-‎ حتى يأتي من يراها،
-‎ ويقدّرها،
-‎ ولا يقطفها،
-‎ بل يجلس إلى جانبي،
-‎ ويزرع معي…
-‎ حتى يصير القلب حديقة، والحديقة حقلاً لا نهاية له.
-
-⸻
-
-‎ وحين قابلت الألم أخيرًا،
-‎ أمسكته بين يداي،
-‎ كان خائفًا، وقال:
-
-‎ “ آسف…
-‎ أعلم أنني جرحتك كثيرًا،
-‎ أعلم أنني كنت أنانيًّا،
-‎ لم أفكر إلا بنفسي،
-‎ وتحدثت عنك بسوء،
-‎ وأظهرت نفسي دائمًا كأنني الضحية.”
-
-‎ قاطعته، بصوتٍ هادئ:
-
-‎ “اهدأ…
-‎ لا تخف.
-‎ لن أؤذيك.
-‎ لا تقلق،
-‎ لن أفضح أسرارك،
-‎ حتى بعد كلّ ما فعلت.
-‎ لقد اخترتَ قلبي ليكون خزنةً لكلماتك،
-‎ ولن أخذلك… حتى و إن خذلتني.”
-
-‎ فقال بدهشة:
-‎ “لكن... لماذا؟
-‎ كيف يمكنك أن تكون بهذا البرود؟!”
-
-‎ “لم أقل إنني هادئ،
-‎ لكن حتى عند خروجك من حياتي،
-‎ بعد أن تركت حفرة عميقة في صدري،
-‎ حتى بعد أن الكلمات التي كسرتني خرجت من فم شخصٍ
-‎ ظننت أنه سكني وسندي…
-‎ حتى حين رميتني كأنني لا شيء،
-‎ وأنا كنت أراك شيئًا نادرًا لا يتكرّر،
-‎ أنا ما زلت أدعو الله لك،
-‎ أن تكون بخير،
-‎ لأنك كنت يومًا قريبًا مني،
-‎ جزءًا من عائلةٍ حلمت بها طويلاً.
-‎ ضحكنا معًا،
-‎ تقاسمنا الخبز،
-‎ عشنا لحظات جميلة.
-‎ كنت أتجاوز السيئ،
-‎ لأني أؤمن أن ما هو جميل سيبزغ منه.
-
-‎ لكنني… تُركت.
-‎ من أجل خلافاتٍ تافهة،
-‎ لا معنى لها،
-‎ تركت وحدي في معركة مع المجهول،
-‎ في الظلام،
-‎ مع بضع لمحات نورٍ من إيماني كي أواصل.
-‎ لقد سقطت،
-‎ إصطدمت بجدران الواقع القاسية،
-‎ لكنني واصلت.
-
-‎ ما زلت أذكر حديثك عن أحلامك،
-‎ وكم كنتُ متحمسًا لها كأنها لي،
-‎ وكم دعوت الله أن أراك تحققها.
-‎ لكن حين طلبت منك أن تدعو لي،
-‎ قلت ببساطة: لا يهمني أمرك.”
-
-‎ صمت عارم…
-
-‎ أكملت:
-‎ "ورغم كل ذلك مازلت أريد أن أراك بخير، حتى ولو من بعيد، أحياناً مازلت أتمنى رؤيتك تحقق ما تريد."
-
-‎ سكتُّ قليلاً.
-‎ ثم قلت:
-‎ “يمكنك الذهاب الآن.
-‎ اعتنِ بنفسك.”
-
-‎ وحين أطلقتُ سراح الألم من زنزانة قلبي،
-‎ شعرت بأنني أخف قليلا …
-‎ بانتظار المرّة القادمة
-‎ التي سأحرّر فيها آلاما أخرى .
             </div>
         <div id="raw-fr-text" style="display: none;">
             </div>
         <div id="raw-en-text" style="display: none;">
-            </div>
+            I wish I were special. I wish I were more than what I am.
+
+            Staring into the locked bathroom mirror, I whispered that to myself.
+
+            There are moments when I try to look at my face with eyes that aren’t mine, hoping maybe then, just maybe, I’ll understand how others see me.
+
+            Because no matter how long I stare, I can never truly grasp the whole image of myself. My reflection is often a blur to me. I’ve never really seen me.
+
+            But maybe that’s not entirely bad. Because if I can’t see myself, if I don’t fully understand my own features, maybe there’s still room to grow. Maybe there’s a part of me waiting to be discovered, a hidden strength, a quiet beauty that I’ve overlooked.
+
+            I find myself constantly trying to decode the expressions in my eyes. Are they hopeful? Tired? Or do they hold a secret I haven't yet uncovered?
+
+            The silence of the room amplifies these thoughts, making them echo within me. Each breath feels heavy, burdened by the weight of unspoken questions.
+
+            Sometimes, I imagine stepping out of my skin, just for a moment, to observe myself from a distance. Would I be kind to the person I see? Would I offer words of encouragement, or simply a gentle understanding?
+
+            It’s a strange feeling, this detachment from one's own image. As if I’m a character in a story, and I’m just trying to figure out who I’m supposed to be.
+
+            Perhaps the answers aren’t in the mirror, but in the journey itself. In the small acts of kindness, the quiet moments of reflection, the persistent search for what makes me, me.
+
+            And maybe, just maybe, when I finally stop searching, when I simply exist, I’ll truly be found. The reflection might still be a blur, but the essence, the true self, will shine through.
+
+            I try to find the lines of worry, the subtle hints of joy, the stories etched onto my face. But they always seem to elude me, like whispers carried on the wind.
+
+            This quest for self-perception often leaves me feeling a bit adrift, as if I'm navigating a vast ocean without a compass. Every interaction, every glance, becomes a clue, a piece of a puzzle I'm desperately trying to solve.
+
+            But there's also a strange comfort in this uncertainty. It means I'm not defined by a single image, a single moment. I am fluid, evolving, a work in progress. And in that, there's a unique kind of freedom.
+
+            So I continue to stare, not for answers, but for the quiet acceptance of the unknown. For the beauty of becoming, rather than just being. And in that space, I find a glimmer of hope, a whisper of peace.
+        </div>
 
         <div class="fixed top-0 left-0 right-0 flex flex-col items-start p-4 space-y-2 z-50">
              <div class="flex justify-center space-x-4 mb-2">
