@@ -15,56 +15,60 @@
             box-sizing: border-box;
         }
 
-        body {
+        html, body {
+            height: 100%; /* Ensure HTML and Body take full height */
             margin: 0;
             padding: 0;
+        }
+
+        body {
             font-family: 'Roboto', sans-serif;
-            min-height: 100vh;
             position: relative;
             z-index: 1;
             transition: color 0.5s ease;
+            overscroll-behavior-y: contain; /* Optional: improve mobile scroll experience */
         }
 
         /* --- LOADING SCREEN OVERLAY (fixed on top) --- */
         #loading-screen {
-          position: fixed; /* Position over the content */
+          position: fixed;
           top: 0;
           left: 0;
-          width: 100%;
-          height: 100%;
-          background-color: rgba(0, 0, 0, 0.9); /* Darker overlay for contrast */
+          width: 100vw;  /* Use 100vw */
+          height: 100vh; /* Use 100vh */
+          background-color: rgba(0, 0, 0, 0.9);
           display: flex;
-          flex-direction: column; /* Stack hearts and percentage vertically */
+          flex-direction: column;
           align-items: center;
           justify-content: center;
-          z-index: 10000; /* MUCH HIGHER Z-INDEX: Ensures this element is on top of EVERYTHING else */
-          transition: opacity 0.5s ease; /* Smooth fade-out effect for the screen itself */
+          z-index: 10000;
+          transition: opacity 0.5s ease;
         }
 
         #loading-screen.hidden {
-          opacity: 0; /* Fade out */
-          pointer-events: none; /* Prevent interaction with hidden element after it's faded */
+          opacity: 0;
+          pointer-events: none;
         }
 
         /* --- LOADING INDICATOR CONTAINER (holds hearts) --- */
         .loading-indicator {
-            display: flex; /* Arrange hearts horizontally */
+            display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 15px; /* Space between hearts and percentage */
+            margin-bottom: 15px;
         }
 
         /* --- LOADING HEART ANIMATION --- */
         .loading-indicator span {
-            display: inline-block; /* Treat spans as individual elements */
-            width: 15px; /* Size of the heart container */
+            display: inline-block;
+            width: 15px;
             height: 15px;
-            margin: 0 5px; /* Space between hearts */
-            color: white; /* Color of the heart glyph */
-            font-size: 15px; /* Size of the heart glyph */
-            opacity: 0; /* Start hidden */
-            transform: scale(0.5); /* Start small */
-            animation: pulse-heart 1.4s ease-in-out infinite; /* Animation properties */
+            margin: 0 5px;
+            color: white;
+            font-size: 15px;
+            opacity: 0;
+            transform: scale(0.5);
+            animation: pulse-heart 1.4s ease-in-out infinite;
         }
 
         /* Add delays to create the trailing effect */
@@ -85,9 +89,9 @@
         /* --- LOADING PERCENTAGE TEXT --- */
         .loading-percentage {
           color: #fff;
-          font-size: 24px; /* Smaller size than the old loading text */
+          font-size: 24px;
           font-family: "Ubuntu", sans-serif;
-          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Optional: Add text shadow */
+          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
 
 
@@ -116,8 +120,8 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;   /* Explicitly use viewport width */
+            height: 100vh;  /* Explicitly use viewport height */
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
