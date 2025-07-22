@@ -8,65 +8,71 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet"> <style>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+    <style>
         /* --- Basic Styling --- */
         * {
             box-sizing: border-box;
+        }
+
+        /* Crucial: HTML takes full height and allows body to define scrollable area */
+        html {
+            height: 100%; /* Ensures html fills the viewport */
         }
 
         body {
             margin: 0;
             padding: 0;
             font-family: 'Roboto', sans-serif;
-            min-height: 100vh;
+            min-height: 100vh; /* Body should be at least viewport height, and grow with content */
             position: relative;
             z-index: 1;
             transition: color 0.5s ease;
+            /* No background on body here, it's for the fixed-background div */
         }
 
         /* --- LOADING SCREEN OVERLAY (fixed on top) --- */
         #loading-screen {
-          position: fixed; /* Position over the content */
+          position: fixed;
           top: 0;
           left: 0;
           width: 100%;
           height: 100%;
-          background-color: rgba(0, 0, 0, 0.9); /* Darker overlay for contrast */
+          background-color: rgba(0, 0, 0, 0.9);
           display: flex;
-          flex-direction: column; /* Stack hearts and percentage vertically */
+          flex-direction: column;
           align-items: center;
           justify-content: center;
-          z-index: 10000; /* MUCH HIGHER Z-INDEX: Ensures this element is on top of EVERYTHING else */
-          transition: opacity 0.5s ease; /* Smooth fade-out effect for the screen itself */
+          z-index: 10000;
+          transition: opacity 0.5s ease;
         }
 
         #loading-screen.hidden {
-          opacity: 0; /* Fade out */
-          pointer-events: none; /* Prevent interaction with hidden element after it's faded */
+          opacity: 0;
+          pointer-events: none;
         }
 
         /* --- LOADING INDICATOR CONTAINER (holds hearts) --- */
         .loading-indicator {
-            display: flex; /* Arrange hearts horizontally */
+            display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 15px; /* Space between hearts and percentage */
+            margin-bottom: 15px;
         }
 
         /* --- LOADING HEART ANIMATION --- */
         .loading-indicator span {
-            display: inline-block; /* Treat spans as individual elements */
-            width: 15px; /* Size of the heart container */
+            display: inline-block;
+            width: 15px;
             height: 15px;
-            margin: 0 5px; /* Space between hearts */
-            color: white; /* Color of the heart glyph */
-            font-size: 15px; /* Size of the heart glyph */
-            opacity: 0; /* Start hidden */
-            transform: scale(0.5); /* Start small */
-            animation: pulse-heart 1.4s ease-in-out infinite; /* Animation properties */
+            margin: 0 5px;
+            color: white;
+            font-size: 15px;
+            opacity: 0;
+            transform: scale(0.5);
+            animation: pulse-heart 1.4s ease-in-out infinite;
         }
 
-        /* Add delays to create the trailing effect */
         .loading-indicator span:nth-child(1) { animation-delay: 0s; }
         .loading-indicator span:nth-child(2) { animation-delay: 0.2s; }
         .loading-indicator span:nth-child(3) { animation-delay: 0.4s; }
@@ -84,45 +90,58 @@
         /* --- LOADING PERCENTAGE TEXT --- */
         .loading-percentage {
           color: #fff;
-          font-size: 24px; /* Smaller size than the old loading text */
+          font-size: 24px;
           font-family: "Ubuntu", sans-serif;
-          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Optional: Add text shadow */
+          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
 
 
          /* --- Wrapper for main page content --- */
-        /* This container holds all your main page's visible content */
         #page-content-wrapper {
-            /* THIS IS KEY: Transition the filter property */
-            transition: filter 0.5s ease-in-out; /* Blur disappears faster */
-            position: relative; /* Creates a stacking context */
-            z-index: 0; /* Ensures it's below the loading screen */
-            width: 100%; /* Take full width */
-            min-height: 100vh; /* Ensure wrapper takes full height */
-            /* Existing padding and other styles for content layout are handled by the elements inside this wrapper */
+            transition: filter 0.5s ease-in-out;
+            position: relative;
+            z-index: 0;
+            width: 100%;
+            min-height: 100vh; /* Important: Ensures the wrapper stretches to at least viewport height */
         }
 
-        /* --- Apply blur to the content wrapper when the body has the 'loading' class --- */
-        /* This rule applies initially because the body starts with class="loading" */
         body.loading #page-content-wrapper {
-            filter: blur(15px); /* Adjust the initial max blur amount as needed */
-            pointer-events: none; /* Prevent interaction with blurred content */
+            filter: blur(15px);
+            pointer-events: none;
         }
 
-        /* --- Existing Styles Below --- */
-
+        /* --- FIXED BACKGROUND STYLES --- */
         .fixed-background {
-            position: fixed;
+            position: fixed; /* Fixed to the viewport */
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
+            height: 100%; /* This is height of the viewport */
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            z-index: -1;
+            z-index: -1; /* Place behind other content */
             transition: opacity 0.5s ease;
         }
+
+        /* For the background to expand under content, we'll make the page-content-wrapper
+           effectively control the *scrollable height*, and the fixed-background
+           will simply cover the *viewport*. This is the nature of `position: fixed`.
+           If you truly want the FIXED background to expand with the CONTENT,
+           you cannot use `position: fixed`. Instead, you'd apply the background
+           to the highest common parent that holds ALL content, and ensure
+           that parent is large enough. However, this means the background would scroll.
+
+           If the goal is to have the background *visually appear* to cover the entire
+           scrollable content area, but remain fixed relative to the viewport,
+           then the current `fixed` approach for the images is correct.
+           The "white part at the bottom" could be due to small content,
+           or other elements covering the bottom.
+
+           Let's assume you want the image to always fill the viewport (fixed)
+           and handle the "white part" by ensuring content pushes the height.
+        */
+
 
         .fixed-background.light-background {
              background-image: url('https://i.ibb.co/W4PTCf4P/F59-EDCDE-25-A7-4-E02-BEBF-16-F94-CEE075-E.png');
@@ -167,34 +186,28 @@
             transition: background-color 0.5s ease;
         }
 
-        /* Light mode semi-transparent background for blur elements */
         .blur-effect {
             background-color: rgba(255, 255, 255, 0.7);
         }
 
-        /* Dark mode semi-transparent background for blur elements */
         body.dark-mode .blur-effect {
             background-color: rgba(31, 41, 55, 0.9);
         }
 
-        /* Default glow color (Light Mode) */
         body:not(.dark-mode) .glow {
             box-shadow: 0 0 15px 3px rgba(255, 215, 0, 0.9);
              transition: box-shadow 0.3s ease;
         }
 
-        /* Dark mode glow color */
         body.dark-mode .glow {
             box-shadow: 0 0 10px rgba(192, 132, 252, 0.8);
              transition: box-shadow 0.3s ease;
         }
 
-        /* Add transitions to buttons */
         button {
              transition: color 0.3s ease, background-color 0.3s ease, transform 0.1s ease-out, box-shadow 0.3s ease;
         }
 
-        /* Style for the tapped state */
         button.tapped {
             transform: scale(0.97);
         }
@@ -212,7 +225,6 @@
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
         }
 
-        /* Style for the main content area */
        #content {
             padding: 2rem;
             padding-top: 6rem;
@@ -233,25 +245,18 @@
             opacity: 0;
         }
 
-        /* --- Text Span Styles (without scroll reveal animation) --- */
         #text span {
             cursor: pointer;
-            display: inline; /* Use display: inline for standard text flow */
-
-            /* Keep text effects transitions */
+            display: inline;
             transition: text-shadow 0.3s ease, color 0.3s ease, -webkit-text-fill-color 0.3s ease;
-            /* Default state is now visible immediately */
             opacity: 1;
             transform: none;
         }
 
-
-         /* Ensure hover effect still works */
         #text span:hover {
-             color: #9333EA; /* Example hover color */
+             color: #9333EA;
         }
 
-        /* Text shadow/color styles based on mode */
         body:not(.dark-mode) #text span:not(.glow-word) {
              text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
              -webkit-text-stroke: none;
@@ -268,7 +273,6 @@
              color: white;
         }
 
-        /* Remove text shadow/stroke from the highlighted word */
         #text span.glow-word {
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
             text-shadow: none !important;
@@ -276,20 +280,15 @@
              text-stroke: none !important;
              -webkit-text-fill-color: initial !important;
              color: initial !important;
-             /* Ensure highlighted word is always visible and in its final state */
              opacity: 1 !important;
              transform: none !important;
-             transition-delay: 0ms !important; /* No delay for highlighted word appearance */
-             transition-duration: 0.3s !important; /* Standard transition speed for highlighting */
+             transition-delay: 0ms !important;
+             transition-duration: 0.3s !important;
         }
-        /* --- End Text Span Styles --- */
 
-
-        /* Ensure the save progress button is on top */
         #save-progress-button {
             z-index: 60;
         }
-
 
          body.dark-mode #content h1 {
              color: white;
@@ -301,18 +300,14 @@
              transition: color 0.5s ease;
         }
 
-
-        /* Transition for the popup background */
         #popup > div {
              transition: background-color 0.5s ease, color 0.5s ease;
         }
 
-        /* Add some bottom margin to paragraphs to separate them */
         #text p {
-            margin-bottom: 1rem; /* Adjust as needed */
+            margin-bottom: 1rem;
         }
 
-        /* Dark Mode Button Animation */
         @keyframes spin-once {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
@@ -323,10 +318,13 @@
 
     </style>
 </head>
-<body class="loading"> <div id="loading-screen">
+<body class="loading">
+    <div id="loading-screen">
         <div class="loading-indicator">
-            <span>❤️</span> <span>❤️</span> <span>❤️</span> <span>❤️</span> <span>❤️</span> </div>
-        <div class="loading-percentage">0%</div> </div>
+            <span>❤️</span> <span>❤️</span> <span>❤️</span> <span>❤️</span> <span>❤️</span>
+        </div>
+        <div class="loading-percentage">0%</div>
+    </div>
 
     <div class="fixed-background light-background"></div>
     <div class="fixed-background dark-background"></div>
@@ -334,7 +332,7 @@
     <div id="page-content-wrapper">
 
         <div id="raw-ar-text" style="display: none;">
-    ‎ أتمنى لو كنت شخصًا مميزًا. أتمنى لو كنت أكثر من مجرد ما أنا عليه.
+
 ‎ واقفا أمام مرآة الحمّام المغلق، أحدّق في انعكاسي كأنّي أبحث عني بداخله، هامسا لنفسي بتلك الكلمات.
 ‎ أحيانًا أحاول أن أنظر إلى وجهي بعين لا تشبه عينيّ، بعين ربما تستطيع أن ترى ما فيّ مثل ما أرى في الآخرين…
 ‎ لعلّي أكتشف كيف يراني الناس، وكيف يقرأون هذا الوجه الذي لا أكاد أستوعبه بنفسي.
@@ -506,280 +504,20 @@
 ‎ شعرت بأنني أخف قليلا …
 ‎ بانتظار المرّة القادمة
 ‎ التي سأحرّر فيها آلاما أخرى .
-        </div>
+            </div>
         <div id="raw-fr-text" style="display: none;">
-           Je voudrais être quelqu’un de spécial. Je voudrais être plus que ce que je suis.
-Fixant le miroir de la salle de bain verrouillé, je me suis murmuré cela à moi-même.
-Il y a des moments où j’essaie de regarder mon visage avec des yeux qui ne sont pas les miens, espérant qu’ainsi, peut-être, je comprendrai enfin comment les autres me voient.
-Parce que, peu importe combien de temps je fixe mon reflet, je n’arrive jamais à saisir l’image complète de moi-même. Mon corps, ma présence, tout cela est flou pour moi. Je ne me suis jamais vraiment vu.
-Je me demande souvent… quand ils me regardent, remarquent-ils les choses délicates, belles, que moi j’ignore, comme moi je perçois souvent ces détails cachés chez eux ?
-Peuvent-ils lire mes expressions silencieuses, celles que moi-même je ne comprends pas ?
-
-C’est étrange, comme je peux ressentir les émotions enfouies au plus profond des autres, même quand ils font de leur mieux pour les cacher…
-Mais quand il s’agit de moi, tout ce que je vois, ce sont des ombres ternes, sans forme.
-
-Parfois, je voudrais juste sortir de moi-même.
-Vivre dans un autre corps, juste pour un jour.
-M’asseoir en face de moi.
-Me parler.
-Me voir.
-Savoir ce que ça fait d’exister dans cette peau, vue de l’extérieur.
-Parce que, peu importe combien j’essaie, je n’arrive pas à accepter les compliments.
-Je hoche la tête, je souris… mais au fond, je ne les crois pas. Pas tant que je ne me verrai pas vraiment.
-Pas tant que je ne pourrai pas plonger mon regard dans le mien, comme je le fais dans les yeux de quelqu’un que j’aime.
-
-Mon imagination, mes émotions, ma sensibilité, elles grandissent chaque jour, sans fin.
-Et plus elles grandissent, plus je me perds en moi-même.
-La vie semble trop courte. J’essaie encore de comprendre qui je suis,
-sans même parler de comprendre les autres.
-
-Ce qui me fait vraiment mal, c’est à quel point je me sens incompris.
-Même par moi.
-Je me trompe sur mes propres intentions, je me blâme,
-je me punis,
-je me mets en colère contre moi.
-Mon monde intérieur devient immense, alors que la distance entre moi et les autres s’élargit.
-Parfois, j’ai l’impression de dériver.
-
-Alors, quand quelqu’un me voit enfin, me voit vraiment, je me sens profondément heureux, excité.
-Je m’accroche à lui comme s’il était la seule lumière qu’il me reste.
-Mais ils sont toujours fragiles, comme une simple ampoule en verre,
-et je serre trop fort.
-Et quand je le fais, je les brise.
-La lumière s’éteint.
-Le verre éclate.
-Et quand il se brise, il m’entaille — me fait saigner.
-Laisse des cicatrices qui ne disparaissent jamais.
-Des cicatrices qui restent.
-Des cicatrices qui me rappellent.
-
-Des cicatrices que je ne peux pas oublier.
-
-Mais cela ne m’a jamais empêché d’aimer. Même si l’amour ne semble pas écrit dans mon destin, j’ai toujours essayé d’en donner, en plantant des cœurs comme des graines dans le jardin de mon âme, jour après jour.
-Mais ces derniers temps, ils ne semblent plus pousser. Je ne vois presque plus aucune fleur en forme de cœur.
-Puis j’ai compris : peut-être parce que je les cueillais trop tôt.
-Je les offrais comme cadeaux à ceux que j’aimais, ou peut-être comme preuve que je mérite d’être aimé… que j’ai des sentiments profonds et sincères.
-
-Mais la plupart des fleurs, comme on le sait, finissent dans des bocaux où leurs couleurs fanent lentement, ou pressées entre les pages oubliées d’un vieux livre, tout comme les mots de celui qui les a offertes, jamais relus.
-Et ainsi, je me suis retrouvé avec un jardin vide, un cœur vide, et le parfum de l’amour emporté par le vent — présent juste un instant avant de disparaître à nouveau.
-
-Mais… est-ce vraiment censé se passer ainsi ?
-
-Peut-être pas. Peut-être qu’au lieu d’arracher mon amour et de le donner trop tôt, je le laisserai éclore pour moi. Je le cultiverai doucement, je le garderai vivant en moi, jusqu’au jour où quelqu’un viendra et verra sa valeur.
-Quelqu’un qui ne se contentera pas de prendre une fleur et de partir, mais qui s’agenouillera à mes côtés, et m’aidera à les faire pousser, jusqu’à ce qu’ensemble, nous ayons planté un champ sans fin.
-
-⸻
-
-Quand j’ai enfin rencontré la douleur,
-je l’avais entre mes mains.
-Il suppliait :
-
-« Je suis désolé…
-Je sais que je t’ai tellement fait souffrir.
-Je sais que je n’ai pensé qu’à moi, sans me soucier de toi.
-Je sais que j’ai dit de mauvaises choses sur toi… et agi comme si j’étais la victime. »
-
-Je l’ai interrompu, d’une voix calme :
-
-« Chhh… n’aie pas peur.
-Je ne vais pas te faire de mal.
-C’est bon.
-Je ne te ferai rien.
-Je ne dévoilerai pas tes secrets, même après tout ça.
-Tu as choisi mon cœur comme coffre-fort pour tes mots,
-et je ne te trahirai pas… même si toi, tu l’as fait. »
-
-« Mais — pourquoi ?
-Comment peux-tu rester aussi calme ?! »
-
-« Je n’ai jamais dit que j’étais calme.
-Même si tu es sorti de ma vie,
-après avoir laissé une grande cicatrice sur ma poitrine qui descend jusqu’à mon cœur…
-Même si les mots qui m’ont brisé venaient de celui
-qui était censé être mon soutien et mon espoir…
-Même si tu m’as jeté
-comme un gros morceau de rien
-alors que je te voyais comme une partie précieuse et permanente de ma vie…
-J’espère encore parfois que tu vas bien.
-Parce qu’un jour, tu étais quelqu’un de très proche pour moi,
-un nouveau membre d’une famille que j’ai toujours rêvé d’avoir.
-Tu as ri avec moi.
-Tu as partagé des repas avec moi.
-Tu as vécu de beaux moments avec moi.
-Je ne prêtais pas beaucoup d’attention aux moments amers que nous avons eus,
-parce que j’ai toujours cru que quelque chose de bon en sortirait.
-J’ai appris à m’accrocher à ceux qui comptent pour moi,
-même dans les pires conditions.
-
-Mais moi ?
-On m’a laissé tomber…
-Pour des disputes dérisoires.
-Abandonné dans la bataille.
-Laissé dans l’obscurité,
-guidé seulement par de faibles éclats de ma foi.
-Je suis tombé —
-je me suis cogné contre des murs de dureté —
-mais j’ai continué.
-
-Je me souviens encore de toi me parlant de tes rêves,
-et moi m’enthousiasmant comme s’ils étaient les miens.
-Je me souviens des nuits où j’ai prié pour qu’un jour
-je puisse te voir les réaliser.
-Mais quand je te demande de prier pour moi,
-tu dis que tu t’en fiches. »
-
-Un silence.
-« Tu peux partir maintenant.
-Prends soin de toi. »
-
-Et en libérant la douleur de la prison de ma poitrine,
-je me suis senti un peu plus léger —
-en attendant la prochaine fois
-où je libérerai d’autres douleurs de leur cage.
-
-        </div>
+            </div>
         <div id="raw-en-text" style="display: none;">
-            I wish I were special. I wish I were more than what I am.
-Staring into the locked bathroom mirror, I whispered that to myself.
-There are moments when I try to look at my face with eyes that aren’t mine, hoping maybe then, just maybe, I’ll understand how others see me.
-Because no matter how long I stare, I can never truly grasp the whole image of myself. My body, my presence—it’s a blur to me. I’ve never really seen me.
-I always wonder… when they look at me, do they catch the delicate, beautiful things I overlook, just as I often notice those hidden things in them?
-Can they read my quiet expressions, the ones I don’t even understand myself?
+            </div>
 
-It’s strange how I can feel the emotions buried deep inside others, even when they try so hard to hide them…
-But when it comes to me, all I see are dim, shapeless shadows.
-
-Sometimes, I just wish I could step out of myself.
-To live in another body for a day.
-To sit across from me.
-To talk to me.
-To see me.
-To know what it feels like to exist in this skin, from the outside.
-Because no matter how hard I try, I can’t accept the compliments.
-I nod, I smile… but deep down, I don’t believe them. Not until I truly see myself.
-Not until I can gaze into my own eyes the way I gaze into the eyes of someone I love.
-
-My imagination, my emotions, my sensitivity—they expand every day, endlessly.
-And the more they grow, the more lost I become within myself.
-Life feels too short. I’m still trying to understand who I am, let alone trying to understand everyone else.
-
-What truly hurts is how deeply I feel misunderstood.
-Even by myself.
-I misread my own intentions. I blame myself.
-Punish myself.
-Get angry at myself.
-My inner world grows larger, while the space between me and others grows wider too.
-Sometimes, it feels like I’m floating away.
-
-So when someone finally sees me, truly sees me, I feel really excited and happy.
-I cling to them like they’re the only light I’ve got.
-But they’re always fragile, like a light bulb made of glass.
-And I grip too hard.
-And when I do, I break them.
-The light goes out.
-The glass shatters.
-And as it breaks, it cuts into me. Makes me bleed.
-Leaves scars that never fade.
-Scars that stay.
-Scars that remind me.
-Scars I can’t forget.
-
-But that never stopped me from loving.
-Even if love doesn’t seem to be written in my fate, I’ve always tried to give it.
-Planting hearts like seeds in the garden of my soul, day after day.
-Yet lately, they don’t seem to grow. I hardly see any heart-shaped blooms anymore.
-Then it hit me: maybe it’s because I kept picking them.
-I’d offer them as gifts to the ones I cherished, or maybe as proof that I am someone worthy of being loved. Someone with feelings that run deep and true.
-
-But most flowers, as we know, end up in jars where their colors slowly fade, or pressed between the forgotten pages of an old book.
-Just like the words of the one who gave them, left unread.
-And so, I found myself with an empty garden, an empty heart, and the scent of love carried off by the wind.
-There for just a moment before disappearing again.
-
-But… is that how it’s meant to be?
-
-Maybe not.
-Maybe instead of plucking my love and handing it away too soon, I’ll let it bloom for me.
-I’ll tend to it gently, keep it alive within me—until the day someone comes along who sees its worth.
-Someone who won’t just take a flower and leave, but who will kneel beside me and help me grow them.
-Until together, we’ve planted a field that never ends.
-
-⸻
-
-When I finally met the pain,
-I had him between my hands.
-He said :
-
-"I’m sorry… I know I hurt you so much.
-I know I only thought about myself, without caring about you.
-I know I said bad things about you… and acted like I was the victim.”
-
-I interrupted, my voice calm:
-
-“Shhh… don’t be afraid.
-I’m not going to hurt you.
-It’s okay.
-I won’t do any harm to you.
-I won’t expose your secrets, not even after all of that.
-You chose my heart as a secret vault for your words.
-And I won’t let you down, even when you did.”
-
-“But… why?
-How can you be so cool about it?!”
-
-“I never said I was cool.
-Even though you’re out of my life,
-after leaving a big scar on my chest that runs deep into my heart…
-Even though the words that broke me came from the one
-who was supposed to be my support and my hope.
-Even though you threw me away
-like a big chunk of nothing
-when I thought you were a permanent, valuable part of my life…
-I still sometimes hope you’re okay.
-Because one day, you were someone really close to me.
-A new member of a family I always wished I had.
-You once laughed with me.
-Shared food with me.
-Lived some beautiful moments with me.
-I didn’t care much about the bitter moments we had,
-because I always believed something good would come out of them.
-I learned to hold on to the ones who matter to me,
-even in the worst conditions.
-
-But me?
-I was left.
-Over the most trivial fights.
-Left alone in the battle.
-Left in the darkness,
-guided only by faint glimpses of my faith.
-I fell.
-Bumped into walls of hardness.
-But I kept going.
-
-I still remember you telling me your dreams.
-And me getting excited for you like they were my own.
-I remember the nights I prayed that one day
-I could watch you live those dreams.
-But when I ask you to pray for me,
-you say you don’t care.”
-
-A pause.
-“You can go now.
-Take care of yourself.”
-
-And as I freed the pain from the prison of my chest,
-I felt a little bit lighter.
-Waiting for the next time
-I’ll set more pains free from their cage.
-
-        </div>
         <div class="fixed top-0 left-0 right-0 flex flex-col items-start p-4 space-y-2 z-50">
-             <div class="flex justify-center space-x-4 mb-2"> <button
+             <div class="flex justify-center space-x-4 mb-2">
+                <button
                     id="ar-button"
                     onclick="changeLanguage('ar')"
                     class="text-purple-600 px-6 py-2 rounded-full shadow-lg-custom transition duration-300 ease-in-out transform hover:scale-105 hover:text-purple-700 focus:outline-none blur-effect"
                 >
-    ‎                العربية
+                    العربية
                 </button>
                 <button
                     id="fr-button"
@@ -799,7 +537,8 @@ I’ll set more pains free from their cage.
              <button
                  id="back-home-button"
                  onclick="window.location.href='https://dodch.github.io/Dodch-Stories-/index.html'"
-                 class="text-purple-600 px-4 py-1 text-sm rounded-full shadow-lg-custom transition duration-300 ease-in-out transform hover:scale-105 hover:text-purple-700 focus:outline-none blur-effect inline-flex items-center" >
+                 class="text-purple-600 px-4 py-1 text-sm rounded-full shadow-lg-custom transition duration-300 ease-in-out transform hover:scale-105 hover:text-purple-700 focus:outline-none blur-effect inline-flex items-center"
+             >
                 <span class="mr-1">&larr;</span> <span id="back-home-text">Back Home</span>
             </button>
         </div>
@@ -850,21 +589,17 @@ I’ll set more pains free from their cage.
             </button>
         </div>
 
-    </div> <script>
+    </div>
+    <script>
         const loadingScreen = document.getElementById("loading-screen");
-        // Changed loadText to loadPercentageText for clarity
         const loadPercentageText = document.querySelector(".loading-percentage");
-        const body = document.body; // Reference to the body element
-
+        const body = document.body;
 
         let currentLanguage = 'en';
-        // Use an object to store saved progress for each language
         let allSavedProgress = {};
-
-        // Use temp variables for the clicked word's ID and text before saving
         let tempSavedWordId = '';
         let tempSavedWordText = '';
-        let highlightedWordElement = null; // Element reference for the currently highlighted word
+        let highlightedWordElement = null;
         let isDarkMode = false;
 
         const contentMap = {
@@ -875,12 +610,12 @@ I’ll set more pains free from their cage.
                 savePosition: 'حفظ الموضع',
                 save: 'حفظ',
                 exit: 'خروج',
-                atWord: 'كلمة', // "at word" part for popup
-                positionSaved: 'الموقع محفوظ', // "Position saved" part for console
-                forWord: 'لكلمة', // "for the word" part for console
+                atWord: 'كلمة',
+                positionSaved: 'الموقع محفوظ',
+                forWord: 'لكلمة',
                 wordNotFound: 'الكلمة المحفوظة لم يتم العثور عليها في النص الحالي.',
-                noWordSaved: 'لم يتم حفظ أي كلمة لهذه اللغة بعد', // Changed message
-                backHome: 'العودة للصفحة الرئيسية' // Added Back Home text
+                noWordSaved: 'لم يتم حفظ أي كلمة لهذه اللغة بعد',
+                backHome: 'العودة للصفحة الرئيسية'
             },
             fr: {
                 title: 'Perdu à trouver',
@@ -893,8 +628,8 @@ I’ll set more pains free from their cage.
                 positionSaved: 'La position est enregistrée',
                 forWord: 'pour le mot',
                 wordNotFound: 'Le mot enregistré n\'a pas été trouvé dans le texte actuel.',
-                noWordSaved: 'Aucun mot n\'a été enregistré pour cette langue encore', // Changed message
-                backHome: 'Retour à l\'accueil' // Added Back Home text
+                noWordSaved: 'Aucun mot n\'a été enregistré pour cette langue encore',
+                backHome: 'Retour à l\'accueil'
             },
             en: {
                 title: 'lost to be found',
@@ -907,27 +642,27 @@ I’ll set more pains free from their cage.
                 positionSaved: 'Position saved',
                 forWord: 'for the word',
                 wordNotFound: 'Saved word not found in current text.',
-                noWordSaved: 'No word has been saved for this language yet', // Changed message
-                backHome: 'Back Home' // Added Back Home text
+                noWordSaved: 'No word has been saved for this language yet',
+                backHome: 'Back Home'
             },
         };
 
+        // Reverted: References to fixed background divs
         const lightBackgroundDiv = document.querySelector('.fixed-background.light-background');
         const darkBackgroundDiv = document.querySelector('.fixed-background.dark-background');
+
         const contentDiv = document.getElementById('content');
         const textElement = document.getElementById('text');
         const titleElement = document.getElementById('title');
         const backHomeButton = document.getElementById('back-home-button');
-        const backHomeTextSpan = document.getElementById('back-home-text'); // Span inside back home button
+        const backHomeTextSpan = document.getElementById('back-home-text');
 
 
         function applyTextEffects() {
-            // This function reapplies default styles, useful after removing highlight
-            const textSpans = textElement.querySelectorAll('span[id^="word-p"]'); // Select only word spans
+            const textSpans = textElement.querySelectorAll('span[id^="word-p"]');
             const isDarkModeActive = document.body.classList.contains('dark-mode');
 
             textSpans.forEach(span => {
-                 // Only apply default effects if it's NOT the highlighted word
                  if (!span.classList.contains('glow-word')) {
                      if (isDarkModeActive) {
                          span.style.textShadow = '0 0 1px rgba(255, 255, 255, 0.5)';
@@ -946,37 +681,29 @@ I’ll set more pains free from their cage.
              });
         }
 
-        // Clear progress for the *current* language
         function clearSavedProgress() {
-             // Remove the entry for the current language
              delete allSavedProgress[currentLanguage];
-             // Save the updated object back to localStorage
              localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
 
-             // Remove highlight from the previously highlighted element if it exists
              if (highlightedWordElement) {
                 highlightedWordElement.classList.remove('bg-yellow-200', 'bg-yellow-600', 'rounded', 'glow-word');
-                applyTextEffects(); // Reapply default text effects
-                highlightedWordElement = null; // Clear reference
+                applyTextEffects();
+                highlightedWordElement = null;
              }
              console.log(`Saved progress for ${currentLanguage.toUpperCase()} cleared.`);
         }
 
 
         function changeLanguage(lang, fromLoad = false) {
-            // Prevent unnecessary changes if already fading or same language
-            // The `fromLoad` flag allows the initial load to proceed even if body has 'loading'
             if (contentDiv.classList.contains('content-fading') && !fromLoad) {
                  return;
             }
-             // Prevent unnecessary changes if the same language is already set, unless it's the initial load
             if (currentLanguage === lang && !fromLoad) {
                  return;
             }
 
             currentLanguage = lang;
 
-            // Only save preferred language after the initial load to avoid overwriting
             if (!fromLoad) {
                  localStorage.setItem('preferredLanguage', lang);
             }
@@ -987,11 +714,10 @@ I’ll set more pains free from their cage.
             contentDiv.classList.add('content-fading');
 
             const rawTextElement = document.getElementById(content.rawTextId);
-            const rawText = rawTextElement ? rawTextElement.textContent.trim() : ''; // Trim whitespace
+            const rawText = rawTextElement ? rawTextElement.textContent.trim() : '';
 
             setTimeout(() => {
                 titleElement.textContent = content.title;
-                // Update Back Home button text
                 backHomeTextSpan.textContent = content.backHome;
 
 
@@ -1003,48 +729,39 @@ I’ll set more pains free from their cage.
                     textElement.style.textAlign = 'left';
                 }
 
-                textElement.innerHTML = ''; // Clear previous content
+                textElement.innerHTML = '';
 
                 if (rawText) {
-                    // Split by paragraph first, then process each paragraph
-                    const paragraphs = rawText.split('\n\n'); // Split by double newline for paragraphs
+                    const paragraphs = rawText.split('\n\n');
 
                     paragraphs.forEach((paragraph, pIndex) => {
-                         const lines = paragraph.split('\n'); // Split paragraph into lines for line breaks
+                         const lines = paragraph.split('\n');
 
                          lines.forEach((line, lIndex) => {
                              const trimmedLine = line.trim();
 
                              if (trimmedLine === '') {
-                                  // If a line is just whitespace, add a line break
                                   const br = document.createElement('br');
                                   textElement.appendChild(br);
                              } else {
                                  const pElement = document.createElement('p');
-                                 // Add paragraph class only to actual paragraphs
                                  pElement.classList.add('mb-4', 'text-lg', 'leading-relaxed');
 
 
-                                 // Split words while keeping spaces and punctuation attached or as separate spans
-                                 const wordsAndSpaces = trimmedLine.match(/\S+|\s+|[.,!?;:]/g); // Match non-spaces, spaces, or common punctuation
+                                 const wordsAndSpaces = trimmedLine.match(/\S+|\s+|[.,!?;:]/g);
 
                                  if (wordsAndSpaces) {
                                      wordsAndSpaces.forEach((part, partIndex) => {
-                                         // If it's just spaces, add a text node directly
-                                         if (part.trim() === '' && !/[.,!?;:]/.test(part)) { // Also check it's not just punctuation
+                                         if (part.trim() === '' && !/[.,!?;:]/.test(part)) {
                                              pElement.appendChild(document.createTextNode(part));
                                          } else {
-                                             // It's a word or punctuation attached to a word or just punctuation
                                              const span = document.createElement('span');
-                                             span.textContent = part; // Use part directly
-                                             span.classList.add('cursor-pointer'); // Keep base class
+                                             span.textContent = part;
+                                             span.classList.add('cursor-pointer');
 
-                                             // Assign a unique ID based on paragraph and part index
                                              const uniqueId = `word-p${pIndex}-l${lIndex}-part${partIndex}`;
                                              span.id = uniqueId;
 
-                                             // Attach click handler, passing the span's ID and text
-                                             // Trim text for display purposes, but unique ID is the locator
                                              span.onclick = () => handleWordClick(uniqueId, span.textContent.trim());
 
                                              pElement.appendChild(span);
@@ -1064,47 +781,40 @@ I’ll set more pains free from their cage.
                 }
 
 
-                // Update button texts
                 document.getElementById('save-progress-button').textContent = content.saveProgress;
                 document.getElementById('popup-title').textContent = content.savePosition;
                 document.getElementById('popup').querySelector('.bg-green-500').textContent = content.save;
                 document.getElementById('popup').querySelector('.bg-red-500').textContent = content.exit;
 
-                // Update active language button glow
                 document.getElementById('ar-button').classList.remove('glow');
                 document.getElementById('fr-button').classList.remove('glow');
                 document.getElementById('en-button').classList.remove('glow');
                 document.getElementById(`${lang}-button`).classList.add('glow');
 
-                 // Highlight the saved word for the *new* current language if it exists
                  highlightWord();
 
-                 // If this is the initial load and a word is saved for this language, scroll to it
                  const savedProgressForCurrentLang = allSavedProgress[currentLanguage];
                  if (fromLoad && savedProgressForCurrentLang && savedProgressForCurrentLang.id) {
-                     // Small delay to ensure text is fully rendered before trying to scroll
                       setTimeout(() => {
-                          scrollToSavedWord(false); // Scroll without extra checks/alerts
-                      }, 100); // Adjust delay if needed
+                          scrollToSavedWord(false);
+                      }, 100);
                  }
 
                 contentDiv.classList.remove('content-fading');
 
-                 // Ensure title color is correct based on mode
                  if (isDarkMode) {
                      titleElement.style.color = 'white';
                  } else {
                       titleElement.style.color = 'inherit';
                  }
 
-            }, 500); // Match the fade-out duration
+            }, 500);
         }
 
-        // Modified to accept span ID and text
         function handleWordClick(spanId, wordText) {
             tempSavedWordId = spanId;
-            tempSavedWordText = wordText; // Store the text for the popup message
-            document.getElementById('popup-text').textContent = `${contentMap[currentLanguage].savePosition} ${contentMap[currentLanguage].atWord}: "${wordText}"?`; // Use the text here
+            tempSavedWordText = wordText;
+            document.getElementById('popup-text').textContent = `${contentMap[currentLanguage].savePosition} ${contentMap[currentLanguage].atWord}: "${wordText}"?`;
             document.getElementById('popup').classList.remove('hidden');
             document.getElementById('popup').classList.remove('fade-out');
             document.getElementById('popup').classList.add('fade-in');
@@ -1113,17 +823,15 @@ I’ll set more pains free from their cage.
         function closePopup() {
             document.getElementById('popup').classList.remove('fade-in');
             document.getElementById('popup').classList.add('fade-out');
-            // Clear temp variables when closing popup without saving
             tempSavedWordId = '';
             tempSavedWordText = '';
             setTimeout(() => {
                 document.getElementById('popup').classList.add('hidden');
-            }, 300); // Match the fade-out duration
+            }, 300);
         }
 
         function savePosition() {
             if (tempSavedWordId) {
-                // Save the ID and text for the *current* language
                 allSavedProgress[currentLanguage] = {
                     id: tempSavedWordId,
                     text: tempSavedWordText
@@ -1131,20 +839,17 @@ I’ll set more pains free from their cage.
 
                 console.log(`${contentMap[currentLanguage].positionSaved} ${contentMap[currentLanguage].forWord}: "${tempSavedWordText}" (ID: ${tempSavedWordId}) in language "${currentLanguage}"`);
 
-                // Save the entire progress object to localStorage
                 localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
 
-                highlightWord(); // Highlight the *newly* saved word for the current language
+                highlightWord();
 
             }
-            closePopup(); // Close the popup after saving
+            closePopup();
         }
 
-        // Scroll to the saved word for the *current* language
         function scrollToSavedWord(performChecks = true) {
             const savedProgressForCurrentLang = allSavedProgress[currentLanguage];
 
-            // Check if a word is saved for the current language
             if (!savedProgressForCurrentLang || !savedProgressForCurrentLang.id) {
                 alert(contentMap[currentLanguage].noWordSaved);
                 return;
@@ -1153,73 +858,60 @@ I’ll set more pains free from their cage.
             const savedWordId = savedProgressForCurrentLang.id;
             const savedWordText = savedProgressForCurrentLang.text;
 
-            // Find the element by its unique ID
             const targetElement = document.getElementById(savedWordId);
 
             if (targetElement) {
-                 highlightWord(); // Highlight the found element (will use the current saved word ID)
+                 highlightWord();
 
-                 // Use requestAnimationFrame for smoother scrolling after potential element rendering
                  requestAnimationFrame(() => {
                     targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                  });
 
             } else {
-                // If the element with the saved ID is not found for the current language
                 console.warn(`${contentMap[currentLanguage].wordNotFound} (ID: ${savedWordId}, Text: "${savedWordText}")`);
-                // Alert only if performing checks (i.e., initiated by button click, not on load)
                 if (performChecks) {
                     alert(`${contentMap[currentLanguage].wordNotFound} ("${savedWordText}")`);
-                    // Offer to clear saved progress for this language if word not found
                     const confirmClear = confirm(`Clear saved progress for ${currentLanguage.toUpperCase()}?`);
                     if (confirmClear) {
                         clearSavedProgress();
                     }
                 } else {
-                     // If on load and word not found, silently clear progress for this language
                      console.warn(`Clearing saved progress for ${currentLanguage.toUpperCase()} due to missing element.`);
                      clearSavedProgress();
                 }
             }
         }
 
-       // Highlight the saved word for the *current* language
        function highlightWord() {
-           // Remove highlight from the previously highlighted element if it exists
            if (highlightedWordElement) {
                highlightedWordElement.classList.remove('bg-yellow-200', 'bg-yellow-600', 'rounded', 'glow-word');
-               applyTextEffects(); // Reapply default text effects to the unhighlighted word
-               highlightedWordElement = null; // Clear the reference
+               applyTextEffects();
+               highlightedWordElement = null;
            }
 
            const savedProgressForCurrentLang = allSavedProgress[currentLanguage];
 
-           // Check if there is saved progress for the current language
            if (!savedProgressForCurrentLang || !savedProgressForCurrentLang.id) {
-               return; // No word saved for this language, nothing to highlight
+               return;
            }
 
            const savedWordId = savedProgressForCurrentLang.id;
 
-           // Find the element by its unique ID
            const targetElement = document.getElementById(savedWordId);
 
            if (targetElement) {
-               highlightedWordElement = targetElement; // Set the reference to the currently highlighted element
+               highlightedWordElement = targetElement;
 
-               // Add highlighting classes
                highlightedWordElement.classList.add('rounded', 'glow-word');
 
-               // Apply correct highlight color based on dark/light mode
                if (document.body.classList.contains('dark-mode')) {
-                   highlightedWordElement.classList.remove('bg-yellow-200'); // Remove light mode class
-                   highlightedWordElement.classList.add('bg-yellow-600'); // Add dark mode class
+                   highlightedWordElement.classList.remove('bg-yellow-200');
+                   highlightedWordElement.classList.add('bg-yellow-600');
                } else {
-                   highlightedWordElement.classList.remove('bg-yellow-600'); // Remove dark mode class
-                   highlightedWordElement.classList.add('bg-yellow-200'); // Add light mode class
+                   highlightedWordElement.classList.remove('bg-yellow-600');
+                   highlightedWordElement.classList.add('bg-yellow-200');
                }
 
-               // Override text effects for the highlighted word (CSS handles this mostly, but good practice)
                highlightedWordElement.style.textShadow = 'none';
                highlightedWordElement.style.webkitTextStroke = 'none';
                highlightedWordElement.style.textStroke = 'none';
@@ -1227,11 +919,7 @@ I’ll set more pains free from their cage.
                highlightedWordElement.style.color = 'initial';
 
            } else {
-               // If the element with the saved ID is not found during highlighting
                console.warn(`Element for saved word ID "${savedWordId}" not found for highlighting in language "${currentLanguage}".`);
-               // The element might be missing if the raw text was changed.
-               // We don't clear progress automatically here; it's handled in scrollToSavedWord
-               // when the user tries to navigate to it.
            }
        }
 
@@ -1239,25 +927,23 @@ I’ll set more pains free from their cage.
             const body = document.body;
             const languageButtons = document.querySelectorAll('#ar-button, #fr-button, #en-button');
             const saveButton = document.getElementById('save-progress-button');
-            const darkModeToggleBtn = document.getElementById('dark-mode-toggle-button'); // Get the toggle button
-            const darkModeIcon = document.getElementById('dark-mode-icon'); // Get the icon span
+            const darkModeToggleBtn = document.getElementById('dark-mode-toggle-button');
+            const darkModeIcon = document.getElementById('dark-mode-icon');
             const popupDivInner = document.getElementById('popup').querySelector('div');
             const contentTitle = document.getElementById('title');
 
-            // Toggle the isDarkMode state
             isDarkMode = !isDarkMode;
             localStorage.setItem('darkModeEnabled', isDarkMode);
 
-            // Apply animation class briefly
             darkModeToggleBtn.classList.add('animate-spin-once');
-            // Remove animation class after it completes
             darkModeToggleBtn.addEventListener('animationend', () => {
                 darkModeToggleBtn.classList.remove('animate-spin-once');
-            }, { once: true }); // Use { once: true } to automatically remove the listener
+            }, { once: true });
 
 
             if (isDarkMode) {
                 body.classList.add('dark-mode');
+                // These are now correctly manipulating the opacity of the fixed background divs
                 lightBackgroundDiv.style.opacity = 0;
                 darkBackgroundDiv.style.opacity = 1;
 
@@ -1268,7 +954,6 @@ I’ll set more pains free from their cage.
                  saveButton.classList.remove('text-purple-600', 'hover:text-purple-700');
                  saveButton.classList.add('text-purple-300', 'hover:text-purple-400');
 
-                 // Apply dark mode styles to the Back Home button
                  backHomeButton.classList.remove('text-purple-600', 'hover:text-purple-700');
                  backHomeButton.classList.add('text-purple-300', 'hover:text-purple-400');
 
@@ -1276,15 +961,16 @@ I’ll set more pains free from their cage.
                 darkModeToggleBtn.classList.remove('text-gray-600', 'hover:text-gray-700');
                 darkModeToggleBtn.classList.add('text-gray-400', 'hover:text-gray-300');
 
-                darkModeIcon.textContent = '🌙'; // Set emoji for dark mode
+                darkModeIcon.textContent = '🌙';
 
                 popupDivInner.classList.remove('text-gray-800');
                 popupDivInner.classList.add('text-white');
 
                 contentTitle.style.color = 'white';
 
-            } else { // Revert to light mode
+            } else {
                 body.classList.remove('dark-mode');
+                // These are now correctly manipulating the opacity of the fixed background divs
                 lightBackgroundDiv.style.opacity = 1;
                 darkBackgroundDiv.style.opacity = 0;
 
@@ -1295,7 +981,6 @@ I’ll set more pains free from their cage.
                  saveButton.classList.remove('text-purple-300', 'hover:text-purple-400');
                  saveButton.classList.add('text-purple-600', 'hover:text-purple-700');
 
-                 // Apply light mode styles to the Back Home button
                  backHomeButton.classList.remove('text-purple-300', 'hover:text-purple-400');
                  backHomeButton.classList.add('text-purple-600', 'hover:text-purple-700');
 
@@ -1303,7 +988,7 @@ I’ll set more pains free from their cage.
                 darkModeToggleBtn.classList.remove('text-gray-400', 'hover:text-gray-300');
                 darkModeToggleBtn.classList.add('text-gray-600', 'hover:text-gray-700');
 
-                darkModeIcon.textContent = '☀️'; // Set emoji for light mode
+                darkModeIcon.textContent = '☀️';
 
                 popupDivInner.classList.remove('text-white');
                 popupDivInner.classList.add('text-gray-800');
@@ -1311,17 +996,13 @@ I’ll set more pains free from their cage.
                  contentTitle.style.color = 'inherit';
             }
 
-             // Reapply text effects and highlight after theme change
              applyTextEffects();
-             highlightWord(); // Ensure highlight color updates
+             highlightWord();
         }
 
-        // Add click animation to buttons (excluding popup and dark mode toggle which has its own)
         const animatedButtons = document.querySelectorAll('button:not(#popup button):not(#dark-mode-toggle-button)');
         animatedButtons.forEach(button => {
             button.addEventListener('click', function() {
-                 // Only apply tap effect if not the back home button's click
-                 // The back home button's click changes the page location immediately
                  if (this.id !== 'back-home-button') {
                     this.classList.add('tapped');
                     setTimeout(() => {
@@ -1332,9 +1013,7 @@ I’ll set more pains free from their cage.
         });
 
 
-        // --- Loading Screen Script (Modified) ---
         let load = 0;
-        // Interval to update the loading percentage text animation
         let interval = setInterval(updateLoadingText, 30);
 
         function updateLoadingText() {
@@ -1342,81 +1021,71 @@ I’ll set more pains free from their cage.
 
           if (load > 99) {
             clearInterval(interval);
-            // Update the percentage text to 100%
             loadPercentageText.innerText = '100%';
-            // The loading screen hiding and un-blurring is triggered by window.load
           } else {
-             // Only update the percentage text element
             loadPercentageText.innerText = `${load}%`;
           }
         }
 
-        // Wait for the entire page (including all resources like images, stylesheets) to load
         window.addEventListener('load', () => {
-            // Ensure the percentage text shows 100% before starting to hide
-             if (load < 100) { // Only update if interval didn't finish
+             if (load < 100) {
                  loadPercentageText.innerText = '100%';
              }
 
-            // Add a small delay before hiding the loading screen and un-blurring the content.
             setTimeout(() => {
-                // Remove the 'loading' class from the body.
-                // This triggers the CSS transition on the #page-content-wrapper filter (blur)
-                // and removes 'pointer-events: none'.
                 body.classList.remove('loading');
-
-                // Start fading out the loading screen (CSS transition handles the fade over 0.5s).
-                // This happens concurrently with the blur transition.
                 loadingScreen.classList.add('hidden');
 
-                 // Optional: Remove the loading screen element completely from the DOM after its transition ends.
-                // Add a delay that is slightly longer than the loading screen's fade-out transition (0.5s).
                 setTimeout(() => {
                     loadingScreen.remove();
                  }, 600);
 
-            }, 500); // Delay in milliseconds BEFORE hiding/un-blurring starts
+            }, 500);
         });
 
 
-        // --- Initial Setup (Existing Script) ---
-
         document.addEventListener('DOMContentLoaded', () => {
-             // --- Load Saved Progress ---
              const savedProgressJson = localStorage.getItem('allSavedProgress');
              try {
                  allSavedProgress = JSON.parse(savedProgressJson) || {};
              } catch (e) {
                  console.error("Failed to parse saved progress from localStorage:", e);
-                 allSavedProgress = {}; // Reset if parsing fails
-                 localStorage.removeItem('allSavedProgress'); // Clear invalid data
+                 allSavedProgress = {};
+                 localStorage.removeItem('allSavedProgress');
              }
 
-             // --- Theme Setup ---
              const savedDarkMode = localStorage.getItem('darkModeEnabled');
              if (savedDarkMode !== null) {
                  isDarkMode = JSON.parse(savedDarkMode);
              } else {
-                 // Default to light mode if no preference is saved
-                 isDarkMode = false; // Default
+                 isDarkMode = false;
              }
-             // Apply initial theme based on the loaded preference or default
-             // Temporarily invert `isDarkMode` so the first call to toggleDarkMode sets the desired state correctly.
+
+             // Correctly set initial opacity for fixed backgrounds based on isDarkMode
+             if (isDarkMode) {
+                 lightBackgroundDiv.style.opacity = 0;
+                 darkBackgroundDiv.style.opacity = 1;
+                 body.classList.add('dark-mode'); // Also add the class for other CSS rules
+             } else {
+                 lightBackgroundDiv.style.opacity = 1;
+                 darkBackgroundDiv.style.opacity = 0;
+                 body.classList.remove('dark-mode'); // Ensure no dark mode class initially
+             }
+
+             // Now call toggleDarkMode to set the icon and button colors
+             // Toggle it once to reflect the *correct* loaded state initially
+             // We need to 'invert' isDarkMode here because toggleDarkMode will flip it again
              isDarkMode = !isDarkMode; // This ensures the first call sets it to the loaded/default value
-             toggleDarkMode(); // This will also set the correct initial emoji
+             toggleDarkMode();
 
-             // --- Language Setup ---
+
              const preferredLanguage = localStorage.getItem('preferredLanguage');
-             let initialLangToLoad = 'en'; // Default language is English
+             let initialLangToLoad = 'en';
 
-             // Prioritize preferred language if valid
              if (preferredLanguage && contentMap[preferredLanguage]) {
                 initialLangToLoad = preferredLanguage;
              }
-             // If no valid preferred language, initialLangToLoad remains 'en'
 
-             // Change language and populate text. Passing true indicates it's the initial load.
-             // This call happens *before* the window.load event, populating content while loading screen is visible.
              changeLanguage(initialLangToLoad, true);
 
         });
