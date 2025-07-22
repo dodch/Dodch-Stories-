@@ -8,67 +8,62 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
-    <style>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet"> <style>
         /* --- Basic Styling --- */
         * {
             box-sizing: border-box;
         }
 
-        html, body {
-            height: 100%; /* Ensure HTML and Body take full height */
+        body {
             margin: 0;
             padding: 0;
-        }
-
-        body {
             font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
             position: relative;
             z-index: 1;
             transition: color 0.5s ease;
-            overscroll-behavior-y: contain; /* Optional: improve mobile scroll experience */
         }
 
         /* --- LOADING SCREEN OVERLAY (fixed on top) --- */
         #loading-screen {
-          position: fixed;
+          position: fixed; /* Position over the content */
           top: 0;
           left: 0;
-          width: 100vw;  /* Use 100vw */
-          height: 100vh; /* Use 100vh */
-          background-color: rgba(0, 0, 0, 0.9);
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.9); /* Darker overlay for contrast */
           display: flex;
-          flex-direction: column;
+          flex-direction: column; /* Stack hearts and percentage vertically */
           align-items: center;
           justify-content: center;
-          z-index: 10000;
-          transition: opacity 0.5s ease;
+          z-index: 10000; /* MUCH HIGHER Z-INDEX: Ensures this element is on top of EVERYTHING else */
+          transition: opacity 0.5s ease; /* Smooth fade-out effect for the screen itself */
         }
 
         #loading-screen.hidden {
-          opacity: 0;
-          pointer-events: none;
+          opacity: 0; /* Fade out */
+          pointer-events: none; /* Prevent interaction with hidden element after it's faded */
         }
 
         /* --- LOADING INDICATOR CONTAINER (holds hearts) --- */
         .loading-indicator {
-            display: flex;
+            display: flex; /* Arrange hearts horizontally */
             align-items: center;
             justify-content: center;
-            margin-bottom: 15px;
+            margin-bottom: 15px; /* Space between hearts and percentage */
         }
 
         /* --- LOADING HEART ANIMATION --- */
         .loading-indicator span {
-            display: inline-block;
-            width: 15px;
+            display: inline-block; /* Treat spans as individual elements */
+            width: 15px; /* Size of the heart container */
             height: 15px;
-            margin: 0 5px;
-            color: white;
-            font-size: 15px;
-            opacity: 0;
-            transform: scale(0.5);
-            animation: pulse-heart 1.4s ease-in-out infinite;
+            margin: 0 5px; /* Space between hearts */
+            color: white; /* Color of the heart glyph */
+            font-size: 15px; /* Size of the heart glyph */
+            opacity: 0; /* Start hidden */
+            transform: scale(0.5); /* Start small */
+            animation: pulse-heart 1.4s ease-in-out infinite; /* Animation properties */
         }
 
         /* Add delays to create the trailing effect */
@@ -89,9 +84,9 @@
         /* --- LOADING PERCENTAGE TEXT --- */
         .loading-percentage {
           color: #fff;
-          font-size: 24px;
+          font-size: 24px; /* Smaller size than the old loading text */
           font-family: "Ubuntu", sans-serif;
-          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Optional: Add text shadow */
         }
 
 
@@ -120,8 +115,8 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;   /* Explicitly use viewport width */
-            height: 100vh;  /* Explicitly use viewport height */
+            width: 100%;
+            height: 100%;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -218,9 +213,9 @@
         }
 
         /* Style for the main content area */
-        #content {
+       #content {
             padding: 2rem;
-            /* REMOVED: padding-top: 6rem; This was causing the white space */
+            padding-top: 6rem;
             position: relative;
             z-index: 1;
             margin-left: auto;
@@ -232,18 +227,6 @@
             background-color: transparent;
             transition: opacity 0.5s ease-in-out;
             opacity: 1;
-        }
-
-        /* Add padding to the top of the main content area *inside* the #content,
-           to prevent it from being hidden behind the fixed navigation bar.
-           Adjust this value based on the actual height of your navigation bar.
-           A good practice is to make it slightly more than your nav bar's height.
-        */
-        #content h1 {
-            padding-top: 5rem; /* Adjust this value (e.g., 5rem) based on your navigation bar's height */
-            margin-bottom: 1rem; /* Keep original margin-bottom or adjust */
-            color: inherit; /* Ensure this is here for light mode default */
-            transition: color 0.5s ease;
         }
 
         #content.content-fading {
@@ -313,7 +296,10 @@
              transition: color 0.5s ease;
         }
 
-         /* body:not(.dark-mode) #content h1 { is handled by the default color: inherit; now } */
+         body:not(.dark-mode) #content h1 {
+             color: inherit;
+             transition: color 0.5s ease;
+        }
 
 
         /* Transition for the popup background */
@@ -335,20 +321,12 @@
           animation: spin-once 0.5s ease-in-out;
         }
 
-        /* Apply safe area padding to the fixed navigation bar for iOS */
-        .fixed.top-0 {
-            padding-top: env(safe-area-inset-top, 0px); /* Use safe area for top padding, fallback to 0 */
-        }
-
     </style>
 </head>
-<body class="loading">
-    <div id="loading-screen">
+<body class="loading"> <div id="loading-screen">
         <div class="loading-indicator">
-            <span>❤️</span> <span>❤️</span> <span>❤️</span> <span>❤️</span> <span>❤️</span>
-        </div>
-        <div class="loading-percentage">0%</div>
-    </div>
+            <span>❤️</span> <span>❤️</span> <span>❤️</span> <span>❤️</span> <span>❤️</span> </div>
+        <div class="loading-percentage">0%</div> </div>
 
     <div class="fixed-background light-background"></div>
     <div class="fixed-background dark-background"></div>
@@ -420,7 +398,7 @@
 
 ‎ لكنني رغم ذلك… لم أتوقف عن الحب.
 ‎ حتى وإن لم يكن قدري أن أُحَب كما أحِب،
-‎ لم أتوقّف عن الزراعة
+‎ لم أتوقّف عن الزراعة 
 ‎ كنت أزرع القلوب كزهور في بستان روحي، كلّ يوم.
 ‎ لكن مؤخرًا، لم تعد تنمو.
 ‎ لم أعد أرى قلوبًا متفتّحة.
@@ -430,12 +408,12 @@
 ‎ أو كإثبات أنني أستحق الحب،
 ‎ أن مشاعري صادقة، رغم كل ما يُقال.
 
-‎ لكن أغلب الزهور  كما نعلم
+‎ لكن أغلب الزهور  كما نعلم 
 ‎ إما تموت ببطئ في إناءٍ زجاجي على رفٍّ منسي،
 ‎ أو تُطوى بين صفحات كتاب لا يُقرأ،
 ‎ تمامًا كالكلمات التي أقولها، والتي لا يسمعها أحد.
 ‎ وانتهى بي الأمر في بستانٍ جاف، بقلبٍ فارغ،
-‎ وعطر الحب تبخّر مع الريح
+‎ وعطر الحب تبخّر مع الريح 
 ‎ يحضر للحظة، ثم يغيب.
 
 ‎ ولكن…
@@ -538,7 +516,7 @@ Je me demande souvent… quand ils me regardent, remarquent-ils les choses déli
 Peuvent-ils lire mes expressions silencieuses, celles que moi-même je ne comprends pas ?
 
 C’est étrange, comme je peux ressentir les émotions enfouies au plus profond des autres, même quand ils font de leur mieux pour les cacher…
-But when it comes to me, all I see are dim, shapeless shadows.
+Mais quand il s’agit de moi, tout ce que je vois, ce sont des ombres ternes, sans forme.
 
 Parfois, je voudrais juste sortir de moi-même.
 Vivre dans un autre corps, juste pour un jour.
@@ -547,7 +525,7 @@ Me parler.
 Me voir.
 Savoir ce que ça fait d’exister dans cette peau, vue de l’extérieur.
 Parce que, peu importe combien j’essaie, je n’arrive pas à accepter les compliments.
-Je hoche la tête, je souris… but au fond, je ne les crois pas. Pas tant que je ne me verrai pas vraiment.
+Je hoche la tête, je souris… mais au fond, je ne les crois pas. Pas tant que je ne me verrai pas vraiment.
 Pas tant que je ne pourrai pas plonger mon regard dans le mien, comme je le fais dans les yeux de quelqu’un que j’aime.
 
 Mon imagination, mes émotions, ma sensibilité, elles grandissent chaque jour, sans fin.
@@ -577,7 +555,7 @@ Des cicatrices qui me rappellent.
 
 Des cicatrices que je ne peux pas oublier.
 
-But that never stopped me from loving. Même si l’amour ne semble pas écrit dans mon destin, j’ai toujours essayé d’en donner, en plantant des cœurs comme des graines dans le jardin de mon âme, jour après jour.
+Mais cela ne m’a jamais empêché d’aimer. Même si l’amour ne semble pas écrit dans mon destin, j’ai toujours essayé d’en donner, en plantant des cœurs comme des graines dans le jardin de mon âme, jour après jour.
 Mais ces derniers temps, ils ne semblent plus pousser. Je ne vois presque plus aucune fleur en forme de cœur.
 Puis j’ai compris : peut-être parce que je les cueillais trop tôt.
 Je les offrais comme cadeaux à ceux que j’aimais, ou peut-être comme preuve que je mérite d’être aimé… que j’ai des sentiments profonds et sincères.
@@ -585,9 +563,9 @@ Je les offrais comme cadeaux à ceux que j’aimais, ou peut-être comme preuve 
 Mais la plupart des fleurs, comme on le sait, finissent dans des bocaux où leurs couleurs fanent lentement, ou pressées entre les pages oubliées d’un vieux livre, tout comme les mots de celui qui les a offertes, jamais relus.
 Et ainsi, je me suis retrouvé avec un jardin vide, un cœur vide, et le parfum de l’amour emporté par le vent — présent juste un instant avant de disparaître à nouveau.
 
-But… est-ce vraiment censé se passer ainsi ?
+Mais… est-ce vraiment censé se passer ainsi ?
 
-Maybe not. Peut-être qu’au lieu d’arracher mon amour et de le donner trop tôt, je le laisserai éclore pour moi. Je le cultiverai doucement, je le garderai vivant en moi, jusqu’au jour où quelqu’un viendra et verra sa valeur.
+Peut-être pas. Peut-être qu’au lieu d’arracher mon amour et de le donner trop tôt, je le laisserai éclore pour moi. Je le cultiverai doucement, je le garderai vivant en moi, jusqu’au jour où quelqu’un viendra et verra sa valeur.
 Quelqu’un qui ne se contentera pas de prendre une fleur et de partir, mais qui s’agenouillera à mes côtés, et m’aidera à les faire pousser, jusqu’à ce qu’ensemble, nous ayons planté un champ sans fin.
 
 ⸻
@@ -641,7 +619,7 @@ Laissé dans l’obscurité,
 guidé seulement par de faibles éclats de ma foi.
 Je suis tombé —
 je me suis cogné contre des murs de dureté —
-but j’ai continué.
+mais j’ai continué.
 
 Je me souviens encore de toi me parlant de tes rêves,
 et moi m’enthousiasmant comme s’ils étaient les miens.
@@ -796,8 +774,7 @@ I’ll set more pains free from their cage.
 
         </div>
         <div class="fixed top-0 left-0 right-0 flex flex-col items-start p-4 space-y-2 z-50">
-             <div class="flex justify-center space-x-4 mb-2">
-                 <button
+             <div class="flex justify-center space-x-4 mb-2"> <button
                     id="ar-button"
                     onclick="changeLanguage('ar')"
                     class="text-purple-600 px-6 py-2 rounded-full shadow-lg-custom transition duration-300 ease-in-out transform hover:scale-105 hover:text-purple-700 focus:outline-none blur-effect"
@@ -873,8 +850,7 @@ I’ll set more pains free from their cage.
             </button>
         </div>
 
-    </div>
-    <script>
+    </div> <script>
         const loadingScreen = document.getElementById("loading-screen");
         // Changed loadText to loadPercentageText for clarity
         const loadPercentageText = document.querySelector(".loading-percentage");
