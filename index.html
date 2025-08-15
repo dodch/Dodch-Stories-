@@ -7,6 +7,7 @@
 <meta name="google-site-verification" content="WPsemouAlOQyJaztzjjtf6afzzagtg6WWPZh7gd3T8A">
 <meta name="description" content="Dodch Stories is a collection of original stories written with emotion, creativity, and depth. Explore fiction that connects to the heart and imagination.">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quattrocento+Sans">
 <style>
 /* Default (Light) Mode Variables */
 :root {
@@ -15,7 +16,7 @@
     --lg-text: #ffffff;
     --heart-color: rgba(255, 255, 255, 0.8);
     --heart-active: #fb4268;
-    --bg-url: url("https://i.ibb.co/hxBtrKYq/IMG-1865.jpg  ");
+    --bg-url: url("https://i.ibb.co/hxBtrKYq/IMG-1865.jpg");
     --main-bg: rgba(0, 0, 0, 0);
     --body-transition: background-color 0.5s ease;
     --button-bg: rgba(255, 255, 255, 0.3);
@@ -43,6 +44,59 @@ body.dark-mode {
     --glass-shadow: rgba(255, 255, 255, 0.15);
     --notification-text: #f0f0f0;
 }
+
+/* Loading Screen Styles */
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 9999;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.loading.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loading-text {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    text-align: center;
+    width: 100%;
+    height: 100px;
+    line-height: 100px;
+}
+
+.loading-text span {
+    display: inline-block;
+    margin: 0 5px;
+    color: #fff;
+    font-family: 'Quattrocento Sans', sans-serif;
+    filter: blur(0px);
+    animation: blur-text 1.5s infinite linear alternate;
+}
+
+.loading-text span:nth-child(1) { animation-delay: 0s; }
+.loading-text span:nth-child(2) { animation-delay: 0.2s; }
+.loading-text span:nth-child(3) { animation-delay: 0.4s; }
+.loading-text span:nth-child(4) { animation-delay: 0.6s; }
+.loading-text span:nth-child(5) { animation-delay: 0.8s; }
+
+@keyframes blur-text {
+    0% { filter: blur(0px); }
+    100% { filter: blur(4px); }
+}
+/* END Loading Screen Styles */
 
 html, body {
     margin: 0;
@@ -648,8 +702,17 @@ body {
 </head>
 <body>
 
+<div class="loading" id="loadingScreen">
+    <div class="loading-text">
+        <span class="loading-text-words">D</span>
+        <span class="loading-text-words">O</span>
+        <span class="loading-text-words">D</span>
+        <span class="loading-text-words">C</span>
+        <span class="loading-text-words">H</span>
+    </div>
+</div>
 <div class="notifications-container">
-    <p class="notification-item">New update from the ground up (Beta testing)following the new Liquid Glass design made by Apple, hope you like it ❤️.</p>
+    <p class="notification-item">📢 Breaking News: New stories added! Check out the latest updates now. 🔥</p>
 </div>
 
 <div class="background"></div>
@@ -691,6 +754,16 @@ body {
 </svg>
 
 <script>
+// New Loading Screen JS
+document.addEventListener('DOMContentLoaded', () => {
+    const loadingScreen = document.getElementById('loadingScreen');
+
+    // Hide the loading screen after a short delay
+    setTimeout(() => {
+        loadingScreen.classList.add('hidden');
+    }, 1500); // Wait 1.5 seconds before starting the fade-out
+});
+
 const filterBtn = document.getElementById('filterBtn');
 const darkModeBtn = document.getElementById('darkModeBtn');
 const searchButton = document.getElementById('searchButton');
