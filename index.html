@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -101,7 +102,7 @@
 
         .glass-container.animate-in {
             opacity: 1;
-            /* Updated to 1.2s for a smoother entrance */
+            /* Animation duration for the main grid container */
             animation: jelloEntrance 1.2s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
         }
 
@@ -258,13 +259,15 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            animation: buttonEntrance 0.6s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
+            /* **UPDATED**: Increased animation duration for the heart button */
+            animation: buttonEntrance 1s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
             opacity: 0;
             transform: scale(0);
         }
 
         .favorite-btn.animate-in {
-            animation: buttonBounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
+            /* **UPDATED**: Increased animation duration for the heart button */
+            animation: buttonBounceIn 1s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
         }
 
         @keyframes buttonBounceIn {
@@ -320,7 +323,7 @@
             display: flex;
             gap: 1rem;
             z-index: 10;
-            /* Updated to 1.2s for a smoother entrance */
+            /* Animation duration for the main buttons container */
             animation: containerEntrance 1.2s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
             opacity: 0;
             transform: translateY(20px);
@@ -472,7 +475,7 @@
             z-index: 10;
             flex-direction: row;
             transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            /* Updated to 1.2s for a smoother entrance */
+            /* Animation duration for the search container */
             animation: searchContainerEntrance 1.2s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
             opacity: 0;
             transform: translateX(20px);
@@ -710,7 +713,7 @@
 </div>
 
 <div class="notifications-container">
-    <p class="notification-item">📢 Breaking News: New stories added! Check out the latest updates now. 🔥</p>
+    <p class="notification-item">New update from the ground up ( beta testing ) inspired by the new design era of Liquid Glass made by Apple . I hope you like it ❤️ </p>
 </div>
 
 <div class="background"></div>
@@ -1018,8 +1021,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // If no background image is set, just hide the loading screen
         loadingScreen.classList.add('hidden');
         setTimeout(() => {
-            fetchAndRenderPanels();
-        }, 500);
+                fetchAndRenderPanels();
+            }, 500);
     }
 });
 // ----------------------------------------------------
@@ -1070,3 +1073,5 @@ searchBar.addEventListener('input', filterAndRenderPanels);
 
 </body>
 </html>
+
+Fix it and provide full html 
