@@ -57,9 +57,16 @@
 
         body {
             overflow-y: auto;
+            /* ADDED THIS SECTION FOR BACKGROUND */
+            background-image: var(--bg-url);
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed; /* THIS IS THE FIX */
         }
-
-        .background {
+        
+        /* REMOVED THE .background RULE */
+        /* .background {
             position: fixed;
             top: 0;
             left: 0;
@@ -67,7 +74,7 @@
             height: 100%;
             background: var(--bg-url) center/cover no-repeat;
             z-index: -1;
-        }
+        } */
 
         .container {
             display: flex;
@@ -718,8 +725,6 @@
     <p class="notification-item">New update from the ground up ( beta testing ) inspired by the new design era of Liquid Glass made by Apple . I hope you like it ❤️ </p>
 </div>
 
-<div class="background"></div>
-
 <div class="container" id="panelsContainer"></div>
 <span id="no-favorites-message">No favorites yet! Click the heart to add some.</span>
 
@@ -998,7 +1003,6 @@ async function fetchAndRenderPanels() {
 // ----------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
     const loadingScreen = document.getElementById('loadingScreen');
-    const backgroundDiv = document.querySelector('.background');
     const bgImageUrl = getComputedStyle(document.documentElement).getPropertyValue('--bg-url').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
 
     if (bgImageUrl) {
