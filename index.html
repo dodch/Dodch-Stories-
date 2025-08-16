@@ -707,6 +707,12 @@
             100% { filter: blur(4px); }
         }
 
+        /* FIX: A small empty div to force correct scroll behavior on Android */
+        .scroll-fix {
+            height: 1px;
+            margin-top: 50px; /* Optional: provides a buffer at the bottom */
+        }
+
     </style>
 </head>
 <body>
@@ -760,6 +766,8 @@
         <feDisplacementMap in="SourceGraphic" in2="blur" scale="50" xChannelSelector="A" yChannelSelector="A"/>
     </filter>
 </svg>
+
+<div class="scroll-fix"></div>
 
 <script>
 const filterBtn = document.getElementById('filterBtn');
