@@ -50,30 +50,33 @@
             padding: 0;
             height: 100%;
             font-family: sans-serif;
-            overflow: hidden; /* Prevent body from scrolling */
+            overflow-x: hidden;
             background-color: var(--main-bg);
             transition: var(--body-transition);
         }
 
         body {
+            overflow-y: auto;
             /* ADDED THIS SECTION FOR BACKGROUND */
             background-image: var(--bg-url);
             background-position: center;
             background-size: cover;
             background-repeat: no-repeat;
-            background-attachment: fixed; /* THIS IS THE FIX */
+            background-attachment: fixed;
+            /* NEW FIX: A temporary color to hide the white space */
+            background-color: #2e3b55;
         }
-
-        /* ADDED: New container to manage all scrollable content */
-        .main-container {
-            position: absolute;
+        
+        /* REMOVED THE .background RULE */
+        /* .background {
+            position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            overflow-y: scroll; /* Makes this container scrollable */
-            z-index: 1; /* Puts it over the background but under the floating buttons */
-        }
+            width: 100%;
+            height: 100%;
+            background: var(--bg-url) center/cover no-repeat;
+            z-index: -1;
+        } */
 
         .container {
             display: flex;
@@ -82,7 +85,8 @@
             padding: 2rem;
             align-items: center;
             transition: all 0.5s ease;
-            margin-top: 6rem;
+            /* NEW FIX: Margin-top handled by JavaScript to adjust for safe area */
+            /* margin-top: 6rem; */
             margin-bottom: 200px;
             position: relative;
         }
@@ -730,10 +734,8 @@
     <p class="notification-item">New update from the ground up ( beta testing ) inspired by the new design era of Liquid Glass made by Apple . I hope you like it ❤️ </p>
 </div>
 
-<div class="main-container">
-    <div class="container" id="panelsContainer"></div>
-    <span id="no-favorites-message">No favorites yet! Click the heart to add some.</span>
-</div>
+<div class="container" id="panelsContainer"></div>
+<span id="no-favorites-message">No favorites yet! Click the heart to add some.</span>
 
 <div class="floating-buttons-container animate-in">
     <div class="floating-button glass-button-base" id="darkModeBtn" title="Toggle Dark Mode">
@@ -767,6 +769,8 @@
         <feDisplacementMap in="SourceGraphic" in2="blur" scale="50" xChannelSelector="A" yChannelSelector="A"/>
     </filter>
 </svg>
+
+<div class="scroll-fix"></div>
 
 <script>
 const filterBtn = document.getElementById('filterBtn');
@@ -1082,6 +1086,31 @@ searchButton.addEventListener('click', () => {
 });
 
 searchBar.addEventListener('input', filterAndRenderPanels);
+
+// FIX: A small empty div to force correct scroll behavior on Android
+const scrollFix = document.createElement('div');
+scrollFix.classList.add('scroll-fix');
+document.body.appendChild(scrollFix);
+
+// NEW FIX: Adjust top margin of container for iOS 26 safe area
+function adjustContainerTop() {
+    const container = document.getElementById('panelsContainer');
+    // Get the top safe area inset from the environment variables
+    const safeAreaTop = window.getComputedStyle(document.documentElement).getPropertyValue('safe-area-inset-top');
+
+    if (safeAreaTop) {
+        // Convert the value to a number and add a buffer
+        const topMargin = parseFloat(safeAreaTop) + 16; // Add 16px to be safe
+        container.style.marginTop = `${topMargin}px`;
+    }
+}
+
+// Call the function on page load
+window.addEventListener('load', adjustContainerTop);
+
+// Call the function on resize, just in case
+window.addEventListener('resize', adjustContainerTop);
+
 </script>
 
 </body>
