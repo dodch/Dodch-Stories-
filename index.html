@@ -11,38 +11,56 @@
     <style>
         /* Default (Light) Mode Variables */
         :root {
-            --lg-bg-color: rgba(255, 255, 255, 0.25);
-            --lg-highlight: rgba(255, 255, 255, 0.75);
-            --lg-text: #ffffff;
             --heart-color: rgba(255, 255, 255, 0.8);
             --heart-active: #fb4268;
             --bg-url: url("https://i.ibb.co/hxBtrKYq/IMG-1865.jpg");
             --main-bg: rgba(0, 0, 0, 0);
             --body-transition: background-color 0.5s ease;
-            --button-bg: rgba(255, 255, 255, 0.3);
-            --button-hover-bg: rgba(255, 255, 255, 0.5);
-            --button-shadow: rgba(0, 0, 0, 0.3);
-            --search-bg: rgba(255, 255, 255, 0.3);
-            --search-placeholder: rgba(255, 255, 255, 0.6);
             --moon-color: #ffffff;
             --notification-text: #ffffff;
-            --glass-shadow: rgba(0, 0, 0, 0.3);
+            --search-placeholder: rgba(255, 255, 255, 0.5);
+
+            /* NEW LIQUID GLASS VARIABLES - LIGHT MODE */
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-text: #ffffff;
+            --glass-shadow: 
+                inset 0 0 0 1px color-mix(in srgb, #fff calc(10%), transparent),
+                inset 1.8px 3px 0px -2px color-mix(in srgb, #fff calc(90%), transparent),
+                inset -2px -2px 0px -2px color-mix(in srgb, #fff calc(80%), transparent),
+                inset -3px -8px 1px -6px color-mix(in srgb, #fff calc(60%), transparent),
+                inset -0.3px -1px 4px 0px color-mix(in srgb, #000 calc(12%), transparent),
+                inset -1.5px 2.5px 0px -2px color-mix(in srgb, #000 calc(20%), transparent),
+                inset 0px 3px 4px -2px color-mix(in srgb, #000 calc(20%), transparent),
+                inset 2px -6.5px 1px -4px color-mix(in srgb, #000 calc(10%), transparent),
+                /* MODIFIED: Increased blur and spread for outer shadows */
+                0px 2px 10px 0px color-mix(in srgb, #000 calc(20%), transparent),
+                0px 10px 30px 0px color-mix(in srgb, #000 calc(15%), transparent);
+            --button-shadow: var(--glass-shadow);
         }
 
         /* Dark Mode Variables */
         body.dark-mode {
-            --lg-bg-color: rgba(0, 0, 0, 0.4);
-            --lg-highlight: rgba(255, 255, 255, 0.3);
             --main-bg: rgba(0, 0, 0, 0.6);
-            --lg-text: #f0f0f0;
-            --button-bg: rgba(0, 0, 0, 0.4);
-            --button-hover-bg: rgba(0, 0, 0, 0.6);
-            --button-shadow: rgba(255, 255, 255, 0.15);
-            --search-bg: rgba(0, 0, 0, 0.4);
-            --search-placeholder: rgba(255, 255, 255, 0.5);
             --moon-color: #fce38a;
-            --glass-shadow: rgba(255, 255, 255, 0.15);
             --notification-text: #f0f0f0;
+            --search-placeholder: rgba(255, 255, 255, 0.8);
+
+            /* NEW LIQUID GLASS VARIABLES - DARK MODE */
+            --glass-bg: rgba(0, 0, 0, 0.25);
+            --glass-text: #f0f0f0;
+            --glass-shadow: 
+                inset 0 0 0 1px color-mix(in srgb, #fff calc(10%), transparent),
+                inset 1.8px 3px 0px -2px color-mix(in srgb, #fff calc(90%), transparent),
+                inset -2px -2px 0px -2px color-mix(in srgb, #fff calc(80%), transparent),
+                inset -3px -8px 1px -6px color-mix(in srgb, #fff calc(60%), transparent),
+                inset -0.3px -1px 4px 0px color-mix(in srgb, #000 calc(12%), transparent),
+                inset -1.5px 2.5px 0px -2px color-mix(in srgb, #000 calc(20%), transparent),
+                inset 0px 3px 4px -2px color-mix(in srgb, #000 calc(20%), transparent),
+                inset 2px -6.5px 1px -4px color-mix(in srgb, #000 calc(10%), transparent),
+                /* MODIFIED: Increased blur and spread for outer shadows */
+                0px 2px 10px 0px color-mix(in srgb, #000 calc(40%), transparent),
+                0px 10px 30px 0px color-mix(in srgb, #000 calc(30%), transparent);
+            --button-shadow: var(--glass-shadow);
         }
 
         html, body {
@@ -52,31 +70,18 @@
             font-family: sans-serif;
             overflow-x: hidden;
             background-color: var(--main-bg);
-            transition: var(--body-transition);
+            /* Add transition for text color */
+            transition: background-color 0.5s ease, color 0.5s ease;
         }
 
         body {
             overflow-y: auto;
-            /* ADDED THIS SECTION FOR BACKGROUND */
             background-image: var(--bg-url);
             background-position: center;
             background-size: cover;
             background-repeat: no-repeat;
-            background-attachment: fixed;
-            /* NEW FIX: A temporary color to hide the white space */
             background-color: #2e3b55;
         }
-        
-        /* REMOVED THE .background RULE */
-        /* .background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-url) center/cover no-repeat;
-            z-index: -1;
-        } */
 
         .container {
             display: flex;
@@ -85,8 +90,6 @@
             padding: 2rem;
             align-items: center;
             transition: all 0.5s ease;
-            /* NEW FIX: Margin-top handled by JavaScript to adjust for safe area */
-            /* margin-top: 6rem; */
             margin-bottom: 200px;
             position: relative;
         }
@@ -98,14 +101,18 @@
             min-height: 200px;
             border-radius: 3rem;
             overflow: hidden;
-            box-shadow: 0 10px 30px var(--glass-shadow);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+            box-shadow: var(--glass-shadow);
+            transition: transform 0.3s cubic-bezier(0.2,0.9,0.3,1.5), background-color 0.5s ease, box-shadow 0.5s ease;
             display: flex;
             justify-content: center;
             align-items: center;
             text-decoration: none;
             opacity: 0;
             transform: scale(0.9);
+            background-color: var(--glass-bg);
+            /* NEW SVG LIQUID GLASS EFFECT */
+            backdrop-filter: blur(4px) url(#filter);
+            -webkit-backdrop-filter: blur(4px);
         }
 
         .glass-container:hover {
@@ -114,7 +121,6 @@
 
         .glass-container.animate-in {
             opacity: 1;
-            /* Animation duration for the main grid container */
             animation: jelloEntrance 1.2s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
         }
 
@@ -147,7 +153,6 @@
             }
         }
 
-        /* FIXED: Updated panel-hidden class */
         .panel-hidden {
             animation: jelloExit 0.3s ease-in forwards;
             pointer-events: none;
@@ -161,40 +166,16 @@
             transform: scale(0.9) translateY(20px);
         }
 
-        .glass-filter,
-        .glass-overlay,
-        .glass-specular {
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-        }
-
-        .glass-filter {
-            z-index: 0;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            filter: url(#lensFilter) saturate(120%) brightness(1.15);
-        }
-
-        .glass-overlay {
-            z-index: 1;
-            background: var(--lg-bg-color);
-            transition: background 0.5s ease;
-        }
-
-        .glass-specular {
-            z-index: 2;
-            box-shadow: inset 1px 1px 0 var(--lg-highlight), inset 0 0 5px var(--lg-highlight);
-            transition: box-shadow 0.5s ease;
-        }
+        /* REMOVED .glass-filter, .glass-overlay, .glass-specular */
 
         .glass-content {
             position: relative;
             z-index: 3;
-            color: var(--lg-text);
+            color: var(--glass-text);
             font-size: 1.2rem;
             text-align: center;
             padding: 0 2rem;
+            /* Add transition for text color */
             transition: color 0.5s ease;
         }
 
@@ -230,40 +211,32 @@
             align-items: center;
             cursor: pointer;
             z-index: 4;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.5s ease, background-color 0.5s ease;
+            background-color: var(--glass-bg);
+            /* NEW SVG LIQUID GLASS EFFECT */
+            backdrop-filter: blur(4px) url(#filter);
+            -webkit-backdrop-filter: blur(4px);
+            box-shadow: var(--button-shadow);
         }
-
-        .glass-button-base::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            z-index: -1;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            background: var(--button-bg);
-            transition: background 0.3s cubic-bezier(0.175, 0.885, 0.32, 2.2);
-        }
-
-        .glass-button-base::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            z-index: 1;
-            box-shadow: inset 1px 1px 0 var(--lg-highlight), inset 0 0 5px var(--lg-highlight);
-            transition: box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 2.2);
-        }
-
+        
+        /* Apply consistent hover effect to all buttons */
         .glass-button-base:hover {
             transform: scale(1.1);
+            /* MODIFIED: Increased shadow on hover */
+            box-shadow: 
+                inset 0 0 0 1px color-mix(in srgb, #fff calc(10%), transparent),
+                inset 1.8px 3px 0px -2px color-mix(in srgb, #fff calc(90%), transparent),
+                inset -2px -2px 0px -2px color-mix(in srgb, #fff calc(80%), transparent),
+                inset -3px -8px 1px -6px color-mix(in srgb, #fff calc(60%), transparent),
+                inset -0.3px -1px 4px 0px color-mix(in srgb, #000 calc(12%), transparent),
+                inset -1.5px 2.5px 0px -2px color-mix(in srgb, #000 calc(20%), transparent),
+                inset 0px 3px 4px -2px color-mix(in srgb, #000 calc(20%), transparent),
+                inset 2px -6.5px 1px -4px color-mix(in srgb, #000 calc(10%), transparent),
+                0px 4px 20px 0px color-mix(in srgb, #000 calc(30%), transparent),
+                0px 20px 60px 0px color-mix(in srgb, #000 calc(25%), transparent);
         }
-
-        .glass-button-base:hover::before {
-            background: var(--button-hover-bg);
-        }
-
-        /* Individual button styles */
+        
+        /* REMOVED ::before and ::after as the new style combines them */
         .favorite-btn {
             position: absolute;
             top: 1rem;
@@ -271,14 +244,12 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            /* **UPDATED**: Increased animation duration for the heart button */
             animation: buttonEntrance 1s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
             opacity: 0;
             transform: scale(0);
         }
 
         .favorite-btn.animate-in {
-            /* **UPDATED**: Increased animation duration for the heart button */
             animation: buttonBounceIn 1s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
         }
 
@@ -320,7 +291,7 @@
             width: 20px;
             height: 20px;
             fill: var(--heart-color);
-            transition: fill 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+            transition: fill 0.5s ease;
             transform: translateY(1px);
         }
 
@@ -335,7 +306,6 @@
             display: flex;
             gap: 1rem;
             z-index: 10;
-            /* Animation duration for the main buttons container */
             animation: containerEntrance 1.2s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
             opacity: 0;
             transform: translateY(20px);
@@ -381,9 +351,9 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            box-shadow: 0 6px 20px var(--button-shadow);
+            box-shadow: var(--button-shadow);
             z-index: 10;
-            transition: box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+            transition: box-shadow 0.5s ease;
             animation: buttonEntrance 0.6s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
             opacity: 0;
             transform: scale(0);
@@ -402,7 +372,7 @@
         }
 
         .floating-button:hover {
-            box-shadow: 0 10px 30px var(--button-shadow);
+            box-shadow: var(--glass-shadow);
         }
 
         .floating-button svg {
@@ -410,56 +380,57 @@
             z-index: 2;
             width: 30px;
             height: 30px;
-            fill: var(--lg-text);
-            transition: fill 0.3s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+            fill: var(--glass-text);
+            transition: fill 0.5s ease;
             transform: translateY(1px);
         }
 
-        /* Premium bounce effect for all buttons */
-        .bouncy-tap {
-            animation: tapBounce 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
+        /* Remove tap animation and add smooth color transition */
+        .floating-button:active svg {
+            transition: fill 0.1s ease;
         }
 
-        @keyframes tapBounce {
-            0% { transform: scale(1); }
-            30% { transform: scale(1.3); }
-            60% { transform: scale(0.9); }
-            100% { transform: scale(1); }
+        .floating-button.active svg {
+            fill: var(--heart-active);
+        }
+
+        #darkModeBtn:active svg {
+            fill: var(--moon-color);
+        }
+
+        #filterBtn:active svg {
+            fill: var(--heart-active);
+        }
+
+        #darkModeBtn.active svg {
+            fill: var(--moon-color);
+        }
+
+        #filterBtn.active svg {
+            fill: var(--heart-active);
         }
 
         #darkModeBtn svg {
             fill: var(--moon-color);
         }
 
-        #filterBtn.floating-button.glowing-red svg {
-            fill: var(--heart-active);
-        }
-
-        .floating-button.glowing-red {
-            box-shadow: 0 0 15px #fb4268;
-            transition: box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 2.2);
-        }
-
-        .floating-button.glowing-yellow {
-            box-shadow: 0 0 15px #fce38a;
-            transition: box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 2.2);
-        }
-
+        /* Removed glow classes */
+        .floating-button.glowing-red,
+        .floating-button.glowing-yellow,
         .floating-button.glowing-blue,
         .search-button.glowing-blue {
-            box-shadow: 0 0 15px #00aaff;
-            transition: box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+            box-shadow: var(--glass-shadow);
         }
 
         .highlight {
             --glow-color: #00aaff;
-            color: #ffffff;
+            color: var(--glass-text); /* Ensure highlight text transitions with dark mode */
             text-shadow:
                 0 0 10px var(--glow-color),
                 0 0 20px var(--glow-color),
                 0 0 30px var(--glow-color),
                 0 0 40px var(--glow-color);
-            transition: text-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+            transition: text-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 2.2), color 0.5s ease; /* Added transition */
             animation: text-glow-pulse 2s infinite alternate;
         }
 
@@ -485,9 +456,7 @@
             align-items: center;
             gap: 1rem;
             z-index: 10;
-            flex-direction: row;
             transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            /* Animation duration for the search container */
             animation: searchContainerEntrance 1.2s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
             opacity: 0;
             transform: translateX(20px);
@@ -535,16 +504,17 @@
             border: none;
             border-radius: 30px;
             padding: 0;
-            color: var(--lg-text);
+            color: var(--glass-text);
             font-size: 1rem;
             opacity: 0;
             visibility: hidden;
             margin-right: 0px;
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            background: var(--search-bg);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            box-shadow: inset 1px 1px 0 var(--lg-highlight), inset 0 0 5px var(--lg-highlight);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), background-color 0.5s ease, box-shadow 0.5s ease;
+            /* NEW LIQUID GLASS STYLE */
+            background-color: var(--glass-bg);
+            backdrop-filter: blur(4px) url(#filter);
+            -webkit-backdrop-filter: blur(4px);
+            box-shadow: var(--glass-shadow);
         }
 
         .search-bar:focus {
@@ -561,18 +531,20 @@
 
         .search-bar::placeholder {
             color: var(--search-placeholder);
+            /* Add transition for placeholder color */
+            transition: color 0.5s ease;
         }
 
         .search-button {
             width: 60px;
             height: 60px;
             border-radius: 30px;
-            box-shadow: 0 6px 20px var(--button-shadow);
-            transition: box-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+            box-shadow: var(--button-shadow);
+            transition: box-shadow 0.5s ease, background-color 0.5s ease;
         }
 
         .search-button:hover {
-            box-shadow: 0 10px 30px var(--button-shadow);
+            box-shadow: var(--glass-shadow);
         }
 
         .search-button svg {
@@ -580,12 +552,12 @@
             z-index: 2;
             width: 30px;
             height: 30px;
-            fill: var(--lg-text);
-            transition: fill 0.5s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+            fill: var(--glass-text);
+            transition: fill 0.5s ease;
         }
 
         #no-favorites-message {
-            color: var(--lg-text);
+            color: var(--glass-text);
             font-size: 1.5rem;
             opacity: 0;
             text-align: center;
@@ -594,7 +566,8 @@
             left: 50%;
             transform: translate(-50%, -40%);
             pointer-events: none;
-            transition: opacity 0.5s cubic-bezier(0.175, 0.885, 0.32, 2.2), transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+            /* Add transition for text color */
+            transition: opacity 0.5s cubic-bezier(0.175, 0.885, 0.32, 2.2), transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 2.2), color 0.5s ease;
             width: 100%;
             z-index: 5;
         }
@@ -653,6 +626,8 @@
             animation: slide-left 15s linear infinite;
             display: inline-block;
             animation-delay: -5s;
+            /* Add transition for text color */
+            transition: color 0.5s ease;
         }
 
         @keyframes slide-left {
@@ -713,9 +688,8 @@
         /* FIX: A small empty div to force correct scroll behavior on Android */
         .scroll-fix {
             height: 1px;
-            margin-top: 50px; /* Optional: provides a buffer at the bottom */
+            margin-top: 50px;
         }
-
     </style>
 </head>
 <body>
@@ -760,14 +734,11 @@
     <input type="text" id="searchInput" class="search-bar" placeholder="Search stories...">
 </div>
 
-<svg xmlns="http://www.w3.org/2000/svg" style="display:none;">
-    <filter id="lensFilter" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox">
-        <feComponentTransfer in="SourceAlpha" result="alpha">
-            <feFuncA type="identity"/>
-        </feComponentTransfer>
-        <feGaussianBlur in="in" stdDeviation="50" result="blur"/>
-        <feDisplacementMap in="SourceGraphic" in2="blur" scale="50" xChannelSelector="A" yChannelSelector="A"/>
-    </filter>
+<svg style="display:none">
+  <filter id="filter" color-interpolation-filters="linearRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.001" numOctaves="4" result="turbulence"/> 
+    <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="350"/> 
+  </filter>
 </svg>
 
 <div class="scroll-fix"></div>
@@ -795,26 +766,22 @@ function loadSavedState() {
 
     if (savedDarkMode === 'true') {
         body.classList.add('dark-mode');
-        darkModeBtn.classList.add('glowing-yellow');
     }
 
-    // Set showingFavorites based on saved state BEFORE rendering panels
     showingFavorites = savedShowingFavorites === 'true';
     
     if (showingFavorites) {
-        filterBtn.classList.add('glowing-red');
+        filterBtn.classList.add('active');
     }
 
     if (savedSearchActive === 'true') {
         searchBar.classList.add('active');
-        searchButton.classList.add('glowing-blue');
     }
 
     if (savedSearchValue) {
         searchBar.value = savedSearchValue;
     }
 
-    // Apply saved favorites to panels
     if (savedFavorites.length > 0) {
         panels.forEach((panel, index) => {
             const title = panel.querySelector('.title').dataset.originalTitle;
@@ -832,7 +799,6 @@ function saveState() {
     localStorage.setItem('searchActive', searchBar.classList.contains('active'));
     localStorage.setItem('searchValue', searchBar.value);
     
-    // Save favorites
     const favoriteTitles = [];
     document.querySelectorAll('.glass-container .favorite-btn.active').forEach(btn => {
         const panel = btn.closest('.glass-container');
@@ -846,16 +812,6 @@ function highlightText(text, query) {
     if (!query) return text;
     const regex = new RegExp(query, 'gi');
     return text.replace(regex, (match) => `<span class="highlight">${match}</span>`);
-}
-
-function addBouncyAnimation(element) {
-    // Immediately apply animation class for instant feedback
-    element.classList.add('bouncy-tap');
-    
-    // Remove animation class after it completes
-    setTimeout(() => {
-        element.classList.remove('bouncy-tap');
-    }, 200); // Match animation duration
 }
 
 function updateNoFavoritesMessageState() {
@@ -879,7 +835,6 @@ function updatePanelVisibility(panel, shouldShow, searchQuery) {
     descriptionEl.innerHTML = highlightText(originalDescription, searchQuery);
 
     if (shouldShow) {
-        // Ensure panel is properly displayed
         panel.style.display = 'flex';
         panel.style.visibility = 'visible';
         panel.style.opacity = '1';
@@ -891,18 +846,16 @@ function updatePanelVisibility(panel, shouldShow, searchQuery) {
         panel.classList.remove('panel-hidden');
         panel.classList.add('animate-in');
         
-        // Explicitly reset and reapply favorite button animation
         favoriteBtn.classList.remove('animate-in');
         favoriteBtn.style.opacity = '0';
         favoriteBtn.style.transform = 'scale(0)';
         setTimeout(() => {
             favoriteBtn.classList.add('animate-in');
-        }, 50); // Small delay to ensure animation retriggers
+        }, 50);
     } else {
         panel.classList.add('panel-hidden');
         panel.classList.remove('animate-in');
         
-        // Cleanup after animation completes
         setTimeout(() => {
             if (panel.classList.contains('panel-hidden')) {
                 panel.style.display = 'none';
@@ -931,7 +884,7 @@ function filterAndRenderPanels() {
     });
 
     updateNoFavoritesMessageState();
-    saveState(); // Save state after filtering
+    saveState();
 }
 
 async function fetchAndRenderPanels() {
@@ -948,9 +901,6 @@ async function fetchAndRenderPanels() {
         stories.forEach((story, index) => {
             const panelHtml = `
                 <a href="${story.file}" class="glass-container">
-                    <div class="glass-filter"></div>
-                    <div class="glass-overlay"></div>
-                    <div class="glass-specular"></div>
                     <div class="glass-content">
                         <div class="title" data-original-title="${story.title}">${story.title}</div>
                         <div class="description" data-original-description="${story.description}">${story.description}</div>
@@ -971,10 +921,9 @@ async function fetchAndRenderPanels() {
         panels.forEach((panel, index) => {
             setTimeout(() => {
                 panel.classList.add('animate-in');
-            }, index * 120); // Slightly increased delay for smoother cascade
+            }, index * 120);
         });
 
-        // Add event listeners to favorite buttons with proper animation handling
         document.querySelectorAll('.favorite-btn').forEach((btn, index) => {
             btn.style.opacity = '0';
             btn.style.transform = 'scale(0)';
@@ -984,9 +933,8 @@ async function fetchAndRenderPanels() {
             
             btn.addEventListener('click', (event) => {
                 event.preventDefault();
-                addBouncyAnimation(btn);
                 btn.classList.toggle('active');
-                btn.setAttribute('aria-pressed', btn.classList.contains('active')); // Accessibility
+                btn.setAttribute('aria-pressed', btn.classList.contains('active'));
                 filterAndRenderPanels();
             });
         });
@@ -995,10 +943,8 @@ async function fetchAndRenderPanels() {
             filterAndRenderPanels();
         }
 
-        // Load saved state after panels are created
         loadSavedState();
         
-        // Apply filter if needed after loading
         if (showingFavorites) {
             filterAndRenderPanels();
         }
@@ -1009,9 +955,6 @@ async function fetchAndRenderPanels() {
     }
 }
 
-// ----------------------------------------------------
-// New Script for Loading Screen
-// ----------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
     const loadingScreen = document.getElementById('loadingScreen');
     const bgImageUrl = getComputedStyle(document.documentElement).getPropertyValue('--bg-url').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
@@ -1019,12 +962,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (bgImageUrl) {
         const img = new Image();
         img.onload = () => {
-            // Background image is loaded, now hide the loading screen
             loadingScreen.classList.add('hidden');
-            // Animate in the main content after a slight delay
             setTimeout(() => {
                 fetchAndRenderPanels();
-            }, 500); // Wait a moment for the fade-out to start
+            }, 500);
         };
         img.onerror = () => {
             console.error('Failed to load background image. Hiding loading screen anyway.');
@@ -1035,33 +976,22 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         img.src = bgImageUrl;
     } else {
-        // If no background image is set, just hide the loading screen
         loadingScreen.classList.add('hidden');
         setTimeout(() => {
                 fetchAndRenderPanels();
             }, 500);
     }
 });
-// ----------------------------------------------------
-// End New Script for Loading Screen
-// ----------------------------------------------------
 
 darkModeBtn.addEventListener('click', () => {
-    addBouncyAnimation(darkModeBtn);
+    darkModeBtn.classList.toggle('active');
     body.classList.toggle('dark-mode');
-    darkModeBtn.classList.toggle('glowing-yellow');
     saveState();
 });
 
 filterBtn.addEventListener('click', () => {
-    addBouncyAnimation(filterBtn);
+    filterBtn.classList.toggle('active');
     showingFavorites = !showingFavorites;
-
-    if (showingFavorites) {
-        filterBtn.classList.add('glowing-red');
-    } else {
-        filterBtn.classList.remove('glowing-red');
-    }
 
     filterAndRenderPanels();
     updateNoFavoritesMessageState();
@@ -1075,7 +1005,6 @@ filterBtn.addEventListener('click', () => {
 
 searchButton.addEventListener('click', () => {
     searchBar.classList.toggle('active');
-    searchButton.classList.toggle('glowing-blue');
     if (searchBar.classList.contains('active')) {
         searchBar.focus();
     } else {
@@ -1087,28 +1016,22 @@ searchButton.addEventListener('click', () => {
 
 searchBar.addEventListener('input', filterAndRenderPanels);
 
-// FIX: A small empty div to force correct scroll behavior on Android
 const scrollFix = document.createElement('div');
 scrollFix.classList.add('scroll-fix');
 document.body.appendChild(scrollFix);
 
-// NEW FIX: Adjust top margin of container for iOS 26 safe area
 function adjustContainerTop() {
     const container = document.getElementById('panelsContainer');
-    // Get the top safe area inset from the environment variables
     const safeAreaTop = window.getComputedStyle(document.documentElement).getPropertyValue('safe-area-inset-top');
 
     if (safeAreaTop) {
-        // Convert the value to a number and add a buffer
-        const topMargin = parseFloat(safeAreaTop) + 16; // Add 16px to be safe
+        const topMargin = parseFloat(safeAreaTop) + 16;
         container.style.marginTop = `${topMargin}px`;
     }
 }
 
-// Call the function on page load
 window.addEventListener('load', adjustContainerTop);
 
-// Call the function on resize, just in case
 window.addEventListener('resize', adjustContainerTop);
 
 </script>
