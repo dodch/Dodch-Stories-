@@ -256,8 +256,32 @@
             }
         }
         
+        /* New styles for unselected language buttons */
+        .unselected-language {
+            opacity: 0.6; /* Dims the button */
+            filter: grayscale(100%); /* Grays it out */
+            transform: scale(0.95); /* Decreases its size slightly */
+            transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Ensure hover effect is removed on unselected buttons */
+        .unselected-language:hover {
+            transform: scale(0.95) !important;
+            box-shadow: none !important;
+        }
+
+        /* Ensure the selected button has a clear highlight */
         .selected-language {
-            transform: scale(1.1);
+             /* Maintain original size or slightly larger to stand out */
+             transform: scale(1.05); 
+             opacity: 1;
+             filter: grayscale(0%);
+             box-shadow: var(--button-shadow-light);
+        }
+
+        /* Remove the general hover scale effect on all language buttons */
+        #ar-button:hover, #fr-button:hover, #en-button:hover {
+            transform: scale(1.05); /* Change the scale to match selected for a smoother transition */
         }
 
         button {
@@ -388,7 +412,6 @@
         .animate-spin-once {
           animation: spin-once 0.5s ease-in-out;
         }
-
     </style>
 </head>
 <body class="loading">
@@ -613,100 +636,105 @@
             Parfois, j’ai l’impression de dériver.
 
             Alors, quand quelqu’un me voit enfin, me voit vraiment, je me sens profondément heureux, excité.
-            Je m’accroche à lui comme s’il était la seule lumière qu’il me reste.
-            Mais ils sont toujours fragiles, comme une simple ampoule en verre,
-            et je serre trop fort.
-            Et quand je le fais, je les brise.
-            La lumière s’éteint.
-            Le verre éclate.
-            Et quand il se brise, il m’entaille — me fait saigner.
-            Laisse des cicatrices qui ne disparaissent jamais.
-            Des cicatrices qui restent.
-            Des cicatrices qui me rappellent.
+            I cling to them like they’re the only light I’ve got.
+            But they’re always fragile, like a light bulb made of glass.
+            And I grip too hard.
+            And when I do, I break them.
+            The light goes out.
+            The glass shatters.
+            And as it breaks, it cuts into me. Makes me bleed.
+            Leaves scars that never fade.
+            Scars that stay.
+            Scars that remind me.
+            Scars I can’t forget.
 
-            Des cicatrices que je ne peux pas oublier.
+            But that never stopped me from loving.
+            Even if love doesn’t seem to be written in my fate, I’ve always tried to give it.
+            Planting hearts like seeds in the garden of my soul, day after day.
+            Yet lately, they don’t seem to grow. I hardly see any heart-shaped blooms anymore.
+            Then it hit me: maybe it’s because I kept picking them.
+            I’d offer them as gifts to the ones I cherished, or maybe as proof that I am someone worthy of being loved. Someone with feelings that run deep and true.
 
-            Mais cela ne m’a jamais empêché d’aimer. Même si l’amour ne semble pas écrit dans mon destin, j’ai toujours essayé d’en donner, en plantant des cœurs comme des graines dans le jardin de mon âme, jour après jour.
-            Mais ces derniers temps, ils ne semblent plus pousser. Je ne vois presque plus aucune fleur en forme de cœur.
-            Puis j’ai compris : peut-être parce que je les cueillais trop tôt.
-            Je les offrais comme cadeaux à ceux que j’aimais, ou peut-être comme preuve que je mérite d’être aimé… que j’ai des sentiments profonds et sincères.
+            But most flowers, as we know, end up in jars where their colors slowly fade, or pressed between the forgotten pages of an old book.
+            Just like the words of the one who gave them, left unread.
+            And so, I found myself with an empty garden, an empty heart, and the scent of love carried off by the wind.
+            There for just a moment before disappearing again.
 
-            Mais la plupart des fleurs, comme on le sait, finissent dans des bocaux où leurs couleurs fanent lentement, ou pressées entre les pages oubliées d’un vieux livre, tout comme les mots de celui qui les a offertes, jamais relus.
-            Et ainsi, je me suis retrouvé avec un jardin vide, un cœur vide, et le parfum de l’amour emporté par le vent — présent juste un instant avant de disparaître à nouveau.
+            But… is that how it’s meant to be?
 
-            Mais… est-ce vraiment censé se passer ainsi ?
-
-            Peut-être pas. Peut-être qu’au lieu d’arracher mon amour et de le donner trop tôt, je le laisserai éclore pour moi. Je le cultiverai doucement, je le garderai vivant en moi, jusqu’au jour où quelqu’un viendra et verra sa valeur.
-            Quelqu’un qui ne se contentera pas de prendre une fleur et de partir, mais qui s’agenouillera à mes côtés, et m’aidera à les faire pousser, jusqu’à ce qu’ensemble, nous ayons planté un champ sans fin.
+            Maybe not.
+            Maybe instead of plucking my love and handing it away too soon, I’ll let it bloom for me.
+            I’ll tend to it gently, keep it alive within me—until the day someone comes along who sees its worth.
+            Someone who won’t just take a flower and leave, but who will kneel beside me and help me grow them.
+            Until together, we’ve planted a field that never ends.
 
             ⸻
 
-            Quand j’ai enfin rencontré la douleur,
-            je l’avais entre mes mains.
-            Il suppliait :
+            When I finally met the pain,
+            I had him between my hands.
+            He said :
 
-            « Je suis désolé…
-            Je sais que je t’ai tellement fait souffrir.
-            Je sais que je n’ai pensé qu’à moi, sans me soucier de toi.
-            Je sais que j’ai dit de mauvaises choses sur toi… et agi comme si j’étais la victime. »
+            "I’m sorry… I know I hurt you so much.
+            I know I only thought about myself, without caring about you.
+            I know I said bad things about you… and acted like I was the victim.”
 
-            Je l’ai interrompu, d’une voix calme :
+            I interrupted, my voice calm:
 
-            « Chhh… n’aie pas peur.
-            Je ne vais pas te faire de mal.
-            C’est bon.
-            Je ne te ferai rien.
-            Je ne dévoilerai pas tes secrets, même après tout ça.
-            Tu as choisi mon cœur comme coffre-fort pour tes mots,
-            et je ne te trahirai pas… même si toi, tu l’as fait. »
+            “Shhh… don’t be afraid.
+            I’m not going to hurt you.
+            It’s okay.
+            I won’t do any harm to you.
+            I won’t expose your secrets, not even after all of that.
+            You chose my heart as a secret vault for your words.
+            And I won’t let you down, even when you did.”
 
-            « But… why?
-            Comment peux-tu rester aussi calme ?! »
+            “But… why?
+            How can you be so cool about it?!”
 
-            « Je n’ai jamais dit que j’étais calme.
-            Même si tu es sorti de ma vie,
-            après avoir laissé une grande cicatrice sur ma poitrine qui descend jusqu’à mon cœur…
-            Même si les mots qui m’ont brisé venaient de celui
-            qui était censé être mon soutien et mon espoir.
-            Même si tu m’as jeté
-            comme un gros morceau de rien
-            alors que je te voyais comme une partie précieuse et permanente de ma vie…
-            J’espère encore parfois que tu vas bien.
-            Parce qu’un jour, tu étais quelqu’un de très proche pour moi,
-            un nouveau membre d’une famille que j’ai toujours rêvé d’avoir.
-            Tu as ri avec moi.
-            Tu as partagé des repas avec moi.
-            Tu as vécu de beaux moments avec moi.
-            Je ne prêtais pas beaucoup d’attention aux moments amers que nous avons eus,
-            parce que j’ai toujours cru que quelque chose de bon en sortirait.
-            J’ai appris à m’accrocher à ceux qui comptent pour moi,
-            même dans les pires conditions.
+            “I never said I was cool.
+            Even though you’re out of my life,
+            after leaving a big scar on my chest that runs deep into my heart…
+            Even though the words that broke me came from the one
+            who was supposed to be my support and my hope.
+            Even though you threw me away
+            like a big chunk of nothing
+            when I thought you were a permanent, valuable part of my life…
+            I still sometimes hope you’re okay.
+            Because one day, you were someone really close to me.
+            A new member of a family I always wished I had.
+            You once laughed with me.
+            Shared food with me.
+            Lived some beautiful moments with me.
+            I didn’t care much about the bitter moments we had,
+            because I always believed something good would come out of them.
+            I learned to hold on to the ones who matter to me,
+            even in the worst conditions.
 
-            Mais moi ?
-            On m’a laissé tomber…
-            Pour des disputes dérisoires.
-            Abandonné dans la bataille.
-            Laissé dans l’obscurité,
-            guidé seulement par de faibles éclats de ma foi.
-            Je suis tombé —
-            je me suis cogné contre des murs de dureté —
-            mais j’ai continué.
+            But me?
+            I was left.
+            Over the most trivial fights.
+            Left alone in the battle.
+            Left in the darkness,
+            guided only by faint glimpses of my faith.
+            I fell.
+            Bumped into walls of hardness.
+            But I kept going.
 
-            Je me souviens encore de toi me parlant de tes rêves,
-            et moi m’enthousiasmant comme s’ils étaient les miens.
-            Je me souviens des nuits où j’ai prié pour qu’un jour
-            je puisse te voir les réaliser.
-            Mais quand je te demande de prier pour moi,
-            tu dis que tu t’en fiches. »
+            I still remember you telling me your dreams.
+            And me getting excited for you like they were my own.
+            I remember the nights I prayed that one day
+            I could watch you live those dreams.
+            But when I ask you to pray for me,
+            you say you don’t care.”
 
             A pause.
-            « Tu peux partir now.
-            Prends soin de toi. »
+            “You can go now.
+            Take care of yourself.”
 
-            Et en libérant la douleur de la prison de ma poitrine,
-            je me suis senti un peu plus léger —
-            en attendant la prochaine fois
-            où je libérerai d’autres douleurs de leur cage.
+            And as I freed the pain from the prison of my chest,
+            I felt a little bit lighter.
+            Waiting for the next time
+            I’ll set more pains free from their cage.
         </div>
         <div id="raw-en-text" style="display: none;">
             I wish I were special. I wish I were more than what I am.
@@ -1054,8 +1082,17 @@
                  return;
             }
             
-            // Remove 'selected-language' class from all buttons
-            languageButtons.forEach(button => button.classList.remove('selected-language'));
+            // Add 'unselected-language' to all buttons, then remove from the new one
+            languageButtons.forEach(button => {
+                button.classList.add('unselected-language');
+                button.classList.remove('selected-language');
+            });
+            const newButton = document.getElementById(`${lang}-button`);
+            if(newButton) {
+                newButton.classList.remove('unselected-language');
+                newButton.classList.add('selected-language');
+            }
+
 
             currentLanguage = lang;
 
@@ -1063,13 +1100,6 @@
                  localStorage.setItem('preferredLanguage', lang);
             }
             
-            // Add 'selected-language' class to the new button
-            const newButton = document.getElementById(`${lang}-button`);
-            if(newButton) {
-                newButton.classList.add('selected-language');
-            }
-
-
             const content = contentMap[lang];
 
             contentDiv.classList.add('content-fading');
