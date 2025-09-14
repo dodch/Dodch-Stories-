@@ -15,7 +15,7 @@
             --heart-color: rgba(255, 255, 255, 0.8);
             --heart-active: #fb4268;
             --bg-url: url("https://i.ibb.co/hxBtrKYq/IMG-1865.jpg");
-            --bg-url-dark: url("https://i.ibb.co/5gBLTYpm/IMG-2195.jpg"); /* New dark mode background image */
+            --bg-url-dark: url("https://i.ibb.co/5gBLTYpm/IMG-2195.jpg");
             --main-bg: rgba(0, 0, 0, 0);
             --body-transition: background-color 0.5s ease;
             --moon-color: #ffffff;
@@ -237,7 +237,7 @@
             z-index: 4;
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.5s ease, background-color 0.5s ease;
             background-color: var(--glass-bg);
-            /* NEW SVG LIQUID GLASS EFFECT */
+            /* NEW SVG LIQUID GLASS EFFECT - FIXED */
             backdrop-filter: blur(4px) url(#filter);
             -webkit-backdrop-filter: blur(4px);
             box-shadow: var(--button-shadow);
@@ -425,16 +425,16 @@
             background-color: color-mix(in srgb, var(--purple-tint) 20%, transparent);
             border: none;
         }
-
-        /* Moon icon color when dark mode is active */
-        .floating-button#darkModeBtn.active svg {
-            fill: var(--moon-color);
-        }
         
         /* Glass-like tint for search button */
         #searchButton {
             background-color: color-mix(in srgb, var(--blue-tint) 20%, transparent);
             border: none;
+        }
+
+        /* Moon icon color when dark mode is active */
+        .floating-button#darkModeBtn.active svg {
+            fill: var(--moon-color);
         }
 
         /* DARK MODE BUTTON TINTS */
@@ -536,7 +536,7 @@
             visibility: hidden;
             margin-right: 0px;
             transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), background-color 0.5s ease, box-shadow 0.5s ease;
-            /* NEW LIQUID GLASS STYLE */
+            /* NEW LIQUID GLASS STYLE - FIXED */
             background-color: color-mix(in srgb, var(--blue-tint) 20%, transparent);
             backdrop-filter: blur(4px) url(#filter);
             -webkit-backdrop-filter: blur(4px);
