@@ -991,31 +991,39 @@ async function fetchAndRenderPanels() {
 
 document.addEventListener('DOMContentLoaded', () => {
     const loadingScreen = document.getElementById('loadingScreen');
-    const bgImageUrl = getComputedStyle(document.documentElement).getPropertyValue('--bg-url').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
+    const bgImageUrlLight = getComputedStyle(document.documentElement).getPropertyValue('--bg-url').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
+    const bgImageUrlDark = getComputedStyle(document.documentElement).getPropertyValue('--bg-url-dark').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
 
-    if (bgImageUrl) {
-        const img = new Image();
-        img.onload = () => {
-            loadingScreen.classList.add('hidden');
-            setTimeout(() => {
-                fetchAndRenderPanels();
-            }, 500);
-        };
-        img.onerror = () => {
-            console.error('Failed to load background image. Hiding loading screen anyway.');
-            loadingScreen.classList.add('hidden');
-            setTimeout(() => {
-                fetchAndRenderPanels();
-            }, 500);
-        };
-        img.src = bgImageUrl;
+    const imagesToLoad = [];
+    if (bgImageUrlLight) imagesToLoad.push(bgImageUrlLight);
+    if (bgImageUrlDark) imagesToLoad.push(bgImageUrlDark);
+
+    let imagesLoadedCount = 0;
+
+    if (imagesToLoad.length > 0) {
+        imagesToLoad.forEach(url => {
+            const img = new Image();
+            img.onload = img.onerror = () => {
+                imagesLoadedCount++;
+                if (imagesLoadedCount === imagesToLoad.length) {
+                    loadingScreen.classList.add('hidden');
+                    setTimeout(() => {
+                        fetchAndRenderPanels();
+                    }, 500);
+                }
+            };
+            img.src = url;
+        });
     } else {
+        // No background images to load, proceed
         loadingScreen.classList.add('hidden');
         setTimeout(() => {
-                fetchAndRenderPanels();
-            }, 500);
+            fetchAndRenderPanels();
+        }, 500);
     }
 });
+
+
 
 function initializeHeartColor() {
     const heartSvg = filterBtn.querySelector('svg');
