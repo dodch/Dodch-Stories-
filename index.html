@@ -1,4 +1,3 @@
-Why the buttons and search expand doesn’t have the same SVG effect as the grids ? 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -239,7 +238,7 @@ Why the buttons and search expand doesn’t have the same SVG effect as the grid
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.5s ease, background-color 0.5s ease;
             background-color: var(--glass-bg);
             /* NEW SVG LIQUID GLASS EFFECT */
-            backdrop-filter: blur(4px) url(#filter);
+            backdrop-filter: blur(4px);
             -webkit-backdrop-filter: blur(4px);
             box-shadow: var(--button-shadow);
         }
@@ -426,16 +425,16 @@ Why the buttons and search expand doesn’t have the same SVG effect as the grid
             background-color: color-mix(in srgb, var(--purple-tint) 20%, transparent);
             border: none;
         }
-
-        /* Moon icon color when dark mode is active */
-        .floating-button#darkModeBtn.active svg {
-            fill: var(--moon-color);
-        }
         
         /* Glass-like tint for search button */
         #searchButton {
             background-color: color-mix(in srgb, var(--blue-tint) 20%, transparent);
             border: none;
+        }
+
+        /* Moon icon color when dark mode is active */
+        .floating-button#darkModeBtn.active svg {
+            fill: var(--moon-color);
         }
 
         /* DARK MODE BUTTON TINTS */
@@ -539,7 +538,7 @@ Why the buttons and search expand doesn’t have the same SVG effect as the grid
             transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), background-color 0.5s ease, box-shadow 0.5s ease;
             /* NEW LIQUID GLASS STYLE */
             background-color: color-mix(in srgb, var(--blue-tint) 20%, transparent);
-            backdrop-filter: blur(4px) url(#filter);
+            backdrop-filter: blur(4px);
             -webkit-backdrop-filter: blur(4px);
             box-shadow: var(--glass-shadow);
         }
