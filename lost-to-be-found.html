@@ -9,7 +9,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
-
     <style>
         /* --- GLASS EFFECT VARIABLES & STYLES --- */
         :root {
@@ -51,7 +50,6 @@
             /* New variable for the unselected language button text in light mode */
             --unselected-lang-text-light: #f0f0f0;
         }
-
         body.dark-mode {
             --glass-bg-dark: rgba(0, 0, 0, 0.25);
             --glass-text-dark: #f0f0f0;
@@ -79,7 +77,6 @@
             /* New variable for the unselected language button text in dark mode */
             --unselected-lang-text-dark: #C084FC;
         }
-        
         .glass-button-base {
             background-color: var(--glass-bg-light);
             box-shadow: var(--button-shadow-light);
@@ -87,52 +84,43 @@
             -webkit-backdrop-filter: blur(4px);
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.5s ease, background-color 0.5s ease;
         }
-
         body.dark-mode .glass-button-base {
             background-color: var(--glass-bg-dark);
             box-shadow: var(--button-shadow-dark);
         }
-        
         .save-button-custom {
             background-color: var(--save-button-bg-light);
             color: var(--save-button-text-light);
         }
-
         body.dark-mode .save-button-custom {
             background-color: var(--save-button-bg-dark);
             color: var(--save-button-text-dark);
         }
-        
         .back-home-button-custom {
             background-color: var(--back-button-bg-light);
             color: var(--back-button-text-light);
             font-size: 1.25rem;
         }
-        
         body.dark-mode .back-home-button-custom {
             background-color: var(--back-button-bg-dark);
             color: var(--back-button-text-dark);
         }
-
         /* New button class for dark mode button */
         .dark-mode-button-custom {
             background-color: var(--dark-mode-button-bg-light);
             color: var(--main-text-color-light);
         }
-        
         body.dark-mode .dark-mode-button-custom {
             background-color: var(--dark-mode-button-bg-dark);
             color: var(--main-text-color-dark);
         }
-
         .glass-popup {
              border-radius: 2rem;
              padding: 1.5rem;
         }
-
         .glass-button-base:hover {
              transform: scale(1.1);
-             box-shadow: 
+             box-shadow:
                 inset 0 0 0 1px color-mix(in srgb, #fff calc(10%), transparent),
                 inset 1.8px 3px 0px -2px color-mix(in srgb, #fff calc(90%), transparent),
                 inset -2px -2px 0px -2px color-mix(in srgb, #fff calc(80%), transparent),
@@ -144,7 +132,6 @@
                 0px 4px 20px 0px color-mix(in srgb, #000 calc(30%), transparent),
                 0px 20px 60px 0px color-mix(in srgb, #000 calc(25%), transparent);
         }
-
         body.dark-mode .glass-button-base:hover {
             box-shadow:
                 inset 0 0 0 1px color-mix(in srgb, #fff calc(10%), transparent),
@@ -158,14 +145,11 @@
                 0px 4px 20px 0px color-mix(in srgb, #000 calc(40%), transparent),
                 0px 20px 60px 0px color-mix(in srgb, #000 calc(35%), transparent);
         }
-
         /* --- END OF GLASS EFFECT STYLES --- */
-
         /* --- Basic Styling --- */
         * {
             box-sizing: border-box;
         }
-
         body {
             margin: 0;
             padding: 0;
@@ -176,11 +160,9 @@
             transition: color 0.5s ease;
             color: var(--main-text-color-light);
         }
-
         body.dark-mode {
             color: var(--main-text-color-dark);
         }
-
         /* --- LOADING SCREEN OVERLAY (fixed on top) --- */
         #loading-screen {
           position: fixed;
@@ -196,12 +178,10 @@
           z-index: 10000;
           transition: opacity 0.5s ease;
         }
-
         #loading-screen.hidden {
           opacity: 0;
           pointer-events: none;
         }
-
         /* --- LOADING INDICATOR CONTAINER (holds hearts) --- */
         .loading-indicator {
             display: flex;
@@ -209,7 +189,6 @@
             justify-content: center;
             margin-bottom: 15px;
         }
-
         /* --- LOADING HEART ANIMATION --- */
         .loading-indicator span {
             display: inline-block;
@@ -222,22 +201,17 @@
             transform: scale(0.5);
             animation: pulse-heart 1.4s ease-in-out infinite;
         }
-
         /* Add delays to create the trailing effect */
         .loading-indicator span:nth-child(1) { animation-delay: 0s; }
         .loading-indicator span:nth-child(2) { animation-delay: 0.2s; }
         .loading-indicator span:nth-child(3) { animation-delay: 0.4s; }
         .loading-indicator span:nth-child(4) { animation-delay: 0.6s; }
         .loading-indicator span:nth-child(5) { animation-delay: 0.8s; }
-
-
         @keyframes pulse-heart {
             0% { opacity: 0; transform: scale(0.5); }
             50% { opacity: 1; transform: scale(1.1); }
             100% { opacity: 0; transform: scale(0.5); }
         }
-
-
         /* --- LOADING PERCENTAGE TEXT --- */
         .loading-percentage {
           color: #fff;
@@ -245,8 +219,6 @@
           font-family: "Ubuntu", sans-serif;
           text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
-
-
          /* --- Wrapper for main page content --- */
         #page-content-wrapper {
             transition: filter 0.5s ease-in-out;
@@ -255,12 +227,10 @@
             width: 100%;
             min-height: 100vh;
         }
-
         body.loading #page-content-wrapper {
             filter: blur(15px);
             pointer-events: none;
         }
-
         .fixed-background {
             position: fixed;
             top: 0;
@@ -273,24 +243,20 @@
             z-index: -1;
             transition: opacity 0.5s ease;
         }
-
         .fixed-background.light-background {
              background-image: var(--main-bg-url-light);
              opacity: 1;
         }
-
         .fixed-background.dark-background {
              background-image: var(--main-bg-url-dark);
              opacity: 0;
         }
-
         body.dark-mode .fixed-background.light-background {
             opacity: 0;
         }
          body.dark-mode .fixed-background.dark-background {
             opacity: 1;
         }
-
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -311,7 +277,6 @@
                 transform: scale(0.9);
             }
         }
-        
         /* New styles for unselected language buttons */
         .unselected-language {
             opacity: 0.8;
@@ -319,37 +284,30 @@
             transform: scale(0.98);
             transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
         }
-
         .unselected-language:hover {
             transform: scale(0.95) !important;
             box-shadow: none !important;
         }
-
         .selected-language {
              background-color: var(--save-button-bg-light);
              color: var(--selected-lang-button-text);
-             transform: scale(1.05); 
+             transform: scale(1.05);
              opacity: 1;
              filter: grayscale(0%);
              box-shadow: var(--button-shadow-light);
         }
-
         body.dark-mode .selected-language {
              background-color: var(--save-button-bg-dark);
         }
-
         #ar-button:hover, #fr-button:hover, #en-button:hover {
             transform: scale(1.05);
         }
-
         button {
              transition: color 0.3s ease, background-color 0.3s ease, transform 0.1s ease-out, box-shadow 0.3s ease;
         }
-
         button.tapped {
             transform: scale(0.97);
         }
-
         .fade-in {
             animation: fadeIn 0.3s ease-in-out;
         }
@@ -359,7 +317,6 @@
         .glow-word {
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
         }
-
         #content {
             padding: 2rem;
             padding-top: 6rem;
@@ -377,15 +334,12 @@
             backdrop-filter: blur(2px);
             -webkit-backdrop-filter: blur(2px);
         }
-
         body.dark-mode #content {
             background-color: var(--content-bg-dark);
         }
-
         #content.content-fading {
             opacity: 0;
         }
-
         #text span {
             cursor: pointer;
             display: inline;
@@ -393,15 +347,12 @@
             opacity: 1;
             transform: none;
         }
-
         #text span:hover {
              color: var(--text-on-glass-light);
         }
-
         body.dark-mode #text span:hover {
              color: var(--text-on-glass-dark);
         }
-
         body:not(.dark-mode) #text span:not(.glow-word) {
              text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
              -webkit-text-stroke: none;
@@ -409,7 +360,6 @@
              -webkit-text-fill-color: initial;
              color: inherit;
         }
-
         body.dark-mode #text span:not(.glow-word) {
             text-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
              -webkit-text-stroke: none;
@@ -417,7 +367,6 @@
              -webkit-text-fill-color: white;
              color: white;
         }
-
         #text span.glow-word {
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
             text-shadow: none !important;
@@ -430,21 +379,17 @@
              transition-delay: 0ms !important;
              transition-duration: 0.3s !important;
         }
-
         #save-progress-button {
             z-index: 60;
         }
-
         body.dark-mode #content h1 {
              color: white;
              transition: color 0.5s ease;
         }
-
          body:not(.dark-mode) #content h1 {
              color: inherit;
              transition: color 0.5s ease;
         }
-
         /* New styles for pop-up */
         #popup > div {
              background-color: var(--pop-up-bg-light);
@@ -454,21 +399,17 @@
              transition: background-color 0.5s ease, color 0.5s ease;
              box-shadow: var(--glass-shadow-light);
         }
-
         body.dark-mode #popup > div {
              background-color: var(--pop-up-bg-dark);
              color: var(--pop-up-text-dark);
              box-shadow: var(--glass-shadow-dark);
         }
-        
         #popup button.bg-green-500, #popup button.bg-red-500 {
              transition: background-color 0.3s ease;
         }
-
         #text p {
             margin-bottom: 1rem;
         }
-
         @keyframes spin-once {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
@@ -485,12 +426,9 @@
         </div>
         <div class="loading-percentage">0%</div>
     </div>
-
     <div class="fixed-background light-background"></div>
     <div class="fixed-background dark-background"></div>
-
     <div id="page-content-wrapper">
-
         <div id="raw-ar-text" style="display: none;">
             ‎ أتمنى لو كنت شخصًا مميزًا. أتمنى لو كنت أكثر من مجرد ما أنا عليه.
             ‎ واقفا أمام مرآة الحمّام المغلق، أحدّق في انعكاسي كأنّي أبحث عني بداخله، هامسا لنفسي بتلك الكلمات.
@@ -499,15 +437,12 @@
             ‎ أحدّق طويلاً، ومع ذلك تظل صورتي مبهمة، ضبابية، كأنّها انعكاس في ماءٍ راكد.
             ‎ جسدي، وجودي، وحتى صوتي أحيانًا… كلّها تبدو لي كأشياء أعرفها من بعيد.
             ‎ كأنني لم أرَ نفسي قط، كما يراها الآخرون.
-
             ‎ أتساءل كثيرًا… عندما ينظرون إلي، هل يلاحظون تلك التفاصيل الدقيقة التي أغفل عنها؟
             ‎ هل يرون ما أراه أنا فيهم، حين أتأمل وجوههم، وأشعر بأشياء لا تُقال؟
             ‎ هل يستطيع أحدهم أن يفهم تعابيري الصامتة التي لا أفهمها حتى أنا؟
-
             ‎ غريب هو هذا التناقض… أستطيع أن أرى بوضوح ما يخفيه الناس خلف نظراتهم،
             ‎ وأشعر بأحزانهم حتى إن لم يتحدثوا،
-            ‎ لكنني حين أنظر إلى نفسي، لا أرى إلا فراغًا… ظلًّا باهتًا بلا ملامح.
-
+            ‎ لكنني حين أنظر إلى نفسي، لا أرى إلا فراغًا… ظلًّا باهتًا بلا ملامح.
             ‎ أحيانًا أتمنى لو استطعت أن أخرج من جسدي ليومٍ واحد فقط.
             ‎ أعيش في جسدٍ آخر،
             ‎ أجلس قبالتي،
@@ -519,13 +454,11 @@
             ‎ أبتسم، أهز رأسي،
             ‎ لكن قلبي يهمس: “لستُ كما يقولون”.
             ‎ لأنني ببساطة… لم أرني بعد.
-
             ‎ خيالي واسع، مشاعري تتضخم يومًا بعد يوم،
             ‎ حساسيّتي تجاه ما حولي تتجاوز ما يمكنني تحمله أحيانًا،
             ‎ وكلما كبرت، شعرت أنني أضيع أكثر.
             ‎ العمر قصير… وأنا بالكاد أفهم نفسي،
             ‎ فكيف لي أن أفهم غيري؟
-
             ‎ أكثر ما يؤلمني هو هذا الشعور العميق بعدم الفَهم.
             ‎ لا أحد يفهمني.
             ‎ بل حتى أنا لا أفهمني.
@@ -536,7 +469,6 @@
             ‎ عالمي الداخلي يزداد اتساعًا،
             ‎ لكن المسافة بيني وبين من حولي تتّسع هي الأخرى.
             ‎ وفي لحظات كثيرة، أشعر أنني… أطفو بعيدًا عن كل شيء.
-
             ‎ لكن حين يشعر بي أحدهم حقًا، حين ينظر في عيني ويراني،
             ‎ أشعر بسعادة عارمة.
             ‎ أتعلّق به،
@@ -553,7 +485,6 @@
             ‎ ندوب لا تندمل.
             ‎ ندوب لا تُنسى.
             ‎ ندوب تذكرني بما مضى.
-
             ‎ لكنني رغم ذلك… لم أتوقف عن الحب.
             ‎ حتى وإن لم يكن قدري أن أُحَب كما أحِب،
             ‎ لم أتوقّف عن الزراعة
@@ -565,19 +496,16 @@
             ‎ وأقدّمها، إما لمن أحببت،
             ‎ أو كإثبات أنني أستحق الحب،
             ‎ أن مشاعري صادقة، رغم كل ما يُقال.
-
             ‎ لكن أغلب الزهور كما نعلم
-            ‎ إما تموت ببطئ في إناءٍ زجاجي على رفٍّ منسي،
+            ‎ إما تموت ببطئ في إناءٍ زجاجي على رفٍّ منسي،
             ‎ أو تُطوى بين صفحات كتاب لا يُقرأ،
             ‎ تمامًا كالكلمات التي أقولها، والتي لا يسمعها أحد.
             ‎ وانتهى بي الأمر في بستانٍ جاف، بقلبٍ فارغ،
             ‎ وعطر الحب تبخّر مع الريح
             ‎ يحضر للحظة، ثم يغيب.
-
             ‎ ولكن…
             ‎ هل هذا ما ينبغي أن يكون ؟
             ‎ ربما لا.
-
             ‎ ربما عليّ أن أترك زهور قلبي تنمو من أجلي أنا.
             ‎ أعتني بها،
             ‎ أرويها،
@@ -588,22 +516,17 @@
             ‎ بل يجلس إلى جانبي،
             ‎ ويزرع معي…
             ‎ حتى يصير القلب حديقة، والحديقة حقلاً لا نهاية له.
-
             ⸻
-
             ‎ وحين قابلت الألم أخيرًا،
             ‎ أمسكته بين يداي،
             ‎ كان خائفًا، وقال:
-
             ‎ “ آسف…
             ‎ أعلم أنني جرحتك كثيرًا،
-            ‎ أعلم أنني كنت أنانيًّا،
+            ‎ أعلم أنني كنت أنانيًّا،
             ‎ لم أفكر إلا بنفسي،
             ‎ وتحدثت عنك بسوء،
             ‎ وأظهرت نفسي دائمًا كأنني الضحية.”
-
             ‎ قاطعته، بصوتٍ هادئ:
-
             ‎ “اهدأ…
             ‎ لا تخف.
             ‎ لن أؤذيك.
@@ -612,11 +535,9 @@
             ‎ حتى بعد كلّ ما فعلت.
             ‎ لقد اخترتَ قلبي ليكون خزنةً لكلماتك،
             ‎ ولن أخذلك… حتى و إن خذلتني.”
-
             ‎ فقال بدهشة:
             ‎ “لكن... لماذا؟
             ‎ كيف يمكنك أن تكون بهذا البرود؟!”
-
             ‎ “لم أقل إنني هادئ،
             ‎ لكن حتى عند خروجك من حياتي،
             ‎ بعد أن تركت حفرة عميقة في صدري،
@@ -633,7 +554,6 @@
             ‎ عشنا لحظات جميلة.
             ‎ كنت أتجاوز السيئ،
             ‎ لأني أؤمن أن ما هو جميل سيبزغ منه.
-
             ‎ لكنني… تُركت.
             ‎ من أجل خلافاتٍ تافهة،
             ‎ لا معنى لها،
@@ -643,23 +563,18 @@
             ‎ لقد سقطت،
             ‎ إصطدمت بجدران الواقع القاسية،
             ‎ لكنني واصلت.
-
             ‎ ما زلت أذكر حديثك عن أحلامك،
             ‎ وكم كنتُ متحمسًا لها كأنها لي،
             ‎ وكم دعوت الله أن أراك تحققها.
             ‎ لكن حين طلبت منك أن تدعو لي،
             ‎ قلت ببساطة: لا يهمني أمرك.”
-
             ‎ صمت عارم…
-
             ‎ أكملت:
             ‎ "ورغم كل ذلك مازلت أريد أن أراك بخير، حتى ولو من بعيد، أحياناً مازلت أتمنى رؤيتك تحقق ما تريد."
-
-            ‎ سكتُّ قليلاً.
+            ‎ سكتُّ قليلاً.
             ‎ ثم قلت:
             ‎ “يمكنك الذهاب الآن.
             ‎ اعتنِ بنفسك.”
-
             ‎ وحين أطلقتُ سراح الألم من زنزانة قلبي،
             ‎ شعرت بأنني أخف قليلا…
             ‎ بانتظار المرّة القادمة
@@ -672,10 +587,8 @@
             Parce que, peu importe combien de temps je fixe mon reflet, je n’arrive jamais à saisir l’image complète de moi-même. Mon corps, ma présence, tout cela est flou pour moi. Je ne me suis jamais vraiment vu.
             Je me demande souvent… quand ils me regardent, remarquent-ils les choses délicates, belles, que moi j’ignore, comme moi je perçois souvent ces détails cachés chez eux ?
             Peuvent-ils lire mes expressions silencieuses, celles que moi-même je ne comprends pas ?
-
             C’est étrange, comme je peux ressentir les émotions enfouies au plus profond des autres, même quand ils font de leur mieux pour les cacher…
             But when it comes to me, all I see are dim, shapeless shadows.
-
             Parfois, je voudrais juste sortir de moi-même.
             Vivre dans un autre corps, juste pour un jour.
             M’asseoir en face de moi.
@@ -685,12 +598,10 @@
             Parce que, peu importe combien j’essaie, je n’arrive pas à accepter les compliments.
             Je hoche la tête, je souris… but deep down, I don’t believe them. Not until I truly see myself.
             Not until I can gaze into my own eyes the way I gaze into the eyes of someone I love.
-
             Mon imagination, mes émotions, ma sensibilité, elles grandissent chaque jour, sans fin.
             Et plus elles grandissent, plus je me perds en moi-même.
             La vie semble trop courte. J’essaie encore de comprendre qui je suis,
             sans même parler de comprendre les autres.
-
             Ce qui me fait vraiment mal, c’est à quel point je me sens incompris.
             Même par moi.
             Je me trompe sur mes propres intentions, je me blâme,
@@ -698,7 +609,6 @@
             je me mets en colère contre moi.
             Mon monde intérieur devient immense, alors que la distance entre moi et les autres s’élargit.
             Parfois, j’ai l’impression de dériver.
-
             Alors, quand quelqu’un me voit enfin, me voit vraiment, je me sens profondément heureux, excité.
             I cling to them like they’re the only light I’ve got.
             But they’re always fragile, like a light bulb made of glass.
@@ -711,39 +621,30 @@
             Scars that stay.
             Scars that remind me.
             Scars I can’t forget.
-
             But that never stopped me from loving.
             Even if love doesn’t seem to be written in my fate, I’ve always tried to give it.
             Planting hearts like seeds in the garden of my soul, day after day.
             Yet lately, they don’t seem to grow. I hardly see any heart-shaped blooms anymore.
             Then it hit me: maybe it’s because I kept picking them.
             I’d offer them as gifts to the ones I cherished, or maybe as proof that I am someone worthy of being loved. Someone with feelings that run deep and true.
-
             But most flowers, as we know, end up in jars where their colors slowly fade, or pressed between the forgotten pages of an old book.
             Just like the words of the one who gave them, left unread.
             And so, I found myself with an empty garden, an empty heart, and the scent of love carried off by the wind.
             There for just a moment before disappearing again.
-
             But… is that how it’s meant to be?
-
             Maybe not.
             Maybe instead of plucking my love and handing it away too soon, I’ll let it bloom for me.
             I’ll tend to it gently, keep it alive within me—until the day someone comes along who sees its worth.
             Someone who won’t just take a flower and leave, but who will kneel beside me and help me grow them.
             Until together, we’ve planted a field that never ends.
-
             ⸻
-
             When I finally met the pain,
             I had him between my hands.
             He said :
-
             "I’m sorry… I know I hurt you so much.
             I know I only thought about myself, without caring about you.
             I know I said bad things about you… and acted like I was the victim.”
-
             I interrupted, my voice calm:
-
             “Shhh… don’t be afraid.
             I’m not going to hurt you.
             It’s okay.
@@ -751,10 +652,8 @@
             I won’t expose your secrets, not even after all of that.
             You chose my heart as a secret vault for your words.
             And I won’t let you down, even when you did.”
-
             “But… why?
             How can you be so cool about it?!”
-
             “I never said I was cool.
             Even though you’re out of my life,
             after leaving a big scar on my chest that runs deep into my heart…
@@ -773,7 +672,6 @@
             because I always believed something good would come out of them.
             I learned to hold on to the ones who matter to me,
             even in the worst conditions.
-
             But me?
             I was left.
             Over the most trivial fights.
@@ -783,18 +681,15 @@
             I fell.
             Bumped into walls of hardness.
             But I kept going.
-
             I still remember you telling me your dreams.
             And me getting excited for you like they were my own.
             I remember the nights I prayed that one day
             I could watch you live those dreams.
             But when I ask you to pray for me,
             you say you don’t care.”
-
             A pause.
             “You can go now.
             Take care of yourself.”
-
             And as I freed the pain from the prison of my chest,
             I felt a little bit lighter.
             Waiting for the next time
@@ -807,10 +702,8 @@
             Because no matter how long I stare, I can never truly grasp the whole image of myself. My body, my presence—it’s a blur to me. I’ve never really seen me.
             I always wonder… when they look at me, do they catch the delicate, beautiful things I overlook, just as I often notice those hidden things in them?
             Can they read my quiet expressions, the ones I don’t even understand myself?
-
             It’s strange how I can feel the emotions buried deep inside others, even when they try so hard to hide them…
             But when it comes to me, all I see are dim, shapeless shadows.
-
             Sometimes, I just wish I could step out of myself.
             To live in another body for a day.
             To sit across from me.
@@ -820,11 +713,9 @@
             Because no matter how hard I try, I can’t accept the compliments.
             I nod, I smile… but deep down, I don’t believe them. Not until I truly see myself.
             Not until I can gaze into my own eyes the way I gaze into the eyes of someone I love.
-
             My imagination, my emotions, my sensitivity—they expand every day, endlessly.
             And the more they grow, the more lost I become within myself.
             Life feels too short. I’m still trying to understand who I am, let alone trying to understand everyone else.
-
             What truly hurts is how deeply I feel misunderstood.
             Even by myself.
             I misread my own intentions. I blame myself.
@@ -832,7 +723,6 @@
             Get angry at myself.
             My inner world grows larger, while the space between me and others grows wider too.
             Sometimes, it feels like I’m floating away.
-
             So when someone finally sees me, truly sees me, I feel really excited and happy.
             I cling to them like they’re the only light I’ve got.
             But they’re always fragile, like a light bulb made of glass.
@@ -845,39 +735,30 @@
             Scars that stay.
             Scars that remind me.
             Scars I can’t forget.
-
             But that never stopped me from loving.
             Even if love doesn’t seem to be written in my fate, I’ve always tried to give it.
             Planting hearts like seeds in the garden of my soul, day after day.
             Yet lately, they don’t seem to grow. I hardly see any heart-shaped blooms anymore.
             Then it hit me: maybe it’s because I kept picking them.
             I’d offer them as gifts to the ones I cherished, or maybe as proof that I am someone worthy of being loved. Someone with feelings that run deep and true.
-
             But most flowers, as we know, end up in jars where their colors slowly fade, or pressed between the forgotten pages of an old book.
             Just like the words of the one who gave them, left unread.
             And so, I found myself with an empty garden, an empty heart, and the scent of love carried off by the wind.
             There for just a moment before disappearing again.
-
             But… is that how it’s meant to be?
-
             Maybe not.
             Maybe instead of plucking my love and handing it away too soon, I’ll let it bloom for me.
             I’ll tend to it gently, keep it alive within me—until the day someone comes along who sees its worth.
             Someone who won’t just take a flower and leave, but who will kneel beside me and help me grow them.
             Until together, we’ve planted a field that never ends.
-
             ⸻
-
             When I finally met the pain,
             I had him between my hands.
             He said :
-
             "I’m sorry… I know I hurt you so much.
             I know I only thought about myself, without caring about you.
             I know I said bad things about you… and acted like I was the victim.”
-
             I interrupted, my voice calm:
-
             “Shhh… don’t be afraid.
             I’m not going to hurt you.
             It’s okay.
@@ -885,10 +766,8 @@
             I won’t expose your secrets, not even after all of that.
             You chose my heart as a secret vault for your words.
             And I won’t let you down, even when you did.”
-
             “But… why?
             How can you be so cool about it?!”
-
             “I never said I was cool.
             Even though you’re out of my life,
             after leaving a big scar on my chest that runs deep into my heart…
@@ -907,7 +786,6 @@
             because I always believed something good would come out of them.
             I learned to hold on to the ones who matter to me,
             even in the worst conditions.
-
             But me?
             I was left.
             Over the most trivial fights.
@@ -917,18 +795,15 @@
             I fell.
             Bumped into walls of hardness.
             But I kept going.
-
             I still remember you telling me your dreams.
             And me getting excited for you like they were my own.
             I remember the nights I prayed that one day
             I could watch you live those dreams.
             But when I ask you to pray for me,
             you say you don’t care.”
-
             A pause.
             “You can go now.
             Take care of yourself.”
-
             And as I freed the pain from the prison of my chest,
             I felt a little bit lighter.
             Waiting for the next time
@@ -965,13 +840,10 @@
                 ⌂
             </button>
         </div>
-
-
         <div id="content" class="rounded-lg mx-auto content-fading">
             <h1 id="title" class="text-3xl font-bold mb-4"></h1>
             <div id="text" class="text-lg leading-relaxed"></div>
         </div>
-
         <button
             id="save-progress-button"
             onclick="scrollToSavedWord()"
@@ -980,7 +852,6 @@
         >
             Saved Progress
         </button>
-
         <div id="popup" class="hidden fixed inset-0 flex items-center justify-center z-50">
             <div class="glass-button-base glass-popup shadow-lg w-64 fade-in">
                 <h2 id="popup-title" class="text-lg font-bold mb-2">Save Position</h2>
@@ -1001,7 +872,6 @@
                 </div>
             </div>
         </div>
-
         <div class="fixed bottom-4 right-4 z-50">
             <button
                 id="dark-mode-toggle-button"
@@ -1011,22 +881,17 @@
                 <span id="dark-mode-icon">☀️</span>
             </button>
         </div>
-
     </div>
-
     <script>
         const loadingScreen = document.getElementById("loading-screen");
         const loadPercentageText = document.querySelector(".loading-percentage");
         const body = document.body;
-
         let currentLanguage = 'en';
         let allSavedProgress = {};
-
         let tempSavedWordId = '';
         let tempSavedWordText = '';
         let highlightedWordElement = null;
         let isDarkMode = false;
-
         const contentMap = {
             ar: {
                 title: 'ضائع لأوجد',
@@ -1071,7 +936,6 @@
                 backHome: 'Back Home'
             },
         };
-
         const lightBackgroundDiv = document.querySelector('.fixed-background.light-background');
         const darkBackgroundDiv = document.querySelector('.fixed-background.dark-background');
         const contentDiv = document.getElementById('content');
@@ -1084,12 +948,9 @@
         const darkModeToggleBtn = document.getElementById('dark-mode-toggle-button');
         const darkModeIcon = document.getElementById('dark-mode-icon');
         const popupDivInner = document.getElementById('popup').querySelector('div');
-
-
         function applyTextEffects() {
             const textSpans = textElement.querySelectorAll('span[id^="word-p"]');
             const isDarkModeActive = document.body.classList.contains('dark-mode');
-
             textSpans.forEach(span => {
                  if (!span.classList.contains('glow-word')) {
                      if (isDarkModeActive) {
@@ -1108,7 +969,6 @@
                  }
              });
         }
-
         function clearSavedProgress() {
              delete allSavedProgress[currentLanguage];
              localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
@@ -1119,7 +979,6 @@
              }
              console.log(`Saved progress for ${currentLanguage.toUpperCase()} cleared.`);
         }
-
         function changeLanguage(lang, fromLoad = false) {
             if (contentDiv.classList.contains('content-fading') && !fromLoad) {
                  return;
@@ -1127,7 +986,6 @@
             if (currentLanguage === lang && !fromLoad) {
                  return;
             }
-            
             // First, reset all buttons to unselected state
             languageButtons.forEach(button => {
                 button.classList.add('unselected-language');
@@ -1135,7 +993,6 @@
                 // Set the text color for unselected buttons
                 button.style.color = body.classList.contains('dark-mode') ? 'var(--unselected-lang-text-dark)' : 'var(--unselected-lang-text-light)';
             });
-            
             // Then, apply selected state to the new button
             const newButton = document.getElementById(`${lang}-button`);
             if(newButton) {
@@ -1144,27 +1001,19 @@
                  // Set the text color for the newly selected button
                 newButton.style.color = body.classList.contains('dark-mode') ? 'var(--save-button-text-dark)' : 'var(--save-button-text-light)';
             }
-
-
             currentLanguage = lang;
-
             if (!fromLoad) {
                  localStorage.setItem('preferredLanguage', lang);
             }
-            
             const content = contentMap[lang];
-
             contentDiv.classList.add('content-fading');
-
             const rawTextElement = document.getElementById(content.rawTextId);
             const rawText = rawTextElement ? rawTextElement.textContent.trim() : '';
-
             setTimeout(() => {
                 titleElement.textContent = content.title;
                 if (backHomeTextSpan) {
                      backHomeTextSpan.textContent = content.backHome;
                 }
-
                 if (lang === 'ar') {
                     contentDiv.dir = 'rtl';
                     textElement.style.textAlign = 'right';
@@ -1172,14 +1021,11 @@
                     contentDiv.dir = 'ltr';
                     textElement.style.textAlign = 'left';
                 }
-
                 textElement.innerHTML = '';
-
                 if (rawText) {
-                    const paragraphs = rawText.split('\n\n');
-
+                    const paragraphs = rawText.split('\n'); // Fixed line break
                     paragraphs.forEach((paragraph, pIndex) => {
-                         const lines = paragraph.split('\n');
+                         const lines = paragraph.split('\n'); // Fixed line break
                          lines.forEach((line, lIndex) => {
                              const trimmedLine = line.trim();
                              if (trimmedLine === '') {
@@ -1189,7 +1035,6 @@
                                  const pElement = document.createElement('p');
                                  pElement.classList.add('mb-4', 'text-lg', 'leading-relaxed');
                                  const wordsAndSpaces = trimmedLine.match(/\S+|\s+|[.,!?;:]/g);
-
                                  if (wordsAndSpaces) {
                                      wordsAndSpaces.forEach((part, partIndex) => {
                                          if (part.trim() === '' && !/[.,!?;:]/.test(part)) {
@@ -1216,32 +1061,29 @@
                      textElement.appendChild(noTextElement);
                      console.warn(`No raw text found for language: ${lang}`);
                 }
-
                 document.getElementById('save-progress-button').textContent = content.saveProgress;
                 document.getElementById('popup-title').textContent = content.savePosition;
                 document.getElementById('popup').querySelector('.bg-green-500').textContent = content.save;
                 document.getElementById('popup').querySelector('.bg-red-500').textContent = content.exit;
-
                 highlightWord();
                 applyTextEffects();
-
+                // --- FIX: Only scroll if it's the initial load ---
                 const savedProgressForCurrentLang = allSavedProgress[currentLanguage];
                 if (fromLoad && savedProgressForCurrentLang && savedProgressForCurrentLang.id) {
+                      // Introduce a small delay to ensure content is fully rendered before scrolling
                       setTimeout(() => {
-                          scrollToSavedWord(false);
+                          scrollToSavedWord(false); // Perform scroll without checks
                       }, 100);
                 }
-
+                // --- END FIX ---
                 contentDiv.classList.remove('content-fading');
                 if (isDarkMode) {
                     titleElement.style.color = 'white';
                 } else {
                      titleElement.style.color = 'inherit';
                 }
-
             }, 500);
         }
-
         function handleWordClick(spanId, wordText) {
             tempSavedWordId = spanId;
             tempSavedWordText = wordText;
@@ -1250,7 +1092,6 @@
             document.getElementById('popup').classList.remove('fade-out');
             document.getElementById('popup').classList.add('fade-in');
         }
-
         function closePopup() {
             document.getElementById('popup').classList.remove('fade-in');
             document.getElementById('popup').classList.add('fade-out');
@@ -1260,7 +1101,6 @@
                 document.getElementById('popup').classList.add('hidden');
             }, 300);
         }
-
         function savePosition() {
             if (tempSavedWordId) {
                 allSavedProgress[currentLanguage] = {
@@ -1273,18 +1113,15 @@
             }
             closePopup();
         }
-
         function scrollToSavedWord(performChecks = true) {
             const savedProgressForCurrentLang = allSavedProgress[currentLanguage];
             if (!savedProgressForCurrentLang || !savedProgressForCurrentLang.id) {
                 alert(contentMap[currentLanguage].noWordSaved);
                 return;
             }
-
             const savedWordId = savedProgressForCurrentLang.id;
             const savedWordText = savedProgressForCurrentLang.text;
             const targetElement = document.getElementById(savedWordId);
-
             if (targetElement) {
                  highlightWord();
                  requestAnimationFrame(() => {
@@ -1304,26 +1141,21 @@
                 }
             }
         }
-
        function highlightWord() {
            if (highlightedWordElement) {
                highlightedWordElement.classList.remove('bg-yellow-200', 'bg-yellow-600', 'rounded', 'glow-word');
                applyTextEffects();
                highlightedWordElement = null;
            }
-
            const savedProgressForCurrentLang = allSavedProgress[currentLanguage];
            if (!savedProgressForCurrentLang || !savedProgressForCurrentLang.id) {
                return;
            }
-
            const savedWordId = savedProgressForCurrentLang.id;
            const targetElement = document.getElementById(savedWordId);
-
            if (targetElement) {
                highlightedWordElement = targetElement;
                highlightedWordElement.classList.add('rounded', 'glow-word');
-
                if (document.body.classList.contains('dark-mode')) {
                    highlightedWordElement.classList.remove('bg-yellow-200');
                    highlightedWordElement.classList.add('bg-yellow-600');
@@ -1340,16 +1172,13 @@
                console.warn(`Element for saved word ID "${savedWordId}" not found for highlighting in language "${currentLanguage}".`);
            }
        }
-
         function toggleDarkMode() {
             isDarkMode = !isDarkMode;
             localStorage.setItem('darkModeEnabled', isDarkMode);
-
             darkModeToggleBtn.classList.add('animate-spin-once');
             darkModeToggleBtn.addEventListener('animationend', () => {
                 darkModeToggleBtn.classList.remove('animate-spin-once');
             }, { once: true });
-
             if (isDarkMode) {
                 body.classList.add('dark-mode');
                 lightBackgroundDiv.style.opacity = 0;
@@ -1361,14 +1190,14 @@
                 darkBackgroundDiv.style.opacity = 0;
                 darkModeIcon.textContent = '☀️';
             }
-            
-            // Re-apply correct colors to buttons based on the new mode
-            changeLanguage(currentLanguage, true);
-
+            // --- FIX: Call changeLanguage with fromLoad=false to prevent scrolling ---
+            // Re-apply correct colors to buttons and text based on the new mode,
+            // but do not trigger the scroll logic by setting fromLoad to false.
+            changeLanguage(currentLanguage, false); // Changed from true to false
+            // --- END FIX ---
             applyTextEffects();
-            highlightWord();
+            highlightWord(); // Re-highlight the word in the new mode
         }
-
         const animatedButtons = document.querySelectorAll('button:not(#popup button):not(#dark-mode-toggle-button)');
         animatedButtons.forEach(button => {
             button.addEventListener('click', function() {
@@ -1380,10 +1209,8 @@
                  }
             });
         });
-
         let load = 0;
         let interval = setInterval(updateLoadingText, 30);
-
         function updateLoadingText() {
           load++;
           if (load > 99) {
@@ -1393,7 +1220,6 @@
             loadPercentageText.innerText = `${load}%`;
           }
         }
-
         window.addEventListener('load', () => {
              if (load < 100) {
                  loadPercentageText.innerText = '100%';
@@ -1406,7 +1232,6 @@
                  }, 600);
             }, 500);
         });
-
         document.addEventListener('DOMContentLoaded', () => {
              const savedProgressJson = localStorage.getItem('allSavedProgress');
              try {
@@ -1416,23 +1241,22 @@
                  allSavedProgress = {};
                  localStorage.removeItem('allSavedProgress');
              }
-
              const savedDarkMode = localStorage.getItem('darkModeEnabled');
              if (savedDarkMode !== null) {
                  isDarkMode = JSON.parse(savedDarkMode);
              } else {
                  isDarkMode = false;
              }
+             // Ensure the initial toggle sets the correct mode
              isDarkMode = !isDarkMode;
              toggleDarkMode();
-
              const preferredLanguage = localStorage.getItem('preferredLanguage');
              let initialLangToLoad = 'en';
-
              if (preferredLanguage && contentMap[preferredLanguage]) {
                 initialLangToLoad = preferredLanguage;
              }
-             changeLanguage(initialLangToLoad, true);
+             // Load the initial language content and scroll to saved word if applicable
+             changeLanguage(initialLangToLoad, true); // Initial load should allow scrolling
         });
     </script>
 </body>
