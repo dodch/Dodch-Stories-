@@ -190,8 +190,6 @@
             transform: scale(0.9) translateY(20px);
         }
 
-        /* REMOVED .glass-filter, .glass-overlay, .glass-specular */
-
         .glass-content {
             position: relative;
             z-index: 3;
@@ -199,7 +197,6 @@
             font-size: 1.2rem;
             text-align: center;
             padding: 0 2rem;
-            /* Add transition for text color */
             transition: color 0.5s ease;
         }
 
@@ -237,7 +234,7 @@
             z-index: 4;
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.5s ease, background-color 0.5s ease;
             background-color: var(--glass-bg);
-            /* NEW SVG LIQUID GLASS EFFECT - FIXED */
+            /* NEW SVG LIQUID GLASS EFFECT */
             backdrop-filter: blur(4px) url(#filter);
             -webkit-backdrop-filter: blur(4px);
             box-shadow: var(--button-shadow);
@@ -414,21 +411,16 @@
             transform: translateY(1px);
         }
 
-        /* Subtle red tint for favorites button */
+        /* REMOVED TINT BACKGROUNDS - FIXED */
         #filterBtn {
-            background-color: color-mix(in srgb, var(--red-tint) 20%, transparent);
             border: none;
         }
 
-        /* Subtle purple tint for dark mode button */
         #darkModeBtn {
-            background-color: color-mix(in srgb, var(--purple-tint) 20%, transparent);
             border: none;
         }
-        
-        /* Glass-like tint for search button */
+
         #searchButton {
-            background-color: color-mix(in srgb, var(--blue-tint) 20%, transparent);
             border: none;
         }
 
@@ -437,15 +429,15 @@
             fill: var(--moon-color);
         }
 
-        /* DARK MODE BUTTON TINTS */
+        /* DARK MODE BUTTON TINTS - FIXED */
         body.dark-mode #filterBtn {
-            background-color: color-mix(in srgb, var(--red-tint) 50%, transparent);
+            /* REMOVED TINT */
         }
         body.dark-mode #darkModeBtn {
-            background-color: color-mix(in srgb, var(--purple-tint) 50%, transparent);
+            /* REMOVED TINT */
         }
         body.dark-mode #searchButton {
-            background-color: color-mix(in srgb, var(--blue-tint) 50%, transparent);
+            /* REMOVED TINT */
         }
 
         .highlight {
@@ -537,14 +529,14 @@
             margin-right: 0px;
             transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), background-color 0.5s ease, box-shadow 0.5s ease;
             /* NEW LIQUID GLASS STYLE - FIXED */
-            background-color: color-mix(in srgb, var(--blue-tint) 20%, transparent);
+            background-color: var(--glass-bg); /* Use the same background as the grids for consistency */
             backdrop-filter: blur(4px) url(#filter);
             -webkit-backdrop-filter: blur(4px);
             box-shadow: var(--glass-shadow);
         }
 
         body.dark-mode .search-bar {
-            background-color: color-mix(in srgb, var(--blue-tint) 50%, transparent);
+            background-color: var(--glass-bg);
         }
 
         .search-bar:focus {
