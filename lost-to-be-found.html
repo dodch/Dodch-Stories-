@@ -44,6 +44,12 @@
             --back-button-text-dark: #ffffff;
             /* New variable for the dark mode button */
             --dark-mode-button-bg-light: rgba(59, 130, 246, 0.6);
+            /* New variable for the content tint */
+            --content-bg-light: rgba(0, 0, 0, 0.2);
+            /* New variable for the selected language button text */
+            --selected-lang-button-text: var(--save-button-text-light);
+            /* New variable for the unselected language button text in light mode */
+            --unselected-lang-text-light: #f0f0f0;
         }
 
         body.dark-mode {
@@ -66,6 +72,12 @@
             --text-on-glass-dark: #C084FC;
             /* New variable for the dark mode button */
             --dark-mode-button-bg-dark: rgba(147, 197, 253, 0.25);
+            /* New variable for the content tint */
+            --content-bg-dark: rgba(0, 0, 0, 0.2);
+            /* New variable for the selected language button text */
+            --selected-lang-button-text: var(--save-button-text-dark);
+            /* New variable for the unselected language button text in dark mode */
+            --unselected-lang-text-dark: #C084FC;
         }
         
         .glass-button-base {
@@ -302,9 +314,9 @@
         
         /* New styles for unselected language buttons */
         .unselected-language {
-            opacity: 0.6;
-            filter: grayscale(100%);
-            transform: scale(0.95);
+            opacity: 0.8;
+            filter: grayscale(60%);
+            transform: scale(0.98);
             transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
         }
 
@@ -314,10 +326,16 @@
         }
 
         .selected-language {
+             background-color: var(--save-button-bg-light);
+             color: var(--selected-lang-button-text);
              transform: scale(1.05); 
              opacity: 1;
              filter: grayscale(0%);
              box-shadow: var(--button-shadow-light);
+        }
+
+        body.dark-mode .selected-language {
+             background-color: var(--save-button-bg-dark);
         }
 
         #ar-button:hover, #fr-button:hover, #en-button:hover {
@@ -353,9 +371,15 @@
             border-radius: 0.5rem;
             margin-top: 1rem;
             margin-bottom: 1rem;
-            background-color: transparent;
             transition: opacity 0.5s ease-in-out;
             opacity: 1;
+            background-color: var(--content-bg-light);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+        }
+
+        body.dark-mode #content {
+            background-color: var(--content-bg-dark);
         }
 
         #content.content-fading {
@@ -637,7 +661,7 @@
             ‎ اعتنِ بنفسك.”
 
             ‎ وحين أطلقتُ سراح الألم من زنزانة قلبي،
-            ‎ شعرت بأنني أخف قليلا …
+            ‎ شعرت بأنني أخف قليلا…
             ‎ بانتظار المرّة القادمة
             ‎ التي سأحرّر فيها آلاما أخرى .
         </div>
@@ -650,7 +674,7 @@
             Peuvent-ils lire mes expressions silencieuses, celles que moi-même je ne comprends pas ?
 
             C’est étrange, comme je peux ressentir les émotions enfouies au plus profond des autres, même quand ils font de leur mieux pour les cacher…
-            Mais quand il s’agit de moi, tout ce que je vois, ce sont des ombres ternes, sans forme.
+            But when it comes to me, all I see are dim, shapeless shadows.
 
             Parfois, je voudrais juste sortir de moi-même.
             Vivre dans un autre corps, juste pour un jour.
@@ -1007,8 +1031,8 @@
             ar: {
                 title: 'ضائع لأوجد',
                 rawTextId: 'raw-ar-text',
-                saveProgress: 'حفظ التقدم',
-                savePosition: 'حفظ الموضع',
+                saveProgress: 'التقدم المحفوظ',
+                savePosition: 'التقدم المحفوظ',
                 save: 'حفظ',
                 exit: 'خروج',
                 atWord: 'كلمة',
@@ -1021,8 +1045,8 @@
             fr: {
                 title: 'Perdu à trouver',
                 rawTextId: 'raw-fr-text',
-                saveProgress: 'Enregistrer le progrès',
-                savePosition: 'Enregistrer la position',
+                saveProgress: 'Progression enregistrée',
+                savePosition: 'Progression enregistrée',
                 save: 'Enregistrer',
                 exit: 'Sortir',
                 atWord: 'mot',
@@ -1061,21 +1085,6 @@
         const darkModeIcon = document.getElementById('dark-mode-icon');
         const popupDivInner = document.getElementById('popup').querySelector('div');
 
-
-        function setButtonTextColor() {
-             const isDarkModeActive = document.body.classList.contains('dark-mode');
-             
-             languageButtons.forEach(button => {
-                 button.style.color = isDarkModeActive ? 'var(--text-on-glass-dark)' : 'var(--text-on-glass-light)';
-             });
-             
-             // The dark mode toggle button has different colors
-             if (isDarkModeActive) {
-                darkModeToggleBtn.style.color = 'var(--main-text-color-dark)';
-             } else {
-                 darkModeToggleBtn.style.color = 'var(--main-text-color-light)';
-             }
-        }
 
         function applyTextEffects() {
             const textSpans = textElement.querySelectorAll('span[id^="word-p"]');
@@ -1119,15 +1128,21 @@
                  return;
             }
             
-            // Add 'unselected-language' to all buttons, then remove from the new one
+            // First, reset all buttons to unselected state
             languageButtons.forEach(button => {
                 button.classList.add('unselected-language');
                 button.classList.remove('selected-language');
+                // Set the text color for unselected buttons
+                button.style.color = body.classList.contains('dark-mode') ? 'var(--unselected-lang-text-dark)' : 'var(--unselected-lang-text-light)';
             });
+            
+            // Then, apply selected state to the new button
             const newButton = document.getElementById(`${lang}-button`);
             if(newButton) {
                 newButton.classList.remove('unselected-language');
                 newButton.classList.add('selected-language');
+                 // Set the text color for the newly selected button
+                newButton.style.color = body.classList.contains('dark-mode') ? 'var(--save-button-text-dark)' : 'var(--save-button-text-light)';
             }
 
 
@@ -1208,7 +1223,7 @@
                 document.getElementById('popup').querySelector('.bg-red-500').textContent = content.exit;
 
                 highlightWord();
-                setButtonTextColor();
+                applyTextEffects();
 
                 const savedProgressForCurrentLang = allSavedProgress[currentLanguage];
                 if (fromLoad && savedProgressForCurrentLang && savedProgressForCurrentLang.id) {
@@ -1346,8 +1361,10 @@
                 darkBackgroundDiv.style.opacity = 0;
                 darkModeIcon.textContent = '☀️';
             }
+            
+            // Re-apply correct colors to buttons based on the new mode
+            changeLanguage(currentLanguage, true);
 
-            setButtonTextColor();
             applyTextEffects();
             highlightWord();
         }
