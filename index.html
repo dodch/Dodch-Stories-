@@ -38,10 +38,8 @@
                 inset -1.5px 2.5px 0px -2px color-mix(in srgb, #000 calc(20%), transparent),
                 inset 0px 3px 4px -2px color-mix(in srgb, #000 calc(20%), transparent),
                 inset 2px -6.5px 1px -4px color-mix(in srgb, #000 calc(10%), transparent),
-                /* MODIFIED: Increased blur and spread for outer shadows */
                 0px 2px 10px 0px color-mix(in srgb, #000 calc(20%), transparent),
                 0px 10px 30px 0px color-mix(in srgb, #000 calc(15%), transparent);
-            --button-shadow: var(--glass-shadow);
         }
 
         /* Dark Mode Variables */
@@ -67,10 +65,8 @@
                 inset -1.5px 2.5px 0px -2px color-mix(in srgb, #000 calc(20%), transparent),
                 inset 0px 3px 4px -2px color-mix(in srgb, #000 calc(20%), transparent),
                 inset 2px -6.5px 1px -4px color-mix(in srgb, #000 calc(10%), transparent),
-                /* MODIFIED: Increased blur and spread for outer shadows */
                 0px 2px 10px 0px color-mix(in srgb, rgba(0, 0, 0, 0.5), transparent),
                 0px 10px 30px 0px color-mix(in srgb, rgba(0, 0, 0, 0.4), transparent);
-            --button-shadow: var(--glass-shadow);
         }
 
         html, body {
@@ -80,22 +76,21 @@
             font-family: sans-serif;
             overflow-x: hidden;
             background-color: var(--main-bg);
-            /* Add transition for text color */
             transition: background-color 0.5s ease, color 0.5s ease;
         }
 
         body {
             overflow-y: auto;
-            background-image: var(--bg-url); /* Default light mode background */
+            background-image: var(--bg-url);
             background-position: center;
             background-size: cover;
             background-repeat: no-repeat;
             background-color: #2e3b55;
-            transition: background-image 1s ease-in-out, background-color 0.5s ease; /* Smooth transition for background-image */
+            transition: background-image 1s ease-in-out, background-color 0.5s ease;
         }
 
         body.dark-mode {
-            background-image: var(--bg-url-dark); /* Dark mode background */
+            background-image: var(--bg-url-dark);
         }
 
         .container {
@@ -125,12 +120,10 @@
             opacity: 0;
             transform: scale(0.9);
             background-color: var(--glass-bg);
-            /* NEW SVG LIQUID GLASS EFFECT */
             backdrop-filter: blur(4px) url(#filter);
             -webkit-backdrop-filter: blur(4px);
         }
 
-        /* NEW: Tint for favorited grids */
         .glass-container.favorited {
             background-color: color-mix(in srgb, var(--heart-active) 25%, transparent);
         }
@@ -223,7 +216,7 @@
             opacity: 0.8;
         }
 
-        /* Base style for all glass buttons */
+        /* Base style for all glass buttons - Corrected to match glass-container */
         .glass-button-base {
             position: relative;
             overflow: hidden;
@@ -233,17 +226,14 @@
             cursor: pointer;
             z-index: 4;
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.5s ease, background-color 0.5s ease;
-            background-color: var(--glass-bg);
-            /* NEW SVG LIQUID GLASS EFFECT */
+            background-color: var(--glass-bg); /* Now uses the shared glass background variable */
             backdrop-filter: blur(4px) url(#filter);
             -webkit-backdrop-filter: blur(4px);
-            box-shadow: var(--button-shadow);
+            box-shadow: var(--glass-shadow); /* Now uses the shared glass shadow variable */
         }
         
-        /* Apply consistent hover effect to all buttons */
         .glass-button-base:hover {
             transform: scale(1.1);
-            /* MODIFIED: Increased shadow on hover */
             box-shadow: 
                 inset 0 0 0 1px color-mix(in srgb, #fff calc(10%), transparent),
                 inset 1.8px 3px 0px -2px color-mix(in srgb, #fff calc(90%), transparent),
@@ -257,7 +247,6 @@
                 0px 20px 60px 0px color-mix(in srgb, #000 calc(25%), transparent);
         }
         
-        /* REMOVED ::before and ::after as the new style combines them */
         .favorite-btn {
             position: absolute;
             top: 1rem;
@@ -320,9 +309,8 @@
             fill: var(--heart-active);
         }
         
-        /* Style for the floating filter button's SVG */
         .floating-button#filterBtn svg {
-            fill: var(--heart-color); /* This will be overridden by the script */
+            fill: var(--heart-color);
         }
 
         .floating-buttons-container {
@@ -377,7 +365,7 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            box-shadow: var(--button-shadow);
+            box-shadow: var(--glass-shadow); /* Changed to use consistent shadow */
             z-index: 10;
             transition: box-shadow 0.5s ease;
             animation: buttonEntrance 0.6s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
@@ -411,33 +399,28 @@
             transform: translateY(1px);
         }
 
-        /* REMOVED TINT BACKGROUNDS - FIXED */
+        /* FIX: Apply more transparent background to show the liquid effect */
         #filterBtn {
+            background-color: color-mix(in srgb, var(--red-tint) 10%, transparent);
             border: none;
         }
-
         #darkModeBtn {
+            background-color: color-mix(in srgb, var(--purple-tint) 10%, transparent);
             border: none;
         }
-
         #searchButton {
+            background-color: color-mix(in srgb, var(--blue-tint) 10%, transparent);
             border: none;
         }
 
-        /* Moon icon color when dark mode is active */
-        .floating-button#darkModeBtn.active svg {
-            fill: var(--moon-color);
-        }
-
-        /* DARK MODE BUTTON TINTS - FIXED */
         body.dark-mode #filterBtn {
-            /* REMOVED TINT */
+            background-color: color-mix(in srgb, var(--red-tint) 20%, transparent);
         }
         body.dark-mode #darkModeBtn {
-            /* REMOVED TINT */
+            background-color: color-mix(in srgb, var(--purple-tint) 20%, transparent);
         }
         body.dark-mode #searchButton {
-            /* REMOVED TINT */
+            background-color: color-mix(in srgb, var(--blue-tint) 20%, transparent);
         }
 
         .highlight {
@@ -528,15 +511,12 @@
             visibility: hidden;
             margin-right: 0px;
             transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), background-color 0.5s ease, box-shadow 0.5s ease;
-            /* NEW LIQUID GLASS STYLE - FIXED */
-            background-color: var(--glass-bg); /* Use the same background as the grids for consistency */
+            
+            /* FIX: Use the more transparent background and consistent shadow */
+            background-color: var(--glass-bg); 
             backdrop-filter: blur(4px) url(#filter);
             -webkit-backdrop-filter: blur(4px);
             box-shadow: var(--glass-shadow);
-        }
-
-        body.dark-mode .search-bar {
-            background-color: var(--glass-bg);
         }
 
         .search-bar:focus {
@@ -553,7 +533,6 @@
 
         .search-bar::placeholder {
             color: var(--search-placeholder);
-            /* Add transition for placeholder color */
             transition: color 0.5s ease;
         }
 
@@ -561,7 +540,7 @@
             width: 60px;
             height: 60px;
             border-radius: 30px;
-            box-shadow: var(--button-shadow);
+            box-shadow: var(--glass-shadow); /* Changed to use consistent shadow */
             transition: box-shadow 0.5s ease, background-color 0.5s ease;
         }
 
@@ -588,7 +567,6 @@
             left: 50%;
             transform: translate(-50%, -40%);
             pointer-events: none;
-            /* Add transition for text color */
             transition: opacity 0.5s cubic-bezier(0.175, 0.885, 0.32, 2.2), transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 2.2), color 0.5s ease;
             width: 100%;
             z-index: 5;
@@ -648,7 +626,6 @@
             animation: slide-left 15s linear infinite;
             display: inline-block;
             animation-delay: -5s;
-            /* Add transition for text color */
             transition: color 0.5s ease;
         }
 
@@ -657,7 +634,6 @@
             100% { transform: translateX(-100%); }
         }
 
-        /* Loading animation styles */
         .loading {
             position: fixed;
             top: 0;
@@ -695,7 +671,6 @@
             animation: blur-text 1.5s infinite linear alternate;
         }
         
-        /* Animation delays for staggered effect */
         .loading-text span:nth-child(1) { animation-delay: 0s; }
         .loading-text span:nth-child(2) { animation-delay: 0.2s; }
         .loading-text span:nth-child(3) { animation-delay: 0.4s; }
@@ -707,7 +682,6 @@
             100% { filter: blur(4px); }
         }
 
-        /* FIX: A small empty div to force correct scroll behavior on Android */
         .scroll-fix {
             height: 1px;
             margin-top: 50px;
@@ -778,7 +752,6 @@ let showingFavorites = false;
 let panels = [];
 let allStories = [];
 
-// Load saved state from localStorage on page load
 function loadSavedState() {
     const savedDarkMode = localStorage.getItem('darkMode');
     const savedShowingFavorites = localStorage.getItem('showingFavorites');
@@ -816,7 +789,6 @@ function loadSavedState() {
     }
 }
 
-// Save state to localStorage
 function saveState() {
     localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
     localStorage.setItem('showingFavorites', showingFavorites);
@@ -1008,7 +980,6 @@ document.addEventListener('DOMContentLoaded', () => {
             img.src = url;
         });
     } else {
-        // No background images to load, proceed
         loadingScreen.classList.add('hidden');
         setTimeout(() => {
             fetchAndRenderPanels();
