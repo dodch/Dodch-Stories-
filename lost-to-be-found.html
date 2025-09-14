@@ -34,6 +34,16 @@
             --main-text-color-light: #f0f0f0;
             --main-text-color-dark: #f0f0f0;
             --text-on-glass-light: #9333EA;
+            --save-button-bg-light: rgba(147, 51, 234, 0.6);
+            --save-button-bg-dark: rgba(192, 132, 252, 0.25);
+            --save-button-text-light: #ffffff;
+            --save-button-text-dark: #ffffff;
+            --back-button-bg-light: rgba(239, 68, 68, 0.6);
+            --back-button-bg-dark: rgba(252, 165, 165, 0.25);
+            --back-button-text-light: #ffffff;
+            --back-button-text-dark: #ffffff;
+            /* New variable for the dark mode button */
+            --dark-mode-button-bg-light: rgba(59, 130, 246, 0.6);
         }
 
         body.dark-mode {
@@ -54,6 +64,8 @@
             --pop-up-bg-dark: rgba(31, 41, 55, 0.9);
             --pop-up-text-dark: #f0f0f0;
             --text-on-glass-dark: #C084FC;
+            /* New variable for the dark mode button */
+            --dark-mode-button-bg-dark: rgba(147, 197, 253, 0.25);
         }
         
         .glass-button-base {
@@ -69,6 +81,38 @@
             box-shadow: var(--button-shadow-dark);
         }
         
+        .save-button-custom {
+            background-color: var(--save-button-bg-light);
+            color: var(--save-button-text-light);
+        }
+
+        body.dark-mode .save-button-custom {
+            background-color: var(--save-button-bg-dark);
+            color: var(--save-button-text-dark);
+        }
+        
+        .back-home-button-custom {
+            background-color: var(--back-button-bg-light);
+            color: var(--back-button-text-light);
+            font-size: 1.25rem;
+        }
+        
+        body.dark-mode .back-home-button-custom {
+            background-color: var(--back-button-bg-dark);
+            color: var(--back-button-text-dark);
+        }
+
+        /* New button class for dark mode button */
+        .dark-mode-button-custom {
+            background-color: var(--dark-mode-button-bg-light);
+            color: var(--main-text-color-light);
+        }
+        
+        body.dark-mode .dark-mode-button-custom {
+            background-color: var(--dark-mode-button-bg-dark);
+            color: var(--main-text-color-dark);
+        }
+
         .glass-popup {
              border-radius: 2rem;
              padding: 1.5rem;
@@ -258,30 +302,26 @@
         
         /* New styles for unselected language buttons */
         .unselected-language {
-            opacity: 0.6; /* Dims the button */
-            filter: grayscale(100%); /* Grays it out */
-            transform: scale(0.95); /* Decreases its size slightly */
+            opacity: 0.6;
+            filter: grayscale(100%);
+            transform: scale(0.95);
             transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
         }
 
-        /* Ensure hover effect is removed on unselected buttons */
         .unselected-language:hover {
             transform: scale(0.95) !important;
             box-shadow: none !important;
         }
 
-        /* Ensure the selected button has a clear highlight */
         .selected-language {
-             /* Maintain original size or slightly larger to stand out */
              transform: scale(1.05); 
              opacity: 1;
              filter: grayscale(0%);
              box-shadow: var(--button-shadow-light);
         }
 
-        /* Remove the general hover scale effect on all language buttons */
         #ar-button:hover, #fr-button:hover, #en-button:hover {
-            transform: scale(1.05); /* Change the scale to match selected for a smoother transition */
+            transform: scale(1.05);
         }
 
         button {
@@ -619,8 +659,8 @@
             Me voir.
             Savoir ce que ça fait d’exister dans cette peau, vue de l’extérieur.
             Parce que, peu importe combien j’essaie, je n’arrive pas à accepter les compliments.
-            Je hoche la tête, je souris… mais au fond, je ne les crois pas. Pas tant que je ne me verrai pas vraiment.
-            Pas tant que je ne pourrai pas plonger mon regard dans le mien, comme je le fais dans les yeux de quelqu’un que j’aime.
+            Je hoche la tête, je souris… but deep down, I don’t believe them. Not until I truly see myself.
+            Not until I can gaze into my own eyes the way I gaze into the eyes of someone I love.
 
             Mon imagination, mes émotions, ma sensibilité, elles grandissent chaque jour, sans fin.
             Et plus elles grandissent, plus je me perds en moi-même.
@@ -897,8 +937,8 @@
              <button
                  id="back-home-button"
                  onclick="window.location.href='https://dodch.github.io/Dodch-Stories-/index.html'"
-                 class="px-4 py-1 text-sm rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base inline-flex items-center" >
-                <span class="mr-1">&larr;</span> <span id="back-home-text">Back Home</span>
+                 class="w-10 h-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base back-home-button-custom inline-flex items-center justify-center" >
+                ⌂
             </button>
         </div>
 
@@ -911,7 +951,7 @@
         <button
             id="save-progress-button"
             onclick="scrollToSavedWord()"
-            class="fixed bottom-4 left-4 px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base"
+            class="fixed bottom-4 left-4 px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base save-button-custom"
             style="z-index: 60;"
         >
             Saved Progress
@@ -942,7 +982,7 @@
             <button
                 id="dark-mode-toggle-button"
                 onclick="toggleDarkMode()"
-                class="w-10 h-10 flex items-center justify-center rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base"
+                class="w-10 h-10 flex items-center justify-center rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base dark-mode-button-custom"
             >
                 <span id="dark-mode-icon">☀️</span>
             </button>
@@ -1024,13 +1064,10 @@
 
         function setButtonTextColor() {
              const isDarkModeActive = document.body.classList.contains('dark-mode');
-             const textColor = isDarkModeActive ? 'var(--text-on-glass-dark)' : 'var(--text-on-glass-light)';
              
              languageButtons.forEach(button => {
-                 button.style.color = textColor;
+                 button.style.color = isDarkModeActive ? 'var(--text-on-glass-dark)' : 'var(--text-on-glass-light)';
              });
-             saveButton.style.color = textColor;
-             backHomeButton.style.color = textColor;
              
              // The dark mode toggle button has different colors
              if (isDarkModeActive) {
@@ -1109,7 +1146,9 @@
 
             setTimeout(() => {
                 titleElement.textContent = content.title;
-                backHomeTextSpan.textContent = content.backHome;
+                if (backHomeTextSpan) {
+                     backHomeTextSpan.textContent = content.backHome;
+                }
 
                 if (lang === 'ar') {
                     contentDiv.dir = 'rtl';
