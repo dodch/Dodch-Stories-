@@ -14,14 +14,19 @@
             --heart-color: rgba(255, 255, 255, 0.8);
             --heart-active: #fb4268;
             --bg-url: url("https://i.ibb.co/hxBtrKYq/IMG-1865.jpg");
+            --bg-url-dark: url("https://i.ibb.co/5gBLTYpm/IMG-2195.jpg"); /* New dark mode background image */
             --main-bg: rgba(0, 0, 0, 0);
             --body-transition: background-color 0.5s ease;
             --moon-color: #ffffff;
             --notification-text: #ffffff;
             --search-placeholder: rgba(255, 255, 255, 0.5);
+            --tint-color: #fff;
+            --blue-tint: #00aaff;
+            --purple-tint: #a366ff;
+            --red-tint: #ff3366;
 
             /* NEW LIQUID GLASS VARIABLES - LIGHT MODE */
-            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-bg: color-mix(in srgb, var(--tint-color) 10%, transparent);
             --glass-text: #ffffff;
             --glass-shadow: 
                 inset 0 0 0 1px color-mix(in srgb, #fff calc(10%), transparent),
@@ -40,13 +45,17 @@
 
         /* Dark Mode Variables */
         body.dark-mode {
-            --main-bg: rgba(0, 0, 0, 0.6);
+            --main-bg: rgba(0, 0, 0, 0.7);
             --moon-color: #fce38a;
             --notification-text: #f0f0f0;
             --search-placeholder: rgba(255, 255, 255, 0.8);
+            --tint-color: #888;
+            --blue-tint: #00aaff;
+            --purple-tint: #a366ff;
+            --red-tint: #ff3366;
 
             /* NEW LIQUID GLASS VARIABLES - DARK MODE */
-            --glass-bg: rgba(0, 0, 0, 0.25);
+            --glass-bg: rgba(0, 0, 0, 0.35);
             --glass-text: #f0f0f0;
             --glass-shadow: 
                 inset 0 0 0 1px color-mix(in srgb, #fff calc(10%), transparent),
@@ -58,8 +67,8 @@
                 inset 0px 3px 4px -2px color-mix(in srgb, #000 calc(20%), transparent),
                 inset 2px -6.5px 1px -4px color-mix(in srgb, #000 calc(10%), transparent),
                 /* MODIFIED: Increased blur and spread for outer shadows */
-                0px 2px 10px 0px color-mix(in srgb, #000 calc(40%), transparent),
-                0px 10px 30px 0px color-mix(in srgb, #000 calc(30%), transparent);
+                0px 2px 10px 0px color-mix(in srgb, rgba(0, 0, 0, 0.5), transparent),
+                0px 10px 30px 0px color-mix(in srgb, rgba(0, 0, 0, 0.4), transparent);
             --button-shadow: var(--glass-shadow);
         }
 
@@ -76,11 +85,16 @@
 
         body {
             overflow-y: auto;
-            background-image: var(--bg-url);
+            background-image: var(--bg-url); /* Default light mode background */
             background-position: center;
             background-size: cover;
             background-repeat: no-repeat;
             background-color: #2e3b55;
+            transition: background-image 1s ease-in-out, background-color 0.5s ease; /* Smooth transition for background-image */
+        }
+
+        body.dark-mode {
+            background-image: var(--bg-url-dark); /* Dark mode background */
         }
 
         .container {
@@ -113,6 +127,15 @@
             /* NEW SVG LIQUID GLASS EFFECT */
             backdrop-filter: blur(4px) url(#filter);
             -webkit-backdrop-filter: blur(4px);
+        }
+
+        /* NEW: Tint for favorited grids */
+        .glass-container.favorited {
+            background-color: color-mix(in srgb, var(--heart-active) 25%, transparent);
+        }
+
+        body.dark-mode .glass-container.favorited {
+            background-color: color-mix(in srgb, var(--heart-active) 40%, transparent);
         }
 
         .glass-container:hover {
@@ -298,6 +321,11 @@
         .favorite-btn.active svg {
             fill: var(--heart-active);
         }
+        
+        /* Style for the floating filter button's SVG */
+        .floating-button#filterBtn svg {
+            fill: var(--heart-color); /* This will be overridden by the script */
+        }
 
         .floating-buttons-container {
             position: fixed;
@@ -385,52 +413,49 @@
             transform: translateY(1px);
         }
 
-        /* Remove tap animation and add smooth color transition */
-        .floating-button:active svg {
-            transition: fill 0.1s ease;
+        /* Subtle red tint for favorites button */
+        #filterBtn {
+            background-color: color-mix(in srgb, var(--red-tint) 20%, transparent);
+            border: none;
         }
 
-        .floating-button.active svg {
-            fill: var(--heart-active);
+        /* Subtle purple tint for dark mode button */
+        #darkModeBtn {
+            background-color: color-mix(in srgb, var(--purple-tint) 20%, transparent);
+            border: none;
         }
 
-        #darkModeBtn:active svg {
+        /* Moon icon color when dark mode is active */
+        .floating-button#darkModeBtn.active svg {
             fill: var(--moon-color);
         }
-
-        #filterBtn:active svg {
-            fill: var(--heart-active);
+        
+        /* Glass-like tint for search button */
+        #searchButton {
+            background-color: color-mix(in srgb, var(--blue-tint) 20%, transparent);
+            border: none;
         }
 
-        #darkModeBtn.active svg {
-            fill: var(--moon-color);
+        /* DARK MODE BUTTON TINTS */
+        body.dark-mode #filterBtn {
+            background-color: color-mix(in srgb, var(--red-tint) 50%, transparent);
         }
-
-        #filterBtn.active svg {
-            fill: var(--heart-active);
+        body.dark-mode #darkModeBtn {
+            background-color: color-mix(in srgb, var(--purple-tint) 50%, transparent);
         }
-
-        #darkModeBtn svg {
-            fill: var(--moon-color);
-        }
-
-        /* Removed glow classes */
-        .floating-button.glowing-red,
-        .floating-button.glowing-yellow,
-        .floating-button.glowing-blue,
-        .search-button.glowing-blue {
-            box-shadow: var(--glass-shadow);
+        body.dark-mode #searchButton {
+            background-color: color-mix(in srgb, var(--blue-tint) 50%, transparent);
         }
 
         .highlight {
             --glow-color: #00aaff;
-            color: var(--glass-text); /* Ensure highlight text transitions with dark mode */
+            color: var(--glass-text);
             text-shadow:
                 0 0 10px var(--glow-color),
                 0 0 20px var(--glow-color),
                 0 0 30px var(--glow-color),
                 0 0 40px var(--glow-color);
-            transition: text-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 2.2), color 0.5s ease; /* Added transition */
+            transition: text-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 2.2), color 0.5s ease;
             animation: text-glow-pulse 2s infinite alternate;
         }
 
@@ -511,10 +536,14 @@
             margin-right: 0px;
             transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), background-color 0.5s ease, box-shadow 0.5s ease;
             /* NEW LIQUID GLASS STYLE */
-            background-color: var(--glass-bg);
+            background-color: color-mix(in srgb, var(--blue-tint) 20%, transparent);
             backdrop-filter: blur(4px) url(#filter);
             -webkit-backdrop-filter: blur(4px);
             box-shadow: var(--glass-shadow);
+        }
+
+        body.dark-mode .search-bar {
+            background-color: color-mix(in srgb, var(--blue-tint) 50%, transparent);
         }
 
         .search-bar:focus {
@@ -766,6 +795,7 @@ function loadSavedState() {
 
     if (savedDarkMode === 'true') {
         body.classList.add('dark-mode');
+        darkModeBtn.classList.add('active');
     }
 
     showingFavorites = savedShowingFavorites === 'true';
@@ -783,10 +813,11 @@ function loadSavedState() {
     }
 
     if (savedFavorites.length > 0) {
-        panels.forEach((panel, index) => {
+        panels.forEach((panel) => {
             const title = panel.querySelector('.title').dataset.originalTitle;
             if (savedFavorites.includes(title)) {
                 panel.querySelector('.favorite-btn').classList.add('active');
+                panel.classList.add('favorited');
             }
         });
     }
@@ -815,7 +846,7 @@ function highlightText(text, query) {
 }
 
 function updateNoFavoritesMessageState() {
-    const favoritePanels = document.querySelectorAll('.glass-container .favorite-btn.active');
+    const favoritePanels = document.querySelectorAll('.glass-container.favorited');
     if (showingFavorites && favoritePanels.length === 0) {
         noFavoritesMessage.classList.add('show');
     } else {
@@ -869,7 +900,7 @@ function filterAndRenderPanels() {
     let visiblePanelsCount = 0;
 
     panels.forEach(panel => {
-        const isFavorite = panel.querySelector('.favorite-btn').classList.contains('active');
+        const isFavorite = panel.classList.contains('favorited');
         const title = panel.querySelector('.title').dataset.originalTitle.toLowerCase();
         const description = panel.querySelector('.description').dataset.originalDescription.toLowerCase();
         const isMatch = title.includes(searchQuery) || description.includes(searchQuery);
@@ -933,7 +964,9 @@ async function fetchAndRenderPanels() {
             
             btn.addEventListener('click', (event) => {
                 event.preventDefault();
+                const panel = btn.closest('.glass-container');
                 btn.classList.toggle('active');
+                panel.classList.toggle('favorited');
                 btn.setAttribute('aria-pressed', btn.classList.contains('active'));
                 filterAndRenderPanels();
             });
@@ -944,6 +977,7 @@ async function fetchAndRenderPanels() {
         }
 
         loadSavedState();
+        initializeHeartColor();
         
         if (showingFavorites) {
             filterAndRenderPanels();
@@ -983,6 +1017,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+function initializeHeartColor() {
+    const heartSvg = filterBtn.querySelector('svg');
+    if (showingFavorites) {
+        heartSvg.style.fill = 'var(--heart-active)';
+    } else {
+        heartSvg.style.fill = 'var(--heart-color)';
+    }
+}
+
 darkModeBtn.addEventListener('click', () => {
     darkModeBtn.classList.toggle('active');
     body.classList.toggle('dark-mode');
@@ -990,13 +1033,19 @@ darkModeBtn.addEventListener('click', () => {
 });
 
 filterBtn.addEventListener('click', () => {
-    filterBtn.classList.toggle('active');
     showingFavorites = !showingFavorites;
+
+    const heartSvg = filterBtn.querySelector('svg');
+    if (showingFavorites) {
+        heartSvg.style.fill = 'var(--heart-active)';
+    } else {
+        heartSvg.style.fill = 'var(--heart-color)';
+    }
 
     filterAndRenderPanels();
     updateNoFavoritesMessageState();
 
-    const favoritePanels = document.querySelectorAll('.glass-container .favorite-btn.active');
+    const favoritePanels = document.querySelectorAll('.glass-container.favorited');
     if (showingFavorites && favoritePanels.length > 0) {
         panelsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
