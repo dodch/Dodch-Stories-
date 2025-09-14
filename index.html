@@ -216,7 +216,9 @@
             opacity: 0.8;
         }
 
-        /* Base style for all glass buttons - Corrected to match glass-container */
+        /* --- BUTTONS & SEARCH BAR FIX --- */
+        
+        /* Base style for all glass buttons */
         .glass-button-base {
             position: relative;
             overflow: hidden;
@@ -225,13 +227,37 @@
             align-items: center;
             cursor: pointer;
             z-index: 4;
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.5s ease, background-color 0.5s ease;
-            background-color: var(--glass-bg); /* Now uses the shared glass background variable */
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.5s ease;
+            
+            /* Apply backdrop-filter here */
             backdrop-filter: blur(4px) url(#filter);
             -webkit-backdrop-filter: blur(4px);
-            box-shadow: var(--glass-shadow); /* Now uses the shared glass shadow variable */
+            
+            /* Make the button transparent so the pseudo-element shows through */
+            background-color: transparent;
+            box-shadow: var(--glass-shadow);
         }
         
+        /* Add a pseudo-element for the animated, translucent background */
+        .glass-button-base::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: var(--glass-bg); /* Use the same transparent background as the grids */
+            animation: flow 10s infinite linear;
+            z-index: -1; /* Place it behind the button content */
+        }
+        
+        /* Animation for the pseudo-element to create the moving liquid effect */
+        @keyframes flow {
+            from { transform: translate(0, 0) scale(1.5) rotate(0deg); }
+            to { transform: translate(-50%, -50%) scale(1.5) rotate(360deg); }
+        }
+
+        /* Hover effect */
         .glass-button-base:hover {
             transform: scale(1.1);
             box-shadow: 
@@ -246,7 +272,7 @@
                 0px 4px 20px 0px color-mix(in srgb, #000 calc(30%), transparent),
                 0px 20px 60px 0px color-mix(in srgb, #000 calc(25%), transparent);
         }
-        
+
         .favorite-btn {
             position: absolute;
             top: 1rem;
@@ -365,7 +391,7 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            box-shadow: var(--glass-shadow); /* Changed to use consistent shadow */
+            box-shadow: var(--glass-shadow);
             z-index: 10;
             transition: box-shadow 0.5s ease;
             animation: buttonEntrance 0.6s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
@@ -399,30 +425,27 @@
             transform: translateY(1px);
         }
 
-        /* FIX: Apply more transparent background to show the liquid effect */
-        #filterBtn {
-            background-color: color-mix(in srgb, var(--red-tint) 10%, transparent);
-            border: none;
+        /* --- FIX: Apply transparent background to show the liquid effect via pseudo-element --- */
+        #filterBtn::before {
+            background: color-mix(in srgb, var(--red-tint) 10%, transparent);
         }
-        #darkModeBtn {
-            background-color: color-mix(in srgb, var(--purple-tint) 10%, transparent);
-            border: none;
+        #darkModeBtn::before {
+            background: color-mix(in srgb, var(--purple-tint) 10%, transparent);
         }
-        #searchButton {
-            background-color: color-mix(in srgb, var(--blue-tint) 10%, transparent);
-            border: none;
+        #searchButton::before {
+            background: color-mix(in srgb, var(--blue-tint) 10%, transparent);
         }
 
-        body.dark-mode #filterBtn {
-            background-color: color-mix(in srgb, var(--red-tint) 20%, transparent);
+        body.dark-mode #filterBtn::before {
+            background: color-mix(in srgb, var(--red-tint) 20%, transparent);
         }
-        body.dark-mode #darkModeBtn {
-            background-color: color-mix(in srgb, var(--purple-tint) 20%, transparent);
+        body.dark-mode #darkModeBtn::before {
+            background: color-mix(in srgb, var(--purple-tint) 20%, transparent);
         }
-        body.dark-mode #searchButton {
-            background-color: color-mix(in srgb, var(--blue-tint) 20%, transparent);
+        body.dark-mode #searchButton::before {
+            background: color-mix(in srgb, var(--blue-tint) 20%, transparent);
         }
-
+        
         .highlight {
             --glow-color: #00aaff;
             color: var(--glass-text);
@@ -512,8 +535,8 @@
             margin-right: 0px;
             transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), background-color 0.5s ease, box-shadow 0.5s ease;
             
-            /* FIX: Use the more transparent background and consistent shadow */
-            background-color: var(--glass-bg); 
+            /* Apply consistent styles to the search bar */
+            background-color: var(--glass-bg);
             backdrop-filter: blur(4px) url(#filter);
             -webkit-backdrop-filter: blur(4px);
             box-shadow: var(--glass-shadow);
@@ -540,7 +563,7 @@
             width: 60px;
             height: 60px;
             border-radius: 30px;
-            box-shadow: var(--glass-shadow); /* Changed to use consistent shadow */
+            box-shadow: var(--glass-shadow);
             transition: box-shadow 0.5s ease, background-color 0.5s ease;
         }
 
@@ -727,7 +750,7 @@
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
     </div>
-    <input type="text" id="searchInput" class="search-bar" placeholder="Search stories...">
+    <input type="text" id="searchInput" class="search-bar glass-button-base" placeholder="Search stories...">
 </div>
 
 <svg style="display:none">
