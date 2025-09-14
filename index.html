@@ -1,3 +1,4 @@
+Why the buttons and search expand doesn’t have the same SVG effect as the grids ? 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,7 +16,7 @@
             --heart-color: rgba(255, 255, 255, 0.8);
             --heart-active: #fb4268;
             --bg-url: url("https://i.ibb.co/hxBtrKYq/IMG-1865.jpg");
-            --bg-url-dark: url("https://i.ibb.co/5gBLTYpm/IMG-2195.jpg");
+            --bg-url-dark: url("https://i.ibb.co/5gBLTYpm/IMG-2195.jpg"); /* New dark mode background image */
             --main-bg: rgba(0, 0, 0, 0);
             --body-transition: background-color 0.5s ease;
             --moon-color: #ffffff;
@@ -38,8 +39,10 @@
                 inset -1.5px 2.5px 0px -2px color-mix(in srgb, #000 calc(20%), transparent),
                 inset 0px 3px 4px -2px color-mix(in srgb, #000 calc(20%), transparent),
                 inset 2px -6.5px 1px -4px color-mix(in srgb, #000 calc(10%), transparent),
+                /* MODIFIED: Increased blur and spread for outer shadows */
                 0px 2px 10px 0px color-mix(in srgb, #000 calc(20%), transparent),
                 0px 10px 30px 0px color-mix(in srgb, #000 calc(15%), transparent);
+            --button-shadow: var(--glass-shadow);
         }
 
         /* Dark Mode Variables */
@@ -65,8 +68,10 @@
                 inset -1.5px 2.5px 0px -2px color-mix(in srgb, #000 calc(20%), transparent),
                 inset 0px 3px 4px -2px color-mix(in srgb, #000 calc(20%), transparent),
                 inset 2px -6.5px 1px -4px color-mix(in srgb, #000 calc(10%), transparent),
+                /* MODIFIED: Increased blur and spread for outer shadows */
                 0px 2px 10px 0px color-mix(in srgb, rgba(0, 0, 0, 0.5), transparent),
                 0px 10px 30px 0px color-mix(in srgb, rgba(0, 0, 0, 0.4), transparent);
+            --button-shadow: var(--glass-shadow);
         }
 
         html, body {
@@ -76,21 +81,22 @@
             font-family: sans-serif;
             overflow-x: hidden;
             background-color: var(--main-bg);
+            /* Add transition for text color */
             transition: background-color 0.5s ease, color 0.5s ease;
         }
 
         body {
             overflow-y: auto;
-            background-image: var(--bg-url);
+            background-image: var(--bg-url); /* Default light mode background */
             background-position: center;
             background-size: cover;
             background-repeat: no-repeat;
             background-color: #2e3b55;
-            transition: background-image 1s ease-in-out, background-color 0.5s ease;
+            transition: background-image 1s ease-in-out, background-color 0.5s ease; /* Smooth transition for background-image */
         }
 
         body.dark-mode {
-            background-image: var(--bg-url-dark);
+            background-image: var(--bg-url-dark); /* Dark mode background */
         }
 
         .container {
@@ -120,10 +126,12 @@
             opacity: 0;
             transform: scale(0.9);
             background-color: var(--glass-bg);
+            /* NEW SVG LIQUID GLASS EFFECT */
             backdrop-filter: blur(4px) url(#filter);
             -webkit-backdrop-filter: blur(4px);
         }
 
+        /* NEW: Tint for favorited grids */
         .glass-container.favorited {
             background-color: color-mix(in srgb, var(--heart-active) 25%, transparent);
         }
@@ -183,6 +191,8 @@
             transform: scale(0.9) translateY(20px);
         }
 
+        /* REMOVED .glass-filter, .glass-overlay, .glass-specular */
+
         .glass-content {
             position: relative;
             z-index: 3;
@@ -190,6 +200,7 @@
             font-size: 1.2rem;
             text-align: center;
             padding: 0 2rem;
+            /* Add transition for text color */
             transition: color 0.5s ease;
         }
 
@@ -216,8 +227,6 @@
             opacity: 0.8;
         }
 
-        /* --- BUTTONS & SEARCH BAR FIX --- */
-        
         /* Base style for all glass buttons */
         .glass-button-base {
             position: relative;
@@ -227,39 +236,18 @@
             align-items: center;
             cursor: pointer;
             z-index: 4;
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.5s ease;
-            
-            /* Apply backdrop-filter here */
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.5s ease, background-color 0.5s ease;
+            background-color: var(--glass-bg);
+            /* NEW SVG LIQUID GLASS EFFECT */
             backdrop-filter: blur(4px) url(#filter);
             -webkit-backdrop-filter: blur(4px);
-            
-            /* Make the button transparent so the pseudo-element shows through */
-            background-color: transparent;
-            box-shadow: var(--glass-shadow);
+            box-shadow: var(--button-shadow);
         }
         
-        /* Add a pseudo-element for the animated, translucent background */
-        .glass-button-base::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: var(--glass-bg); /* Use the same transparent background as the grids */
-            animation: flow 10s infinite linear;
-            z-index: -1; /* Place it behind the button content */
-        }
-        
-        /* Animation for the pseudo-element to create the moving liquid effect */
-        @keyframes flow {
-            from { transform: translate(0, 0) scale(1.5) rotate(0deg); }
-            to { transform: translate(-50%, -50%) scale(1.5) rotate(360deg); }
-        }
-
-        /* Hover effect */
+        /* Apply consistent hover effect to all buttons */
         .glass-button-base:hover {
             transform: scale(1.1);
+            /* MODIFIED: Increased shadow on hover */
             box-shadow: 
                 inset 0 0 0 1px color-mix(in srgb, #fff calc(10%), transparent),
                 inset 1.8px 3px 0px -2px color-mix(in srgb, #fff calc(90%), transparent),
@@ -272,7 +260,8 @@
                 0px 4px 20px 0px color-mix(in srgb, #000 calc(30%), transparent),
                 0px 20px 60px 0px color-mix(in srgb, #000 calc(25%), transparent);
         }
-
+        
+        /* REMOVED ::before and ::after as the new style combines them */
         .favorite-btn {
             position: absolute;
             top: 1rem;
@@ -335,8 +324,9 @@
             fill: var(--heart-active);
         }
         
+        /* Style for the floating filter button's SVG */
         .floating-button#filterBtn svg {
-            fill: var(--heart-color);
+            fill: var(--heart-color); /* This will be overridden by the script */
         }
 
         .floating-buttons-container {
@@ -391,7 +381,7 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            box-shadow: var(--glass-shadow);
+            box-shadow: var(--button-shadow);
             z-index: 10;
             transition: box-shadow 0.5s ease;
             animation: buttonEntrance 0.6s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
@@ -425,27 +415,40 @@
             transform: translateY(1px);
         }
 
-        /* --- FIX: Apply transparent background to show the liquid effect via pseudo-element --- */
-        #filterBtn::before {
-            background: color-mix(in srgb, var(--red-tint) 10%, transparent);
-        }
-        #darkModeBtn::before {
-            background: color-mix(in srgb, var(--purple-tint) 10%, transparent);
-        }
-        #searchButton::before {
-            background: color-mix(in srgb, var(--blue-tint) 10%, transparent);
+        /* Subtle red tint for favorites button */
+        #filterBtn {
+            background-color: color-mix(in srgb, var(--red-tint) 20%, transparent);
+            border: none;
         }
 
-        body.dark-mode #filterBtn::before {
-            background: color-mix(in srgb, var(--red-tint) 20%, transparent);
+        /* Subtle purple tint for dark mode button */
+        #darkModeBtn {
+            background-color: color-mix(in srgb, var(--purple-tint) 20%, transparent);
+            border: none;
         }
-        body.dark-mode #darkModeBtn::before {
-            background: color-mix(in srgb, var(--purple-tint) 20%, transparent);
-        }
-        body.dark-mode #searchButton::before {
-            background: color-mix(in srgb, var(--blue-tint) 20%, transparent);
+
+        /* Moon icon color when dark mode is active */
+        .floating-button#darkModeBtn.active svg {
+            fill: var(--moon-color);
         }
         
+        /* Glass-like tint for search button */
+        #searchButton {
+            background-color: color-mix(in srgb, var(--blue-tint) 20%, transparent);
+            border: none;
+        }
+
+        /* DARK MODE BUTTON TINTS */
+        body.dark-mode #filterBtn {
+            background-color: color-mix(in srgb, var(--red-tint) 50%, transparent);
+        }
+        body.dark-mode #darkModeBtn {
+            background-color: color-mix(in srgb, var(--purple-tint) 50%, transparent);
+        }
+        body.dark-mode #searchButton {
+            background-color: color-mix(in srgb, var(--blue-tint) 50%, transparent);
+        }
+
         .highlight {
             --glow-color: #00aaff;
             color: var(--glass-text);
@@ -534,12 +537,15 @@
             visibility: hidden;
             margin-right: 0px;
             transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), background-color 0.5s ease, box-shadow 0.5s ease;
-            
-            /* Apply consistent styles to the search bar */
-            background-color: var(--glass-bg);
+            /* NEW LIQUID GLASS STYLE */
+            background-color: color-mix(in srgb, var(--blue-tint) 20%, transparent);
             backdrop-filter: blur(4px) url(#filter);
             -webkit-backdrop-filter: blur(4px);
             box-shadow: var(--glass-shadow);
+        }
+
+        body.dark-mode .search-bar {
+            background-color: color-mix(in srgb, var(--blue-tint) 50%, transparent);
         }
 
         .search-bar:focus {
@@ -556,6 +562,7 @@
 
         .search-bar::placeholder {
             color: var(--search-placeholder);
+            /* Add transition for placeholder color */
             transition: color 0.5s ease;
         }
 
@@ -563,7 +570,7 @@
             width: 60px;
             height: 60px;
             border-radius: 30px;
-            box-shadow: var(--glass-shadow);
+            box-shadow: var(--button-shadow);
             transition: box-shadow 0.5s ease, background-color 0.5s ease;
         }
 
@@ -590,6 +597,7 @@
             left: 50%;
             transform: translate(-50%, -40%);
             pointer-events: none;
+            /* Add transition for text color */
             transition: opacity 0.5s cubic-bezier(0.175, 0.885, 0.32, 2.2), transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 2.2), color 0.5s ease;
             width: 100%;
             z-index: 5;
@@ -649,6 +657,7 @@
             animation: slide-left 15s linear infinite;
             display: inline-block;
             animation-delay: -5s;
+            /* Add transition for text color */
             transition: color 0.5s ease;
         }
 
@@ -657,6 +666,7 @@
             100% { transform: translateX(-100%); }
         }
 
+        /* Loading animation styles */
         .loading {
             position: fixed;
             top: 0;
@@ -694,6 +704,7 @@
             animation: blur-text 1.5s infinite linear alternate;
         }
         
+        /* Animation delays for staggered effect */
         .loading-text span:nth-child(1) { animation-delay: 0s; }
         .loading-text span:nth-child(2) { animation-delay: 0.2s; }
         .loading-text span:nth-child(3) { animation-delay: 0.4s; }
@@ -705,6 +716,7 @@
             100% { filter: blur(4px); }
         }
 
+        /* FIX: A small empty div to force correct scroll behavior on Android */
         .scroll-fix {
             height: 1px;
             margin-top: 50px;
@@ -750,7 +762,7 @@
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
     </div>
-    <input type="text" id="searchInput" class="search-bar glass-button-base" placeholder="Search stories...">
+    <input type="text" id="searchInput" class="search-bar" placeholder="Search stories...">
 </div>
 
 <svg style="display:none">
@@ -775,6 +787,7 @@ let showingFavorites = false;
 let panels = [];
 let allStories = [];
 
+// Load saved state from localStorage on page load
 function loadSavedState() {
     const savedDarkMode = localStorage.getItem('darkMode');
     const savedShowingFavorites = localStorage.getItem('showingFavorites');
@@ -812,6 +825,7 @@ function loadSavedState() {
     }
 }
 
+// Save state to localStorage
 function saveState() {
     localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
     localStorage.setItem('showingFavorites', showingFavorites);
@@ -1003,6 +1017,7 @@ document.addEventListener('DOMContentLoaded', () => {
             img.src = url;
         });
     } else {
+        // No background images to load, proceed
         loadingScreen.classList.add('hidden');
         setTimeout(() => {
             fetchAndRenderPanels();
