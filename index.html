@@ -449,13 +449,7 @@ function loadSavedState() {
   if (showingFavorites) {
     document.getElementById('filterBtn').classList.add('active');
   }
-  // The search bar state is now explicitly managed to avoid being active on reload
   const searchBar = document.getElementById('searchInput');
-  if (savedSearchActive === 'true') {
-    // We intentionally don't set the search bar to active on load
-    // to prevent it from being expanded by default on refresh.
-    // The only time it should be active is when the user interacts with it.
-  }
   if (savedSearchValue) {
     searchBar.value = savedSearchValue;
   }
@@ -474,7 +468,6 @@ function saveState() {
   const searchBar = document.getElementById('searchInput');
   localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
   localStorage.setItem('showingFavorites', showingFavorites);
-  // We no longer save searchActive, so it defaults to false on reload.
   localStorage.setItem('searchValue', searchBar.value);
   const favoriteTitles = [];
   document.querySelectorAll('.glass-container .favorite-btn.active').forEach(btn => {
@@ -510,7 +503,8 @@ async function fetchAndBuildGrid() {
     storiesData.forEach(story => {
       const card = document.createElement('a');
       card.className = "glass-container";
-      card.href = "#"; 
+      card.href = story.url; // FIXED: Set href from JSON data
+      card.target = "_blank"; // ADDED: Opens link in a new tab
       card.innerHTML = `
         <div class="glass-content">
           <h3 class="title" data-original-title="${story.title}">${story.title}</h3>
@@ -646,13 +640,8 @@ async function fetchAndBuildGrid() {
     });
 
     searchBar.addEventListener('input', filterAndRenderPanels);
-    // New event listener for the 'blur' event to handle mobile keyboard 'Done'
     searchBar.addEventListener('blur', () => {
         searchBar.classList.remove('active');
-        // You can choose to clear the search bar on blur, but it's
-        // often better for UX to leave the text in case the user
-        // accidentally tapped out of the field.
-        // searchBar.value = '';
         filterAndRenderPanels();
         saveState();
     });
