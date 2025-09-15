@@ -1,1099 +1,733 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="google-site-verification" content="WPsemouAlOQyJaztzjjtf6afzzagtg6WWPZh7gd3T8A">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dodch Stories | Original Fiction and Creative Writing</title>
-    <link rel="icon" type="image/png" href="IMG_2196.png">
-    <meta name="description" content="Dodch Stories is a collection of original stories written with emotion, creativity, and depth. Explore fiction that connects to the heart and imagination.">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quattrocento+Sans">
-    <style>
-        /* Default (Light) Mode Variables */
-        :root {
-            --heart-color: rgba(255, 255, 255, 0.8);
-            --heart-active: #fb4268;
-            --bg-url: url("https://i.ibb.co/hxBtrKYq/IMG-1865.jpg");
-            --bg-url-dark: url("https://i.ibb.co/5gBLTYpm/IMG-2195.jpg"); /* New dark mode background image */
-            --main-bg: rgba(0, 0, 0, 0);
-            --body-transition: background-color 0.5s ease;
-            --moon-color: #ffffff;
-            --notification-text: #ffffff;
-            --search-placeholder: rgba(255, 255, 255, 0.5);
-            --tint-color: #fff;
-            --blue-tint: #00aaff;
-            --purple-tint: #a366ff;
-            --red-tint: #ff3366;
-
-            /* NEW LIQUID GLASS VARIABLES - LIGHT MODE */
-            --glass-bg: color-mix(in srgb, var(--tint-color) 10%, transparent);
-            --glass-text: #ffffff;
-            --glass-shadow: 
-                inset 0 0 0 1px color-mix(in srgb, #fff calc(10%), transparent),
-                inset 1.8px 3px 0px -2px color-mix(in srgb, #fff calc(90%), transparent),
-                inset -2px -2px 0px -2px color-mix(in srgb, #fff calc(80%), transparent),
-                inset -3px -8px 1px -6px color-mix(in srgb, #fff calc(60%), transparent),
-                inset -0.3px -1px 4px 0px color-mix(in srgb, #000 calc(12%), transparent),
-                inset -1.5px 2.5px 0px -2px color-mix(in srgb, #000 calc(20%), transparent),
-                inset 0px 3px 4px -2px color-mix(in srgb, #000 calc(20%), transparent),
-                inset 2px -6.5px 1px -4px color-mix(in srgb, #000 calc(10%), transparent),
-                /* MODIFIED: Increased blur and spread for outer shadows */
-                0px 2px 10px 0px color-mix(in srgb, #000 calc(20%), transparent),
-                0px 10px 30px 0px color-mix(in srgb, #000 calc(15%), transparent);
-            --button-shadow: var(--glass-shadow);
-        }
-
-        /* Dark Mode Variables */
-        body.dark-mode {
-            --main-bg: rgba(0, 0, 0, 0.7);
-            --moon-color: #fce38a;
-            --notification-text: #f0f0f0;
-            --search-placeholder: rgba(255, 255, 255, 0.8);
-            --tint-color: #888;
-            --blue-tint: #00aaff;
-            --purple-tint: #a366ff;
-            --red-tint: #ff3366;
-
-            /* NEW LIQUID GLASS VARIABLES - DARK MODE */
-            --glass-bg: rgba(0, 0, 0, 0.35);
-            --glass-text: #f0f0f0;
-            --glass-shadow: 
-                inset 0 0 0 1px color-mix(in srgb, #fff calc(10%), transparent),
-                inset 1.8px 3px 0px -2px color-mix(in srgb, #fff calc(90%), transparent),
-                inset -2px -2px 0px -2px color-mix(in srgb, #fff calc(80%), transparent),
-                inset -3px -8px 1px -6px color-mix(in srgb, #fff calc(60%), transparent),
-                inset -0.3px -1px 4px 0px color-mix(in srgb, #000 calc(12%), transparent),
-                inset -1.5px 2.5px 0px -2px color-mix(in srgb, #000 calc(20%), transparent),
-                inset 0px 3px 4px -2px color-mix(in srgb, #000 calc(20%), transparent),
-                inset 2px -6.5px 1px -4px color-mix(in srgb, #000 calc(10%), transparent),
-                /* MODIFIED: Increased blur and spread for outer shadows */
-                0px 2px 10px 0px color-mix(in srgb, rgba(0, 0, 0, 0.5), transparent),
-                0px 10px 30px 0px color-mix(in srgb, rgba(0, 0, 0, 0.4), transparent);
-            --button-shadow: var(--glass-shadow);
-        }
-
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            font-family: sans-serif;
-            overflow-x: hidden;
-            background-color: var(--main-bg);
-            /* Add transition for text color */
-            transition: background-color 0.5s ease, color 0.5s ease;
-        }
-
-        body {
-            overflow-y: auto;
-            background-image: var(--bg-url); /* Default light mode background */
-            background-position: center;
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-attachment: fixed; /* This is the key change */
-            background-color: #2e3b55;
-            transition: background-image 1s ease-in-out, background-color 0.5s ease;
-        }
-
-        body.dark-mode {
-            background-image: var(--bg-url-dark); /* Dark mode background */
-        }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-            padding: 2rem;
-            align-items: center;
-            transition: all 0.5s ease;
-            margin-bottom: 200px;
-            position: relative;
-        }
-
-        .glass-container {
-            position: relative;
-            width: 90vw;
-            max-width: 800px;
-            min-height: 200px;
-            border-radius: 3rem;
-            overflow: hidden;
-            box-shadow: var(--glass-shadow);
-            transition: transform 0.3s cubic-bezier(0.2,0.9,0.3,1.5), background-color 0.5s ease, box-shadow 0.5s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-decoration: none;
-            opacity: 0;
-            transform: scale(0.9);
-            background-color: var(--glass-bg);
-            /* NEW SVG LIQUID GLASS EFFECT */
-            backdrop-filter: blur(4px) url(#filter);
-            -webkit-backdrop-filter: blur(4px);
-        }
-
-        /* NEW: Tint for favorited grids */
-        .glass-container.favorited {
-            background-color: color-mix(in srgb, var(--heart-active) 25%, transparent);
-        }
-
-        body.dark-mode .glass-container.favorited {
-            background-color: color-mix(in srgb, var(--heart-active) 40%, transparent);
-        }
-
-        .glass-container:hover {
-            transform: scale(1.03) rotate(-1deg);
-        }
-
-        .glass-container.animate-in {
-            opacity: 1;
-            animation: jelloEntrance 1.2s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
-        }
-
-        @keyframes jelloEntrance {
-            0% {
-                opacity: 0;
-                transform: scale(0.7) translateY(50px);
-            }
-            40% {
-                opacity: 1;
-                transform: scale(1.05) translateY(-10px) rotate(-1deg);
-            }
-            60% {
-                transform: scale(0.98) translateY(5px) rotate(0.5deg);
-            }
-            100% {
-                transform: scale(1) translateY(0px) rotate(0deg);
-                opacity: 1;
-            }
-        }
-
-        @keyframes jelloExit {
-            0% {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-            100% {
-                opacity: 0;
-                transform: scale(0.9) translateY(20px);
-            }
-        }
-
-        .panel-hidden {
-            animation: jelloExit 0.3s ease-in forwards;
-            pointer-events: none;
-            height: auto;
-            padding: 0;
-            margin: 0;
-            border: none;
-            min-height: 0;
-            overflow: visible;
-            opacity: 0;
-            transform: scale(0.9) translateY(20px);
-        }
-
-        /* REMOVED .glass-filter, .glass-overlay, .glass-specular */
-
-        .glass-content {
-            position: relative;
-            z-index: 3;
-            color: var(--glass-text);
-            font-size: 1.2rem;
-            text-align: center;
-            padding: 0 2rem;
-            /* Add transition for text color */
-            transition: color 0.5s ease;
-        }
-
-        .glass-content .title, .glass-content .description {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s cubic-bezier(0.175, 0.885, 0.32, 2.2), transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 2.2);
-        }
-
-        .glass-container.animate-in .glass-content .title,
-        .glass-container.animate-in .glass-content .description {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .glass-content .title {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-
-        .glass-content .description {
-            font-size: 1.2rem;
-            opacity: 0.8;
-        }
-
-        /* Base style for all glass buttons */
-        .glass-button-base {
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            z-index: 4;
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.5s ease, background-color 0.5s ease;
-            background-color: var(--glass-bg);
-            /* NEW SVG LIQUID GLASS EFFECT - REMOVED FROM BUTTONS */
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            box-shadow: var(--button-shadow);
-        }
-        
-        /* Apply consistent hover effect to all buttons */
-        .glass-button-base:hover {
-            transform: scale(1.1);
-            /* MODIFIED: Increased shadow on hover */
-            box-shadow: 
-                inset 0 0 0 1px color-mix(in srgb, #fff calc(10%), transparent),
-                inset 1.8px 3px 0px -2px color-mix(in srgb, #fff calc(90%), transparent),
-                inset -2px -2px 0px -2px color-mix(in srgb, #fff calc(80%), transparent),
-                inset -3px -8px 1px -6px color-mix(in srgb, #fff calc(60%), transparent),
-                inset -0.3px -1px 4px 0px color-mix(in srgb, #000 calc(12%), transparent),
-                inset -1.5px 2.5px 0px -2px color-mix(in srgb, #000 calc(20%), transparent),
-                inset 0px 3px 4px -2px color-mix(in srgb, #000 calc(20%), transparent),
-                inset 2px -6.5px 1px -4px color-mix(in srgb, #000 calc(10%), transparent),
-                0px 4px 20px 0px color-mix(in srgb, #000 calc(30%), transparent),
-                0px 20px 60px 0px color-mix(in srgb, #000 calc(25%), transparent);
-        }
-        
-        /* REMOVED ::before and ::after as the new style combines them */
-        .favorite-btn {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            animation: buttonEntrance 1s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
-            opacity: 0;
-            transform: scale(0);
-        }
-
-        .favorite-btn.animate-in {
-            animation: buttonBounceIn 1s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
-        }
-
-        @keyframes buttonBounceIn {
-            0% {
-                opacity: 0;
-                transform: scale(0);
-            }
-            40% {
-                opacity: 1;
-                transform: scale(1.2);
-            }
-            60% {
-                transform: scale(0.9);
-            }
-            80% {
-                transform: scale(1.05);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        @keyframes buttonEntrance {
-            0% {
-                opacity: 0;
-                transform: scale(0);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .favorite-btn svg {
-            position: relative;
-            z-index: 2;
-            width: 20px;
-            height: 20px;
-            fill: var(--heart-color);
-            transition: fill 0.5s ease;
-            transform: translateY(1px);
-        }
-
-        .favorite-btn.active svg {
-            fill: var(--heart-active);
-        }
-        
-        /* Style for the floating filter button's SVG */
-        .floating-button#filterBtn svg {
-            fill: var(--heart-color); /* This will be overridden by the script */
-        }
-
-        .floating-buttons-container {
-            position: fixed;
-            bottom: 2rem;
-            left: 2rem;
-            display: flex;
-            gap: 1rem;
-            z-index: 10;
-            animation: containerEntrance 1.2s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        .floating-buttons-container.animate-in {
-            animation: containerBounceIn 1.2s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
-        }
-
-        @keyframes containerBounceIn {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            40% {
-                opacity: 1;
-                transform: translateY(-10px);
-            }
-            60% {
-                transform: translateY(5px);
-            }
-            80% {
-                transform: translateY(-2px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes containerEntrance {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .floating-button {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            box-shadow: var(--button-shadow);
-            z-index: 10;
-            transition: box-shadow 0.5s ease;
-            animation: buttonEntrance 0.6s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
-            opacity: 0;
-            transform: scale(0);
-        }
-
-        .floating-button.animate-in {
-            animation: buttonBounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
-        }
-
-        .floating-button:nth-child(1) {
-            animation-delay: 0.2s;
-        }
-
-        .floating-button:nth-child(2) {
-            animation-delay: 0.4s;
-        }
-
-        .floating-button:hover {
-            box-shadow: var(--glass-shadow);
-        }
-
-        .floating-button svg {
-            position: relative;
-            z-index: 2;
-            width: 30px;
-            height: 30px;
-            fill: var(--glass-text);
-            transition: fill 0.5s ease;
-            transform: translateY(1px);
-        }
-
-        /* Subtle red tint for favorites button */
-        #filterBtn {
-            background-color: color-mix(in srgb, var(--red-tint) 20%, transparent);
-            border: none;
-        }
-
-        /* Subtle purple tint for dark mode button */
-        #darkModeBtn {
-            background-color: color-mix(in srgb, var(--purple-tint) 20%, transparent);
-            border: none;
-        }
-        
-        /* Glass-like tint for search button */
-        #searchButton {
-            background-color: color-mix(in srgb, var(--blue-tint) 20%, transparent);
-            border: none;
-        }
-
-        /* Moon icon color when dark mode is active */
-        .floating-button#darkModeBtn.active svg {
-            fill: var(--moon-color);
-        }
-
-        /* DARK MODE BUTTON TINTS */
-        body.dark-mode #filterBtn {
-            background-color: color-mix(in srgb, var(--red-tint) 50%, transparent);
-        }
-        body.dark-mode #darkModeBtn {
-            background-color: color-mix(in srgb, var(--purple-tint) 50%, transparent);
-        }
-        body.dark-mode #searchButton {
-            background-color: color-mix(in srgb, var(--blue-tint) 50%, transparent);
-        }
-
-        .highlight {
-            --glow-color: #00aaff;
-            color: var(--glass-text);
-            text-shadow:
-                0 0 10px var(--glow-color),
-                0 0 20px var(--glow-color),
-                0 0 30px var(--glow-color),
-                0 0 40px var(--glow-color);
-            transition: text-shadow 0.3s cubic-bezier(0.175, 0.885, 0.32, 2.2), color 0.5s ease;
-            animation: text-glow-pulse 2s infinite alternate;
-        }
-
-        @keyframes text-glow-pulse {
-            0% {
-                text-shadow:
-                    0 0 10px var(--glow-color),
-                    0 0 20px var(--glow-color);
-            }
-            100% {
-                text-shadow:
-                    0 0 20px var(--glow-color),
-                    0 0 40px var(--glow-color),
-                    0 0 60px var(--glow-color);
-            }
-        }
-
-        .search-container-wrapper {
-            position: fixed;
-            top: 2rem;
-            right: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            z-index: 10;
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            animation: searchContainerEntrance 1.2s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
-            opacity: 0;
-            transform: translateX(20px);
-        }
-
-        .search-container-wrapper.animate-in {
-            animation: searchContainerBounceIn 1.2s cubic-bezier(0.175, 0.885, 0.32, 2.2) forwards;
-        }
-
-        @keyframes searchContainerBounceIn {
-            0% {
-                opacity: 0;
-                transform: translateX(20px);
-            }
-            40% {
-                opacity: 1;
-                transform: translateX(-10px);
-            }
-            60% {
-                transform: translateX(5px);
-            }
-            80% {
-                transform: translateX(-2px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes searchContainerEntrance {
-            0% {
-                opacity: 0;
-                transform: translateX(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .search-bar {
-            width: 0;
-            height: 60px;
-            border: none;
-            border-radius: 30px;
-            padding: 0;
-            color: var(--glass-text);
-            font-size: 1rem;
-            opacity: 0;
-            visibility: hidden;
-            margin-right: 0px;
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), background-color 0.5s ease, box-shadow 0.5s ease;
-            /* NEW LIQUID GLASS STYLE */
-            background-color: color-mix(in srgb, var(--blue-tint) 20%, transparent);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            box-shadow: var(--glass-shadow);
-        }
-
-        body.dark-mode .search-bar {
-            background-color: color-mix(in srgb, var(--blue-tint) 50%, transparent);
-        }
-
-        .search-bar:focus {
-            outline: none;
-        }
-
-        .search-bar.active {
-            width: 250px;
-            padding: 0 20px;
-            opacity: 1;
-            visibility: visible;
-            margin-right: 1rem;
-        }
-
-        .search-bar::placeholder {
-            color: var(--search-placeholder);
-            /* Add transition for placeholder color */
-            transition: color 0.5s ease;
-        }
-
-        .search-button {
-            width: 60px;
-            height: 60px;
-            border-radius: 30px;
-            box-shadow: var(--button-shadow);
-            transition: box-shadow 0.5s ease, background-color 0.5s ease;
-        }
-
-        .search-button:hover {
-            box-shadow: var(--glass-shadow);
-        }
-
-        .search-button svg {
-            position: relative;
-            z-index: 2;
-            width: 30px;
-            height: 30px;
-            fill: var(--glass-text);
-            transition: fill 0.5s ease;
-        }
-
-        #no-favorites-message {
-            color: var(--glass-text);
-            font-size: 1.5rem;
-            opacity: 0;
-            text-align: center;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -40%);
-            pointer-events: none;
-            /* Add transition for text color */
-            transition: opacity 0.5s cubic-bezier(0.175, 0.885, 0.32, 2.2), transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 2.2), color 0.5s ease;
-            width: 100%;
-            z-index: 5;
-        }
-
-        #no-favorites-message.show {
-            opacity: 1;
-            transform: translate(-50%, -50%);
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                margin-top: 6rem;
-            }
-
-            .search-container-wrapper {
-                right: 1rem;
-                top: 1rem;
-                gap: 0.5rem;
-            }
-
-            .search-bar {
-                width: 0;
-                margin-left: 0;
-            }
-
-            .search-bar.active {
-                width: 200px;
-                padding: 0 15px;
-                margin-left: 0.5rem;
-            }
-
-            .floating-buttons-container {
-                left: 1rem;
-                bottom: 1rem;
-            }
-        }
-
-        .notifications-container {
-            position: fixed;
-            top: 2rem;
-            right: 100px;
-            display: flex;
-            align-items: center;
-            overflow: hidden;
-            white-space: nowrap;
-            z-index: 10;
-            height: 60px;
-            width: calc(100% - 100px);
-            pointer-events: none;
-        }
-
-        .notifications-container .notification-item {
-            color: var(--notification-text);
-            font-size: 1.25rem;
-            font-weight: bold;
-            animation: slide-left 15s linear infinite;
-            display: inline-block;
-            animation-delay: -5s;
-            /* Add transition for text color */
-            transition: color 0.5s ease;
-        }
-
-        @keyframes slide-left {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
-
-        /* Loading animation styles */
-        .loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 1;
-            transition: opacity 1s ease-in-out;
-            pointer-events: all;
-        }
-
-        .loading.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .loading-text {
-            text-align: center;
-            width: 100%;
-            line-height: 100px;
-        }
-
-        .loading-text span {
-            display: inline-block;
-            margin: 0 5px;
-            color: #fff;
-            font-family: 'Quattrocento Sans', sans-serif;
-            font-size: 2rem;
-            filter: blur(0px);
-            animation: blur-text 1.5s infinite linear alternate;
-        }
-        
-        /* Animation delays for staggered effect */
-        .loading-text span:nth-child(1) { animation-delay: 0s; }
-        .loading-text span:nth-child(2) { animation-delay: 0.2s; }
-        .loading-text span:nth-child(3) { animation-delay: 0.4s; }
-        .loading-text span:nth-child(4) { animation-delay: 0.6s; }
-        .loading-text span:nth-child(5) { animation-delay: 0.8s; }
-
-        @keyframes blur-text {
-            0% { filter: blur(0px); }
-            100% { filter: blur(4px); }
-        }
-
-        /* FIX: A small empty div to force correct scroll behavior on Android */
-        .scroll-fix {
-            height: 1px;
-            margin-top: 50px;
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quattrocento+Sans">
+<style>
+  :root{
+    --heart-color:rgba(255,255,255,0.8);
+    --heart-active:#fb4268;
+    --bg-url:url("https://i.ibb.co/hxBtrKYq/IMG-1865.jpg");
+    --bg-url-dark:url("https://i.ibb.co/5gBLTYpm/IMG-2195.jpg");
+    --main-bg:rgba(0,0,0,0);
+    --moon-color:#fff;
+    --notification-text:#fff;
+    --search-placeholder:rgba(255,255,255,0.5);
+    --tint-color:#fff;
+    --blue-tint:#00aaff;
+    --purple-tint:#a366ff;
+    --red-tint:#ff3366;
+    --glass-bg:color-mix(in srgb,var(--tint-color) 10%,transparent);
+    --glass-text:#fff;
+    --glass-shadow:inset 0 0 0 1px color-mix(in srgb,#fff 10%,transparent),
+                    inset 1.8px 3px 0px -2px color-mix(in srgb,#fff 90%,transparent),
+                    inset -2px -2px 0px -2px color-mix(in srgb,#fff 80%,transparent),
+                    inset -3px -8px 1px -6px color-mix(in srgb,#fff 60%,transparent),
+                    inset -0.3px -1px 4px 0px color-mix(in srgb,#000 12%,transparent),
+                    inset -1.5px 2.5px 0px -2px color-mix(in srgb,#000 20%,transparent),
+                    inset 0px 3px 4px -2px color-mix(in srgb,#000 20%,transparent),
+                    inset 2px -6.5px 1px -4px color-mix(in srgb,#000 10%,transparent),
+                    0px 2px 10px 0px color-mix(in srgb,#000 20%,transparent),
+                    0px 10px 30px 0px color-mix(in srgb,#000 15%,transparent);
+    --button-shadow:var(--glass-shadow);
+    transition: all 0.5s ease-in-out;
+  }
+  body.dark-mode{
+    --main-bg:rgba(0,0,0,0.7);
+    --moon-color:#fce38a;
+    --notification-text:#f0f0f0;
+    --search-placeholder:rgba(255,255,255,0.8);
+    --tint-color:#888;
+    --blue-tint:#00aaff;
+    --purple-tint:#a366ff;
+    --red-tint:#ff3366;
+    --glass-bg:rgba(0,0,0,0.35);
+    --glass-text:#f0f0f0;
+    --glass-shadow:inset 0 0 0 1px color-mix(in srgb,#fff 10%,transparent),
+                    inset 1.8px 3px 0px -2px color-mix(in srgb,#fff 90%,transparent),
+                    inset -2px -2px 0px -2px color-mix(in srgb,#fff 80%,transparent),
+                    inset -3px -8px 1px -6px color-mix(in srgb,#fff 60%,transparent),
+                    inset -0.3px -1px 4px 0px color-mix(in srgb,#000 12%,transparent),
+                    inset -1.5px 2.5px 0px -2px color-mix(in srgb,#000 20%,transparent),
+                    inset 0px 3px 4px -2px color-mix(in srgb,#000 20%,transparent),
+                    inset 2px -6.5px 1px -4px color-mix(in srgb,#000 10%,transparent),
+                    0px 2px 10px 0px color-mix(in srgb,rgba(0,0,0,0.5),transparent),
+                    0px 10px 30px 0px color-mix(in srgb,rgba(0,0,0,0.4),transparent);
+    --button-shadow:var(--glass-shadow);
+  }
+  body {
+    margin:0;
+    color:#fff;
+    font-family:sans-serif;
+    padding:40px;
+    background-color:#2e3b55;
+    position: relative;
+    overflow-x: hidden;
+    transition: all 0.5s ease-in-out;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: var(--bg-url);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    z-index: -1;
+    transition: background-image 1s ease-in-out, background-color 1s ease-in-out;
+  }
+  body.dark-mode::before {
+    background-image: var(--bg-url-dark);
+  }
+  h1{margin:0 0 20px;}
+  .grid {
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap:20px;
+    margin-top: 100px;
+    transition: all 0.5s ease-in-out;
+  }
+  .glass-container {
+    background:var(--glass-bg);
+    border-radius:3rem;
+    padding:20px;
+    min-height:120px;
+    box-shadow:var(--glass-shadow);
+    will-change: transform;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    transition: box-shadow 0.2s, background 0.5s ease-in-out;
+    cursor:pointer;
+    text-decoration: none;
+    color: var(--glass-text);
+    backdrop-filter:blur(4px) url(#filter);
+    -webkit-backdrop-filter:blur(4px);
+    position: relative;
+  }
+  .glass-container:hover {
+    box-shadow:0 20px 50px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.1), var(--glass-shadow);
+  }
+  .glass-container.favorited{
+    background-color:color-mix(in srgb,var(--heart-active) 25%,transparent)
+  }
+  .glass-content {
+    text-align: center;
+    padding: 0 2rem;
+  }
+  .title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: .5rem;
+  }
+  .description {
+    font-size: 1rem;
+    opacity: .8;
+  }
+  .search-container-wrapper {
+    position: fixed;
+    top: 40px;
+    right: 40px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    z-index: 10;
+  }
+  .search-bar {
+    width:0;
+    height:60px;
+    border:none;
+    border-radius:30px;
+    padding:0;
+    color:var(--glass-text);
+    font-size:1rem;
+    opacity:0;
+    visibility:hidden;
+    margin-right:0px;
+    background-color:color-mix(in srgb,var(--blue-tint) 20%,transparent);
+    backdrop-filter:blur(4px);
+    -webkit-backdrop-filter:blur(4px);
+    box-shadow:var(--glass-shadow);
+    transition: width 0.5s ease-in-out, padding 0.5s ease-in-out, opacity 0.5s ease-in-out, background-color 0.5s ease-in-out;
+  }
+  .search-bar:focus{outline:none}
+  .search-bar.active{
+    width:250px;
+    padding:0 20px;
+    opacity:1;
+    visibility:visible;
+    margin-right:1rem;
+  }
+  .search-bar::placeholder{color:var(--search-placeholder);}
+  .search-button{
+    width:60px;
+    height:60px;
+    border-radius:30px;
+    box-shadow:var(--button-shadow);
+    cursor: pointer;
+    background-color:color-mix(in srgb,var(--blue-tint) 20%,transparent);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: box-shadow 0.5s ease-in-out, background-color 0.5s ease-in-out;
+  }
+  .search-button svg{
+    width:30px;
+    height:30px;
+    fill: none;
+    stroke: var(--glass-text);
+    stroke-width:2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    transition: stroke 0.5s ease-in-out;
+  }
+  .highlight {
+    color: var(--blue-tint);
+    text-shadow:0 0 10px var(--blue-tint),0 0 20px var(--blue-tint);
+  }
+  /* --- Buttons from the second code --- */
+  .favorite-btn{
+    position:absolute;
+    top:1rem;
+    right:1rem;
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    opacity:1;
+    transform:scale(1);
+    background-color: var(--glass-bg);
+    box-shadow: var(--button-shadow);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+  }
+  .favorite-btn svg{
+    position:relative;
+    z-index:2;
+    width:20px;
+    height:20px;
+    fill:var(--heart-color);
+    transform:translateY(1px);
+    transition:fill 0.5s ease-in-out;
+  }
+  .favorite-btn.active svg{
+    fill:var(--heart-active);
+  }
+  .floating-buttons-container{
+    position:fixed;
+    bottom:2rem;
+    left:2rem;
+    display:flex;
+    gap:1rem;
+    z-index:10;
+  }
+  .floating-button{
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    box-shadow:var(--button-shadow);
+    cursor:pointer;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    transition: background-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+  }
+  .floating-button svg{
+    width:30px;
+    height:30px;
+    fill:var(--glass-text);
+    transition:fill 0.5s ease-in-out;
+  }
+  #darkModeBtn.active svg{
+    fill:var(--moon-color);
+  }
+  #no-favorites-message{
+    color:var(--glass-text);
+    font-size:1.5rem;
+    opacity:0;
+    text-align:center;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-40%);
+    pointer-events:none;
+    width:100%;
+    z-index:5;
+  }
+  #no-favorites-message.show{
+    opacity:1;
+    transform:translate(-50%,-50%);
+  }
+  .loading{
+    position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:9999;
+    display:flex;justify-content:center;align-items:center;opacity:1;transition:opacity 1s ease-in-out;
+    pointer-events:all;
+  }
+  .loading.hidden{
+    opacity:0;pointer-events:none;
+  }
+  .loading-text{
+    text-align:center;width:100%;line-height:100px;
+  }
+  .loading-text span{
+    display:inline-block;margin:0 5px;color:#fff;font-family:'Quattrocento Sans',sans-serif;
+    font-size:2rem;filter:blur(0);animation:blur-text 1.5s infinite linear alternate;
+  }
+  .loading-text span:nth-child(1){animation-delay:0s}
+  .loading-text span:nth-child(2){animation-delay:.2s}
+  .loading-text span:nth-child(3){animation-delay:.4s}
+  .loading-text span:nth-child(4){animation-delay:.6s}
+  .loading-text span:nth-child(5){animation-delay:.8s}
+  @keyframes blur-text{0%{filter:blur(0)}100%{filter:blur(4px)}}
+  .notifications-container{
+    position:fixed;top:2rem;right:100px;display:flex;align-items:center;overflow:hidden;
+    white-space:nowrap;z-index:10;height:60px;width:calc(100% - 100px);pointer-events:none;
+  }
+  .notifications-container .notification-item{
+    color:var(--notification-text);font-size:1.25rem;font-weight:bold;
+    animation:slide-left 15s linear infinite;display:inline-block;animation-delay:-5s;
+  }
+  @keyframes slide-left{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+  .panel-hidden{
+    pointer-events:none;height:auto;padding:0;margin:0;border:none;min-height:0;
+    overflow:visible;opacity:0;transform:scale(0.9) translateY(20px);display:none;
+  }
+  .scroll-fix{
+    height:1px;
+    margin-top:50px;
+  }
+  
+  /* --- Media Query for smaller screens --- */
+  @media (max-width: 600px) {
+    .search-container-wrapper {
+      top: 20px;
+      right: 20px;
+      gap: 0.5rem;
+    }
+    .search-bar.active {
+      width: 180px;
+      padding: 0 15px;
+      margin-right: 0.5rem;
+    }
+    body {
+        padding: 20px;
+    }
+    .floating-buttons-container{
+        left:1rem;
+        bottom:1rem;
+    }
+  }
+</style>
 </head>
 <body>
-
 <div class="loading" id="loadingScreen">
-    <div class="loading-text">
-        <span class="loading-text-words">D</span>
-        <span class="loading-text-words">O</span>
-        <span class="loading-text-words">D</span>
-        <span class="loading-text-words">C</span>
-        <span class="loading-text-words">H</span>
-    </div>
+  <div class="loading-text">
+    <span class="loading-text-words">D</span>
+    <span class="loading-text-words">O</span>
+    <span class="loading-text-words">D</span>
+    <span class="loading-text-words">C</span>
+    <span class="loading-text-words">H</span>
+  </div>
 </div>
-
 <div class="notifications-container">
-    <p class="notification-item">New update from the ground up ( beta testing ) inspired by the new design era of Liquid Glass made by Apple . I hope you like it ❤️ </p>
+  <p class="notification-item">New update from the ground up ( beta testing ) inspired by the new design era of Liquid Glass made by Apple . I hope you like it ❤️</p>
 </div>
 
-<div class="container" id="panelsContainer"></div>
+<div class="search-container-wrapper" id="searchContainerWrapper">
+  <div class="search-button glass-button-base" id="searchButton" title="Search">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+  </div>
+  <input type="text" id="searchInput" class="search-bar" placeholder="Search stories...">
+</div>
+<div class="grid" id="grid"></div>
 <span id="no-favorites-message">No favorites yet! Click the heart to add some.</span>
-
-<div class="floating-buttons-container animate-in">
-    <div class="floating-button glass-button-base" id="darkModeBtn" title="Toggle Dark Mode">
-        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-    </div>
-    <div class="floating-button glass-button-base" id="filterBtn" title="Show Favorites">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 
+<div class="floating-buttons-container">
+  <div class="floating-button glass-button-base" id="darkModeBtn" title="Toggle Dark Mode">
+    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+  </div>
+  <div class="floating-button glass-button-base" id="filterBtn" title="Show Favorites">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 
             4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 
             3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-        </svg>
-    </div>
+    </svg>
+  </div>
 </div>
-
-<div class="search-container-wrapper animate-in" id="searchContainerWrapper">
-    <div class="search-button glass-button-base" id="searchButton" title="Search">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
-            <circle cx="11" cy="11" r="8" fill="transparent"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-    </div>
-    <input type="text" id="searchInput" class="search-bar" placeholder="Search stories...">
-</div>
-
 <svg style="display:none">
   <filter id="filter" color-interpolation-filters="linearRGB">
-    <feTurbulence type="fractalNoise" baseFrequency="0.001" numOctaves="4" result="turbulence"/> 
-    <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="350"/> 
+    <feTurbulence type="fractalNoise" baseFrequency="0.001" numOctaves="4" result="turbulence"/>
+    <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="350"/>
   </filter>
 </svg>
-
 <div class="scroll-fix"></div>
 
 <script>
-const filterBtn = document.getElementById('filterBtn');
-const darkModeBtn = document.getElementById('darkModeBtn');
-const searchButton = document.getElementById('searchButton');
-const searchBar = document.getElementById('searchInput');
-const panelsContainer = document.getElementById('panelsContainer');
-const noFavoritesMessage = document.getElementById('no-favorites-message');
-const body = document.body;
-
-let showingFavorites = false;
+// Global variables to store data and grid elements
 let panels = [];
 let allStories = [];
+let showingFavorites = false;
+const body = document.body;
 
-// Load saved state from localStorage on page load
-function loadSavedState() {
-    const savedDarkMode = localStorage.getItem('darkMode');
-    const savedShowingFavorites = localStorage.getItem('showingFavorites');
-    const savedSearchActive = localStorage.getItem('searchActive');
-    const savedSearchValue = localStorage.getItem('searchValue');
-    const savedFavorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-
-    if (savedDarkMode === 'true') {
-        body.classList.add('dark-mode');
-        darkModeBtn.classList.add('active');
-    }
-
-    showingFavorites = savedShowingFavorites === 'true';
-    
-    if (showingFavorites) {
-        filterBtn.classList.add('active');
-    }
-
-    if (savedSearchActive === 'true') {
-        searchBar.classList.add('active');
-    }
-
-    if (savedSearchValue) {
-        searchBar.value = savedSearchValue;
-    }
-
-    if (savedFavorites.length > 0) {
-        panels.forEach((panel) => {
-            const title = panel.querySelector('.title').dataset.originalTitle;
-            if (savedFavorites.includes(title)) {
-                panel.querySelector('.favorite-btn').classList.add('active');
-                panel.classList.add('favorited');
-            }
-        });
-    }
-}
-
-// Save state to localStorage
-function saveState() {
-    localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
-    localStorage.setItem('showingFavorites', showingFavorites);
-    localStorage.setItem('searchActive', searchBar.classList.contains('active'));
-    localStorage.setItem('searchValue', searchBar.value);
-    
-    const favoriteTitles = [];
-    document.querySelectorAll('.glass-container .favorite-btn.active').forEach(btn => {
-        const panel = btn.closest('.glass-container');
-        const title = panel.querySelector('.title').dataset.originalTitle;
-        favoriteTitles.push(title);
-    });
-    localStorage.setItem('favorites', JSON.stringify(favoriteTitles));
-}
-
+// Helper function to highlight matching text
 function highlightText(text, query) {
-    if (!query) return text;
-    const regex = new RegExp(query, 'gi');
-    return text.replace(regex, (match) => `<span class="highlight">${match}</span>`);
+  if (!query) return text;
+  const regex = new RegExp(query, 'gi');
+  return text.replace(regex, (match) => `<span class="highlight">${match}</span>`);
 }
 
 function updateNoFavoritesMessageState() {
-    const favoritePanels = document.querySelectorAll('.glass-container.favorited');
-    if (showingFavorites && favoritePanels.length === 0) {
-        noFavoritesMessage.classList.add('show');
-    } else {
-        noFavoritesMessage.classList.remove('show');
-    }
+  const favoritePanels = document.querySelectorAll('.glass-container.favorited');
+  const noFavoritesMessage = document.getElementById('no-favorites-message');
+  if (showingFavorites && favoritePanels.length === 0) {
+    noFavoritesMessage.classList.add('show');
+  } else {
+    noFavoritesMessage.classList.remove('show');
+  }
 }
 
 function updatePanelVisibility(panel, shouldShow, searchQuery) {
-    const titleEl = panel.querySelector('.title');
-    const descriptionEl = panel.querySelector('.description');
-    const favoriteBtn = panel.querySelector('.favorite-btn');
-    
-    const originalTitle = titleEl.dataset.originalTitle;
-    const originalDescription = descriptionEl.dataset.originalDescription;
-    
-    titleEl.innerHTML = highlightText(originalTitle, searchQuery);
-    descriptionEl.innerHTML = highlightText(originalDescription, searchQuery);
-
-    if (shouldShow) {
-        panel.style.display = 'flex';
-        panel.style.visibility = 'visible';
-        panel.style.opacity = '1';
-        panel.style.height = '';
-        panel.style.padding = '';
-        panel.style.margin = '';
-        panel.style.overflow = '';
-        panel.style.transform = 'scale(1) translateY(0)';
-        panel.classList.remove('panel-hidden');
-        panel.classList.add('animate-in');
-        
-        favoriteBtn.classList.remove('animate-in');
-        favoriteBtn.style.opacity = '0';
-        favoriteBtn.style.transform = 'scale(0)';
-        setTimeout(() => {
-            favoriteBtn.classList.add('animate-in');
-        }, 50);
-    } else {
-        panel.classList.add('panel-hidden');
-        panel.classList.remove('animate-in');
-        
-        setTimeout(() => {
-            if (panel.classList.contains('panel-hidden')) {
-                panel.style.display = 'none';
-            }
-        }, 300);
-    }
+  const titleEl = panel.querySelector('.title');
+  const descriptionEl = panel.querySelector('.description');
+  const originalTitle = titleEl.dataset.originalTitle;
+  const originalDescription = descriptionEl.dataset.originalDescription;
+  titleEl.innerHTML = highlightText(originalTitle, searchQuery);
+  descriptionEl.innerHTML = highlightText(originalDescription, searchQuery);
+  
+  if (shouldShow) {
+    panel.style.display = 'flex';
+    panel.classList.remove('panel-hidden');
+  } else {
+    panel.classList.add('panel-hidden');
+    panel.style.display = 'none';
+  }
 }
 
+// Function to filter and render panels based on search query
 function filterAndRenderPanels() {
-    const searchQuery = searchBar.value.toLowerCase();
-    let visiblePanelsCount = 0;
+  const searchBar = document.getElementById('searchInput');
+  const searchQuery = searchBar.value.toLowerCase();
+  
+  panels.forEach(panel => {
+    const isFavorite = panel.classList.contains('favorited');
+    const title = panel.querySelector('.title').dataset.originalTitle.toLowerCase();
+    const description = panel.querySelector('.description').dataset.originalDescription.toLowerCase();
+    const isMatch = title.includes(searchQuery) || description.includes(searchQuery);
+    const shouldShow = isMatch && (!showingFavorites || isFavorite);
+    
+    updatePanelVisibility(panel, shouldShow, searchQuery);
+  });
+  updateNoFavoritesMessageState();
+  saveState();
+}
 
-    panels.forEach(panel => {
-        const isFavorite = panel.classList.contains('favorited');
-        const title = panel.querySelector('.title').dataset.originalTitle.toLowerCase();
-        const description = panel.querySelector('.description').dataset.originalDescription.toLowerCase();
-        const isMatch = title.includes(searchQuery) || description.includes(searchQuery);
-        
-        const shouldShow = isMatch && (!showingFavorites || isFavorite);
-        
-        updatePanelVisibility(panel, shouldShow, searchQuery);
-        
-        if (shouldShow) {
-            visiblePanelsCount++;
-        }
+function loadSavedState() {
+  const savedDarkMode = localStorage.getItem('darkMode');
+  const savedShowingFavorites = localStorage.getItem('showingFavorites');
+  const savedSearchActive = localStorage.getItem('searchActive');
+  const savedSearchValue = localStorage.getItem('searchValue');
+  const savedFavorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+  
+  if (savedDarkMode === 'true') {
+    body.classList.add('dark-mode');
+    document.getElementById('darkModeBtn').classList.add('active');
+  }
+  showingFavorites = savedShowingFavorites === 'true';
+  if (showingFavorites) {
+    document.getElementById('filterBtn').classList.add('active');
+  }
+  // The search bar state is now explicitly managed to avoid being active on reload
+  const searchBar = document.getElementById('searchInput');
+  if (savedSearchActive === 'true') {
+    // We intentionally don't set the search bar to active on load
+    // to prevent it from being expanded by default on refresh.
+    // The only time it should be active is when the user interacts with it.
+  }
+  if (savedSearchValue) {
+    searchBar.value = savedSearchValue;
+  }
+  if (savedFavorites.length > 0) {
+    panels.forEach((panel) => {
+      const title = panel.querySelector('.title').dataset.originalTitle;
+      if (savedFavorites.includes(title)) {
+        panel.querySelector('.favorite-btn').classList.add('active');
+        panel.classList.add('favorited');
+      }
+    });
+  }
+}
+
+function saveState() {
+  const searchBar = document.getElementById('searchInput');
+  localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
+  localStorage.setItem('showingFavorites', showingFavorites);
+  // We no longer save searchActive, so it defaults to false on reload.
+  localStorage.setItem('searchValue', searchBar.value);
+  const favoriteTitles = [];
+  document.querySelectorAll('.glass-container .favorite-btn.active').forEach(btn => {
+    const panel = btn.closest('.glass-container');
+    const title = panel.querySelector('.title').dataset.originalTitle;
+    favoriteTitles.push(title);
+  });
+  localStorage.setItem('favorites', JSON.stringify(favoriteTitles));
+}
+
+function initializeHeartColor() {
+  const filterBtn = document.getElementById('filterBtn');
+  const heartSvg = filterBtn.querySelector('svg');
+  if (showingFavorites) {
+    heartSvg.style.fill = 'var(--heart-active)';
+  } else {
+    heartSvg.style.fill = 'var(--heart-color)';
+  }
+}
+
+async function fetchAndBuildGrid() {
+  try {
+    const response = await fetch('stories.json');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const storiesData = await response.json();
+    allStories = storiesData; 
+    
+    const grid = document.getElementById('grid');
+    grid.innerHTML = '';
+    
+    storiesData.forEach(story => {
+      const card = document.createElement('a');
+      card.className = "glass-container";
+      card.href = "#"; 
+      card.innerHTML = `
+        <div class="glass-content">
+          <h3 class="title" data-original-title="${story.title}">${story.title}</h3>
+          <p class="description" data-original-description="${story.description}">${story.description}</p>
+        </div>
+        <div class="favorite-btn glass-button-base">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 
+            4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 
+            3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </div>
+      `;
+      grid.appendChild(card);
     });
 
-    updateNoFavoritesMessageState();
-    saveState();
-}
+    panels = [...document.querySelectorAll('.glass-container')];
 
-async function fetchAndRenderPanels() {
-    try {
-        const response = await fetch('stories.json');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const stories = await response.json();
+    const state = panels.map(() => ({
+      scaleX: 0.1, // Start with a very small scale
+      scaleY: 0.1, // Start with a very small scale
+      vx: 0,
+      vy: 0, 
+      rotX: 0,
+      rotY: 0,
+      vrX: 0,
+      vrY: 0,
+      damping: 0.65 + Math.random() * 0.15
+    }));
+    
+    // Trigger the jelly effect on load
+    panels.forEach((card, i) => {
+        // Use a slight delay to create a staggered effect on load
+        setTimeout(() => {
+            // Apply a vertical impulse to start the bounce
+            const impulse = 0.5 + Math.random() * 0.2; // A random impulse for variety
+            state[i].vy -= impulse; 
+            state[i].vx -= (0.1 + Math.random() * 0.1); // Add a horizontal impulse too
+        }, i * 50); // Stagger the start of each panel's animation by 50ms
+    });
+
+    let lastScroll = window.scrollY;
+    let lastTime = performance.now();
+    let pointer = { x: -9999, y: -9999 };
+
+    window.addEventListener('mousemove', e => {
+      pointer.x = e.clientX;
+      pointer.y = e.clientY;
+    });
+    window.addEventListener('touchmove', e => {
+      pointer.x = e.touches[0].clientX;
+      pointer.y = e.touches[0].clientY;
+    });
+
+    function frame(now) {
+      const dt = (now - lastTime) / 1000;
+      lastTime = now;
+
+      const scrollY = window.scrollY;
+      const delta = scrollY - lastScroll;
+      lastScroll = scrollY;
+
+      const vh = window.innerHeight;
+      const center = scrollY + vh / 2;
+
+      panels.forEach((card, i) => {
+        const rect = card.getBoundingClientRect();
+        const s = state[i];
         
-        panelsContainer.innerHTML = '';
-        allStories = stories;
-        
-        stories.forEach((story, index) => {
-            const panelHtml = `
-                <a href="${story.file}" class="glass-container">
-                    <div class="glass-content">
-                        <div class="title" data-original-title="${story.title}">${story.title}</div>
-                        <div class="description" data-original-description="${story.description}">${story.description}</div>
-                    </div>
-                    <div class="favorite-btn glass-button-base">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 
-                            4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 
-                            3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                        </svg>
-                    </div>
-                </a>
-            `;
-            panelsContainer.insertAdjacentHTML('beforeend', panelHtml);
-        });
+        const cardCenter = scrollY + rect.top + rect.height / 2;
+        const dist = Math.abs(cardCenter - center) / vh;
+        const scrollImpulse = delta * 0.02 * (1 - dist);
 
-        panels = document.querySelectorAll('.glass-container');
-        panels.forEach((panel, index) => {
-            setTimeout(() => {
-                panel.classList.add('animate-in');
-            }, index * 120);
-        });
+        const targetScaleYScroll = 1 - scrollImpulse;
+        const targetScaleXScroll = 1 + scrollImpulse * 0.7;
 
-        document.querySelectorAll('.favorite-btn').forEach((btn, index) => {
-            btn.style.opacity = '0';
-            btn.style.transform = 'scale(0)';
-            setTimeout(() => {
-                btn.classList.add('animate-in');
-            }, index * 50);
-            
-            btn.addEventListener('click', (event) => {
-                event.preventDefault();
-                const panel = btn.closest('.glass-container');
-                btn.classList.toggle('active');
-                panel.classList.toggle('favorited');
-                btn.setAttribute('aria-pressed', btn.classList.contains('active'));
-                filterAndRenderPanels();
-            });
-        });
-        
-        if (searchBar.classList.contains('active')) {
-            filterAndRenderPanels();
-        }
+        const dx = pointer.x - (rect.left + rect.width / 2);
+        const dy = pointer.y - (rect.top + rect.height / 2);
+        const pointerDist = Math.sqrt(dx * dx + dy * dy);
+        const maxDist = 200;
+        const influence = Math.max(0, (maxDist - pointerDist) / maxDist);
 
-        loadSavedState();
-        initializeHeartColor();
-        
-        if (showingFavorites) {
-            filterAndRenderPanels();
-        }
+        const targetScaleXPointer = 1 + 0.4 * influence;
+        const targetScaleYPointer = 1 - 0.4 * influence;
+        const targetRotX = dy * 0.15 * influence;
+        const targetRotY = -dx * 0.15 * influence;
 
-    } catch (error) {
-        console.error('Failed to fetch stories:', error);
-        panelsContainer.innerHTML = '<p style="color:white;">Failed to load stories. Please ensure "stories.json" exists and is formatted correctly.</p>';
+        const targetScaleX = (targetScaleXScroll + targetScaleXPointer) / 2;
+        const targetScaleY = (targetScaleYScroll + targetScaleYPointer) / 2;
+
+        const d = s.damping;
+
+        s.vx += (targetScaleX - s.scaleX) * 0.25;
+        s.vx *= d;
+        s.scaleX += s.vx;
+
+        s.vy += (targetScaleY - s.scaleY) * 0.25;
+        s.vy *= d;
+        s.scaleY += s.vy;
+
+        s.vrX += (targetRotX - s.rotX) * 0.25;
+        s.vrX *= d;
+        s.rotX += s.vrX;
+
+        s.vrY += (targetRotY - s.rotY) * 0.25;
+        s.vrY *= d;
+        s.rotY += s.vrY;
+
+        card.style.transform = `
+          scaleX(${s.scaleX}) scaleY(${s.scaleY})
+          rotateX(${s.rotX}deg) rotateY(${s.rotY}deg)
+        `;
+      });
+      requestAnimationFrame(frame);
     }
+    requestAnimationFrame(frame);
+
+    // --- Add event listeners for the search and other functionality ---
+    const searchButton = document.getElementById('searchButton');
+    const searchBar = document.getElementById('searchInput');
+    const filterBtn = document.getElementById('filterBtn');
+    const darkModeBtn = document.getElementById('darkModeBtn');
+    
+    searchButton.addEventListener('click', () => {
+      searchBar.classList.toggle('active');
+      if (searchBar.classList.contains('active')) {
+        searchBar.focus();
+      } else {
+        searchBar.value = '';
+        filterAndRenderPanels();
+      }
+      saveState();
+    });
+
+    searchBar.addEventListener('input', filterAndRenderPanels);
+    // New event listener for the 'blur' event to handle mobile keyboard 'Done'
+    searchBar.addEventListener('blur', () => {
+        searchBar.classList.remove('active');
+        // You can choose to clear the search bar on blur, but it's
+        // often better for UX to leave the text in case the user
+        // accidentally tapped out of the field.
+        // searchBar.value = '';
+        filterAndRenderPanels();
+        saveState();
+    });
+    
+    darkModeBtn.addEventListener('click', () => {
+      darkModeBtn.classList.toggle('active');
+      body.classList.toggle('dark-mode');
+      saveState();
+    });
+
+    filterBtn.addEventListener('click', () => {
+      showingFavorites = !showingFavorites;
+      const heartSvg = filterBtn.querySelector('svg');
+      if (showingFavorites) {
+        heartSvg.style.fill = 'var(--heart-active)';
+      } else {
+        heartSvg.style.fill = 'var(--heart-color)';
+      }
+      filterAndRenderPanels();
+      updateNoFavoritesMessageState();
+      saveState();
+    });
+    
+    document.querySelectorAll('.favorite-btn').forEach((btn) => {
+      btn.addEventListener('click', (event) => {
+        event.preventDefault();
+        const panel = btn.closest('.glass-container');
+        btn.classList.toggle('active');
+        panel.classList.toggle('favorited');
+        btn.setAttribute('aria-pressed', btn.classList.contains('active'));
+        filterAndRenderPanels();
+      });
+    });
+
+    loadSavedState();
+    initializeHeartColor();
+    if (searchBar.classList.contains('active') || showingFavorites) {
+      filterAndRenderPanels();
+    }
+
+  } catch (error) {
+    console.error('Failed to load grid data:', error);
+    document.getElementById('grid').innerHTML = '<p style="color:#fff;">Failed to load stories. Check that stories.json exists.</p>';
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const loadingScreen = document.getElementById('loadingScreen');
-    const bgImageUrlLight = getComputedStyle(document.documentElement).getPropertyValue('--bg-url').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
-    const bgImageUrlDark = getComputedStyle(document.documentElement).getPropertyValue('--bg-url-dark').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
-
-    const imagesToLoad = [];
-    if (bgImageUrlLight) imagesToLoad.push(bgImageUrlLight);
-    if (bgImageUrlDark) imagesToLoad.push(bgImageUrlDark);
-
-    let imagesLoadedCount = 0;
-
-    if (imagesToLoad.length > 0) {
-        imagesToLoad.forEach(url => {
-            const img = new Image();
-            img.onload = img.onerror = () => {
-                imagesLoadedCount++;
-                if (imagesLoadedCount === imagesToLoad.length) {
-                    loadingScreen.classList.add('hidden');
-                    setTimeout(() => {
-                        fetchAndRenderPanels();
-                    }, 500);
-                }
-            };
-            img.src = url;
-        });
-    } else {
-        // No background images to load, proceed
-        loadingScreen.classList.add('hidden');
-        setTimeout(() => {
-            fetchAndRenderPanels();
-        }, 500);
-    }
+  const loadingScreen = document.getElementById('loadingScreen');
+  const bgImageUrlLight = getComputedStyle(document.documentElement).getPropertyValue('--bg-url').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
+  const bgImageUrlDark = getComputedStyle(document.documentElement).getPropertyValue('--bg-url-dark').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
+  const imagesToLoad = [];
+  if (bgImageUrlLight) imagesToLoad.push(bgImageUrlLight);
+  if (bgImageUrlDark) imagesToLoad.push(bgImageUrlDark);
+  let imagesLoadedCount = 0;
+  if (imagesToLoad.length > 0) {
+    imagesToLoad.forEach(url => {
+      const img = new Image();
+      img.onload = img.onerror = () => {
+        imagesLoadedCount++;
+        if (imagesLoadedCount === imagesToLoad.length) {
+          loadingScreen.classList.add('hidden');
+          setTimeout(() => {
+            fetchAndBuildGrid(); // Call the main function here
+          }, 500);
+        }
+      };
+      img.src = url;
+    });
+  } else {
+    loadingScreen.classList.add('hidden');
+    setTimeout(() => {
+      fetchAndBuildGrid(); // Call the main function here as well
+    }, 500);
+  }
 });
-
-
-
-function initializeHeartColor() {
-    const heartSvg = filterBtn.querySelector('svg');
-    if (showingFavorites) {
-        heartSvg.style.fill = 'var(--heart-active)';
-    } else {
-        heartSvg.style.fill = 'var(--heart-color)';
-    }
-}
-
-darkModeBtn.addEventListener('click', () => {
-    darkModeBtn.classList.toggle('active');
-    body.classList.toggle('dark-mode');
-    saveState();
-});
-
-filterBtn.addEventListener('click', () => {
-    showingFavorites = !showingFavorites;
-
-    const heartSvg = filterBtn.querySelector('svg');
-    if (showingFavorites) {
-        heartSvg.style.fill = 'var(--heart-active)';
-    } else {
-        heartSvg.style.fill = 'var(--heart-color)';
-    }
-
-    filterAndRenderPanels();
-    updateNoFavoritesMessageState();
-
-    const favoritePanels = document.querySelectorAll('.glass-container.favorited');
-    if (showingFavorites && favoritePanels.length > 0) {
-        panelsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-    saveState();
-});
-
-searchButton.addEventListener('click', () => {
-    searchBar.classList.toggle('active');
-    if (searchBar.classList.contains('active')) {
-        searchBar.focus();
-    } else {
-        searchBar.value = '';
-        filterAndRenderPanels();
-    }
-    saveState();
-});
-
-searchBar.addEventListener('input', filterAndRenderPanels);
-
-const scrollFix = document.createElement('div');
-scrollFix.classList.add('scroll-fix');
-document.body.appendChild(scrollFix);
-
-function adjustContainerTop() {
-    const container = document.getElementById('panelsContainer');
-    const safeAreaTop = window.getComputedStyle(document.documentElement).getPropertyValue('safe-area-inset-top');
-
-    if (safeAreaTop) {
-        const topMargin = parseFloat(safeAreaTop) + 16;
-        container.style.marginTop = `${topMargin}px`;
-    }
-}
-
-window.addEventListener('load', adjustContainerTop);
-
-window.addEventListener('resize', adjustContainerTop);
-
 </script>
-
 </body>
 </html>
