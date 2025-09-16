@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="google-site-verification" content="WPsemouAlOQyJaztzjjtf6afzzagtg6WWPZh7gd3T8A">
+<title>Dodch Stories | Original Fiction and Creative Writing</title>
+<meta name="description" content="Dodch Stories is a collection of original stories written with emotion, creativity, and depth. Explore fiction that connects to the heart and imagination.">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quattrocento+Sans">
@@ -177,6 +180,8 @@
     justify-content: center;
     align-items: center;
     transition: box-shadow 0.5s ease-in-out, background-color 0.5s ease-in-out;
+    backdrop-filter:blur(4px);
+    -webkit-backdrop-filter:blur(4px);
   }
   .search-button svg{
     width:30px;
@@ -202,7 +207,7 @@
     border-radius:50%;
     opacity:1;
     transform:scale(1);
-    background-color: var(--glass-bg);
+    background-color: color-mix(in srgb,var(--red-tint) 20%,transparent);
     box-shadow: var(--button-shadow);
     display: flex;
     justify-content: center;
@@ -217,6 +222,8 @@
     fill:var(--heart-color);
     transform:translateY(1px);
     transition:fill 0.5s ease-in-out;
+    stroke:black;
+    stroke-width:1.5px;
   }
   .favorite-btn.active svg{
     fill:var(--heart-active);
@@ -238,16 +245,22 @@
     display:flex;
     justify-content:center;
     align-items:center;
-    background-color: var(--glass-bg);
+    background-color: color-mix(in srgb,var(--purple-tint) 20%,transparent);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     transition: background-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+    transform-origin: center;
+  }
+  #filterBtn.floating-button {
+      background-color: color-mix(in srgb,var(--red-tint) 20%,transparent);
   }
   .floating-button svg{
     width:30px;
     height:30px;
     fill:var(--glass-text);
     transition:fill 0.5s ease-in-out;
+    stroke:black;
+    stroke-width:1.5px;
   }
   #darkModeBtn.active svg{
     fill:var(--moon-color);
@@ -328,6 +341,33 @@
         bottom:1rem;
     }
   }
+  .site-footer {
+    text-align: center;
+    margin-top: 50px;
+    color: var(--glass-text);
+    opacity: 0.7;
+    font-size: 0.9rem;
+    transition: color 0.5s ease-in-out;
+  }
+
+  /* --- New Jello Animation CSS --- */
+  .squash {
+    transform: scale(0.85, 0.9);
+  }
+
+  @keyframes jello-wobble {
+    0%   { transform: scale(1,1); }
+    15%  { transform: scale(1.25,0.75) rotate(1deg); }
+    30%  { transform: scale(0.75,1.25) rotate(-1deg); }
+    45%  { transform: scale(1.15,0.85) rotate(0.6deg); }
+    60%  { transform: scale(0.9,1.1) rotate(-0.6deg); }
+    75%  { transform: scale(1.05,0.95) rotate(0.3deg); }
+    100% { transform: scale(1,1) rotate(0); }
+  }
+
+  .jello {
+    animation: jello-wobble 0.8s ease;
+  }
 </style>
 </head>
 <body>
@@ -375,12 +415,37 @@
 </svg>
 <div class="scroll-fix"></div>
 
+<footer class="site-footer">
+  <p>&copy; 2024 Dodch. All Rights Reserved.</p>
+</footer>
+
 <script>
+// Disable right-click menu
+document.addEventListener('contextmenu', event => event.preventDefault());
+
 // Global variables to store data and grid elements
 let panels = [];
 let allStories = [];
 let showingFavorites = false;
 const body = document.body;
+
+// New function to add tap animation
+function addTapAnimation(element) {
+  element.addEventListener('pointerdown', () => {
+    element.classList.add('squash');
+  });
+  
+  element.addEventListener('pointerup', () => {
+    element.classList.remove('squash');
+    element.classList.remove('jello');
+    void element.offsetWidth; // force reflow to restart animation
+    element.classList.add('jello');
+  });
+
+  element.addEventListener('pointerleave', () => {
+    element.classList.remove('squash');
+  });
+}
 
 // Helper function to highlight matching text
 function highlightText(text, query) {
@@ -627,6 +692,11 @@ async function fetchAndBuildGrid() {
     const filterBtn = document.getElementById('filterBtn');
     const darkModeBtn = document.getElementById('darkModeBtn');
     
+    // Add jello animation to the floating buttons
+    addTapAnimation(darkModeBtn);
+    addTapAnimation(filterBtn);
+    addTapAnimation(searchButton);
+    
     searchButton.addEventListener('click', () => {
       searchBar.classList.toggle('active');
       if (searchBar.classList.contains('active')) {
@@ -665,6 +735,7 @@ async function fetchAndBuildGrid() {
     });
     
     document.querySelectorAll('.favorite-btn').forEach((btn) => {
+      addTapAnimation(btn); // Add jello animation to favorite buttons
       btn.addEventListener('click', (event) => {
         event.stopPropagation();
         event.preventDefault(); 
