@@ -161,6 +161,7 @@
     transition: width 0.5s ease-in-out, padding 0.5s ease-in-out, opacity 0.5s ease-in-out, background-color 0.5s ease-in-out;
   }
   .search-bar:focus{outline:none}
+  .search-bar::placeholder{color:var(--search-placeholder);}
   .search-bar.active{
     width:250px;
     padding:0 20px;
@@ -168,7 +169,6 @@
     visibility:visible;
     margin-right:1rem;
   }
-  .search-bar::placeholder{color:var(--search-placeholder);}
   .search-button{
     width:60px;
     height:60px;
@@ -759,6 +759,23 @@ async function fetchAndBuildGrid() {
   }
 }
 
+// Function to animate the floating and search buttons on initial load
+function animateButtonsOnLoad() {
+    const searchButton = document.getElementById('searchButton');
+    const filterBtn = document.getElementById('filterBtn');
+    const darkModeBtn = document.getElementById('darkModeBtn');
+    const buttonsToAnimate = [searchButton, filterBtn, darkModeBtn];
+    buttonsToAnimate.forEach((button, i) => {
+      setTimeout(() => {
+        button.classList.add('jello');
+        setTimeout(() => {
+          button.classList.remove('jello');
+        }, 800); // 800ms matches the animation duration
+      }, i * 200 + 100); // Stagger the start by 200ms with a 100ms initial delay
+    });
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
   const loadingScreen = document.getElementById('loadingScreen');
   const bgImageUrlLight = getComputedStyle(document.documentElement).getPropertyValue('--bg-url').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
@@ -767,6 +784,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (bgImageUrlLight) imagesToLoad.push(bgImageUrlLight);
   if (bgImageUrlDark) imagesToLoad.push(bgImageUrlDark);
   let imagesLoadedCount = 0;
+  
+  animateButtonsOnLoad(); // Animate buttons immediately
+  
   if (imagesToLoad.length > 0) {
     imagesToLoad.forEach(url => {
       const img = new Image();
