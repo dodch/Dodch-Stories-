@@ -1,8 +1,8 @@
 [
     {
-        "title": "with the right person",
-        "description": "how someone can change you",
-        "length": "short story",
+        "title": "With the right person",
+        "description": "How someone can change you",
+        "length": "Short story",
         "date": "19/09/2025",
         "file": "with-the-right-person.html",
         "status": "New",
@@ -10,34 +10,34 @@
     },
     {
         "title": "Lost to be found",
-        "description": "العربية français english",
-        "length": "short story",
+        "description": "العربية Français English",
+        "length": "Short story",
         "date": "17/05/2025",
         "file": "lost-to-be-found.html",
         "status": "",
-        "status_color": "null"
+        "status_color": ""
     },
     {
         "title": "The coldest night",
-        "description": "love warmth loss hope...",
-        "length": "long story",
+        "description": "Love Warmth Loss Hope...",
+        "length": "Long story",
         "date": "10/02/2025",
         "file": "The-Coldest-Night.html",
-        "status": "first story",
+        "status": "First story",
         "status_color": "golden"
     },
     {
         "title": "Villain",
-        "description": "(preview)",
+        "description": "(Preview)",
         "length": "",
-        "date": "undefined",
+        "date": "Undefined",
         "file": "villain.html",
         "status": "",
         "status_color": ""
     },
     {
         "title": "Behind the fog",
-        "description": "when the fog clears out, a new story begins",
+        "description": "When the fog clears out, a new story begins",
         "length": "",
         "date": "Next winter",
         "file": "",
