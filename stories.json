@@ -6,7 +6,8 @@
         "date": "19/09/2025",
         "file": "with-the-right-person.html",
         "status": "New",
-        "status_color": "red"
+        "status_color": "red",
+        "creator": "Adam Dodch"
     },
     {
         "title": "Lost to be found",
@@ -15,7 +16,8 @@
         "date": "17/05/2025",
         "file": "lost-to-be-found.html",
         "status": "",
-        "status_color": ""
+        "status_color": "",
+        "creator": "Adam Dodch"
     },
     {
         "title": "The coldest night",
@@ -24,7 +26,8 @@
         "date": "10/02/2025",
         "file": "The-Coldest-Night.html",
         "status": "First story",
-        "status_color": "golden"
+        "status_color": "golden",
+        "creator": "Adam dodch"
     },
     {
         "title": "Villain",
@@ -33,7 +36,8 @@
         "date": "Undefined",
         "file": "villain.html",
         "status": "",
-        "status_color": ""
+        "status_color": "",
+        "creator": "Adam Dodch"
     },
     {
         "title": "Behind the fog",
@@ -42,6 +46,7 @@
         "date": "Next winter",
         "file": "",
         "status": "",
-        "status_color": ""
+        "status_color": "",
+        "creator": "Adam Dodch"
     }
 ]
