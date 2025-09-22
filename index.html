@@ -8,7 +8,7 @@
 <meta name="description" content="Dodch Stories is a collection of original stories written with emotion, creativity, and depth. Explore fiction that connects to the heart and imagination.">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quattrocento+Sans">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quattrocento+Sans|Open+Sans|Montserrat">
 <style>
   :root{
     --heart-color:rgba(255,255,255,0.8);
@@ -38,6 +38,7 @@
                     0px 10px 30px 0px color-mix(in srgb,#000 15%,transparent);
     --button-shadow:var(--glass-shadow);
     transition: all 0.5s ease-in-out;
+    --panel-blur-start: 10px;
   }
   body.dark-mode{
     --main-bg:rgba(0,0,0,0.7);
@@ -131,10 +132,12 @@
     font-size: 1.5rem;
     font-weight: bold;
     margin-bottom: .5rem;
+    font-family: 'Montserrat', sans-serif;
   }
   .description {
     font-size: 1rem;
     opacity: .8;
+    font-family: 'Open Sans', sans-serif;
   }
   .search-container-wrapper {
     position: fixed;
@@ -172,6 +175,7 @@
     margin-right:1rem;
   }
   .search-button{
+    position: relative;
     width:60px;
     height:60px;
     border-radius:30px;
@@ -185,6 +189,22 @@
     backdrop-filter:blur(4px);
     -webkit-backdrop-filter:blur(4px);
   }
+  .search-button.active {
+    background-color: var(--red-tint);
+  }
+  .search-button svg.search-icon {
+    transform: rotate(0deg) scale(1);
+  }
+  .search-button.active svg.search-icon {
+    transform: rotate(45deg) scale(0);
+  }
+  .search-button svg.close-icon {
+    position: absolute;
+    transform: rotate(-45deg) scale(0);
+  }
+  .search-button.active svg.close-icon {
+    transform: rotate(0deg) scale(1);
+  }
   .search-button svg{
     width:30px;
     height:30px;
@@ -193,7 +213,7 @@
     stroke-width:2;
     stroke-linecap:round;
     stroke-linejoin:round;
-    transition: stroke 0.5s ease-in-out;
+    transition: transform 0.5s ease-in-out, stroke 0.5s ease-in-out;
   }
   .highlight {
     color: var(--blue-tint);
@@ -247,7 +267,7 @@
     display:flex;
     justify-content:center;
     align-items:center;
-    background-color: color-mix(in srgb,var(--purple-tint) 20%,transparent);
+    background-color: color-mix(in srgb,var(--purple-tint) 40%,transparent);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     transition: background-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
@@ -307,7 +327,7 @@
   @keyframes blur-text{0%{filter:blur(0)}100%{filter:blur(4px)}}
   .notifications-container{
     position:fixed;top:2rem;right:100px;display:flex;align-items:center;overflow:hidden;
-    white-space:nowrap;z-index:10;height:60px;width:calc(100% - 100px);pointer-events:none;
+    white-space:nowrap;z-index:5;height:60px;width:calc(100% - 100px);pointer-events:none;
   }
   .notifications-container .notification-item{
     color:var(--notification-text);font-size:1.25rem;font-weight:bold;
@@ -351,6 +371,12 @@
     font-size: 0.9rem;
     transition: color 0.5s ease-in-out;
   }
+  .made-by-who {
+    font-family: 'Quattrocento Sans', sans-serif;
+    font-size: 1.2rem;
+    color: var(--golden-tint);
+    margin-top: 10px;
+  }
 
   /* --- Jello Animation CSS --- */
   .squash {
@@ -372,21 +398,35 @@
   }
   
   /* --- Added CSS for story details and status pills --- */
-  .story-length {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
+  .story-length, .creation-date {
+    bottom: 30px;
     font-size: 0.8rem;
     opacity: 0.6;
     text-transform: capitalize;
   }
+
+  .story-length {
+    position: absolute;
+    left: 20px;
+  }
   
   .creation-date {
     position: absolute;
-    bottom: 20px;
     right: 20px;
+  }
+  
+  .story-creator {
+    position: absolute;
+    bottom: 5px;
+    font-family: 'Quattrocento Sans', sans-serif;
     font-size: 0.8rem;
-    opacity: 0.6;
+    opacity: 0.8;
+    color: var(--golden-tint);
+    text-transform: capitalize;
+    text-align: center;
+    width: 100%;
+    left: 0;
+    padding-bottom: 10px;
   }
 
   .glass-container.no-link {
@@ -440,9 +480,217 @@
       0% { box-shadow: 0 0 5px var(--golden-tint), 0 0 10px var(--golden-tint), 0 0 15px var(--golden-tint); transform: scale(1); }
       100% { box-shadow: 0 0 10px var(--golden-tint), 0 0 20px var(--golden-tint), 0 0 30px var(--golden-tint); transform: scale(1.05); }
   }
+
+  /* --- Info Panel CSS --- */
+  .info-container-wrapper {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: opacity 0.5s ease-in-out;
+  }
+  .info-container-wrapper.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .info-button {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    box-shadow: var(--button-shadow);
+    cursor: pointer;
+    background-color: color-mix(in srgb, var(--red-tint) 40%, transparent);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: box-shadow 0.5s ease-in-out, background-color 0.5s ease-in-out;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .info-button svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: var(--glass-text);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: stroke 0.5s ease-in-out;
+  }
+
+  .info-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 80px 40px 40px;
+    box-sizing: border-box;
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(var(--panel-blur-start));
+    -webkit-backdrop-filter: blur(var(--panel-blur-start));
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transform: scale(0.95);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease-in-out, transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), backdrop-filter 0.5s ease-in-out;
+  }
+
+  .info-panel.active {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .info-content {
+      overflow-y: auto;
+      height: 100%;
+      max-width: 600px;
+      padding-top: 2rem;
+  }
+
+  .info-panel h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: var(--glass-text);
+    z-index: 100;
+  }
+
+  .info-panel p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: 0 0 1rem;
+    color: var(--glass-text);
+    z-index: 100;
+  }
+  
+  /* Close button styling */
+  .close-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    background-color: color-mix(in srgb, var(--red-tint) 20%, transparent);
+    box-shadow: var(--button-shadow);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 101;
+  }
+
+  .close-button svg {
+    width: 20px;
+    height: 20px;
+    stroke: var(--glass-text);
+    stroke-width: 2;
+  }
+
+  body.info-panel-open {
+    overflow: hidden;
+  }
+
+  @media (max-width: 600px) {
+    .info-container-wrapper {
+      top: 20px;
+      left: 20px;
+      gap: 0.5rem;
+    }
+
+    .info-panel {
+      padding: 60px 20px 20px;
+    }
+
+    .info-panel h2 {
+      font-size: 1.5rem;
+    }
+    
+    .info-panel p {
+        font-size: 1rem;
+    }
+  }
 </style>
 </head>
 <body>
+<div class="info-container-wrapper" id="infoContainerWrapper">
+  <div class="info-button glass-button-base" id="infoButton" title="Info">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="16" x2="12" y2="12"></line>
+      <line x1="12" y1="8" x2="12" y2="8"></line>
+    </svg>
+  </div>
+  <div class="info-panel" id="infoPanel">
+    <div class="close-button" id="closeButton">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </div>
+    <div class="info-content">
+      <h2>About Dodch Stories</h2>
+   <p>✨ Here, stories are not just written — they are lived.
+Every word is a mirror of what we can’t say out loud,
+symbols of who we are, and who we might become. ✨</p>
+
+<p>🌌 Our Storytelling Philosophy
+
+We believe that everyone carries something special inside — a thought, a feeling, an idea, a perspective that only they can express. Here, we invite writers to bring those hidden parts of themselves to life.
+
+A story on our site should not just tell events. 
+<p>It should:</p>
+<p>
+	•	Reveal what we can’t say with normal words.
+	</p>
+	<p>
+	•	Carry deep meanings, symbols, and hidden layers for readers to uncover.
+	</p>
+	<p>
+	•	Reflect the truth of our lives — sometimes directly, sometimes through metaphor or fantasy.
+	</p>
+	•	Show us what it feels like to be human in a way that is unforgettable.
+</p>
+<p>⸻</p>
+<p>✨ What Makes a Story Right for Us</p>
+<p>• Modern, relatable, unique — connected to today’s life yet timeless in meaning.</p>
+<p>• Emotional impact — it should stay in the reader’s mind long after they finish.</p>
+<p>• Symbols & hidden meanings — every story is more than what’s on the page.</p>
+<p>• Personal truth — your unique perspective, your special thing, should shine through.</p>
+
+<p>⸻</p>
+
+<p>🚫 <strong>What We Avoid</strong></p>
+<p>• Empty writing without purpose or depth.</p>
+<p>• Copy-paste tropes or soulless stories.</p>
+<p>• Work that doesn’t reveal anything new about life, humanity, or ourselves.</p>
+
+<p>⸻</p>
+
+<p>🌍 <strong>Why We Exist</strong></p>
+
+<p>We are not here for ordinary stories.<br>
+We are here for the stories that transform us — the ones that make us stop, think, feel, and see the world differently.</p>
+
+<p>Everyone has something unique to share.<br>
+This is the place to bring it to life.</p>
+    </div>
+  </div>
+</div>
 <div class="loading" id="loadingScreen">
   <div class="loading-text">
     <span class="loading-text-words">D</span>
@@ -458,9 +706,13 @@
 
 <div class="search-container-wrapper" id="searchContainerWrapper">
   <div class="search-button glass-button-base" id="searchButton" title="Search">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
       <circle cx="11" cy="11" r="8"></circle>
       <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+    <svg class="close-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"></line>
+      <line x1="6" y1="6" x2="18" y2="18"></line>
     </svg>
   </div>
   <input type="text" id="searchInput" class="search-bar" placeholder="Search stories...">
@@ -654,6 +906,7 @@ async function fetchAndBuildGrid() {
         </div>
         <span class="story-length">${story.length}</span>
         <span class="creation-date">${story.date}</span>
+        <p class="story-creator">made by ${story.creator}</p>
         <div class="favorite-btn glass-button-base">
           <svg viewBox="0 0 24 24">
             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 
@@ -688,8 +941,8 @@ async function fetchAndBuildGrid() {
     panels = [...document.querySelectorAll('.glass-container')];
 
     const state = panels.map(() => ({
-      scaleX: 0.1, // Start with a very small scale
-      scaleY: 0.1, // Start with a very small scale
+      scaleX: 0.1,
+      scaleY: 0.1,
       vx: 0,
       vy: 0, 
       rotX: 0,
@@ -699,15 +952,12 @@ async function fetchAndBuildGrid() {
       damping: 0.65 + Math.random() * 0.15
     }));
     
-    // Trigger the jelly effect on load
     panels.forEach((card, i) => {
-        // Use a slight delay to create a staggered effect on load
         setTimeout(() => {
-            // Apply a vertical impulse to start the bounce
-            const impulse = 0.5 + Math.random() * 0.2; // A random impulse for variety
+            const impulse = 0.5 + Math.random() * 0.2;
             state[i].vy -= impulse; 
-            state[i].vx -= (0.1 + Math.random() * 0.1); // Add a horizontal impulse too
-        }, i * 50); // Stagger the start of each panel's animation by 50ms
+            state[i].vx -= (0.1 + Math.random() * 0.1);
+        }, i * 50);
     });
 
     let lastScroll = window.scrollY;
@@ -786,34 +1036,31 @@ async function fetchAndBuildGrid() {
     }
     requestAnimationFrame(frame);
 
-    // --- Add event listeners for the search and other functionality ---
     const searchButton = document.getElementById('searchButton');
     const searchBar = document.getElementById('searchInput');
     const filterBtn = document.getElementById('filterBtn');
     const darkModeBtn = document.getElementById('darkModeBtn');
+    const infoContainerWrapper = document.getElementById('infoContainerWrapper');
     
-    // Add jello animation to the floating buttons
     addTapAnimation(darkModeBtn);
     addTapAnimation(filterBtn);
     addTapAnimation(searchButton);
     
     searchButton.addEventListener('click', () => {
-      searchBar.classList.toggle('active');
-      if (searchBar.classList.contains('active')) {
+      const isActive = searchBar.classList.toggle('active');
+      searchButton.classList.toggle('active', isActive);
+      if (isActive) {
         searchBar.focus();
+        infoContainerWrapper.classList.add('hidden');
       } else {
         searchBar.value = '';
+        infoContainerWrapper.classList.remove('hidden');
         filterAndRenderPanels();
       }
       saveState();
     });
 
     searchBar.addEventListener('input', filterAndRenderPanels);
-    searchBar.addEventListener('blur', () => {
-        searchBar.classList.remove('active');
-        filterAndRenderPanels();
-        saveState();
-    });
     
     darkModeBtn.addEventListener('click', () => {
       darkModeBtn.classList.toggle('active');
@@ -835,7 +1082,7 @@ async function fetchAndBuildGrid() {
     });
     
     document.querySelectorAll('.favorite-btn').forEach((btn) => {
-      addTapAnimation(btn); // Add jello animation to favorite buttons
+      addTapAnimation(btn);
       btn.addEventListener('click', (event) => {
         event.stopPropagation();
         event.preventDefault(); 
@@ -852,6 +1099,32 @@ async function fetchAndBuildGrid() {
     if (searchBar.classList.contains('active') || showingFavorites) {
       filterAndRenderPanels();
     }
+    
+    const infoButton = document.getElementById('infoButton');
+    const infoPanel = document.getElementById('infoPanel');
+    const closeButton = document.getElementById('closeButton');
+    
+    addTapAnimation(infoButton);
+    addTapAnimation(closeButton);
+
+    function toggleInfoPanel() {
+      infoPanel.classList.toggle('active');
+      body.classList.toggle('info-panel-open');
+    }
+    
+    infoButton.addEventListener('click', toggleInfoPanel);
+    closeButton.addEventListener('click', toggleInfoPanel);
+
+    if (searchBar.classList.contains('active')) {
+      infoContainerWrapper.classList.add('hidden');
+      searchButton.classList.add('active');
+    }
+    
+    window.addEventListener('scroll', () => {
+      if (document.activeElement === searchBar) {
+        searchBar.blur();
+      }
+    });
 
   } catch (error) {
     console.error('Failed to load grid data:', error);
@@ -859,19 +1132,19 @@ async function fetchAndBuildGrid() {
   }
 }
 
-// Function to animate the floating and search buttons on initial load
 function animateButtonsOnLoad() {
     const searchButton = document.getElementById('searchButton');
     const filterBtn = document.getElementById('filterBtn');
     const darkModeBtn = document.getElementById('darkModeBtn');
-    const buttonsToAnimate = [searchButton, filterBtn, darkModeBtn];
+    const infoButton = document.getElementById('infoButton');
+    const buttonsToAnimate = [infoButton, searchButton, filterBtn, darkModeBtn];
     buttonsToAnimate.forEach((button, i) => {
       setTimeout(() => {
         button.classList.add('jello');
         setTimeout(() => {
           button.classList.remove('jello');
-        }, 800); // 800ms matches the animation duration
-      }, i * 200 + 100); // Stagger the start by 200ms with a 100ms initial delay
+        }, 800);
+      }, i * 200 + 100);
     });
 }
 
@@ -885,7 +1158,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (bgImageUrlDark) imagesToLoad.push(bgImageUrlDark);
   let imagesLoadedCount = 0;
   
-  animateButtonsOnLoad(); // Animate buttons immediately
+  animateButtonsOnLoad();
   
   if (imagesToLoad.length > 0) {
     imagesToLoad.forEach(url => {
@@ -895,7 +1168,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (imagesLoadedCount === imagesToLoad.length) {
           loadingScreen.classList.add('hidden');
           setTimeout(() => {
-            fetchAndBuildGrid(); // Call the main function here
+            fetchAndBuildGrid();
           }, 500);
         }
       };
@@ -904,7 +1177,7 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     loadingScreen.classList.add('hidden');
     setTimeout(() => {
-      fetchAndBuildGrid(); // Call the main function here as well
+      fetchAndBuildGrid();
     }, 500);
   }
 });
