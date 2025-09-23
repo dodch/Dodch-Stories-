@@ -1,11 +1,12 @@
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="google-site-verification" content="WPsemouAlOQyJaztzjjtf6afzzagtg6WWPZh7gd3T8A">
 <title>Dodch Stories | Original Fiction and Creative Writing</title>
 <meta name="description" content="Dodch Stories is a collection of original stories written with emotion, creativity, and depth. Explore fiction that connects to the heart and imagination.">
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quattrocento+Sans|Open+Sans|Montserrat">
 <style>
@@ -40,7 +41,6 @@
     transition: all 0.5s ease-in-out;
     --panel-blur-start: 10px;
   }
-  
   /* Dark mode variables based on device settings */
   @media (prefers-color-scheme: dark) {
     :root {
@@ -68,7 +68,6 @@
       --button-shadow:var(--glass-shadow);
     }
   }
-
   /* Dark mode variables for manual override */
   body.dark-mode {
     --main-bg: rgba(0,0,0,0.7);
@@ -94,6 +93,9 @@
                     0px 10px 30px 0px color-mix(in srgb,rgba(0,0,0,0.4),transparent);
     --button-shadow:var(--glass-shadow);
   }
+  html {
+    height: 100%;
+  }
   body {
     margin:0;
     color:#fff;
@@ -103,14 +105,15 @@
     position: relative;
     overflow-x: hidden;
     transition: all 0.5s ease-in-out;
+    min-height: 100vh;
   }
   body::before {
     content: '';
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     background-image: var(--bg-url);
     background-position: center;
     background-size: cover;
@@ -118,19 +121,16 @@
     z-index: -1;
     transition: background-image 1s ease-in-out, background-color 1s ease-in-out;
   }
-  
   /* Applies the dark background for the manual button toggle */
   body.dark-mode::before {
     background-image: var(--bg-url-dark);
   }
-
   /* Applies the dark background for device preference */
   @media (prefers-color-scheme: dark) {
     body::before {
       background-image: var(--bg-url-dark);
     }
   }
-
   h1{margin:0 0 20px;}
   .grid {
     display:grid;
@@ -380,7 +380,6 @@
     height:1px;
     margin-top:50px;
   }
-  
   /* --- Media Query for smaller screens --- */
   @media (max-width: 600px) {
     .search-container-wrapper {
@@ -415,12 +414,10 @@
     color: var(--golden-tint);
     margin-top: 10px;
   }
-
   /* --- Jello Animation CSS --- */
   .squash {
     transform: scale(0.85, 0.9);
   }
-
   @keyframes jello-wobble {
     0%   { transform: scale(1,1); }
     15%  { transform: scale(1.25,0.75) rotate(1deg); }
@@ -430,11 +427,9 @@
     75%  { transform: scale(1.05,0.95) rotate(0.3deg); }
     100% { transform: scale(1,1) rotate(0); }
   }
-
   .jello {
     animation: jello-wobble 0.8s ease;
   }
-  
   /* --- Added CSS for story details and status pills --- */
   .story-length {
     position: absolute;
@@ -444,7 +439,6 @@
     opacity: 0.6;
     text-transform: capitalize;
   }
-  
   .creation-date {
     position: absolute;
     bottom: 40px;
@@ -453,7 +447,6 @@
     opacity: 0.6;
     text-transform: capitalize;
   }
-  
   .story-creator {
     position: absolute;
     bottom: 20px;
@@ -466,13 +459,11 @@
     width: 100%;
     left: 0;
   }
-
   .glass-container.no-link {
       opacity: 0.5;
       cursor: not-allowed;
       pointer-events: none;
   }
-  
   /* --- New 'status' pill CSS with glow animations --- */
   .new-pill {
       position: absolute;
@@ -487,38 +478,31 @@
       transform-origin: center;
       text-shadow: 0 0 5px rgba(0,0,0,0.5);
   }
-
   .new-pill.red {
       background-color: var(--red-tint);
       animation: glow-red 1.5s infinite alternate ease-in-out;
   }
-
   @keyframes glow-red {
       0% { box-shadow: 0 0 5px var(--red-tint), 0 0 10px var(--red-tint), 0 0 15px var(--red-tint); transform: scale(1); }
       100% { box-shadow: 0 0 10px var(--red-tint), 0 0 20px var(--red-tint), 0 0 30px var(--red-tint); transform: scale(1.05); }
   }
-
   .new-pill.purple {
       background-color: var(--purple-tint);
       animation: glow-purple 1.5s infinite alternate ease-in-out;
   }
-
   @keyframes glow-purple {
       0% { box-shadow: 0 0 5px var(--purple-tint), 0 0 10px var(--purple-tint), 0 0 15px var(--purple-tint); transform: scale(1); }
       100% { box-shadow: 0 0 10px var(--purple-tint), 0 0 20px var(--purple-tint), 0 0 30px var(--purple-tint); transform: scale(1.05); }
   }
-
   .new-pill.golden {
       background-color: var(--golden-tint);
       color: black;
       animation: glow-golden 1.5s infinite alternate ease-in-out;
   }
-
   @keyframes glow-golden {
       0% { box-shadow: 0 0 5px var(--golden-tint), 0 0 10px var(--golden-tint), 0 0 15px var(--golden-tint); transform: scale(1); }
       100% { box-shadow: 0 0 10px var(--golden-tint), 0 0 20px var(--golden-tint), 0 0 30px var(--golden-tint); transform: scale(1.05); }
   }
-
   /* --- Info Panel CSS --- */
   .info-container-wrapper {
     position: fixed;
@@ -534,7 +518,6 @@
     opacity: 0;
     pointer-events: none;
   }
-
   .info-button {
     width: 45px;
     height: 45px;
@@ -549,7 +532,6 @@
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
   }
-
   .info-button svg {
     width: 20px;
     height: 20px;
@@ -560,7 +542,6 @@
     stroke-linejoin: round;
     transition: stroke 0.5s ease-in-out;
   }
-
   .info-panel {
     position: fixed;
     top: 0;
@@ -583,7 +564,6 @@
     pointer-events: none;
     transition: opacity 0.5s ease-in-out, transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), backdrop-filter 0.5s ease-in-out;
   }
-
   .info-panel.active {
     opacity: 1;
     transform: scale(1);
@@ -591,14 +571,12 @@
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
   }
-
   .info-content {
       overflow-y: auto;
       height: 100%;
       max-width: 600px;
       padding-top: 2rem;
   }
-
   .info-panel h2 {
     font-size: 2rem;
     font-weight: bold;
@@ -606,7 +584,6 @@
     color: var(--glass-text);
     z-index: 100;
   }
-
   .info-panel p {
     font-size: 1.1rem;
     line-height: 1.6;
@@ -614,7 +591,6 @@
     color: var(--glass-text);
     z-index: 100;
   }
-
   /* --- Styles for the new Contact Panel --- */
   .contact-panel-content, .social-links-content {
       width: 100%;
@@ -623,7 +599,6 @@
       flex-direction: column;
       gap: 1rem;
   }
-
   .panel-button {
       padding: 1rem 2rem;
       border-radius: 2rem;
@@ -643,11 +618,9 @@
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(0,0,0,0.3), var(--button-shadow);
   }
-
   .panel-button.social {
       background-color: color-mix(in srgb, var(--purple-tint) 20%, transparent);
   }
-
   .social-link-button {
       padding: 1rem;
       background-color: color-mix(in srgb, var(--golden-tint) 20%, transparent);
@@ -656,7 +629,6 @@
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(0,0,0,0.3), var(--button-shadow);
   }
-  
   /* Close button styling */
   .close-button {
     position: fixed;
@@ -673,33 +645,27 @@
     align-items: center;
     z-index: 101;
   }
-
   .close-button svg {
     width: 20px;
     height: 20px;
     stroke: var(--glass-text);
     stroke-width: 2;
   }
-
   body.info-panel-open {
     overflow: hidden;
   }
-
   @media (max-width: 600px) {
     .info-container-wrapper {
       top: 20px;
       left: 20px;
       gap: 0.5rem;
     }
-
     .info-panel {
       padding: 60px 20px 20px;
     }
-
     .info-panel h2 {
       font-size: 1.5rem;
     }
-    
     .info-panel p {
         font-size: 1rem;
     }
@@ -727,7 +693,6 @@
    <p>✨ Here, stories are not just written — they are lived.
 Every word is a mirror of what we can’t say out loud,
 symbols of who we are, and who we might become. ✨</p>
-
 <p>🌌 Our Storytelling Philosophy</p>
 <p>We believe that everyone carries something special inside — a thought, a feeling, an idea, a perspective that only they can express. Here, we invite writers to bring those hidden parts of themselves to life.</p>
 <p>A story on our site should not just tell events. It should:</p>
@@ -767,7 +732,6 @@ symbols of who we are, and who we might become. ✨</p>
 <div class="notifications-container">
   <p class="notification-item"> welcome to my personal website, you can tap on any story grid to read it or add it to favorites, please enjoy ❤️ </p>
 </div>
-
 <div class="search-container-wrapper" id="searchContainerWrapper">
   <div class="search-button glass-button-base" id="searchButton" title="Search">
     <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -805,11 +769,9 @@ symbols of who we are, and who we might become. ✨</p>
   </filter>
 </svg>
 <div class="scroll-fix"></div>
-
 <footer class="site-footer">
   <p>&copy; 2024 Dodch. All Rights Reserved.</p>
 </footer>
-
 <div class="info-panel" id="contactPanel">
     <div class="close-button" id="closeContactButton">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -826,7 +788,6 @@ symbols of who we are, and who we might become. ✨</p>
       </button>
     </div>
 </div>
-
 <div class="info-panel" id="socialPanel">
     <div class="close-button" id="closeSocialButton">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -846,42 +807,35 @@ symbols of who we are, and who we might become. ✨</p>
       </a>
     </div>
 </div>
-
 <script>
 // Disable right-click menu
 document.addEventListener('contextmenu', event => event.preventDefault());
-
 // Global variables to store data and grid elements
 let panels = [];
 let allStories = [];
 let showingFavorites = false;
 const body = document.body;
-
 // New function to add tap animation
 function addTapAnimation(element) {
   element.addEventListener('pointerdown', () => {
     element.classList.add('squash');
   });
-  
   element.addEventListener('pointerup', () => {
     element.classList.remove('squash');
     element.classList.remove('jello');
     void element.offsetWidth; // force reflow to restart animation
     element.classList.add('jello');
   });
-
   element.addEventListener('pointerleave', () => {
     element.classList.remove('squash');
   });
 }
-
 // Helper function to highlight matching text
 function highlightText(text, query) {
   if (!query) return text;
   const regex = new RegExp(query, 'gi');
   return text.replace(regex, (match) => `<span class="highlight">${match}</span>`);
 }
-
 function updateNoFavoritesMessageState() {
   const favoritePanels = document.querySelectorAll('.glass-container.favorited');
   const noFavoritesMessage = document.getElementById('no-favorites-message');
@@ -891,7 +845,6 @@ function updateNoFavoritesMessageState() {
     noFavoritesMessage.classList.remove('show');
   }
 }
-
 function updatePanelVisibility(panel, shouldShow, searchQuery) {
   const titleEl = panel.querySelector('.title');
   const descriptionEl = panel.querySelector('.description');
@@ -899,7 +852,6 @@ function updatePanelVisibility(panel, shouldShow, searchQuery) {
   const originalDescription = descriptionEl.dataset.originalDescription;
   titleEl.innerHTML = highlightText(originalTitle, searchQuery);
   descriptionEl.innerHTML = highlightText(originalDescription, searchQuery);
-  
   if (shouldShow) {
     panel.style.display = 'flex';
     panel.classList.remove('panel-hidden');
@@ -908,31 +860,26 @@ function updatePanelVisibility(panel, shouldShow, searchQuery) {
     panel.style.display = 'none';
   }
 }
-
 // Function to filter and render panels based on search query
 function filterAndRenderPanels() {
   const searchBar = document.getElementById('searchInput');
   const searchQuery = searchBar.value.toLowerCase();
-  
   panels.forEach(panel => {
     const isFavorite = panel.classList.contains('favorited');
     const title = panel.querySelector('.title').dataset.originalTitle.toLowerCase();
     const description = panel.querySelector('.description').dataset.originalDescription.toLowerCase();
     const isMatch = title.includes(searchQuery) || description.includes(searchQuery);
     const shouldShow = isMatch && (!showingFavorites || isFavorite);
-    
     updatePanelVisibility(panel, shouldShow, searchQuery);
   });
   updateNoFavoritesMessageState();
   saveState();
 }
-
 function loadSavedState() {
   const savedShowingFavorites = localStorage.getItem('showingFavorites');
   const savedSearchActive = localStorage.getItem('searchActive');
   const savedSearchValue = localStorage.getItem('searchValue');
   const savedFavorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-  
   showingFavorites = savedShowingFavorites === 'true';
   if (showingFavorites) {
     document.getElementById('filterBtn').classList.add('active');
@@ -951,7 +898,6 @@ function loadSavedState() {
     });
   }
 }
-
 function saveState() {
   const searchBar = document.getElementById('searchInput');
   localStorage.setItem('showingFavorites', showingFavorites);
@@ -964,7 +910,6 @@ function saveState() {
   });
   localStorage.setItem('favorites', JSON.stringify(favoriteTitles));
 }
-
 function initializeHeartColor() {
   const filterBtn = document.getElementById('filterBtn');
   const heartSvg = filterBtn.querySelector('svg');
@@ -974,7 +919,6 @@ function initializeHeartColor() {
     heartSvg.style.fill = 'var(--heart-color)';
   }
 }
-
 async function fetchAndBuildGrid() {
   try {
     const response = await fetch('stories.json');
@@ -983,20 +927,16 @@ async function fetchAndBuildGrid() {
     }
     const storiesData = await response.json();
     allStories = storiesData; 
-    
     const grid = document.getElementById('grid');
     grid.innerHTML = '';
-    
     storiesData.forEach(story => {
       const card = document.createElement('a');
       card.className = "glass-container";
       card.href = story.file;
-
       if (!story.file || story.file.trim() === '') {
           card.classList.add('no-link');
           card.removeAttribute('href');
       }
-
       card.innerHTML = `
         <div class="glass-content">
           <h3 class="title" data-original-title="${story.title}">${story.title}</h3>
@@ -1013,15 +953,12 @@ async function fetchAndBuildGrid() {
           </svg>
         </div>
       `;
-      
       const status = story.status ? story.status : '';
       const statusColor = story.status_color ? story.status_color.toLowerCase() : '';
-      
       if (status) {
           const newPill = document.createElement('span');
           newPill.className = "new-pill";
           newPill.textContent = status;
-
           if (statusColor.includes('red')) {
               newPill.classList.add('red');
           } else if (statusColor.includes('purple')) {
@@ -1029,15 +966,11 @@ async function fetchAndBuildGrid() {
           } else if (statusColor.includes('golden')) {
               newPill.classList.add('golden');
           }
-
           card.appendChild(newPill);
       }
-
       grid.appendChild(card);
     });
-
     panels = [...document.querySelectorAll('.glass-container')];
-
     const state = panels.map(() => ({
       scaleX: 0.1,
       scaleY: 0.1,
@@ -1049,7 +982,6 @@ async function fetchAndBuildGrid() {
       vrY: 0,
       damping: 0.65 + Math.random() * 0.15
     }));
-    
     panels.forEach((card, i) => {
         setTimeout(() => {
             const impulse = 0.5 + Math.random() * 0.2;
@@ -1057,11 +989,9 @@ async function fetchAndBuildGrid() {
             state[i].vx -= (0.1 + Math.random() * 0.1);
         }, i * 50);
     });
-
     let lastScroll = window.scrollY;
     let lastTime = performance.now();
     let pointer = { x: -9999, y: -9999 };
-
     // This section is now commented out to remove the hover effect
     // window.addEventListener('mousemove', e => {
     //   pointer.x = e.clientX;
@@ -1071,62 +1001,47 @@ async function fetchAndBuildGrid() {
     //   pointer.x = e.touches[0].clientX;
     //   pointer.y = e.touches[0].clientY;
     // });
-
     function frame(now) {
       const dt = (now - lastTime) / 1000;
       lastTime = now;
-
       const scrollY = window.scrollY;
       const delta = scrollY - lastScroll;
       lastScroll = scrollY;
-
       const vh = window.innerHeight;
       const center = scrollY + vh / 2;
-
       panels.forEach((card, i) => {
         const rect = card.getBoundingClientRect();
         const s = state[i];
-        
         const cardCenter = scrollY + rect.top + rect.height / 2;
         const dist = Math.abs(cardCenter - center) / vh;
         const scrollImpulse = delta * 0.02 * (1 - dist);
-
         const targetScaleYScroll = 1 - scrollImpulse;
         const targetScaleXScroll = 1 + scrollImpulse * 0.7;
-
         // The influence calculation is now set to 0 to remove the hover effect
         const dx = pointer.x - (rect.left + rect.width / 2);
         const dy = pointer.y - (rect.top + rect.height / 2);
         const pointerDist = Math.sqrt(dx * dx + dy * dy);
         const maxDist = 200;
         const influence = 0;
-
         const targetScaleXPointer = 1 + 0.4 * influence;
         const targetScaleYPointer = 1 - 0.4 * influence;
         const targetRotX = dy * 0.15 * influence;
         const targetRotY = -dx * 0.15 * influence;
-
         const targetScaleX = (targetScaleXScroll + targetScaleXPointer) / 2;
         const targetScaleY = (targetScaleYScroll + targetScaleYPointer) / 2;
-
         const d = s.damping;
-
         s.vx += (targetScaleX - s.scaleX) * 0.25;
         s.vx *= d;
         s.scaleX += s.vx;
-
         s.vy += (targetScaleY - s.scaleY) * 0.25;
         s.vy *= d;
         s.scaleY += s.vy;
-
         s.vrX += (targetRotX - s.rotX) * 0.25;
         s.vrX *= d;
         s.rotX += s.vrX;
-
         s.vrY += (targetRotY - s.rotY) * 0.25;
         s.vrY *= d;
         s.rotY += s.vrY;
-
         card.style.transform = `
           scaleX(${s.scaleX}) scaleY(${s.scaleY})
           rotateX(${s.rotX}deg) rotateY(${s.rotY}deg)
@@ -1135,17 +1050,14 @@ async function fetchAndBuildGrid() {
       requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
-
     const searchButton = document.getElementById('searchButton');
     const searchBar = document.getElementById('searchInput');
     const filterBtn = document.getElementById('filterBtn');
     const contactBtn = document.getElementById('contactBtn');
     const infoContainerWrapper = document.getElementById('infoContainerWrapper');
-    
     addTapAnimation(contactBtn);
     addTapAnimation(filterBtn);
     addTapAnimation(searchButton);
-    
     searchButton.addEventListener('click', () => {
       const isActive = searchBar.classList.toggle('active');
       searchButton.classList.toggle('active', isActive);
@@ -1159,9 +1071,7 @@ async function fetchAndBuildGrid() {
       }
       saveState();
     });
-
     searchBar.addEventListener('input', filterAndRenderPanels);
-
     filterBtn.addEventListener('click', () => {
       showingFavorites = !showingFavorites;
       const heartSvg = filterBtn.querySelector('svg');
@@ -1174,7 +1084,6 @@ async function fetchAndBuildGrid() {
       updateNoFavoritesMessageState();
       saveState();
     });
-    
     document.querySelectorAll('.favorite-btn').forEach((btn) => {
       addTapAnimation(btn);
       btn.addEventListener('click', (event) => {
@@ -1187,97 +1096,78 @@ async function fetchAndBuildGrid() {
         filterAndRenderPanels();
       });
     });
-
     loadSavedState();
     initializeHeartColor();
     if (searchBar.classList.contains('active') || showingFavorites) {
       filterAndRenderPanels();
     }
-    
     const infoButton = document.getElementById('infoButton');
     const infoPanel = document.getElementById('infoPanel');
     const closeInfoButton = document.getElementById('closeInfoButton');
-    
     addTapAnimation(infoButton);
     addTapAnimation(closeInfoButton);
-
     function toggleInfoPanel() {
       infoPanel.classList.toggle('active');
       body.classList.toggle('info-panel-open');
     }
-    
     infoButton.addEventListener('click', toggleInfoPanel);
     closeInfoButton.addEventListener('click', toggleInfoPanel);
-
     if (searchBar.classList.contains('active')) {
       infoContainerWrapper.classList.add('hidden');
       searchButton.classList.add('active');
     }
-    
     window.addEventListener('scroll', () => {
       if (document.activeElement === searchBar) {
         searchBar.blur();
       }
     });
-
     // New logic for the Contact and Social Media pop-ups
     const contactPanel = document.getElementById('contactPanel');
     const closeContactButton = document.getElementById('closeContactButton');
     const openSocialButton = document.getElementById('openSocialButton');
     const socialPanel = document.getElementById('socialPanel');
     const closeSocialButton = document.getElementById('closeSocialButton');
-
     addTapAnimation(contactBtn);
     addTapAnimation(closeContactButton);
     addTapAnimation(openSocialButton);
     addTapAnimation(closeSocialButton);
-
     // Get the buttons to add the bounce animation to
     const submitStoryBtn = document.getElementById('submitStoryBtn');
     const tiktokBtn = document.getElementById('tiktokBtn');
     const instagramBtn = document.getElementById('instagramBtn');
     const facebookBtn = document.getElementById('facebookBtn');
-
     addTapAnimation(submitStoryBtn);
     addTapAnimation(openSocialButton);
     addTapAnimation(tiktokBtn);
     addTapAnimation(instagramBtn);
     addTapAnimation(facebookBtn);
-
     // New function to close all panels and re-enable scrolling
     function closeAllPanels() {
         contactPanel.classList.remove('active');
         socialPanel.classList.remove('active');
         body.classList.remove('info-panel-open');
     }
-    
     contactBtn.addEventListener('click', () => {
         contactPanel.classList.add('active');
         body.classList.add('info-panel-open');
     });
-
     closeContactButton.addEventListener('click', () => {
         closeAllPanels();
     });
-
     openSocialButton.addEventListener('click', () => {
         contactPanel.classList.remove('active');
         setTimeout(() => {
             socialPanel.classList.add('active');
         }, 300); // Small delay to allow the first panel to fade out
     });
-
     closeSocialButton.addEventListener('click', () => {
         closeAllPanels();
     });
-
-
   } catch (error) {
     console.error('Failed to load grid data:', error);
     document.getElementById('grid').innerHTML = '<p style="color:#fff;">Failed to load stories. Check that stories.json exists.</p>';
   }
 }
-
 function animateButtonsOnLoad() {
     const searchButton = document.getElementById('searchButton');
     const filterBtn = document.getElementById('filterBtn');
@@ -1293,8 +1183,6 @@ function animateButtonsOnLoad() {
       }, i * 200 + 100);
     });
 }
-
-
 document.addEventListener('DOMContentLoaded', () => {
   const loadingScreen = document.getElementById('loadingScreen');
   const bgImageUrlLight = getComputedStyle(document.documentElement).getPropertyValue('--bg-url').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
@@ -1303,9 +1191,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (bgImageUrlLight) imagesToLoad.push(bgImageUrlLight);
   if (bgImageUrlDark) imagesToLoad.push(bgImageUrlDark);
   let imagesLoadedCount = 0;
-  
   animateButtonsOnLoad();
-  
   if (imagesToLoad.length > 0) {
     imagesToLoad.forEach(url => {
       const img = new Image();
@@ -1329,3 +1215,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 </body>
+</html>
