@@ -848,10 +848,36 @@ function updateNoFavoritesMessageState() {
 function updatePanelVisibility(panel, shouldShow, searchQuery) {
   const titleEl = panel.querySelector('.title');
   const descriptionEl = panel.querySelector('.description');
-  const originalTitle = titleEl.dataset.originalTitle;
-  const originalDescription = descriptionEl.dataset.originalDescription;
-  titleEl.innerHTML = highlightText(originalTitle, searchQuery);
-  descriptionEl.innerHTML = highlightText(originalDescription, searchQuery);
+  const creatorEl = panel.querySelector('.story-creator');
+  const dateEl = panel.querySelector('.creation-date');
+  const pillEl = panel.querySelector('.new-pill');
+
+  // Store original text in a data attribute if it doesn't exist
+  if (!titleEl.dataset.originalTitle) {
+      titleEl.dataset.originalTitle = titleEl.textContent;
+  }
+  if (!descriptionEl.dataset.originalDescription) {
+      descriptionEl.dataset.originalDescription = descriptionEl.textContent;
+  }
+  if (!creatorEl.dataset.originalCreator) {
+      creatorEl.dataset.originalCreator = creatorEl.textContent;
+  }
+  if (!dateEl.dataset.originalDate) {
+      dateEl.dataset.originalDate = dateEl.textContent;
+  }
+  if (pillEl && !pillEl.dataset.originalStatus) {
+      pillEl.dataset.originalStatus = pillEl.textContent;
+  }
+
+  // Apply highlighting to all searchable fields
+  titleEl.innerHTML = highlightText(titleEl.dataset.originalTitle, searchQuery);
+  descriptionEl.innerHTML = highlightText(descriptionEl.dataset.originalDescription, searchQuery);
+  creatorEl.innerHTML = highlightText(creatorEl.dataset.originalCreator, searchQuery);
+  dateEl.innerHTML = highlightText(dateEl.dataset.originalDate, searchQuery);
+  if (pillEl) {
+      pillEl.innerHTML = highlightText(pillEl.dataset.originalStatus, searchQuery);
+  }
+
   if (shouldShow) {
     panel.style.display = 'flex';
     panel.classList.remove('panel-hidden');
@@ -860,21 +886,36 @@ function updatePanelVisibility(panel, shouldShow, searchQuery) {
     panel.style.display = 'none';
   }
 }
+
 // Function to filter and render panels based on search query
 function filterAndRenderPanels() {
   const searchBar = document.getElementById('searchInput');
   const searchQuery = searchBar.value.toLowerCase();
   panels.forEach(panel => {
-    const isFavorite = panel.classList.contains('favorited');
+    // Get all the content to be searched
     const title = panel.querySelector('.title').dataset.originalTitle.toLowerCase();
     const description = panel.querySelector('.description').dataset.originalDescription.toLowerCase();
-    const isMatch = title.includes(searchQuery) || description.includes(searchQuery);
+    const creator = panel.querySelector('.story-creator').textContent.toLowerCase().replace('made by ', '');
+    const date = panel.querySelector('.creation-date').textContent.toLowerCase();
+    const pillElement = panel.querySelector('.new-pill');
+    const status = pillElement ? pillElement.textContent.toLowerCase() : '';
+
+    const isFavorite = panel.classList.contains('favorited');
+
+    // Update the search logic to check all fields
+    const isMatch = title.includes(searchQuery) || 
+                    description.includes(searchQuery) ||
+                    creator.includes(searchQuery) ||
+                    date.includes(searchQuery) ||
+                    status.includes(searchQuery);
+
     const shouldShow = isMatch && (!showingFavorites || isFavorite);
     updatePanelVisibility(panel, shouldShow, searchQuery);
   });
   updateNoFavoritesMessageState();
   saveState();
 }
+
 function loadSavedState() {
   const savedShowingFavorites = localStorage.getItem('showingFavorites');
   const savedSearchActive = localStorage.getItem('searchActive');
