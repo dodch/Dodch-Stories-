@@ -41,8 +41,6 @@
             --back-button-bg-dark: rgba(252, 165, 165, 0.25);
             --back-button-text-light: #ffffff;
             --back-button-text-dark: #ffffff;
-            /* New variable for the dark mode button */
-            --dark-mode-button-bg-light: rgba(59, 130, 246, 0.6);
             /* New variable for the content tint */
             --content-bg-light: rgba(0, 0, 0, 0.2);
             /* New variable for the selected language button text */
@@ -68,8 +66,6 @@
             --pop-up-bg-dark: rgba(31, 41, 55, 0.9);
             --pop-up-text-dark: #f0f0f0;
             --text-on-glass-dark: #C084FC;
-            /* New variable for the dark mode button */
-            --dark-mode-button-bg-dark: rgba(147, 197, 253, 0.25);
             /* New variable for the content tint */
             --content-bg-dark: rgba(0, 0, 0, 0.2);
             /* New variable for the selected language button text */
@@ -105,15 +101,6 @@
             background-color: var(--back-button-bg-dark);
             color: var(--back-button-text-dark);
         }
-        /* New button class for dark mode button */
-        .dark-mode-button-custom {
-            background-color: var(--dark-mode-button-bg-light);
-            color: var(--main-text-color-light);
-        }
-        body.dark-mode .dark-mode-button-custom {
-            background-color: var(--dark-mode-button-bg-dark);
-            color: var(--main-text-color-dark);
-        }
         .glass-popup {
              border-radius: 2rem;
              padding: 1.5rem;
@@ -144,6 +131,27 @@
                 inset 2px -6.5px 1px -4px color-mix(in srgb, #000 calc(10%), transparent),
                 0px 4px 20px 0px color-mix(in srgb, #000 calc(40%), transparent),
                 0px 20px 60px 0px color-mix(in srgb, #000 calc(35%), transparent);
+        }
+        /* Custom styles for pop-up buttons to override glass background */
+        #popup button.glass-button-base.bg-green-500 {
+            background-color: rgba(34, 197, 94, 0.8) !important;
+            backdrop-filter: blur(4px) !important;
+            -webkit-backdrop-filter: blur(4px) !important;
+        }
+
+        #popup button.glass-button-base.bg-red-500 {
+            background-color: rgba(239, 68, 68, 0.8) !important;
+            backdrop-filter: blur(4px) !important;
+            -webkit-backdrop-filter: blur(4px) !important;
+        }
+
+        /* Dark mode specific styles for the pop-up buttons */
+        body.dark-mode #popup button.bg-green-500 {
+            background-color: rgba(74, 222, 128, 0.4) !important;
+        }
+
+        body.dark-mode #popup button.bg-red-500 {
+            background-color: rgba(252, 165, 165, 0.4) !important;
         }
         /* --- END OF GLASS EFFECT STYLES --- */
         /* --- Basic Styling --- */
@@ -410,19 +418,28 @@
         #text p {
             margin-bottom: 1rem;
         }
-        @keyframes spin-once {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
+        /* Jello Button Effect */
+        .jello-button {
+            transition: all 0.9s ease-in-out;
         }
-        .animate-spin-once {
-          animation: spin-once 0.5s ease-in-out;
+        .jello-button.animate {
+            animation: jello-horizontal 0.9s both;
+        }
+        @keyframes jello-horizontal {
+            0% { transform: scale3d(1, 1, 1); }
+            30% { transform: scale3d(1.25, 0.75, 1); }
+            40% { transform: scale3d(0.75, 1.25, 1); }
+            50% { transform: scale3d(1.15, 0.85, 1); }
+            65% { transform: scale3d(0.95, 1.05, 1); }
+            75% { transform: scale3d(1.05, 0.95, 1); }
+            100% { transform: scale3d(1, 1, 1); }
         }
     </style>
 </head>
 <body class="loading">
     <div id="loading-screen">
         <div class="loading-indicator">
-            <span>🫂</span> <span>🫂</span> <span>🫂</span> <span>🫂</span> <span>🫂</span>
+            <span>❤️</span> <span>❤️</span> <span>❤️</span> <span>❤️</span> <span>❤️</span>
         </div>
         <div class="loading-percentage">0%</div>
     </div>
@@ -430,8 +447,7 @@
     <div class="fixed-background dark-background"></div>
     <div id="page-content-wrapper">
         <div id="raw-ar-text" style="display: none;">
-            
-لم يُظهر الناس يومًا كيف يبدو الحب حقًا… لا في الأفلام، ولا في المسلسلات، ولا حتى في القصص.
+            ‎  يُظهر الناس يومًا كيف يبدو الحب حقًا… لا في الأفلام، ولا في المسلسلات، ولا حتى في القصص.
 
 كلها مجرد أوهام بسيطة خُلقت لتجعلنا نتأثر، نضحك أو نبكي…
 وكلها كُتبت أو صُنعت لتُقرأ أو تُشاهد مع من تحب، لا وحدك — لأنها ستؤلمك حين تنتهي.
@@ -513,7 +529,6 @@
 
         </div>
         <div id="raw-fr-text" style="display: none;">
-
 Les gens n’ont jamais vraiment montré ce que l’amour ressent vraiment, ni au cinéma, ni dans les séries, ni même dans les histoires.
 
 Ce ne sont que des fantasmes triviaux pour nous émouvoir, nous faire rire ou pleurer…
@@ -601,8 +616,7 @@ Parce que vos âmes resteront toujours liées…
         </div>
         <div id="raw-en-text" style="display: none;">
             
-            
-People never really showed how love really feels like, not in movies not in shows not even in stories.
+            People never really showed how love really feels like, not in movies not in shows not even in stories.
 
 These are all trivial fantasies to make us emotional, laugh or cry….
 
@@ -686,36 +700,35 @@ You will understand that we are not perfect but you’ll learn to fall in love w
 Don’t you ever separate with a close one permanently, it will haunt you forever
 
 Because your souls will always be connected…
-
         </div>
         <div class="fixed top-0 left-0 right-0 flex flex-col items-start p-4 space-y-2 z-50">
              <div class="flex justify-center space-x-4 mb-2">
                  <button
                     id="ar-button"
-                    onclick="changeLanguage('ar')"
-                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base"
+                    onclick="handleButtonClick(this, 'changeLanguage', 'ar')"
+                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base jello-button"
                 >
                     العربية
                 </button>
                 <button
                     id="fr-button"
-                    onclick="changeLanguage('fr')"
-                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base"
+                    onclick="handleButtonClick(this, 'changeLanguage', 'fr')"
+                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base jello-button"
                 >
                     Français
                 </button>
                 <button
                     id="en-button"
-                    onclick="changeLanguage('en')"
-                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base"
+                    onclick="handleButtonClick(this, 'changeLanguage', 'en')"
+                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base jello-button"
                 >
                     English
                 </button>
              </div>
              <button
                  id="back-home-button"
-                 onclick="window.location.href='https://dodch.github.io/Dodch-Stories-/index.html'"
-                 class="w-10 h-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base back-home-button-custom inline-flex items-center justify-center" >
+                 onclick="handleButtonClick(this, 'redirectHome')"
+                 class="w-10 h-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base back-home-button-custom inline-flex items-center justify-center jello-button" >
                 ⌂
             </button>
         </div>
@@ -725,8 +738,8 @@ Because your souls will always be connected…
         </div>
         <button
             id="save-progress-button"
-            onclick="scrollToSavedWord()"
-            class="fixed bottom-4 left-4 px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base save-button-custom"
+            onclick="handleButtonClick(this, 'scrollToSavedWord')"
+            class="fixed bottom-4 left-4 px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base save-button-custom jello-button"
             style="z-index: 60;"
         >
             Saved Progress
@@ -737,28 +750,19 @@ Because your souls will always be connected…
                 <p id="popup-text" class="mb-4 text-sm"></p>
                 <div class="flex justify-end space-x-2">
                     <button
-                        onclick="savePosition()"
-                        class="bg-green-500 text-white px-4 py-2 rounded-full focus:outline-none"
+                        onclick="handleButtonClick(this, 'savePosition')"
+                        class="glass-button-base jello-button bg-green-500 text-white px-4 py-2 rounded-full focus:outline-none"
                     >
                         Save
                     </button>
                     <button
-                        onclick="closePopup()"
-                        class="bg-red-500 text-white px-4 py-2 rounded-full focus:outline-none"
+                        onclick="handleButtonClick(this, 'closePopup')"
+                        class="glass-button-base jello-button bg-red-500 text-white px-4 py-2 rounded-full focus:outline-none"
                     >
                         Exit
                     </button>
                 </div>
             </div>
-        </div>
-        <div class="fixed bottom-4 right-4 z-50">
-            <button
-                id="dark-mode-toggle-button"
-                onclick="toggleDarkMode()"
-                class="w-10 h-10 flex items-center justify-center rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base dark-mode-button-custom"
-            >
-                <span id="dark-mode-icon">☀️</span>
-            </button>
         </div>
     </div>
     <script>
@@ -773,7 +777,7 @@ Because your souls will always be connected…
         let isDarkMode = false;
         const contentMap = {
             ar: {
-                title: 'مع الانسان الصحيح',
+                title: 'مع الشخص الصح ',
                 rawTextId: 'raw-ar-text',
                 saveProgress: 'التقدم المحفوظ',
                 savePosition: 'التقدم المحفوظ',
@@ -787,7 +791,7 @@ Because your souls will always be connected…
                 backHome: 'العودة للصفحة الرئيسية'
             },
             fr: {
-                title: 'avec la vraie personne ',
+                title: 'Avec la vrai personne ',
                 rawTextId: 'raw-fr-text',
                 saveProgress: 'Progression enregistrée',
                 savePosition: 'Progression enregistrée',
@@ -801,7 +805,7 @@ Because your souls will always be connected…
                 backHome: 'Retour à l\'accueil'
             },
             en: {
-                title: 'with the right person',
+                title: 'With the right person',
                 rawTextId: 'raw-en-text',
                 saveProgress: 'Saved Progress',
                 savePosition: 'Save Position',
@@ -824,9 +828,8 @@ Because your souls will always be connected…
         const backHomeTextSpan = document.getElementById('back-home-text');
         const languageButtons = document.querySelectorAll('#ar-button, #fr-button, #en-button');
         const saveButton = document.getElementById('save-progress-button');
-        const darkModeToggleBtn = document.getElementById('dark-mode-toggle-button');
-        const darkModeIcon = document.getElementById('dark-mode-icon');
         const popupDivInner = document.getElementById('popup').querySelector('div');
+        
         function applyTextEffects() {
             const textSpans = textElement.querySelectorAll('span[id^="word-p"]');
             const isDarkModeActive = document.body.classList.contains('dark-mode');
@@ -1051,43 +1054,53 @@ Because your souls will always be connected…
                console.warn(`Element for saved word ID "${savedWordId}" not found for highlighting in language "${currentLanguage}".`);
            }
        }
-        function toggleDarkMode() {
-            isDarkMode = !isDarkMode;
-            localStorage.setItem('darkModeEnabled', isDarkMode);
-            darkModeToggleBtn.classList.add('animate-spin-once');
-            darkModeToggleBtn.addEventListener('animationend', () => {
-                darkModeToggleBtn.classList.remove('animate-spin-once');
-            }, { once: true });
+        function handleDarkModeChange(mediaQuery) {
+            isDarkMode = mediaQuery.matches;
             if (isDarkMode) {
                 body.classList.add('dark-mode');
                 lightBackgroundDiv.style.opacity = 0;
                 darkBackgroundDiv.style.opacity = 1;
-                darkModeIcon.textContent = '🌙';
             } else {
                 body.classList.remove('dark-mode');
                 lightBackgroundDiv.style.opacity = 1;
                 darkBackgroundDiv.style.opacity = 0;
-                darkModeIcon.textContent = '☀️';
             }
-            // --- FIX: Call changeLanguage with fromLoad=false to prevent scrolling ---
-            // Re-apply correct colors to buttons and text based on the new mode,
-            // but do not trigger the scroll logic by setting fromLoad to false.
-            changeLanguage(currentLanguage, false); // Changed from true to false
-            // --- END FIX ---
+            changeLanguage(currentLanguage, false);
             applyTextEffects();
-            highlightWord(); // Re-highlight the word in the new mode
+            highlightWord();
         }
-        const animatedButtons = document.querySelectorAll('button:not(#popup button):not(#dark-mode-toggle-button)');
-        animatedButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                 if (this.id !== 'back-home-button') {
-                    this.classList.add('tapped');
-                    setTimeout(() => {
-                        this.classList.remove('tapped');
-                    }, 100);
-                 }
-            });
-        });
+        
+        // --- NEW JAVASCRIPT FOR JELLO ANIMATION FIX ---
+        function animateJello(element) {
+            element.classList.remove('animate');
+            void element.offsetWidth; // This is a trick to force a reflow
+            element.classList.add('animate');
+        }
+        
+        // Unified function to handle button clicks and animations
+        function handleButtonClick(element, action, ...args) {
+            animateJello(element);
+            
+            switch (action) {
+                case 'changeLanguage':
+                    changeLanguage(...args);
+                    break;
+                case 'scrollToSavedWord':
+                    scrollToSavedWord();
+                    break;
+                case 'savePosition':
+                    savePosition();
+                    break;
+                case 'closePopup':
+                    closePopup();
+                    break;
+                case 'redirectHome':
+                    window.location.href = 'https://dodch.github.io/Dodch-Stories-/index.html';
+                    break;
+            }
+        }
+        // --- END OF NEW JAVASCRIPT ---
+        
         let load = 0;
         let interval = setInterval(updateLoadingText, 30);
         function updateLoadingText() {
@@ -1120,22 +1133,21 @@ Because your souls will always be connected…
                  allSavedProgress = {};
                  localStorage.removeItem('allSavedProgress');
              }
-             const savedDarkMode = localStorage.getItem('darkModeEnabled');
-             if (savedDarkMode !== null) {
-                 isDarkMode = JSON.parse(savedDarkMode);
-             } else {
-                 isDarkMode = false;
-             }
-             // Ensure the initial toggle sets the correct mode
-             isDarkMode = !isDarkMode;
-             toggleDarkMode();
+
+             // Initialize dark mode based on system preference
+             const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+             handleDarkModeChange(darkModeMediaQuery);
+
+             // Listen for changes in system dark mode preference
+             darkModeMediaQuery.addListener(handleDarkModeChange);
+
              const preferredLanguage = localStorage.getItem('preferredLanguage');
              let initialLangToLoad = 'en';
              if (preferredLanguage && contentMap[preferredLanguage]) {
                 initialLangToLoad = preferredLanguage;
              }
              // Load the initial language content and scroll to saved word if applicable
-             changeLanguage(initialLangToLoad, true); // Initial load should allow scrolling
+             changeLanguage(initialLangToLoad, true);
         });
     </script>
 </body>
