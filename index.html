@@ -135,7 +135,8 @@
   h1{margin:0 0 20px;}
   .grid {
     display:grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-auto-rows: minmax(min-content, auto);
     gap:20px;
     margin-top: 100px;
     transition: all 0.5s ease-in-out;
@@ -144,20 +145,15 @@
     background:var(--glass-bg);
     border-radius:3rem;
     padding:20px;
-    min-height:120px;
     box-shadow:var(--glass-shadow);
     will-change: transform;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
     transition: box-shadow 0.2s, background 0.5s ease-in-out;
     cursor:pointer;
     text-decoration: none;
     color: var(--glass-text);
     backdrop-filter:blur(4px) url(#filter);
     -webkit-backdrop-filter:blur(4px);
-    position: relative;
+    position: relative; /* All children are now positioned relative to this */
   }
   .glass-container:hover {
     box-shadow:0 20px 50px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.1), var(--glass-shadow);
@@ -166,14 +162,16 @@
     background-color:color-mix(in srgb,var(--heart-active) 25%,transparent)
   }
   .glass-content {
-    text-align: center;
-    padding: 0 2rem;
+    text-align: left;
+    padding: 3rem 2rem 3rem 2rem; /* Added generous top and bottom padding */
+    position: relative;
   }
   .title {
-    font-size: 1.5rem;
-    font-weight: bold;
+    font-size: 1.75rem;
+    font-weight: 900;
     margin-bottom: .5rem;
     font-family: 'Montserrat', sans-serif;
+    text-shadow: 0 0 5px rgba(0,0,0,0.5); /* Added subtle shadow */
   }
   .description {
     font-size: 1rem;
@@ -439,26 +437,27 @@
   }
   
   /* --- Added CSS for story details and status pills --- */
-  .story-length, .creation-date {
-    bottom: 30px;
+  .story-length {
+    position: absolute;
+    bottom: 40px;
+    left: 20px;
     font-size: 0.8rem;
     opacity: 0.6;
     text-transform: capitalize;
   }
-
-  .story-length {
-    position: absolute;
-    left: 20px;
-  }
   
   .creation-date {
     position: absolute;
+    bottom: 40px;
     right: 20px;
+    font-size: 0.8rem;
+    opacity: 0.6;
+    text-transform: capitalize;
   }
   
   .story-creator {
     position: absolute;
-    bottom: 5px;
+    bottom: 20px;
     font-family: 'Quattrocento Sans', sans-serif;
     font-size: 0.8rem;
     opacity: 0.8;
@@ -467,7 +466,6 @@
     text-align: center;
     width: 100%;
     left: 0;
-    padding-bottom: 10px;
   }
 
   .glass-container.no-link {
@@ -479,8 +477,8 @@
   /* --- New 'status' pill CSS with glow animations --- */
   .new-pill {
       position: absolute;
-      top: 20px;
-      left: 20px;
+      top: 1rem;
+      left: 1rem;
       color: white;
       font-size: 0.75rem;
       font-weight: bold;
@@ -1065,14 +1063,15 @@ async function fetchAndBuildGrid() {
     let lastTime = performance.now();
     let pointer = { x: -9999, y: -9999 };
 
-    window.addEventListener('mousemove', e => {
-      pointer.x = e.clientX;
-      pointer.y = e.clientY;
-    });
-    window.addEventListener('touchmove', e => {
-      pointer.x = e.touches[0].clientX;
-      pointer.y = e.touches[0].clientY;
-    });
+    // This section is now commented out to remove the hover effect
+    // window.addEventListener('mousemove', e => {
+    //   pointer.x = e.clientX;
+    //   pointer.y = e.clientY;
+    // });
+    // window.addEventListener('touchmove', e => {
+    //   pointer.x = e.touches[0].clientX;
+    //   pointer.y = e.touches[0].clientY;
+    // });
 
     function frame(now) {
       const dt = (now - lastTime) / 1000;
@@ -1096,11 +1095,12 @@ async function fetchAndBuildGrid() {
         const targetScaleYScroll = 1 - scrollImpulse;
         const targetScaleXScroll = 1 + scrollImpulse * 0.7;
 
+        // The influence calculation is now set to 0 to remove the hover effect
         const dx = pointer.x - (rect.left + rect.width / 2);
         const dy = pointer.y - (rect.top + rect.height / 2);
         const pointerDist = Math.sqrt(dx * dx + dy * dy);
         const maxDist = 200;
-        const influence = Math.max(0, (maxDist - pointerDist) / maxDist);
+        const influence = 0;
 
         const targetScaleXPointer = 1 + 0.4 * influence;
         const targetScaleYPointer = 1 - 0.4 * influence;
