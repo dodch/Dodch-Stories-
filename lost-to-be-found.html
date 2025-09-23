@@ -418,12 +418,13 @@
         #text p {
             margin-bottom: 1rem;
         }
-
         /* Jello Button Effect */
-        .jello-button:hover {
+        .jello-button {
+            transition: all 0.9s ease-in-out;
+        }
+        .jello-button.animate {
             animation: jello-horizontal 0.9s both;
         }
-
         @keyframes jello-horizontal {
             0% { transform: scale3d(1, 1, 1); }
             30% { transform: scale3d(1.25, 0.75, 1); }
@@ -851,21 +852,21 @@ où je libérerai encore d’autres douleurs de leur cage.
              <div class="flex justify-center space-x-4 mb-2">
                  <button
                     id="ar-button"
-                    onclick="changeLanguage('ar')"
+                    onclick="handleButtonClick(this, 'changeLanguage', 'ar')"
                     class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base jello-button"
                 >
                     العربية
                 </button>
                 <button
                     id="fr-button"
-                    onclick="changeLanguage('fr')"
+                    onclick="handleButtonClick(this, 'changeLanguage', 'fr')"
                     class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base jello-button"
                 >
                     Français
                 </button>
                 <button
                     id="en-button"
-                    onclick="changeLanguage('en')"
+                    onclick="handleButtonClick(this, 'changeLanguage', 'en')"
                     class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base jello-button"
                 >
                     English
@@ -873,7 +874,7 @@ où je libérerai encore d’autres douleurs de leur cage.
              </div>
              <button
                  id="back-home-button"
-                 onclick="window.location.href='https://dodch.github.io/Dodch-Stories-/index.html'"
+                 onclick="handleButtonClick(this, 'redirectHome')"
                  class="w-10 h-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base back-home-button-custom inline-flex items-center justify-center jello-button" >
                 ⌂
             </button>
@@ -884,7 +885,7 @@ où je libérerai encore d’autres douleurs de leur cage.
         </div>
         <button
             id="save-progress-button"
-            onclick="scrollToSavedWord()"
+            onclick="handleButtonClick(this, 'scrollToSavedWord')"
             class="fixed bottom-4 left-4 px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base save-button-custom jello-button"
             style="z-index: 60;"
         >
@@ -896,13 +897,13 @@ où je libérerai encore d’autres douleurs de leur cage.
                 <p id="popup-text" class="mb-4 text-sm"></p>
                 <div class="flex justify-end space-x-2">
                     <button
-                        onclick="savePosition()"
+                        onclick="handleButtonClick(this, 'savePosition')"
                         class="glass-button-base jello-button bg-green-500 text-white px-4 py-2 rounded-full focus:outline-none"
                     >
                         Save
                     </button>
                     <button
-                        onclick="closePopup()"
+                        onclick="handleButtonClick(this, 'closePopup')"
                         class="glass-button-base jello-button bg-red-500 text-white px-4 py-2 rounded-full focus:outline-none"
                     >
                         Exit
@@ -1215,17 +1216,38 @@ où je libérerai encore d’autres douleurs de leur cage.
             applyTextEffects();
             highlightWord();
         }
-        const animatedButtons = document.querySelectorAll('button:not(#popup button)');
-        animatedButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                 if (this.id !== 'back-home-button') {
-                    this.classList.add('tapped');
-                    setTimeout(() => {
-                        this.classList.remove('tapped');
-                    }, 100);
-                 }
-            });
-        });
+        
+        // --- NEW JAVASCRIPT FOR JELLO ANIMATION FIX ---
+        function animateJello(element) {
+            element.classList.remove('animate');
+            void element.offsetWidth; // This is a trick to force a reflow
+            element.classList.add('animate');
+        }
+        
+        // Unified function to handle button clicks and animations
+        function handleButtonClick(element, action, ...args) {
+            animateJello(element);
+            
+            switch (action) {
+                case 'changeLanguage':
+                    changeLanguage(...args);
+                    break;
+                case 'scrollToSavedWord':
+                    scrollToSavedWord();
+                    break;
+                case 'savePosition':
+                    savePosition();
+                    break;
+                case 'closePopup':
+                    closePopup();
+                    break;
+                case 'redirectHome':
+                    window.location.href = 'https://dodch.github.io/Dodch-Stories-/index.html';
+                    break;
+            }
+        }
+        // --- END OF NEW JAVASCRIPT ---
+        
         let load = 0;
         let interval = setInterval(updateLoadingText, 30);
         function updateLoadingText() {
