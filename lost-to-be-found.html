@@ -41,8 +41,6 @@
             --back-button-bg-dark: rgba(252, 165, 165, 0.25);
             --back-button-text-light: #ffffff;
             --back-button-text-dark: #ffffff;
-            /* New variable for the dark mode button */
-            --dark-mode-button-bg-light: rgba(59, 130, 246, 0.6);
             /* New variable for the content tint */
             --content-bg-light: rgba(0, 0, 0, 0.2);
             /* New variable for the selected language button text */
@@ -68,8 +66,6 @@
             --pop-up-bg-dark: rgba(31, 41, 55, 0.9);
             --pop-up-text-dark: #f0f0f0;
             --text-on-glass-dark: #C084FC;
-            /* New variable for the dark mode button */
-            --dark-mode-button-bg-dark: rgba(147, 197, 253, 0.25);
             /* New variable for the content tint */
             --content-bg-dark: rgba(0, 0, 0, 0.2);
             /* New variable for the selected language button text */
@@ -105,15 +101,6 @@
             background-color: var(--back-button-bg-dark);
             color: var(--back-button-text-dark);
         }
-        /* New button class for dark mode button */
-        .dark-mode-button-custom {
-            background-color: var(--dark-mode-button-bg-light);
-            color: var(--main-text-color-light);
-        }
-        body.dark-mode .dark-mode-button-custom {
-            background-color: var(--dark-mode-button-bg-dark);
-            color: var(--main-text-color-dark);
-        }
         .glass-popup {
              border-radius: 2rem;
              padding: 1.5rem;
@@ -144,6 +131,27 @@
                 inset 2px -6.5px 1px -4px color-mix(in srgb, #000 calc(10%), transparent),
                 0px 4px 20px 0px color-mix(in srgb, #000 calc(40%), transparent),
                 0px 20px 60px 0px color-mix(in srgb, #000 calc(35%), transparent);
+        }
+        /* Custom styles for pop-up buttons to override glass background */
+        #popup button.glass-button-base.bg-green-500 {
+            background-color: rgba(34, 197, 94, 0.8) !important;
+            backdrop-filter: blur(4px) !important;
+            -webkit-backdrop-filter: blur(4px) !important;
+        }
+
+        #popup button.glass-button-base.bg-red-500 {
+            background-color: rgba(239, 68, 68, 0.8) !important;
+            backdrop-filter: blur(4px) !important;
+            -webkit-backdrop-filter: blur(4px) !important;
+        }
+
+        /* Dark mode specific styles for the pop-up buttons */
+        body.dark-mode #popup button.bg-green-500 {
+            background-color: rgba(74, 222, 128, 0.4) !important;
+        }
+
+        body.dark-mode #popup button.bg-red-500 {
+            background-color: rgba(252, 165, 165, 0.4) !important;
         }
         /* --- END OF GLASS EFFECT STYLES --- */
         /* --- Basic Styling --- */
@@ -410,12 +418,20 @@
         #text p {
             margin-bottom: 1rem;
         }
-        @keyframes spin-once {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
+
+        /* Jello Button Effect */
+        .jello-button:hover {
+            animation: jello-horizontal 0.9s both;
         }
-        .animate-spin-once {
-          animation: spin-once 0.5s ease-in-out;
+
+        @keyframes jello-horizontal {
+            0% { transform: scale3d(1, 1, 1); }
+            30% { transform: scale3d(1.25, 0.75, 1); }
+            40% { transform: scale3d(0.75, 1.25, 1); }
+            50% { transform: scale3d(1.15, 0.85, 1); }
+            65% { transform: scale3d(0.95, 1.05, 1); }
+            75% { transform: scale3d(1.05, 0.95, 1); }
+            100% { transform: scale3d(1, 1, 1); }
         }
     </style>
 </head>
@@ -430,6 +446,7 @@
     <div class="fixed-background dark-background"></div>
     <div id="page-content-wrapper">
         <div id="raw-ar-text" style="display: none;">
+            ‎ 
             ‎ أتمنى لو كنت شخصًا مميزًا. أتمنى لو كنت أكثر من مجرد ما أنا عليه.
             ‎ واقفا أمام مرآة الحمّام المغلق، أحدّق في انعكاسي كأنّي أبحث عني بداخله، هامسا لنفسي بتلك الكلمات.
             ‎ أحيانًا أحاول أن أنظر إلى وجهي بعين لا تشبه عينيّ، بعين ربما تستطيع أن ترى ما فيّ مثل ما أرى في الآخرين…
@@ -581,6 +598,7 @@
             ‎ التي سأحرّر فيها آلاما أخرى .
         </div>
         <div id="raw-fr-text" style="display: none;">
+
 Je voudrais être spécial. Je voudrais être plus que ce que je suis.
 Fixant le miroir de la salle de bain dont la porte était verrouillée, je me suis murmuré cela à moi-même.
 Il y a des moments où j’essaie de regarder mon visage avec des yeux qui ne sont pas les miens, en espérant que peut-être alors, juste peut-être, je comprendrai comment les autres me voient.
@@ -715,6 +733,7 @@ En attendant la prochaine fois
 où je libérerai encore d’autres douleurs de leur cage.
         </div>
         <div id="raw-en-text" style="display: none;">
+            
             I wish I were special. I wish I were more than what I am.
             Staring into the locked bathroom mirror, I whispered that to myself.
             There are moments when I try to look at my face with eyes that aren’t mine, hoping maybe then, just maybe, I’ll understand how others see me.
@@ -833,21 +852,21 @@ où je libérerai encore d’autres douleurs de leur cage.
                  <button
                     id="ar-button"
                     onclick="changeLanguage('ar')"
-                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base"
+                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base jello-button"
                 >
                     العربية
                 </button>
                 <button
                     id="fr-button"
                     onclick="changeLanguage('fr')"
-                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base"
+                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base jello-button"
                 >
                     Français
                 </button>
                 <button
                     id="en-button"
                     onclick="changeLanguage('en')"
-                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base"
+                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base jello-button"
                 >
                     English
                 </button>
@@ -855,7 +874,7 @@ où je libérerai encore d’autres douleurs de leur cage.
              <button
                  id="back-home-button"
                  onclick="window.location.href='https://dodch.github.io/Dodch-Stories-/index.html'"
-                 class="w-10 h-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base back-home-button-custom inline-flex items-center justify-center" >
+                 class="w-10 h-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base back-home-button-custom inline-flex items-center justify-center jello-button" >
                 ⌂
             </button>
         </div>
@@ -866,7 +885,7 @@ où je libérerai encore d’autres douleurs de leur cage.
         <button
             id="save-progress-button"
             onclick="scrollToSavedWord()"
-            class="fixed bottom-4 left-4 px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base save-button-custom"
+            class="fixed bottom-4 left-4 px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base save-button-custom jello-button"
             style="z-index: 60;"
         >
             Saved Progress
@@ -878,27 +897,18 @@ où je libérerai encore d’autres douleurs de leur cage.
                 <div class="flex justify-end space-x-2">
                     <button
                         onclick="savePosition()"
-                        class="bg-green-500 text-white px-4 py-2 rounded-full focus:outline-none"
+                        class="glass-button-base jello-button bg-green-500 text-white px-4 py-2 rounded-full focus:outline-none"
                     >
                         Save
                     </button>
                     <button
                         onclick="closePopup()"
-                        class="bg-red-500 text-white px-4 py-2 rounded-full focus:outline-none"
+                        class="glass-button-base jello-button bg-red-500 text-white px-4 py-2 rounded-full focus:outline-none"
                     >
                         Exit
                     </button>
                 </div>
             </div>
-        </div>
-        <div class="fixed bottom-4 right-4 z-50">
-            <button
-                id="dark-mode-toggle-button"
-                onclick="toggleDarkMode()"
-                class="w-10 h-10 flex items-center justify-center rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base dark-mode-button-custom"
-            >
-                <span id="dark-mode-icon">☀️</span>
-            </button>
         </div>
     </div>
     <script>
@@ -913,7 +923,7 @@ où je libérerai encore d’autres douleurs de leur cage.
         let isDarkMode = false;
         const contentMap = {
             ar: {
-                title: 'ضائع لأوجد',
+                title: 'ظائع لِأُوجد',
                 rawTextId: 'raw-ar-text',
                 saveProgress: 'التقدم المحفوظ',
                 savePosition: 'التقدم المحفوظ',
@@ -927,7 +937,7 @@ où je libérerai encore d’autres douleurs de leur cage.
                 backHome: 'العودة للصفحة الرئيسية'
             },
             fr: {
-                title: 'Perdu à trouver',
+                title: 'Perdu à trouver ',
                 rawTextId: 'raw-fr-text',
                 saveProgress: 'Progression enregistrée',
                 savePosition: 'Progression enregistrée',
@@ -964,9 +974,8 @@ où je libérerai encore d’autres douleurs de leur cage.
         const backHomeTextSpan = document.getElementById('back-home-text');
         const languageButtons = document.querySelectorAll('#ar-button, #fr-button, #en-button');
         const saveButton = document.getElementById('save-progress-button');
-        const darkModeToggleBtn = document.getElementById('dark-mode-toggle-button');
-        const darkModeIcon = document.getElementById('dark-mode-icon');
         const popupDivInner = document.getElementById('popup').querySelector('div');
+        
         function applyTextEffects() {
             const textSpans = textElement.querySelectorAll('span[id^="word-p"]');
             const isDarkModeActive = document.body.classList.contains('dark-mode');
@@ -1191,33 +1200,22 @@ où je libérerai encore d’autres douleurs de leur cage.
                console.warn(`Element for saved word ID "${savedWordId}" not found for highlighting in language "${currentLanguage}".`);
            }
        }
-        function toggleDarkMode() {
-            isDarkMode = !isDarkMode;
-            localStorage.setItem('darkModeEnabled', isDarkMode);
-            darkModeToggleBtn.classList.add('animate-spin-once');
-            darkModeToggleBtn.addEventListener('animationend', () => {
-                darkModeToggleBtn.classList.remove('animate-spin-once');
-            }, { once: true });
+        function handleDarkModeChange(mediaQuery) {
+            isDarkMode = mediaQuery.matches;
             if (isDarkMode) {
                 body.classList.add('dark-mode');
                 lightBackgroundDiv.style.opacity = 0;
                 darkBackgroundDiv.style.opacity = 1;
-                darkModeIcon.textContent = '🌙';
             } else {
                 body.classList.remove('dark-mode');
                 lightBackgroundDiv.style.opacity = 1;
                 darkBackgroundDiv.style.opacity = 0;
-                darkModeIcon.textContent = '☀️';
             }
-            // --- FIX: Call changeLanguage with fromLoad=false to prevent scrolling ---
-            // Re-apply correct colors to buttons and text based on the new mode,
-            // but do not trigger the scroll logic by setting fromLoad to false.
-            changeLanguage(currentLanguage, false); // Changed from true to false
-            // --- END FIX ---
+            changeLanguage(currentLanguage, false);
             applyTextEffects();
-            highlightWord(); // Re-highlight the word in the new mode
+            highlightWord();
         }
-        const animatedButtons = document.querySelectorAll('button:not(#popup button):not(#dark-mode-toggle-button)');
+        const animatedButtons = document.querySelectorAll('button:not(#popup button)');
         animatedButtons.forEach(button => {
             button.addEventListener('click', function() {
                  if (this.id !== 'back-home-button') {
@@ -1260,22 +1258,21 @@ où je libérerai encore d’autres douleurs de leur cage.
                  allSavedProgress = {};
                  localStorage.removeItem('allSavedProgress');
              }
-             const savedDarkMode = localStorage.getItem('darkModeEnabled');
-             if (savedDarkMode !== null) {
-                 isDarkMode = JSON.parse(savedDarkMode);
-             } else {
-                 isDarkMode = false;
-             }
-             // Ensure the initial toggle sets the correct mode
-             isDarkMode = !isDarkMode;
-             toggleDarkMode();
+
+             // Initialize dark mode based on system preference
+             const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+             handleDarkModeChange(darkModeMediaQuery);
+
+             // Listen for changes in system dark mode preference
+             darkModeMediaQuery.addListener(handleDarkModeChange);
+
              const preferredLanguage = localStorage.getItem('preferredLanguage');
              let initialLangToLoad = 'en';
              if (preferredLanguage && contentMap[preferredLanguage]) {
                 initialLangToLoad = preferredLanguage;
              }
              // Load the initial language content and scroll to saved word if applicable
-             changeLanguage(initialLangToLoad, true); // Initial load should allow scrolling
+             changeLanguage(initialLangToLoad, true);
         });
     </script>
 </body>
