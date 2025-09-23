@@ -317,6 +317,9 @@
   #filterBtn.floating-button {
       background-color: color-mix(in srgb,var(--red-tint) 20%,transparent);
   }
+  #contactBtn.floating-button {
+      background-color: color-mix(in srgb,var(--blue-tint) 20%,transparent);
+  }
   .floating-button svg{
     width:30px;
     height:30px;
@@ -324,9 +327,6 @@
     transition:fill 0.5s ease-in-out;
     stroke:black;
     stroke-width:1.5px;
-  }
-  #darkModeBtn.active svg{
-    fill:var(--moon-color);
   }
   #no-favorites-message{
     color:var(--glass-text);
@@ -617,6 +617,48 @@
     color: var(--glass-text);
     z-index: 100;
   }
+
+  /* --- Styles for the new Contact Panel --- */
+  .contact-panel-content, .social-links-content {
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+  }
+
+  .panel-button {
+      padding: 1rem 2rem;
+      border-radius: 2rem;
+      font-size: 1.25rem;
+      font-weight: bold;
+      text-decoration: none;
+      color: var(--glass-text);
+      box-shadow: var(--button-shadow);
+      transition: all 0.3s ease-in-out;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: color-mix(in srgb, var(--blue-tint) 20%, transparent);
+      cursor: pointer;
+  }
+  .panel-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3), var(--button-shadow);
+  }
+
+  .panel-button.social {
+      background-color: color-mix(in srgb, var(--purple-tint) 20%, transparent);
+  }
+
+  .social-link-button {
+      padding: 1rem;
+      background-color: color-mix(in srgb, var(--golden-tint) 20%, transparent);
+  }
+  .social-link-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3), var(--button-shadow);
+  }
   
   /* Close button styling */
   .close-button {
@@ -677,7 +719,7 @@
     </svg>
   </div>
   <div class="info-panel" id="infoPanel">
-    <div class="close-button" id="closeButton">
+    <div class="close-button" id="closeInfoButton">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="18" y1="6" x2="6" y2="18"></line>
         <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -689,46 +731,30 @@
 Every word is a mirror of what we can’t say out loud,
 symbols of who we are, and who we might become. ✨</p>
 
-<p>🌌 Our Storytelling Philosophy
-
-We believe that everyone carries something special inside — a thought, a feeling, an idea, a perspective that only they can express. Here, we invite writers to bring those hidden parts of themselves to life.
-
-A story on our site should not just tell events. 
-<p>It should:</p>
-<p>
-	•	Reveal what we can’t say with normal words.
-	</p>
-	<p>
-	•	Carry deep meanings, symbols, and hidden layers for readers to uncover.
-	</p>
-	<p>
-	•	Reflect the truth of our lives — sometimes directly, sometimes through metaphor or fantasy.
-	</p>
-	•	Show us what it feels like to be human in a way that is unforgettable.
-</p>
+<p>🌌 Our Storytelling Philosophy</p>
+<p>We believe that everyone carries something special inside — a thought, a feeling, an idea, a perspective that only they can express. Here, we invite writers to bring those hidden parts of themselves to life.</p>
+<p>A story on our site should not just tell events. It should:</p>
+<ul>
+    <li>Reveal what we can’t say with normal words.</li>
+    <li>Carry deep meanings, symbols, and hidden layers for readers to uncover.</li>
+    <li>Reflect the truth of our lives — sometimes directly, sometimes through metaphor or fantasy.</li>
+    <li>Show us what it feels like to be human in a way that is unforgettable.</li>
+</ul>
 <p>⸻</p>
 <p>✨ What Makes a Story Right for Us</p>
 <p>• Modern, relatable, unique — connected to today’s life yet timeless in meaning.</p>
 <p>• Emotional impact — it should stay in the reader’s mind long after they finish.</p>
 <p>• Symbols & hidden meanings — every story is more than what’s on the page.</p>
 <p>• Personal truth — your unique perspective, your special thing, should shine through.</p>
-
 <p>⸻</p>
-
 <p>🚫 <strong>What We Avoid</strong></p>
 <p>• Empty writing without purpose or depth.</p>
 <p>• Copy-paste tropes or soulless stories.</p>
 <p>• Work that doesn’t reveal anything new about life, humanity, or ourselves.</p>
-
 <p>⸻</p>
-
 <p>🌍 <strong>Why We Exist</strong></p>
-
-<p>We are not here for ordinary stories.<br>
-We are here for the stories that transform us — the ones that make us stop, think, feel, and see the world differently.</p>
-
-<p>Everyone has something unique to share.<br>
-This is the place to bring it to life.</p>
+<p>We are not here for ordinary stories.<br>We are here for the stories that transform us — the ones that make us stop, think, feel, and see the world differently.</p>
+<p>Everyone has something unique to share.<br>This is the place to bring it to life.</p>
     </div>
   </div>
 </div>
@@ -761,8 +787,11 @@ This is the place to bring it to life.</p>
 <div class="grid" id="grid"></div>
 <span id="no-favorites-message">No favorites yet! Click the heart to add some.</span>
 <div class="floating-buttons-container">
-  <div class="floating-button glass-button-base" id="darkModeBtn" title="Toggle Dark Mode">
-    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+  <div class="floating-button glass-button-base" id="contactBtn" title="Contact">
+    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+      <polyline points="22,6 12,13 2,6"></polyline>
+    </svg>
   </div>
   <div class="floating-button glass-button-base" id="filterBtn" title="Show Favorites">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -783,6 +812,43 @@ This is the place to bring it to life.</p>
 <footer class="site-footer">
   <p>&copy; 2024 Dodch. All Rights Reserved.</p>
 </footer>
+
+<div class="info-panel" id="contactPanel">
+    <div class="close-button" id="closeContactButton">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </div>
+    <div class="contact-panel-content">
+      <a class="panel-button" id="submitStoryBtn" href="mailto:dotchadam@gmail.com">
+        Submit Your Story
+      </a>
+      <button class="panel-button social" id="openSocialButton">
+        Social Media
+      </button>
+    </div>
+</div>
+
+<div class="info-panel" id="socialPanel">
+    <div class="close-button" id="closeSocialButton">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </div>
+    <div class="social-links-content">
+      <a class="panel-button social-link-button" id="tiktokBtn" href="https://www.tiktok.com/@dodchadam?_t=ZM-8zxCtYC2iXj&_r=1" target="_blank">
+        Tiktok
+      </a>
+      <a class="panel-button social-link-button" id="instagramBtn" href="https://www.instagram.com/adamdodch?igsh=eng4Z3h4NGpjczVo&utm_source=qr" target="_blank">
+        Instagram
+      </a>
+      <a class="panel-button social-link-button" id="facebookBtn" href="https://www.facebook.com/share/17YCuswrPL/?mibextid=wwXIfr" target="_blank">
+        Facebook
+      </a>
+    </div>
+</div>
 
 <script>
 // Disable right-click menu
@@ -864,7 +930,6 @@ function filterAndRenderPanels() {
   saveState();
 }
 
-// This function now only loads favorites and search state, not dark mode.
 function loadSavedState() {
   const savedShowingFavorites = localStorage.getItem('showingFavorites');
   const savedSearchActive = localStorage.getItem('searchActive');
@@ -892,7 +957,6 @@ function loadSavedState() {
 
 function saveState() {
   const searchBar = document.getElementById('searchInput');
-  // Dark mode state is not saved here.
   localStorage.setItem('showingFavorites', showingFavorites);
   localStorage.setItem('searchValue', searchBar.value);
   const favoriteTitles = [];
@@ -912,26 +976,6 @@ function initializeHeartColor() {
   } else {
     heartSvg.style.fill = 'var(--heart-color)';
   }
-}
-
-// NEW FUNCTION: Live theme listener
-function setupLiveThemeListener() {
-  const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
-  function handleThemeChange(event) {
-    if (event.matches) {
-      document.body.classList.add('dark-mode');
-      document.getElementById('darkModeBtn').classList.add('active');
-    } else {
-      document.body.classList.remove('dark-mode');
-      document.getElementById('darkModeBtn').classList.remove('active');
-    }
-  }
-
-  darkModeQuery.addEventListener('change', handleThemeChange);
-
-  // Set the initial state on page load
-  handleThemeChange(darkModeQuery);
 }
 
 async function fetchAndBuildGrid() {
@@ -1096,10 +1140,10 @@ async function fetchAndBuildGrid() {
     const searchButton = document.getElementById('searchButton');
     const searchBar = document.getElementById('searchInput');
     const filterBtn = document.getElementById('filterBtn');
-    const darkModeBtn = document.getElementById('darkModeBtn');
+    const contactBtn = document.getElementById('contactBtn');
     const infoContainerWrapper = document.getElementById('infoContainerWrapper');
     
-    addTapAnimation(darkModeBtn);
+    addTapAnimation(contactBtn);
     addTapAnimation(filterBtn);
     addTapAnimation(searchButton);
     
@@ -1118,12 +1162,6 @@ async function fetchAndBuildGrid() {
     });
 
     searchBar.addEventListener('input', filterAndRenderPanels);
-    
-    darkModeBtn.addEventListener('click', () => {
-      darkModeBtn.classList.toggle('active');
-      body.classList.toggle('dark-mode');
-      // No localStorage save here, so it doesn't persist
-    });
 
     filterBtn.addEventListener('click', () => {
       showingFavorites = !showingFavorites;
@@ -1159,10 +1197,10 @@ async function fetchAndBuildGrid() {
     
     const infoButton = document.getElementById('infoButton');
     const infoPanel = document.getElementById('infoPanel');
-    const closeButton = document.getElementById('closeButton');
+    const closeInfoButton = document.getElementById('closeInfoButton');
     
     addTapAnimation(infoButton);
-    addTapAnimation(closeButton);
+    addTapAnimation(closeInfoButton);
 
     function toggleInfoPanel() {
       infoPanel.classList.toggle('active');
@@ -1170,7 +1208,7 @@ async function fetchAndBuildGrid() {
     }
     
     infoButton.addEventListener('click', toggleInfoPanel);
-    closeButton.addEventListener('click', toggleInfoPanel);
+    closeInfoButton.addEventListener('click', toggleInfoPanel);
 
     if (searchBar.classList.contains('active')) {
       infoContainerWrapper.classList.add('hidden');
@@ -1183,6 +1221,58 @@ async function fetchAndBuildGrid() {
       }
     });
 
+    // New logic for the Contact and Social Media pop-ups
+    const contactPanel = document.getElementById('contactPanel');
+    const closeContactButton = document.getElementById('closeContactButton');
+    const openSocialButton = document.getElementById('openSocialButton');
+    const socialPanel = document.getElementById('socialPanel');
+    const closeSocialButton = document.getElementById('closeSocialButton');
+
+    addTapAnimation(contactBtn);
+    addTapAnimation(closeContactButton);
+    addTapAnimation(openSocialButton);
+    addTapAnimation(closeSocialButton);
+
+    // Get the buttons to add the bounce animation to
+    const submitStoryBtn = document.getElementById('submitStoryBtn');
+    const tiktokBtn = document.getElementById('tiktokBtn');
+    const instagramBtn = document.getElementById('instagramBtn');
+    const facebookBtn = document.getElementById('facebookBtn');
+
+    addTapAnimation(submitStoryBtn);
+    addTapAnimation(openSocialButton);
+    addTapAnimation(tiktokBtn);
+    addTapAnimation(instagramBtn);
+    addTapAnimation(facebookBtn);
+
+    // New function to close all panels and re-enable scrolling
+    function closeAllPanels() {
+        contactPanel.classList.remove('active');
+        socialPanel.classList.remove('active');
+        body.classList.remove('info-panel-open');
+    }
+    
+    contactBtn.addEventListener('click', () => {
+        contactPanel.classList.add('active');
+        body.classList.add('info-panel-open');
+    });
+
+    closeContactButton.addEventListener('click', () => {
+        closeAllPanels();
+    });
+
+    openSocialButton.addEventListener('click', () => {
+        contactPanel.classList.remove('active');
+        setTimeout(() => {
+            socialPanel.classList.add('active');
+        }, 300); // Small delay to allow the first panel to fade out
+    });
+
+    closeSocialButton.addEventListener('click', () => {
+        closeAllPanels();
+    });
+
+
   } catch (error) {
     console.error('Failed to load grid data:', error);
     document.getElementById('grid').innerHTML = '<p style="color:#fff;">Failed to load stories. Check that stories.json exists.</p>';
@@ -1192,9 +1282,9 @@ async function fetchAndBuildGrid() {
 function animateButtonsOnLoad() {
     const searchButton = document.getElementById('searchButton');
     const filterBtn = document.getElementById('filterBtn');
-    const darkModeBtn = document.getElementById('darkModeBtn');
+    const contactBtn = document.getElementById('contactBtn');
     const infoButton = document.getElementById('infoButton');
-    const buttonsToAnimate = [infoButton, searchButton, filterBtn, darkModeBtn];
+    const buttonsToAnimate = [infoButton, searchButton, filterBtn, contactBtn];
     buttonsToAnimate.forEach((button, i) => {
       setTimeout(() => {
         button.classList.add('jello');
@@ -1207,8 +1297,6 @@ function animateButtonsOnLoad() {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  setupLiveThemeListener(); // Call the new listener function
-
   const loadingScreen = document.getElementById('loadingScreen');
   const bgImageUrlLight = getComputedStyle(document.documentElement).getPropertyValue('--bg-url').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
   const bgImageUrlDark = getComputedStyle(document.documentElement).getPropertyValue('--bg-url-dark').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
