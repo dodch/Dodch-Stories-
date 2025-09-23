@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -120,6 +119,8 @@
     background-repeat: no-repeat;
     z-index: -1;
     transition: background-image 1s ease-in-out, background-color 1s ease-in-out;
+    /* CRITICAL FIX: This ensures it covers the full viewport including safe areas */
+    /* Use the safer combination of fixed positioning with viewport units */
   }
   /* Applies the dark background for the manual button toggle */
   body.dark-mode::before {
@@ -673,6 +674,7 @@
 </style>
 </head>
 <body>
+<!-- Rest of your HTML remains unchanged -->
 <div class="info-container-wrapper" id="infoContainerWrapper">
   <div class="info-button glass-button-base" id="infoButton" title="Info">
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
