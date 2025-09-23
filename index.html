@@ -39,6 +39,7 @@
     --button-shadow:var(--glass-shadow);
     transition: all 0.5s ease-in-out;
     --panel-blur-start: 10px;
+    --vh: 100vh; /* Default fallback for browsers that don't run JS */
   }
   
   /* Dark mode variables based on device settings */
@@ -110,7 +111,9 @@
     top: 0;
     left: 0;
     right: 0;
-    bottom: 0;
+    width: 100%;
+    /* Use the JavaScript-calculated variable for height */
+    height: calc(var(--vh, 1vh) * 100);
     background-image: var(--bg-url);
     background-position: center;
     background-size: cover;
@@ -861,6 +864,18 @@ symbols of who we are, and who we might become. ✨</p>
 </div>
 
 <script>
+// Set a custom CSS variable with the correct viewport height
+function setViewportHeight() {
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+// Call the function on initial load
+setViewportHeight();
+
+// Re-calculate on window resize (important for mobile)
+window.addEventListener('resize', setViewportHeight);
+
 // Disable right-click menu
 document.addEventListener('contextmenu', event => event.preventDefault());
 
