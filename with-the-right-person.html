@@ -1,1152 +1,1069 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+
+  <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>lost to be found</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+    <title>"liquid glass" — scroll, drag, configure [Chromium]</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=0, maximum-scale=1.0"
+    />
     <style>
-        /* --- GLASS EFFECT VARIABLES & STYLES --- */
+      @import url('https://unpkg.com/normalize.css') layer(normalize);
+      @import url('https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&display=swap');
+
+      @layer normalize, base, demo;
+
+      @layer demo {
         :root {
-            --glass-bg-light: rgba(255, 255, 255, 0.05);
-            --glass-text-light: #ffffff;
-            --glass-shadow-light:
-                inset 0 0 0 1px color-mix(in srgb, #fff calc(10%), transparent),
-                inset 1.8px 3px 0px -2px color-mix(in srgb, #fff calc(90%), transparent),
-                inset -2px -2px 0px -2px color-mix(in srgb, #fff calc(80%), transparent),
-                inset -3px -8px 1px -6px color-mix(in srgb, #fff calc(60%), transparent),
-                inset -0.3px -1px 4px 0px color-mix(in srgb, #000 calc(12%), transparent),
-                inset -1.5px 2.5px 0px -2px color-mix(in srgb, #000 calc(20%), transparent),
-                inset 0px 3px 4px -2px color-mix(in srgb, #000 calc(20%), transparent),
-                inset 2px -6.5px 1px -4px color-mix(in srgb, #000 calc(10%), transparent),
-                0px 2px 10px 0px color-mix(in srgb, #000 calc(20%), transparent),
-                0px 10px 30px 0px color-mix(in srgb, #000 calc(15%), transparent);
-            --button-shadow-light: var(--glass-shadow-light);
-            --pop-up-bg-light: rgba(255, 255, 255, 0.7);
-            --pop-up-text-light: #1f2937;
-            --main-bg-url-light: url('https://i.ibb.co/Ndbtzv2p/IMG-2299.jpg');
-            --main-bg-url-dark: url("https://i.ibb.co/F4BLKf9t/IMG-2305.jpg");
-            --main-text-color-light: #f0f0f0;
-            --main-text-color-dark: #f0f0f0;
-            --text-on-glass-light: #9333EA;
-            --save-button-bg-light: rgba(147, 51, 234, 0.6);
-            --save-button-bg-dark: rgba(192, 132, 252, 0.25);
-            --save-button-text-light: #ffffff;
-            --save-button-text-dark: #ffffff;
-            --back-button-bg-light: rgba(239, 68, 68, 0.6);
-            --back-button-bg-dark: rgba(252, 165, 165, 0.25);
-            --back-button-text-light: #ffffff;
-            --back-button-text-dark: #ffffff;
-            /* New variable for the content tint */
-            --content-bg-light: rgba(0, 0, 0, 0.2);
-            /* New variable for the selected language button text */
-            --selected-lang-button-text: var(--save-button-text-light);
-            /* New variable for the unselected language button text in light mode */
-            --unselected-lang-text-light: #f0f0f0;
-        }
-        body.dark-mode {
-            --glass-bg-dark: rgba(0, 0, 0, 0.25);
-            --glass-text-dark: #f0f0f0;
-            --glass-shadow-dark:
-                inset 0 0 0 1px color-mix(in srgb, #fff calc(10%), transparent),
-                inset 1.8px 3px 0px -2px color-mix(in srgb, #fff calc(90%), transparent),
-                inset -2px -2px 0px -2px color-mix(in srgb, #fff calc(80%), transparent),
-                inset -3px -8px 1px -6px color-mix(in srgb, #fff calc(60%), transparent),
-                inset -0.3px -1px 4px 0px color-mix(in srgb, #000 calc(12%), transparent),
-                inset -1.5px 2.5px 0px -2px color-mix(in srgb, #000 calc(20%), transparent),
-                inset 0px 3px 4px -2px color-mix(in srgb, #000 calc(20%), transparent),
-                inset 2px -6.5px 1px -4px color-mix(in srgb, #000 calc(10%), transparent),
-                0px 2px 10px 0px color-mix(in srgb, #000 calc(40%), transparent),
-                0px 10px 30px 0px color-mix(in srgb, #000 calc(30%), transparent);
-            --button-shadow-dark: var(--glass-shadow-dark);
-            --pop-up-bg-dark: rgba(31, 41, 55, 0.9);
-            --pop-up-text-dark: #f0f0f0;
-            --text-on-glass-dark: #C084FC;
-            /* New variable for the content tint */
-            --content-bg-dark: rgba(0, 0, 0, 0.2);
-            /* New variable for the selected language button text */
-            --selected-lang-button-text: var(--save-button-text-dark);
-            /* New variable for the unselected language button text in dark mode */
-            --unselected-lang-text-dark: #C084FC;
-        }
-        .glass-button-base {
-            background-color: var(--glass-bg-light);
-            box-shadow: var(--button-shadow-light);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.5s ease, background-color 0.5s ease;
-        }
-        body.dark-mode .glass-button-base {
-            background-color: var(--glass-bg-dark);
-            box-shadow: var(--button-shadow-dark);
-        }
-        .save-button-custom {
-            background-color: var(--save-button-bg-light);
-            color: var(--save-button-text-light);
-        }
-        body.dark-mode .save-button-custom {
-            background-color: var(--save-button-bg-dark);
-            color: var(--save-button-text-dark);
-        }
-        .back-home-button-custom {
-            background-color: var(--back-button-bg-light);
-            color: var(--back-button-text-light);
-            font-size: 1.25rem;
-        }
-        body.dark-mode .back-home-button-custom {
-            background-color: var(--back-button-bg-dark);
-            color: var(--back-button-text-dark);
-        }
-        .glass-popup {
-             border-radius: 2rem;
-             padding: 1.5rem;
-        }
-        .glass-button-base:hover {
-             transform: scale(1.1);
-             box-shadow:
-                inset 0 0 0 1px color-mix(in srgb, #fff calc(10%), transparent),
-                inset 1.8px 3px 0px -2px color-mix(in srgb, #fff calc(90%), transparent),
-                inset -2px -2px 0px -2px color-mix(in srgb, #fff calc(80%), transparent),
-                inset -3px -8px 1px -6px color-mix(in srgb, #fff calc(60%), transparent),
-                inset -0.3px -1px 4px 0px color-mix(in srgb, #000 calc(12%), transparent),
-                inset -1.5px 2.5px 0px -2px color-mix(in srgb, #000 calc(20%), transparent),
-                inset 0px 3px 4px -2px color-mix(in srgb, #000 calc(20%), transparent),
-                inset 2px -6.5px 1px -4px color-mix(in srgb, #000 calc(10%), transparent),
-                0px 4px 20px 0px color-mix(in srgb, #000 calc(30%), transparent),
-                0px 20px 60px 0px color-mix(in srgb, #000 calc(25%), transparent);
-        }
-        body.dark-mode .glass-button-base:hover {
-            box-shadow:
-                inset 0 0 0 1px color-mix(in srgb, #fff calc(10%), transparent),
-                inset 1.8px 3px 0px -2px color-mix(in srgb, #fff calc(90%), transparent),
-                inset -2px -2px 0px -2px color-mix(in srgb, #fff calc(80%), transparent),
-                inset -3px -8px 1px -6px color-mix(in srgb, #fff calc(60%), transparent),
-                inset -0.3px -1px 4px 0px color-mix(in srgb, #000 calc(12%), transparent),
-                inset -1.5px 2.5px 0px -2px color-mix(in srgb, #000 calc(20%), transparent),
-                inset 0px 3px 4px -2px color-mix(in srgb, #000 calc(20%), transparent),
-                inset 2px -6.5px 1px -4px color-mix(in srgb, #000 calc(10%), transparent),
-                0px 4px 20px 0px color-mix(in srgb, #000 calc(40%), transparent),
-                0px 20px 60px 0px color-mix(in srgb, #000 calc(35%), transparent);
-        }
-        /* Custom styles for pop-up buttons to override glass background */
-        #popup button.glass-button-base.bg-green-500 {
-            background-color: rgba(34, 197, 94, 0.8) !important;
-            backdrop-filter: blur(4px) !important;
-            -webkit-backdrop-filter: blur(4px) !important;
+          --content-width: 720px;
+          scrollbar-color: canvasText #0000;
         }
 
-        #popup button.glass-button-base.bg-red-500 {
-            background-color: rgba(239, 68, 68, 0.8) !important;
-            backdrop-filter: blur(4px) !important;
-            -webkit-backdrop-filter: blur(4px) !important;
+        section p {
+          line-height: 1.5;
         }
-
-        /* Dark mode specific styles for the pop-up buttons */
-        body.dark-mode #popup button.bg-green-500 {
-            background-color: rgba(74, 222, 128, 0.4) !important;
-        }
-
-        body.dark-mode #popup button.bg-red-500 {
-            background-color: rgba(252, 165, 165, 0.4) !important;
-        }
-        /* --- END OF GLASS EFFECT STYLES --- */
-        /* --- Basic Styling --- */
-        * {
-            box-sizing: border-box;
-        }
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Roboto', sans-serif;
-            min-height: 100vh;
-            position: relative;
-            z-index: 1;
-            transition: color 0.5s ease;
-            color: var(--main-text-color-light);
-        }
-        body.dark-mode {
-            color: var(--main-text-color-dark);
-        }
-        /* --- LOADING SCREEN OVERLAY (fixed on top) --- */
-        #loading-screen {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background-color: rgba(0, 0, 0, 0.9);
+        
+        .emojis {
+          --font-level: 4;
           display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          z-index: 10000;
-          transition: opacity 0.5s ease;
+          gap: 1rem;
+          flex-wrap: wrap;
         }
-        #loading-screen.hidden {
-          opacity: 0;
-          pointer-events: none;
-        }
-        /* --- LOADING INDICATOR CONTAINER (holds hearts) --- */
-        .loading-indicator {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
-        }
-        /* --- LOADING HEART ANIMATION --- */
-        .loading-indicator span {
-            display: inline-block;
-            width: 15px;
-            height: 15px;
-            margin: 0 5px;
-            color: white;
-            font-size: 15px;
-            opacity: 0;
-            transform: scale(0.5);
-            animation: pulse-heart 1.4s ease-in-out infinite;
-        }
-        /* Add delays to create the trailing effect */
-        .loading-indicator span:nth-child(1) { animation-delay: 0s; }
-        .loading-indicator span:nth-child(2) { animation-delay: 0.2s; }
-        .loading-indicator span:nth-child(3) { animation-delay: 0.4s; }
-        .loading-indicator span:nth-child(4) { animation-delay: 0.6s; }
-        .loading-indicator span:nth-child(5) { animation-delay: 0.8s; }
-        @keyframes pulse-heart {
-            0% { opacity: 0; transform: scale(0.5); }
-            50% { opacity: 1; transform: scale(1.1); }
-            100% { opacity: 0; transform: scale(0.5); }
-        }
-        /* --- LOADING PERCENTAGE TEXT --- */
-        .loading-percentage {
-          color: #fff;
-          font-size: 24px;
-          font-family: "Ubuntu", sans-serif;
-          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
-         /* --- Wrapper for main page content --- */
-        #page-content-wrapper {
-            transition: filter 0.5s ease-in-out;
-            position: relative;
-            z-index: 0;
-            width: 100%;
-            min-height: 100vh;
-        }
-        body.loading #page-content-wrapper {
-            filter: blur(15px);
-            pointer-events: none;
-        }
-        .fixed-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            z-index: -1;
-            transition: opacity 0.5s ease;
-        }
-        .fixed-background.light-background {
-             background-image: var(--main-bg-url-light);
-             opacity: 1;
-        }
-        .fixed-background.dark-background {
-             background-image: var(--main-bg-url-dark);
-             opacity: 0;
-        }
-        body.dark-mode .fixed-background.light-background {
-            opacity: 0;
-        }
-         body.dark-mode .fixed-background.dark-background {
-            opacity: 1;
-        }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
+
+        .arrow {
+          display: inline-block;
+          opacity: 0.8;
+          position: absolute;
+          font-size: 0.875rem;
+          font-family: 'Gloria Hallelujah', cursive;
+          transition: opacity 0.26s ease-out;
+
+          &.arrow--debug {
+            top: 140px;
+            left: 30%;
+            translate: -100% 0;
+            width: 80px;
+            span {
+              display: inline-block;
+              rotate: -24deg;
+              translate: 0 100%;
             }
-            to {
-                opacity: 1;
-                transform: scale(1);
+            svg {
+              rotate: 20deg;
+              /* bottom: 130%; */
+              translate: 80% -80%;
+              rotate: -25deg;
+              left: 0%;
+              width: 100%;
             }
-        }
-        @keyframes fadeOut {
-            from {
-                opacity: 1;
-                transform: scale(1);
-            }
-            to {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-        }
-        /* New styles for unselected language buttons */
-        .unselected-language {
-            opacity: 0.8;
-            filter: grayscale(60%);
-            transform: scale(0.98);
-            transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
-        }
-        .unselected-language:hover {
-            transform: scale(0.95) !important;
-            box-shadow: none !important;
-        }
-        .selected-language {
-             background-color: var(--save-button-bg-light);
-             color: var(--selected-lang-button-text);
-             transform: scale(1.05);
-             opacity: 1;
-             filter: grayscale(0%);
-             box-shadow: var(--button-shadow-light);
-        }
-        body.dark-mode .selected-language {
-             background-color: var(--save-button-bg-dark);
-        }
-        #ar-button:hover, #fr-button:hover, #en-button:hover {
-            transform: scale(1.05);
-        }
-        button {
-             transition: color 0.3s ease, background-color 0.3s ease, transform 0.1s ease-out, box-shadow 0.3s ease;
-        }
-        button.tapped {
-            transform: scale(0.97);
-        }
-        .fade-in {
-            animation: fadeIn 0.3s ease-in-out;
-        }
-        .fade-out {
-            animation: fadeOut 0.3s ease-in-out;
-        }
-        .glow-word {
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
-        }
-        #content {
-            padding: 2rem;
-            padding-top: 6rem;
-            position: relative;
-            z-index: 1;
-            margin-left: auto;
-            margin-right: auto;
-            max-width: 800px;
-            border-radius: 0.5rem;
-            margin-top: 1rem;
-            margin-bottom: 1rem;
-            transition: opacity 0.5s ease-in-out;
-            opacity: 1;
-            background-color: var(--content-bg-light);
-        }
-        body.dark-mode #content {
-            background-color: var(--content-bg-dark);
-        }
-        #content.content-fading {
-            opacity: 0;
-        }
-        #text span {
-            cursor: pointer;
-            display: inline;
-            transition: text-shadow 0.3s ease, color 0.3s ease, -webkit-text-fill-color 0.3s ease;
-            opacity: 1;
-            transform: none;
-        }
-        #text span:hover {
-             color: var(--text-on-glass-light);
-        }
-        body.dark-mode #text span:hover {
-             color: var(--text-on-glass-dark);
-        }
-        body:not(.dark-mode) #text span:not(.glow-word) {
-             text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
-             -webkit-text-stroke: none;
-             text-stroke: none;
-             -webkit-text-fill-color: initial;
-             color: inherit;
-        }
-        body.dark-mode #text span:not(.glow-word) {
-            text-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
-             -webkit-text-stroke: none;
-             text-stroke: none;
-             -webkit-text-fill-color: white;
-             color: white;
-        }
-        #text span.glow-word {
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
-            text-shadow: none !important;
-             -webkit-text-stroke: none !important;
-             text-stroke: none !important;
-             -webkit-text-fill-color: initial !important;
-             color: initial !important;
-             opacity: 1 !important;
-             transform: none !important;
-             transition-delay: 0ms !important;
-             transition-duration: 0.3s !important;
-        }
-        #save-progress-button {
-            z-index: 60;
-        }
-        body.dark-mode #content h1 {
-             color: white;
-             transition: color 0.5s ease;
-        }
-         body:not(.dark-mode) #content h1 {
-             color: inherit;
-             transition: color 0.5s ease;
-        }
-        /* New styles for pop-up */
-        #popup > div {
-             background-color: var(--pop-up-bg-light);
-             color: var(--pop-up-text-light);
-             backdrop-filter: blur(4px);
-             -webkit-backdrop-filter: blur(4px);
-             transition: background-color 0.5s ease, color 0.5s ease;
-             box-shadow: var(--glass-shadow-light);
-        }
-        body.dark-mode #popup > div {
-             background-color: var(--pop-up-bg-dark);
-             color: var(--pop-up-text-dark);
-             box-shadow: var(--glass-shadow-dark);
-        }
-        #popup button.bg-green-500, #popup button.bg-red-500 {
-             transition: background-color 0.3s ease;
-        }
-        #text p {
-            margin-bottom: 1rem;
-        }
-        /* Jello Button Effect */
-        .jello-button {
-            transition: all 0.9s ease-in-out;
-        }
-        .jello-button.animate {
-            animation: jello-horizontal 0.9s both;
-        }
-        @keyframes jello-horizontal {
-            0% { transform: scale3d(1, 1, 1); }
-            30% { transform: scale3d(1.25, 0.75, 1); }
-            40% { transform: scale3d(0.75, 1.25, 1); }
-            50% { transform: scale3d(1.15, 0.85, 1); }
-            65% { transform: scale3d(0.95, 1.05, 1); }
-            75% { transform: scale3d(1.05, 0.95, 1); }
-            100% { transform: scale3d(1, 1, 1); }
-        }
-    </style>
-</head>
-<body class="loading">
-    <div id="loading-screen">
-        <div class="loading-indicator">
-            <span>❤️</span> <span>❤️</span> <span>❤️</span> <span>❤️</span> <span>❤️</span>
-        </div>
-        <div class="loading-percentage">0%</div>
-    </div>
-    <div class="fixed-background light-background"></div>
-    <div class="fixed-background dark-background"></div>
-    <div id="page-content-wrapper">
-        <div id="raw-ar-text" style="display: none;">
-            ‎  يُظهر الناس يومًا كيف يبدو الحب حقًا… لا في الأفلام، ولا في المسلسلات، ولا حتى في القصص.
-
-كلها مجرد أوهام بسيطة خُلقت لتجعلنا نتأثر، نضحك أو نبكي…
-وكلها كُتبت أو صُنعت لتُقرأ أو تُشاهد مع من تحب، لا وحدك — لأنها ستؤلمك حين تنتهي.
-
-الحب أساسي في حياتنا، وأعني بالحب أي شيء أو أي شخص… ليس فقط الرومانسية، بل قد يكون بين أناس مقرّبين، شركاء، أو حتى أصدقاء — أصدقاء حقيقيون مقرّبون…
-وفي الحقيقة، لا يمكنك أن تحب شخصًا بصدق إن لم يكن صديقك أولًا.
-
-أرواحنا خُلقت لتتوافق مع أشخاص محددين فقط…
-ذلك الشخص قادر على أن يغيّرك حقًا — ليس أنت فقط بل العالم من حولك، يمكنه أن يغيّر الزمان والمكان وكأنه سحر.
-
-مع الشخص المناسب:
-تصبح أجمل
-ملامحك تتغير
-جسدك يصبح أخف
-تصبح أكثر حساسية
-كل شيء يبدو أجمل، حتى ألطف لمسة…
-رائحتك تصبح أطيب
-ابتسامتك تصير صادقة
-وتشعر فعلًا بضحكتك حين تخرج من قلبك
- الطعام يصبح ألذ
-الهواء أنقى
-الأجواء مميزة لا تُنسى
-لحظات بسيطة لكنها لا تُقدَّر بثمن
-حتى أغنى الأغنياء لا يستطيعون شراءها.
-
-لا تظن أن الوحدة ستجعل وصولك إلى أهدافك أسهل…
-قلة الأصدقاء قد تعطيك وقتًا لمالٍ أكثر، لكنها لن تمنحك السعادة أبدًا.
-
-يسألونني: ماذا تريد أن تصبح حين تكبر؟ فأجيب: أريد أن أنجح، أريد أن أكون ثريًا.
-هم يفكرون في المال، أما أنا فأفكر في بساطة الحياة… أن أملك القليل مع الشخص المناسب الذي يجعل أبسط الأشياء أثمن ما في الوجود.
-
-تلك الوجبة الرخيصة التي اشتريتها من المطعم، بعد أن شاركت بعض العملات مع صديقي لأستطيع دفع ثمنها،
-كانت ألذ شيء أكلته في حياتي.
-
-تلك الأحاديث التي تبدو بلا معنى، نتكلم عن كل شيء في الحياة،
-لكن كل كلمة تحمل قيمة كبيرة.
-
-لا يهمنا حقًا عمّا نتحدث، ما يهم هو أننا نتحدث… أننا موجودان — معًا.
-أن نستطيع النظر في أعين بعضنا دون خجل أو غرابة،
-أن يكون الصمت الغير مريح مع الآخرين مجرد لحظة سلام بيننا.
-
-ليس لدينا سيارات، فنمشي معًا نصف الطريق إلى البيت، ونقول: “انتبه لنفسك”، ثم نتصل لاحقًا لنتأكد أننا بخير.
-نشارك العطور والملابس معًا،
-نشاهد الأفلام على هواتفنا الصغيرة لان الإنترنت بطئ.
-
-كل ما هو قبيح يصبح جميلًا معهم…
-الرخيص يصبح غاليًا
-النكرة يصبح ذا معنى
-المكسور يُصلَح
-الألعاب البسيطة تصبح بطولات عالمية
-البيت الصغير القديم يصبح قصرًا
-كل ضحكة تجعلنا أكثر حياة
-كل دقيقة تزيد ثقتنا
-كل يوم يجعل فُراقنا أصعب.
-
-ومع ذلك، ها أنا هنا… (ابتسامة ساخرة).
-
-نظن أننا قادرون على إنهاء كل شيء والمضي قُدمًا: “ثمانية مليارات إنسان على الأرض، سأتجاوز الأمر وأجد شخصًا آخر”.
-تلك الجملة المشهورة… يا لها من كذبة عشنا حياتنا ونحن نسمعها.
-ذلك الأمر لن يحدث… تلك المشاعر التي عشتها مع ذلك الشخص لن تتكرر مع أحد آخر.
-
-أقسم أن الله خلق أرواحنا لتتوافق مع قلة نادرة من الناس فقط.
-
-ألا ترى أن هناك أشخاصًا تنسجم معهم بسرعة عجيبة؟ هؤلاء هم الذين خُلِقوا ليكونوا معك.
-
-إن وجدت ذلك الشخص أو الصديق الذي انسجمت معه حقًا، وشعرت معه بكل ما ذكرته سابقًا، فابقَ معه.
-لا تتركه!
-
-نعم ستتشاجران،
-ستواجهان مشاكل عديدة،
-لن تتفقا دائمًا…
-لكن كل خلاف سيقوي رابطكما،
-سيجعلكما تفهمان بعضكما أكثر،
-ستصلان إلى مستوى عالٍ من الفهم المتبادل الصعب بلوغه مع شخص آخر،
-ستدركان أننا لسنا كاملين، لكنكما ستتعلمان أن تحبا هذه العيوب… وهذا هو الحب الحقيقي.
-
-إياك أن تنفصل عن شخص مقرّب منك انفصالًا أبديًا، سيطاردك ذلك إلى الأبد…
-لأنّ روحيكما ستظلان دائمًا متصلتين.
-
-        </div>
-        <div id="raw-fr-text" style="display: none;">
-Les gens n’ont jamais vraiment montré ce que l’amour ressent vraiment, ni au cinéma, ni dans les séries, ni même dans les histoires.
-
-Ce ne sont que des fantasmes triviaux pour nous émouvoir, nous faire rire ou pleurer…
-
-Et tout cela est fait pour être lu ou regardé avec quelqu’un que l’on aime, pas seul — parce que ça fait mal quand ça se termine.
-
-L’amour est essentiel dans nos vies, et par « amour » j’entends n’importe quoi, n’importe qui — ce n’est pas seulement la romance ; ça peut être entre des proches, des partenaires, ou des amis — de vrais amis très proches…
-Et on ne peut pas vraiment aimer quelqu’un sans d’abord être son ami.
-
-Nos âmes sont faites pour n’appartenir qu’à certaines personnes…
-
-De sorte que cette personne peut réellement te transformer — littéralement… pas seulement toi, mais aussi le monde autour de toi ; elle peut, comme par magie, manipuler le temps et l’espace.
-
-Avec la bonne personne
-Tu deviens plus beau / plus belle
-Tes traits changent
-Ton corps se sent plus léger
-Tu deviens plus sensible
-Tout paraît mieux, même le toucher le plus léger…
-Tu sens meilleur
-Ton sourire devient vrai
-Tu sens vraiment quand tu ris du fond du cœur
-La nourriture a un goût incroyable
-L’air devient plus frais
-Les ambiences sont si particulières qu’elles ne s’oublient pas
-Des moments si simples mais inestimables
-Même les plus riches ne peuvent pas les acheter.
-Ne crois pas que la solitude facilitera l’atteinte de tes objectifs…
-
-Avoir moins d’amis peut te donner du temps pour gagner plus d’argent, mais ça ne te rendra jamais plus heureux.
-
-On me demande ce que je veux devenir quand je serai grand, je réponds : je veux réussir, je veux devenir riche.
-
-Ils pensent à l’argent, mais moi je pense à la simplicité de la vie, à avoir peu, mais avec la vrai personne qui rend les choses les plus simples les plus précieuses.
-
-Ce repas bon marché que j’ai acheté au restaurant, en partageant quelques pièces avec mon ami pour pouvoir se le permettre,
-était la chose la plus délicieuse que j’aie jamais goûtée.
-
-Ces conversations apparemment insignifiantes qu’on a, où l’on parle de tous les sujets de la vie —
-pourtant chaque mot compte énormément.
-
-Ce qui importe vraiment, ce n’est pas de quoi on parle ; ce qui compte, c’est que l’on parle, que nous soyons là — ensemble.
-Que l’on puisse se regarder dans les yeux sans timidité ni gêne.
-Que le silence gênant qu’on aurait avec d’autres devient pour nous un moment de paix.
-
-Nous n’avons pas de voiture, alors on se raccompagne à mi-chemin en se disant « prends soin de toi » puis on s’appelle plus tard pour vérifier que tout va bien.
-Ou quand on se prête nos parfums et nos vêtements.
-Ou qu’on regarde des films sur nos petits téléphones parce que notre Wi-Fi est nul.
-
-Tout ce qui est laid devient beau avec eux…
-Le bon marché devient précieux
-L’insignifiant devient plein de sens
-Le brisé se répare
-Les jeux qu’on fait deviennent champions du monde
-La petite maison ancienne devient un château
-Chaque rire nous rend plus vivants
-Chaque minute renforce notre confiance
-Chaque jour rend la séparation de plus en plus impossible.
-
-Et pourtant me voilà, lol…
-
-On croit qu’on peut tout effacer et passer à autre chose — « 8 milliards de personnes sur terre, je m’en remettrai et j’en trouverai une autre. »
-
-Cette fameuse phrase… quel mensonge on nous a toujours raconté.
-Tu n’y arriveras pas… ces sentiments que tu as eus avec cette personne ne se répéteront pas avec une autre.
-
-Je jure que Dieu a créé nos âmes pour ne s’accorder qu’avec quelques autres, rares à trouver.
-
-Ne vois-tu pas qu’il y a des gens avec qui on s’entend tout de suite ? Ce sont ceux qui sont destinés à être avec toi.
-
-Si tu trouves (ou as trouvé) cette personne ou cet ami avec qui tu t’entends parfaitement et que tu as ressenti tout ce que j’ai décrit plus haut, alors reste.
-Ne pars pas !
-
-Oui, vous vous battrez
-Vous aurez des problèmes
-Vous ne serez pas toujours d’accord
-Mais chaque lutte renforcera votre lien
-Vous vous comprendrez mieux
-Vous atteindrez un niveau de compréhension difficile à atteindre avec un autre
-Vous comprendrez que nous ne sommes pas parfaits mais que l’on apprend à aimer ces imperfections — et c’est ça le véritable amour.
-
-Ne te sépare jamais définitivement d’un proche, cela te hantera pour toujours.
-
-Parce que vos âmes resteront toujours liées…
-        </div>
-        <div id="raw-en-text" style="display: none;">
-            
-            People never really showed how love really feels like, not in movies not in shows not even in stories.
-
-These are all trivial fantasies to make us emotional, laugh or cry….
-
-And all of them were meant to be read or watched with someone you love, not alone — because they will hurt you when they end.
-
-Love is essential in/for ours lives, and by love I mean anything,anyone — it’s not just romance, it can be between close people, partners ,or friends — real close friends…
-And you actually can’t really love someone without being your friend.
-
-Ours souls are only meant to belong with certain people…
-
-So that  person can actually change you — literally… not only you but also the world around you, they can manipulate time and space like magic
-
-
-With the right one
-You become more beautiful
-your facial features changes
-your body feels lighter 
-You become more sensitive 
-Everything feels better, even the lightest touch…
-You smell better 
-Your smile becomes real 
-You actually can feel it when you laugh out of your heart
-The food tastes really good 
-The air becomes fresher 
-The vibes are so special they cannot be forgotten 
-Moments so simple yet they are priceless 
-Not even the richest people can buy them.
-Don’t think being alone would make reaching your goals easier…
-
-Less friends might give you time for more money, but it will never make you happier.
-
-They ask me what do I want to be when I grow up, I reply: I want to be successful, I want to be rich.
-
-They think about money, but I think about the simplicity of life, to have a little but with the right person who makes the simplest things the most valuable  
-
-That cheap meal i bought from the restaurant, sharing some coins with my friend to afford it 
-Was the most delicious thing I’ve ever had 
-
-Those meaningless conversations we have, talking about every subject in life 
-Yet every word means a lot 
-
-We don’t really care about what we’re talking about, what we really care about is that we are talking, that we are…there — together
-That we can look in each other’s eyes without being shy or feeling uncomfortable 
-That the awkward silence we usually have with other people is just a moment of peace for us.
-We have no cars so we walk each other half way home saying take care of yourself and later call to make sure we are alright 
-Or when we share perfumes and clothes together 
-Or watch movies on our small phones because we have a shitty WiFi 
-
-Everything ugly becomes beautiful with them…
-The cheap becomes expensive 
-The meaningless becomes meaningful 
-The broken gets fixed 
-The games we play becomes world champion 
-The small old home becomes a castle 
-Every giggle makes us more alive 
-Every minute makes our trust stronger
-Every day makes our separation more impossible.
-
-Yet here I am, lol…
- 
-We think that we can just end it all and move on  “8billion people on earth,ill get over it and find someone else”  
-
-That famous sentence, oh what a lie we have always been hearing.
-You won’t… those feelings you got with that someone won’t be repeated again with another one.
-
-I swear, God has created our souls to only match with a few which are rare to find
-
-Don’t you see that there are people who you get along with too fast, that’s the ones who are meant to be with you
-
-If you find or found that person or friend you really get along with and felt all the things I mentioned before with them, then stay.
-Don’t leave ! 
-
-Yes you will fight 
-You will have problems 
-You won’t always agree 
-But every struggle will make your bound stronger 
-You’ll understand each other more 
-You will reach a high level of understanding that it’s hard to achieve with another 
-You will understand that we are not perfect but you’ll learn to fall in love with these imperfections and that’s true love.
-
-Don’t you ever separate with a close one permanently, it will haunt you forever
-
-Because your souls will always be connected…
-        </div>
-        <div class="fixed top-0 left-0 right-0 flex flex-col items-start p-4 space-y-2 z-50">
-             <div class="flex justify-center space-x-4 mb-2">
-                 <button
-                    id="ar-button"
-                    onclick="handleButtonClick(this, 'changeLanguage', 'ar')"
-                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base jello-button"
-                >
-                    العربية
-                </button>
-                <button
-                    id="fr-button"
-                    onclick="handleButtonClick(this, 'changeLanguage', 'fr')"
-                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base jello-button"
-                >
-                    Français
-                </button>
-                <button
-                    id="en-button"
-                    onclick="handleButtonClick(this, 'changeLanguage', 'en')"
-                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base jello-button"
-                >
-                    English
-                </button>
-             </div>
-             <button
-                 id="back-home-button"
-                 onclick="handleButtonClick(this, 'redirectHome')"
-                 class="w-10 h-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base back-home-button-custom inline-flex items-center justify-center jello-button" >
-                ⌂
-            </button>
-        </div>
-        <div id="content" class="rounded-lg mx-auto content-fading glass-button-base">
-            <h1 id="title" class="text-3xl font-bold mb-4"></h1>
-            <div id="text" class="text-lg leading-relaxed"></div>
-        </div>
-        <button
-            id="save-progress-button"
-            onclick="handleButtonClick(this, 'scrollToSavedWord')"
-            class="fixed bottom-4 left-4 px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base save-button-custom jello-button"
-            style="z-index: 60;"
-        >
-            Saved Progress
-        </button>
-        <div id="popup" class="hidden fixed inset-0 flex items-center justify-center z-50">
-            <div class="glass-button-base glass-popup shadow-lg w-64 fade-in">
-                <h2 id="popup-title" class="text-lg font-bold mb-2">Save Position</h2>
-                <p id="popup-text" class="mb-4 text-sm"></p>
-                <div class="flex justify-end space-x-2">
-                    <button
-                        onclick="handleButtonClick(this, 'savePosition')"
-                        class="glass-button-base jello-button bg-green-500 text-white px-4 py-2 rounded-full focus:outline-none"
-                    >
-                        Save
-                    </button>
-                    <button
-                        onclick="handleButtonClick(this, 'closePopup')"
-                        class="glass-button-base jello-button bg-red-500 text-white px-4 py-2 rounded-full focus:outline-none"
-                    >
-                        Exit
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script>
-        const loadingScreen = document.getElementById("loading-screen");
-        const loadPercentageText = document.querySelector(".loading-percentage");
-        const body = document.body;
-        let currentLanguage = 'en';
-        let allSavedProgress = {};
-        let tempSavedWordId = '';
-        let tempSavedWordText = '';
-        let highlightedWordElement = null;
-        let isDarkMode = false;
-        const contentMap = {
-            ar: {
-                title: 'مع الشخص الصح ',
-                rawTextId: 'raw-ar-text',
-                saveProgress: 'التقدم المحفوظ',
-                savePosition: 'التقدم المحفوظ',
-                save: 'حفظ',
-                exit: 'خروج',
-                atWord: 'كلمة',
-                positionSaved: 'الموقع محفوظ',
-                forWord: 'لكلمة',
-                wordNotFound: 'الكلمة المحفوظة لم يتم العثور عليها في النص الحالي.',
-                noWordSaved: 'لم يتم حفظ أي كلمة لهذه اللغة بعد',
-                backHome: 'العودة للصفحة الرئيسية'
-            },
-            fr: {
-                title: 'Avec la vrai personne ',
-                rawTextId: 'raw-fr-text',
-                saveProgress: 'Progression enregistrée',
-                savePosition: 'Progression enregistrée',
-                save: 'Enregistrer',
-                exit: 'Sortir',
-                atWord: 'mot',
-                positionSaved: 'La position est enregistrée',
-                forWord: 'pour le mot',
-                wordNotFound: 'Le mot enregistré n\'a pas été trouvé dans le texte actuel.',
-                noWordSaved: 'Aucun mot n\'a été enregistré pour cette langue encore',
-                backHome: 'Retour à l\'accueil'
-            },
-            en: {
-                title: 'With the right person',
-                rawTextId: 'raw-en-text',
-                saveProgress: 'Saved Progress',
-                savePosition: 'Save Position',
-                save: 'Save',
-                exit: 'Exit',
-                atWord: 'word',
-                positionSaved: 'Position saved',
-                forWord: 'for the word',
-                wordNotFound: 'Saved word not found in current text.',
-                noWordSaved: 'No word has been saved for this language yet',
-                backHome: 'Back Home'
-            },
-        };
-        const lightBackgroundDiv = document.querySelector('.fixed-background.light-background');
-        const darkBackgroundDiv = document.querySelector('.fixed-background.dark-background');
-        const contentDiv = document.getElementById('content');
-        const textElement = document.getElementById('text');
-        const titleElement = document.getElementById('title');
-        const backHomeButton = document.getElementById('back-home-button');
-        const backHomeTextSpan = document.getElementById('back-home-text');
-        const languageButtons = document.querySelectorAll('#ar-button, #fr-button, #en-button');
-        const saveButton = document.getElementById('save-progress-button');
-        const popupDivInner = document.getElementById('popup').querySelector('div');
-        
-        function applyTextEffects() {
-            const textSpans = textElement.querySelectorAll('span[id^="word-p"]');
-            const isDarkModeActive = document.body.classList.contains('dark-mode');
-            textSpans.forEach(span => {
-                 if (!span.classList.contains('glow-word')) {
-                     if (isDarkModeActive) {
-                         span.style.textShadow = '0 0 1px rgba(255, 255, 255, 0.5)';
-                         span.style.webkitTextStroke = 'none';
-                         span.style.textStroke = 'none';
-                         span.style.webkitTextFillColor = 'white';
-                         span.style.color = 'white';
-                     } else {
-                         span.style.textShadow = '0 0 1px rgba(0, 0, 0, 0.5)';
-                         span.style.webkitTextStroke = 'none';
-                         span.style.textStroke = 'none';
-                         span.style.webkitTextFillColor = 'initial';
-                         span.style.color = 'inherit';
-                     }
-                 }
-             });
-        }
-        function clearSavedProgress() {
-             delete allSavedProgress[currentLanguage];
-             localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
-             if (highlightedWordElement) {
-                highlightedWordElement.classList.remove('bg-yellow-200', 'bg-yellow-600', 'rounded', 'glow-word');
-                applyTextEffects();
-                highlightedWordElement = null;
-             }
-             console.log(`Saved progress for ${currentLanguage.toUpperCase()} cleared.`);
-        }
-        function changeLanguage(lang, fromLoad = false) {
-            if (contentDiv.classList.contains('content-fading') && !fromLoad) {
-                 return;
-            }
-            if (currentLanguage === lang && !fromLoad) {
-                 return;
-            }
-            // First, reset all buttons to unselected state
-            languageButtons.forEach(button => {
-                button.classList.add('unselected-language');
-                button.classList.remove('selected-language');
-                // Set the text color for unselected buttons
-                button.style.color = body.classList.contains('dark-mode') ? 'var(--unselected-lang-text-dark)' : 'var(--unselected-lang-text-light)';
-            });
-            // Then, apply selected state to the new button
-            const newButton = document.getElementById(`${lang}-button`);
-            if(newButton) {
-                newButton.classList.remove('unselected-language');
-                newButton.classList.add('selected-language');
-                 // Set the text color for the newly selected button
-                newButton.style.color = body.classList.contains('dark-mode') ? 'var(--save-button-text-dark)' : 'var(--save-button-text-light)';
-            }
-            currentLanguage = lang;
-            if (!fromLoad) {
-                 localStorage.setItem('preferredLanguage', lang);
-            }
-            const content = contentMap[lang];
-            contentDiv.classList.add('content-fading');
-            const rawTextElement = document.getElementById(content.rawTextId);
-            const rawText = rawTextElement ? rawTextElement.textContent.trim() : '';
-            setTimeout(() => {
-                titleElement.textContent = content.title;
-                if (backHomeTextSpan) {
-                     backHomeTextSpan.textContent = content.backHome;
-                }
-                if (lang === 'ar') {
-                    contentDiv.dir = 'rtl';
-                    textElement.style.textAlign = 'right';
-                } else {
-                    contentDiv.dir = 'ltr';
-                    textElement.style.textAlign = 'left';
-                }
-                textElement.innerHTML = '';
-                if (rawText) {
-                    const paragraphs = rawText.split('\n'); // Fixed line break
-                    paragraphs.forEach((paragraph, pIndex) => {
-                         const lines = paragraph.split('\n'); // Fixed line break
-                         lines.forEach((line, lIndex) => {
-                             const trimmedLine = line.trim();
-                             if (trimmedLine === '') {
-                                  const br = document.createElement('br');
-                                  textElement.appendChild(br);
-                             } else {
-                                 const pElement = document.createElement('p');
-                                 pElement.classList.add('mb-4', 'text-lg', 'leading-relaxed');
-                                 const wordsAndSpaces = trimmedLine.match(/\S+|\s+|[.,!?;:]/g);
-                                 if (wordsAndSpaces) {
-                                     wordsAndSpaces.forEach((part, partIndex) => {
-                                         if (part.trim() === '' && !/[.,!?;:]/.test(part)) {
-                                             pElement.appendChild(document.createTextNode(part));
-                                         } else {
-                                             const span = document.createElement('span');
-                                             span.textContent = part;
-                                             span.classList.add('cursor-pointer');
-                                             const uniqueId = `word-p${pIndex}-l${lIndex}-part${partIndex}`;
-                                             span.id = uniqueId;
-                                             span.onclick = () => handleWordClick(uniqueId, span.textContent.trim());
-                                             pElement.appendChild(span);
-                                         }
-                                     });
-                                 }
-                                 textElement.appendChild(pElement);
-                             }
-                         });
-                    });
-                } else {
-                     const noTextElement = document.createElement('p');
-                     noTextElement.classList.add('text-center', 'text-xl', 'text-gray-500');
-                     noTextElement.textContent = `No text available for ${lang.toUpperCase()}. Please add content to the raw text div.`;
-                     textElement.appendChild(noTextElement);
-                     console.warn(`No raw text found for language: ${lang}`);
-                }
-                document.getElementById('save-progress-button').textContent = content.saveProgress;
-                document.getElementById('popup-title').textContent = content.savePosition;
-                document.getElementById('popup').querySelector('.bg-green-500').textContent = content.save;
-                document.getElementById('popup').querySelector('.bg-red-500').textContent = content.exit;
-                highlightWord();
-                applyTextEffects();
-                // --- FIX: Only scroll if it's the initial load ---
-                const savedProgressForCurrentLang = allSavedProgress[currentLanguage];
-                if (fromLoad && savedProgressForCurrentLang && savedProgressForCurrentLang.id) {
-                      // Introduce a small delay to ensure content is fully rendered before scrolling
-                      setTimeout(() => {
-                          scrollToSavedWord(false); // Perform scroll without checks
-                      }, 100);
-                }
-                // --- END FIX ---
-                contentDiv.classList.remove('content-fading');
-                if (isDarkMode) {
-                    titleElement.style.color = 'white';
-                } else {
-                     titleElement.style.color = 'inherit';
-                }
-            }, 500);
-        }
-        function handleWordClick(spanId, wordText) {
-            tempSavedWordId = spanId;
-            tempSavedWordText = wordText;
-            document.getElementById('popup-text').textContent = `${contentMap[currentLanguage].savePosition} ${contentMap[currentLanguage].atWord}: "${wordText}"?`;
-            document.getElementById('popup').classList.remove('hidden');
-            document.getElementById('popup').classList.remove('fade-out');
-            document.getElementById('popup').classList.add('fade-in');
-        }
-        function closePopup() {
-            document.getElementById('popup').classList.remove('fade-in');
-            document.getElementById('popup').classList.add('fade-out');
-            tempSavedWordId = '';
-            tempSavedWordText = '';
-            setTimeout(() => {
-                document.getElementById('popup').classList.add('hidden');
-            }, 300);
-        }
-        function savePosition() {
-            if (tempSavedWordId) {
-                allSavedProgress[currentLanguage] = {
-                    id: tempSavedWordId,
-                    text: tempSavedWordText
-                };
-                console.log(`${contentMap[currentLanguage].positionSaved} ${contentMap[currentLanguage].forWord}: "${tempSavedWordText}" (ID: ${tempSavedWordId}) in language "${currentLanguage}"`);
-                localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
-                highlightWord();
-            }
-            closePopup();
-        }
-        function scrollToSavedWord(performChecks = true) {
-            const savedProgressForCurrentLang = allSavedProgress[currentLanguage];
-            if (!savedProgressForCurrentLang || !savedProgressForCurrentLang.id) {
-                alert(contentMap[currentLanguage].noWordSaved);
-                return;
-            }
-            const savedWordId = savedProgressForCurrentLang.id;
-            const savedWordText = savedProgressForCurrentLang.text;
-            const targetElement = document.getElementById(savedWordId);
-            if (targetElement) {
-                 highlightWord();
-                 requestAnimationFrame(() => {
-                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                 });
-            } else {
-                console.warn(`${contentMap[currentLanguage].wordNotFound} (ID: ${savedWordId}, Text: "${savedWordText}")`);
-                if (performChecks) {
-                    alert(`${contentMap[currentLanguage].wordNotFound} ("${savedWordText}")`);
-                    const confirmClear = confirm(`Clear saved progress for ${currentLanguage.toUpperCase()}?`);
-                    if (confirmClear) {
-                        clearSavedProgress();
-                    }
-                } else {
-                     console.warn(`Clearing saved progress for ${currentLanguage.toUpperCase()} due to missing element.`);
-                     clearSavedProgress();
-                }
-            }
-        }
-       function highlightWord() {
-           if (highlightedWordElement) {
-               highlightedWordElement.classList.remove('bg-yellow-200', 'bg-yellow-600', 'rounded', 'glow-word');
-               applyTextEffects();
-               highlightedWordElement = null;
-           }
-           const savedProgressForCurrentLang = allSavedProgress[currentLanguage];
-           if (!savedProgressForCurrentLang || !savedProgressForCurrentLang.id) {
-               return;
-           }
-           const savedWordId = savedProgressForCurrentLang.id;
-           const targetElement = document.getElementById(savedWordId);
-           if (targetElement) {
-               highlightedWordElement = targetElement;
-               highlightedWordElement.classList.add('rounded', 'glow-word');
-               if (document.body.classList.contains('dark-mode')) {
-                   highlightedWordElement.classList.remove('bg-yellow-200');
-                   highlightedWordElement.classList.add('bg-yellow-600');
-               } else {
-                   highlightedWordElement.classList.remove('bg-yellow-600');
-                   highlightedWordElement.classList.add('bg-yellow-200');
-               }
-               highlightedWordElement.style.textShadow = 'none';
-               highlightedWordElement.style.webkitTextStroke = 'none';
-               highlightedWordElement.style.textStroke = 'none';
-               highlightedWordElement.style.webkitTextFillColor = 'initial';
-               highlightedWordElement.style.color = 'initial';
-           } else {
-               console.warn(`Element for saved word ID "${savedWordId}" not found for highlighting in language "${currentLanguage}".`);
-           }
-       }
-        function handleDarkModeChange(mediaQuery) {
-            isDarkMode = mediaQuery.matches;
-            if (isDarkMode) {
-                body.classList.add('dark-mode');
-                lightBackgroundDiv.style.opacity = 0;
-                darkBackgroundDiv.style.opacity = 1;
-            } else {
-                body.classList.remove('dark-mode');
-                lightBackgroundDiv.style.opacity = 1;
-                darkBackgroundDiv.style.opacity = 0;
-            }
-            changeLanguage(currentLanguage, false);
-            applyTextEffects();
-            highlightWord();
-        }
-        
-        // --- NEW JAVASCRIPT FOR JELLO ANIMATION FIX ---
-        function animateJello(element) {
-            element.classList.remove('animate');
-            void element.offsetWidth; // This is a trick to force a reflow
-            element.classList.add('animate');
-        }
-        
-        // Unified function to handle button clicks and animations
-        function handleButtonClick(element, action, ...args) {
-            animateJello(element);
-            
-            switch (action) {
-                case 'changeLanguage':
-                    changeLanguage(...args);
-                    break;
-                case 'scrollToSavedWord':
-                    scrollToSavedWord();
-                    break;
-                case 'savePosition':
-                    savePosition();
-                    break;
-                case 'closePopup':
-                    closePopup();
-                    break;
-                case 'redirectHome':
-                    window.location.href = 'https://dodch.github.io/Dodch-Stories-/index.html';
-                    break;
-            }
-        }
-        // --- END OF NEW JAVASCRIPT ---
-        
-        let load = 0;
-        let interval = setInterval(updateLoadingText, 30);
-        function updateLoadingText() {
-          load++;
-          if (load > 99) {
-            clearInterval(interval);
-            loadPercentageText.innerText = '100%';
-          } else {
-            loadPercentageText.innerText = `${load}%`;
           }
         }
-        window.addEventListener('load', () => {
-             if (load < 100) {
-                 loadPercentageText.innerText = '100%';
-             }
-            setTimeout(() => {
-                body.classList.remove('loading');
-                loadingScreen.classList.add('hidden');
-                setTimeout(() => {
-                    loadingScreen.remove();
-                 }, 600);
-            }, 500);
-        });
-        document.addEventListener('DOMContentLoaded', () => {
-             const savedProgressJson = localStorage.getItem('allSavedProgress');
-             try {
-                 allSavedProgress = JSON.parse(savedProgressJson) || {};
-             } catch (e) {
-                 console.error("Failed to parse saved progress from localStorage:", e);
-                 allSavedProgress = {};
-                 localStorage.removeItem('allSavedProgress');
-             }
+        .filter {
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          position: absolute;
+          inset: 0;
+        }
 
-             // Initialize dark mode based on system preference
-             const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-             handleDarkModeChange(darkModeMediaQuery);
+        :is(header, main) {
+          width: var(--content-width);
+          max-width: calc(100vw - 2rem);
+          margin: 0 auto;
+        }
 
-             // Listen for changes in system dark mode preference
-             darkModeMediaQuery.addListener(handleDarkModeChange);
+        section {
+          margin-block: 4rem;
+        }
 
-             const preferredLanguage = localStorage.getItem('preferredLanguage');
-             let initialLangToLoad = 'en';
-             if (preferredLanguage && contentMap[preferredLanguage]) {
-                initialLangToLoad = preferredLanguage;
-             }
-             // Load the initial language content and scroll to saved word if applicable
-             changeLanguage(initialLangToLoad, true);
-        });
+        .images {
+          display: flex;
+          flex-direction: column;
+          gap: 2rem;
+
+          img {
+            width: 300px;
+          }
+        }
+
+        footer {
+          padding: 1rem;
+          text-align: center;
+          font-size: 0.875rem;
+          opacity: 0.7;
+        }
+
+        header {
+          margin-block: 4rem;
+        }
+
+        header p {
+          --font-level: 2;
+          text-wrap: balance;
+          color: color-mix(in oklch, canvasText, canvas 35%);
+        }
+
+        main {
+          flex: 1;
+
+          img {
+            border-radius: 12px;
+          }
+        }
+
+        .apps {
+          display: grid;
+          grid-template-columns: repeat(4, 80px);
+          gap: 1rem;
+        }
+
+        .app {
+          width: 80px;
+          font-size: 0.875rem;
+          font-weight: 300;
+          span {
+            display: block;
+            text-align: center;
+            white-space: nowrap;
+          }
+          img {
+            width: 100%;
+          }
+        }
+
+        .nav-wrap {
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          border-radius: inherit;
+        }
+
+        [data-icons='true'] .effect nav {
+          opacity: 1;
+        }
+
+        [data-mode='dock'] .effect {
+          -webkit-backdrop-filter: url(#filter) brightness(1.1) saturate(1.5);
+                  backdrop-filter: url(#filter) brightness(1.1) saturate(1.5);
+        }
+
+        .effect nav {
+          width: 100%;
+          height: 100%;
+          flex-wrap: wrap;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0.4rem;
+          opacity: 0;
+          overflow: hidden;
+          border-radius: inherit;
+          transition: opacity 0.26s ease-out;
+          /* display: none; */
+
+          img {
+            width: 80px;
+            aspect-ratio: 1;
+          }
+        }
+
+        .effect {
+          opacity: 0;
+          transition: opacity 0.26s ease-out;
+          height: calc(var(--height) * 1px);
+          width: calc(var(--width) * 1px);
+          border-radius: calc(var(--radius) * 1px);
+          position: fixed;
+          z-index: 999999;
+          background: light-dark(
+            hsl(0 0% 100% / var(--frost, 0)),
+            hsl(0 0% 0% / var(--frost, 0))
+          );
+          -webkit-backdrop-filter: url(#filter) saturate(var(--saturation, 1));
+                  backdrop-filter: url(#filter) saturate(var(--saturation, 1));
+          box-shadow: 0 0 2px 1px
+              light-dark(
+                color-mix(in oklch, canvasText, #0000 85%),
+                color-mix(in oklch, canvasText, #0000 65%)
+              )
+              inset,
+            0 0 10px 4px
+              light-dark(
+                color-mix(in oklch, canvasText, #0000 90%),
+                color-mix(in oklch, canvasText, #0000 85%)
+              )
+              inset,
+            0px 4px 16px rgba(17, 17, 26, 0.05), 0px 8px 24px rgba(17, 17, 26, 0.05),
+            0px 16px 56px rgba(17, 17, 26, 0.05),
+            0px 4px 16px rgba(17, 17, 26, 0.05) inset,
+            0px 8px 24px rgba(17, 17, 26, 0.05) inset,
+            0px 16px 56px rgba(17, 17, 26, 0.05) inset;
+
+          * {
+            pointer-events: none;
+          }
+        }
+
+        .placeholder {
+          width: 336px;
+          height: 96px;
+          max-width: 100%;
+          position: relative;
+          margin-bottom: 200px;
+        }
+
+        .dock-placeholder {
+          width: 336px;
+          height: 96px;
+          border-radius: 16px;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          translate: -50% -50%;
+        }
+
+        [data-debug='true'] .displacement-debug {
+          translate: 0 calc(100% + 1rem);
+          scale: 1;
+          opacity: 1;
+        }
+
+        .displacement-debug {
+          pointer-events: none;
+          height: 100%;
+          width: 100%;
+          position: absolute;
+          inset: 0;
+          translate: 0 calc(200% + 1rem);
+          scale: 0.8;
+          opacity: 0;
+          transition-property: translate, opacity, scale;
+          transition-duration: 0.26s;
+          transition-timing-function: ease-out;
+          z-index: -1;
+
+          .label {
+            position: absolute;
+            left: 50%;
+            top: calc(100% + 0.2lh);
+            span {
+              display: inline-block;
+              font-size: 0.875rem;
+              font-family: 'Gloria Hallelujah', cursive;
+              padding: 0.5rem 0.75rem;
+              background: color-mix(in oklch, canvas, #0000 25%);
+              -webkit-backdrop-filter: blur(4px);
+                      backdrop-filter: blur(4px);
+              border-radius: 6px;
+              white-space: nowrap;
+            }
+            svg {
+              position: absolute;
+              filter: drop-shadow(0 2px 10px canvas);
+              right: 100%;
+              rotate: 40deg;
+              translate: 25% 60%;
+              scale: -1 1;
+              width: 40px;
+            }
+          }
+
+          .displacement-image {
+            height: 100%;
+            width: 100%;
+            pointer-events: none;
+            border-radius: calc(var(--radius) * 1px);
+          }
+        }
+
+        h1 {
+          --font-level: 6;
+          line-height: 0.9;
+          margin: 0;
+          margin-bottom: 0.25lh;
+        }
+      }
+
+      @layer base {
+        :root {
+          --font-size-min: 16;
+          --font-size-max: 20;
+          --font-ratio-min: 1.2;
+          --font-ratio-max: 1.33;
+          --font-width-min: 375;
+          --font-width-max: 1500;
+        }
+
+        html {
+          color-scheme: light dark;
+        }
+
+        [data-theme='light'] {
+          color-scheme: light only;
+        }
+
+        [data-theme='dark'] {
+          color-scheme: dark only;
+        }
+
+        :where(.fluid) {
+          --fluid-min: calc(
+            var(--font-size-min) * pow(var(--font-ratio-min), var(--font-level, 0))
+          );
+          --fluid-max: calc(
+            var(--font-size-max) * pow(var(--font-ratio-max), var(--font-level, 0))
+          );
+          --fluid-preferred: calc(
+            (var(--fluid-max) - var(--fluid-min)) /
+              (var(--font-width-max) - var(--font-width-min))
+          );
+          --fluid-type: clamp(
+            (var(--fluid-min) / 16) * 1rem,
+            ((var(--fluid-min) / 16) * 1rem) -
+              (((var(--fluid-preferred) * var(--font-width-min)) / 16) * 1rem) +
+              (var(--fluid-preferred) * var(--variable-unit, 100vi)),
+            (var(--fluid-max) / 16) * 1rem
+          );
+          font-size: var(--fluid-type);
+        }
+
+        *,
+        *:after,
+        *:before {
+          box-sizing: border-box;
+        }
+
+        body {
+          background: light-dark(#fff, #000);
+          overflow-x: hidden;
+          min-height: 100vh;
+          font-family: 'SF Pro Text', 'SF Pro Icons', 'AOS Icons', 'Helvetica Neue',
+            Helvetica, Arial, sans-serif, system-ui;
+        }
+
+        body::before {
+          --size: 45px;
+          --line: color-mix(in hsl, canvasText, transparent 80%);
+          content: '';
+          height: 100vh;
+          width: 100vw;
+          position: fixed;
+          background: linear-gradient(
+                90deg,
+                var(--line) 1px,
+                transparent 1px var(--size)
+              )
+              calc(var(--size) * 0.36) 50% / var(--size) var(--size),
+            linear-gradient(var(--line) 1px, transparent 1px var(--size)) 0%
+              calc(var(--size) * 0.32) / var(--size) var(--size);
+          -webkit-mask: linear-gradient(-20deg, transparent 50%, white);
+                  mask: linear-gradient(-20deg, transparent 50%, white);
+          top: 0;
+          transform-style: flat;
+          pointer-events: none;
+          z-index: -1;
+        }
+
+        .bear-link {
+          color: canvasText;
+          position: fixed;
+          top: 1rem;
+          left: 1rem;
+          width: 48px;
+          aspect-ratio: 1;
+          display: grid;
+          place-items: center;
+          opacity: 0.8;
+        }
+
+        :where(.x-link, .bear-link):is(:hover, :focus-visible) {
+          opacity: 1;
+        }
+
+        .bear-link svg {
+          width: 75%;
+        }
+
+        /* Utilities */
+        .sr-only {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border-width: 0;
+        }
+      }
+
+      [data-top='true'] div.tp-dfwv {
+        top: 8px;
+      }
+
+      div.tp-dfwv {
+        position: fixed;
+        width: 280px;
+        bottom: 8px;
+        top: unset;
+        view-transition-name: pane;
+      }
+    </style>
+  </head>
+    
+  <body>
+  <header>
+      <h1 class="fluid">glass<br />displacement</h1>
+      <p class="fluid">
+        it's not perfect, but neither is the platform.<br />we love it anyway.
+      </p>
+    </header>
+    <div class="effect">
+      <div class="nav-wrap">
+        <nav>
+          <img src="https://assets.codepen.io/605876/finder.png" />
+          <img src="https://assets.codepen.io/605876/launch-control.png" />
+          <img src="https://assets.codepen.io/605876/safari.png" />
+          <img src="https://assets.codepen.io/605876/calendar.png" />
+        </nav>
+      </div>
+      <svg class="filter" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="filter" color-interpolation-filters="sRGB">
+            <feImage
+              x="0"
+              y="0"
+              width="100%"
+              height="100%"
+              result="map"
+            ></feImage>
+            <feDisplacementMap
+              in="SourceGraphic"
+              in2="map"
+              id="redchannel"
+              xChannelSelector="R"
+              yChannelSelector="G"
+              result="dispRed"
+            />
+            <feColorMatrix
+              in="dispRed"
+              type="matrix"
+              values="1 0 0 0 0
+                      0 0 0 0 0
+                      0 0 0 0 0
+                      0 0 0 1 0"
+              result="red"
+            />
+            <feDisplacementMap
+              in="SourceGraphic"
+              in2="map"
+              id="greenchannel"
+              xChannelSelector="R"
+              yChannelSelector="G"
+              result="dispGreen"
+            />
+            <feColorMatrix
+              in="dispGreen"
+              type="matrix"
+              values="0 0 0 0 0
+                      0 1 0 0 0
+                      0 0 0 0 0
+                      0 0 0 1 0"
+              result="green"
+            />
+            <feDisplacementMap
+              in="SourceGraphic"
+              in2="map"
+              id="bluechannel"
+              xChannelSelector="R"
+              yChannelSelector="G"
+              result="dispBlue"
+            />
+            <feColorMatrix
+              in="dispBlue"
+              type="matrix"
+              values="0 0 0 0 0
+                      0 0 0 0 0
+                      0 0 1 0 0
+                      0 0 0 1 0"
+              result="blue"
+            />
+            <feBlend in="red" in2="green" mode="screen" result="rg" />
+            <feBlend in="rg" in2="blue" mode="screen" result="output" />
+            <feGaussianBlur in="output" stdDeviation="0.7" />
+          </filter>
+        </defs>
+      </svg>
+      <div class="displacement-debug"></div>
+    </div>
+    <main>
+      <section class="placeholder">
+        <div class="dock-placeholder"></div>
+        <span class="arrow arrow--debug">
+          <span>drag, scroll, configure</span>
+          <svg
+            viewBox="0 0 122 97"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M116.102 0.0996005C114.952 0.334095 112.7 1.53002 111.433 2.53834C110.869 2.98388 109.368 4.15635 108.077 5.11778C103.455 8.6352 102.61 9.40903 102.187 10.4877C101.39 12.5982 102.798 14.5914 105.097 14.5914C106.13 14.5914 108.241 13.7941 109.696 12.8561C110.424 12.3871 111.01 12.0823 111.01 12.1526C111.01 12.692 107.796 17.8274 106.2 19.8206C102.023 25.0733 95.6642 29.6928 86.2548 34.2889C81.0926 36.8214 77.4555 38.2753 73.9123 39.2367C71.7066 39.823 70.6507 39.9871 67.9053 40.0809C66.0516 40.1513 64.5499 40.1747 64.5499 40.1278C64.5499 40.0809 64.808 38.9788 65.1365 37.6891C65.465 36.3993 65.8404 34.1716 66.0047 32.7647C66.4505 28.3796 65.4884 24.2994 63.4704 22.2359C62.1564 20.8758 60.9363 20.3599 59.0121 20.3599C57.6043 20.3599 57.1115 20.4537 55.7975 21.1103C52.8878 22.5407 50.5648 25.9878 49.5089 30.4197C48.453 34.922 49.2742 38.0877 52.3481 41.1127C53.4744 42.2148 54.46 42.9183 55.9852 43.6921C57.1584 44.2549 58.1439 44.7473 58.1909 44.7708C58.5898 45.0053 54.5304 53.4705 52.0666 57.6211C47.4674 65.3125 39.3486 74.575 30.5728 82.0789C22.2427 89.2309 16.7285 92.4435 9.87677 94.1553C8.28116 94.554 7.13138 94.6478 4.2452 94.6478C1.17131 94.6712 0.608154 94.7181 0.608154 95.023C0.608154 95.234 1.19478 95.5857 2.13337 95.9609C3.54126 96.4768 3.96363 96.5472 7.41296 96.5237C10.5572 96.5237 11.4724 96.4299 13.1149 96.0078C21.7265 93.6863 31.1594 87.1908 42.6102 75.7006C49.2977 69.0175 52.5828 64.9373 56.1494 58.9343C58.0501 55.7217 60.6312 50.6801 61.7575 47.9365L62.5553 45.9902L64.0806 46.1543C71.3547 46.9047 77.7136 45.3101 88.3667 40.034C96.2274 36.1414 101.976 32.3426 106.505 28.0748C108.617 26.0816 111.855 22.2828 112.794 20.7117C113.028 20.313 113.286 19.9847 113.357 19.9847C113.427 19.9847 113.662 20.782 113.873 21.72C114.084 22.6814 114.647 24.276 115.093 25.2609C115.82 26.8085 116.008 27.043 116.454 26.9727C116.876 26.9258 117.228 26.4333 117.956 24.9795C119.317 22.2828 119.833 20.2661 120.772 13.8879C121.757 7.25168 121.781 4.4143 120.889 2.56179C119.95 0.615488 118.12 -0.322489 116.102 0.0996005ZM60.7016 25.7767C61.4525 26.9023 61.8279 29.2942 61.6637 31.9205C61.4759 34.7813 60.5139 38.9788 60.0681 38.9788C59.5284 38.9788 57.1584 37.6422 56.2198 36.8214C54.8354 35.6021 54.3426 34.2889 54.5538 32.2957C54.8589 29.2473 56.1964 26.2223 57.5808 25.3547C58.7306 24.6512 60.0681 24.8388 60.7016 25.7767Z"
+              fill="currentColor"
+            ></path>
+          </svg>
+        </span>
+      </section>
+      <section>
+        <p class="fluid">
+          How do you create backdrop displacement with HTML and CSS? SVG. The
+          idea is that you need a displacement map that distorts the input
+          image. In this case, the backdrop of our element (whatever is
+          underneath).
+        </p>
+      </section>
+      <section>
+        <div class="apps">
+          <div class="app">
+            <img src="https://assets.codepen.io/605876/beeper.png" />
+            <span>Beeper</span>
+          </div>
+          <div class="app">
+            <img src="https://assets.codepen.io/605876/cursor.png" />
+            <span>Cursor</span>
+          </div>
+          <div class="app">
+            <img src="https://assets.codepen.io/605876/screenstudio.png" />
+            <span>Screen Studio</span>
+          </div>
+          <div class="app">
+            <img src="https://assets.codepen.io/605876/raycast.png" />
+            <span>Raycast</span>
+          </div>
+          <div class="app">
+            <img src="https://assets.codepen.io/605876/photos.png" />
+            <span>Photos</span>
+          </div>
+          <div class="app">
+            <img src="https://assets.codepen.io/605876/signal.png" />
+            <span>Signal</span>
+          </div>
+          <div class="app">
+            <img src="https://assets.codepen.io/605876/spotify.png" />
+            <span>Spotify</span>
+          </div>
+          <div class="app">
+            <img src="https://assets.codepen.io/605876/brave.png" />
+            <span>Brave</span>
+          </div>
+        </div>
+      </section>
+            <section>
+        <p class="fluid">
+Check the "debug" option to see the displacement map used
+          and play with the options. The red and blue of the displacement map
+          displaces the backdrop. The caveats? You need to update the map image
+          whenever the shape of the element changes. The big one?
+          backdrop-filter: url() currently only works in Chromium and not
+          Gecko/Webkit.
+        </p>
+      </section>
+      <section class="emojis fluid">
+        <span>🧑‍🍳</span>
+        <span>🤓</span>
+        <span>🤪</span>
+        <span>🙄</span>
+        <span>🤠</span>
+        <span>🥸</span>
+      </section>
+      <section>
+        <p class="fluid">
+          Glass adjusts for different surfaces and use cases.<br />Try different
+          modes or freestyle it in "free" mode.
+        </p>
+      </section>
+      <section class="images">
+        <img
+          src="https://fastly.picsum.photos/id/841/300/300.jpg?hmac=59ZNBwU1FjRrwpU3J7NDerfr_DHq-JPYXqnyumDt17U"
+          alt=""
+        />
+        <img
+          src="https://fastly.picsum.photos/id/517/300/300.jpg?hmac=xDY76wxtwOZ5mEJYjf_i69VkVQibAYi036aADsWbaLs"
+          alt=""
+        />
+        <img
+          src="https://fastly.picsum.photos/id/204/300/300.jpg?hmac=nMn3k2irZFRlOEdAxFaKapzdO5cuwF8eQv5HbhP9Lyw"
+          alt=""
+        />
+        <img
+          src="https://fastly.picsum.photos/id/906/300/300.jpg?hmac=UJKxYXpNPOY5aqp_mipycmJFPgr8bd3RxcZChdDu0-c"
+          alt=""
+        />
+        <img
+          src="https://fastly.picsum.photos/id/546/300/300.jpg?hmac=f8E2wXr3kthnt3BT6h17Y5Baf_0aJUdPIV7GqBVgxzY"
+          alt=""
+        />
+      </section>
+      <section>
+        <p class="fluid">
+          That's it. Go forth and play with SVG filters.<br />But maybe do it in
+          Safari and Firefox first.
+        </p>
+      </section>
+    </main>
+    <footer>┬┴┬┴┤•ᴥ•ʔ jhey &copy; 2025 ├┬┴┬┴</footer>
+    <a
+      aria-label="Follow Jhey"
+      class="bear-link"
+      href="https://twitter.com/intent/follow?screen_name=jh3yy"
+      target="_blank"
+      rel="noreferrer noopener"
+    >
+      <svg
+        class="w-9"
+        viewBox="0 0 969 955"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle
+          cx="161.191"
+          cy="320.191"
+          r="133.191"
+          stroke="currentColor"
+          stroke-width="20"
+        ></circle>
+        <circle
+          cx="806.809"
+          cy="320.191"
+          r="133.191"
+          stroke="currentColor"
+          stroke-width="20"
+        ></circle>
+        <circle
+          cx="695.019"
+          cy="587.733"
+          r="31.4016"
+          fill="currentColor"
+        ></circle>
+        <circle
+          cx="272.981"
+          cy="587.733"
+          r="31.4016"
+          fill="currentColor"
+        ></circle>
+        <path
+          d="M564.388 712.083C564.388 743.994 526.035 779.911 483.372 779.911C440.709 779.911 402.356 743.994 402.356 712.083C402.356 680.173 440.709 664.353 483.372 664.353C526.035 664.353 564.388 680.173 564.388 712.083Z"
+          fill="currentColor"
+        ></path>
+        <rect
+          x="310.42"
+          y="448.31"
+          width="343.468"
+          height="51.4986"
+          fill="#FF1E1E"
+        ></rect>
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M745.643 288.24C815.368 344.185 854.539 432.623 854.539 511.741H614.938V454.652C614.938 433.113 597.477 415.652 575.938 415.652H388.37C366.831 415.652 349.37 433.113 349.37 454.652V511.741L110.949 511.741C110.949 432.623 150.12 344.185 219.845 288.24C289.57 232.295 384.138 200.865 482.744 200.865C581.35 200.865 675.918 232.295 745.643 288.24Z"
+          fill="currentColor"
+        ></path>
+      </svg>
+    </a>
+    <script type="module">
+      import { Pane } from 'https://cdn.skypack.dev/tweakpane@4.0.4';
+      import gsap from 'https://cdn.skypack.dev/gsap@3.13.0';
+      import Draggable from 'https://cdn.skypack.dev/gsap@3.13.0/Draggable';
+      gsap.registerPlugin(Draggable);
+
+      const base = {
+        icons: false,
+        scale: -180,
+        radius: 16,
+        border: 0.07,
+        lightness: 50,
+        displace: 0,
+        blend: 'difference',
+        x: 'R',
+        y: 'B',
+        alpha: 0.93,
+        blur: 11,
+        r: 0,
+        g: 10,
+        b: 20,
+        saturation: 1
+        // these are the ones that usually change
+        // width: 336,
+        // height: 96,
+        // displace: 1,
+        // frost: 0,
+      };
+
+      const presets = {
+        dock: {
+          ...base,
+          width: 336,
+          height: 96,
+          displace: 0.2,
+          icons: true,
+          frost: 0.05 },
+
+        pill: {
+          ...base,
+          width: 200,
+          height: 80,
+          displace: 0,
+          frost: 0,
+          radius: 40 },
+
+        bubble: {
+          ...base,
+          radius: 70,
+          width: 140,
+          height: 140,
+          displace: 0,
+          frost: 0 },
+
+        free: {
+          ...base,
+          width: 140,
+          height: 280,
+          radius: 80,
+          border: 0.15,
+          alpha: 0.74,
+          lightness: 60,
+          blur: 10,
+          displace: 0,
+          scale: -300 } };
+
+
+
+      const config = {
+        ...presets.dock,
+        theme: 'system',
+        debug: false,
+        top: false,
+        // circle, dock, freestyle, etc.
+        preset: 'dock' };
+
+
+      const ctrl = new Pane({
+        title: 'config',
+        expanded: true });
+
+
+      // build this
+      const debugPen = document.querySelector('.displacement-debug');
+      const buildDisplacementImage = () => {
+        const border = Math.min(config.width, config.height) * (config.border * 0.5);
+        const kids = `
+          <svg class="displacement-image" viewBox="0 0 ${config.width} ${
+        config.height
+        }" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="red" x1="100%" y1="0%" x2="0%" y2="0%">
+                <stop offset="0%" stop-color="#000"/>
+                <stop offset="100%" stop-color="red"/>
+              </linearGradient>
+              <linearGradient id="blue" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#000"/>
+                <stop offset="100%" stop-color="blue"/>
+              </linearGradient>
+            </defs>
+            <rect x="0" y="0" width="${config.width}" height="${
+        config.height
+        }" fill="black"></rect>
+            <rect x="0" y="0" width="${config.width}" height="${config.height}" rx="${
+        config.radius
+        }" fill="url(#red)" />
+            <rect x="0" y="0" width="${config.width}" height="${config.height}" rx="${
+        config.radius
+        }" fill="url(#blue)" style="mix-blend-mode: ${config.blend}" />
+            <rect x="${border}" y="${
+        Math.min(config.width, config.height) * (config.border * 0.5)
+        }" width="${config.width - border * 2}" height="${
+        config.height - border * 2
+        }" rx="${config.radius}" fill="hsl(0 0% ${config.lightness}% / ${
+        config.alpha
+        }" style="filter:blur(${config.blur}px)" />
+          </svg>
+          <div class="label">
+            <span>displacement image</span>
+            <svg viewBox="0 0 97 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M74.568 0.553803C74.0753 0.881909 73.6295 1.4678 73.3713 2.12401C73.1367 2.70991 72.3858 4.67856 71.6584 6.50658C70.9544 8.35803 69.4526 11.8031 68.3498 14.1936C66.1441 19.0214 65.839 20.2167 66.543 21.576C67.4581 23.3337 69.4527 23.9196 71.3064 22.9821C72.4797 22.3728 74.8965 19.5839 76.9615 16.4435C78.8387 13.5843 78.8387 13.6077 78.1113 18.3418C77.3369 23.4275 76.4687 26.2866 74.5915 30.0364C73.254 32.7316 71.8461 34.6299 69.218 37.3485C65.9563 40.6999 62.2254 42.9732 57.4385 44.4965C53.8718 45.6449 52.3935 45.8324 47.2546 45.8324C43.3594 45.8324 42.1158 45.7386 39.9805 45.2933C32.2604 43.7466 25.3382 40.9577 19.4015 36.9735C15.0839 34.0909 12.5028 31.7004 9.80427 27.9975C6.80073 23.9196 4.36038 17.2403 3.72682 11.475C3.37485 8.1471 3.1402 7.32683 2.43624 7.13934C0.770217 6.71749 0.183578 7.77211 0.0193217 11.5219C-0.26226 18.5996 2.55356 27.1304 7.17619 33.1066C13.8403 41.7545 25.432 48.4103 38.901 51.2696C41.6465 51.8555 42.2566 51.9023 47.4893 51.9023C52.3935 51.9023 53.426 51.832 55.5144 51.3867C62.2723 49.9337 68.5375 46.6292 72.949 42.1998C76.0464 39.1296 78.1113 36.2939 79.8946 32.7081C82.1942 28.0912 83.5317 23.3103 84.2591 17.17C84.3999 15.8576 84.6111 14.7795 84.7284 14.7795C84.8223 14.7795 85.4559 15.1311 86.1364 15.5763C88.037 16.7716 90.3835 17.8965 93.5748 19.0918C96.813 20.3339 97.3996 20.287 96.4141 18.9512C94.9123 16.9122 90.055 11.5219 87.1219 8.63926C84.0949 5.66288 83.8368 5.33477 83.5552 4.1864C83.3909 3.48332 83.0155 2.68649 82.6401 2.31151C82.0065 1.6553 80.4109 1.04595 79.9885 1.30375C79.8712 1.37406 79.2845 1.11626 78.6744 0.717845C77.2431 -0.172727 75.7413 -0.243024 74.568 0.553803Z" fill="currentColor"></path>
+            </svg>
+          </div>
+        `;
+
+        debugPen.innerHTML = kids;
+
+        const svgEl = debugPen.querySelector('.displacement-image'); // or any other method
+        const serialized = new XMLSerializer().serializeToString(svgEl);
+        const encoded = encodeURIComponent(serialized);
+        const dataUri = `data:image/svg+xml,${encoded}`;
+
+        gsap.set('feImage', {
+          attr: {
+            href: dataUri } });
+
+
+        gsap.set('feDisplacementMap', {
+          attr: {
+            xChannelSelector: config.x,
+            yChannelSelector: config.y } });
+
+
+      };
+
+      const update = () => {
+        buildDisplacementImage();
+        gsap.set(document.documentElement, {
+          '--width': config.width,
+          '--height': config.height,
+          '--radius': config.radius,
+          '--frost': config.frost,
+          '--output-blur': config.displace,
+          '--saturation': config.saturation });
+
+        gsap.set('feDisplacementMap', {
+          attr: {
+            scale: config.scale } });
+
+
+        gsap.set('#redchannel', {
+          attr: {
+            scale: config.scale + config.r } });
+
+
+        gsap.set('#greenchannel', {
+          attr: {
+            scale: config.scale + config.g } });
+
+
+        gsap.set('#bluechannel', {
+          attr: {
+            scale: config.scale + config.b } });
+
+
+        gsap.set('feGaussianBlur', {
+          attr: {
+            stdDeviation: config.displace } });
+
+
+
+        document.documentElement.dataset.icons = config.icons;
+        document.documentElement.dataset.mode = config.preset;
+        document.documentElement.dataset.top = config.top;
+        document.documentElement.dataset.debug = config.debug;
+        document.documentElement.dataset.theme = config.theme;
+      };
+
+      const sync = event => {
+        if (
+        !document.startViewTransition ||
+        event.target.controller.view.labelElement.innerText !== 'theme' &&
+        event.target.controller.view.labelElement.innerText !== 'top')
+
+        return update();
+        document.startViewTransition(() => update());
+      };
+      ctrl.addBinding(config, 'debug');
+      ctrl.addBinding(config, 'top');
+      ctrl.
+      addBinding(config, 'preset', {
+        label: 'mode',
+        options: {
+          dock: 'dock',
+          pill: 'pill',
+          bubble: 'bubble',
+          free: 'free' } }).
+
+
+      on('change', () => {
+        document.documentElement.dataset.mode = config.preset;
+        settings.expanded = config.preset === 'free';
+        settings.disabled = config.preset !== 'free';
+        if (config.preset !== 'free') {
+          const values = presets[config.preset];
+          document.documentElement.dataset.icons = values.icons;
+          console.info({ values });
+          const morph = gsap.timeline({
+            onUpdate: () => {
+              ctrl.refresh();
+            } });
+
+          for (const [key, value] of Object.entries(values)) {
+            morph.to(
+            config,
+            {
+              [key]: value },
+
+            0);
+
+          }
+        }
+      });
+      ctrl.addBinding(config, 'theme', {
+        label: 'theme',
+        options: {
+          system: 'system',
+          light: 'light',
+          dark: 'dark' } });
+
+
+      const settings = ctrl.addFolder({
+        title: 'settings',
+        disabled: true,
+        expanded: false });
+
+
+      settings.addBinding(config, 'frost', {
+        label: 'frost',
+        min: 0,
+        max: 1,
+        step: 0.01 });
+
+      settings.addBinding(config, 'saturation', {
+        min: 0,
+        max: 2,
+        step: 0.1 });
+
+      settings.addBinding(config, 'icons');
+      settings.addBinding(config, 'width', {
+        min: 80,
+        max: 500,
+        step: 1,
+        label: 'width (px)' });
+
+      settings.addBinding(config, 'height', {
+        min: 35,
+        max: 500,
+        step: 1,
+        label: 'height (px)' });
+
+      settings.addBinding(config, 'radius', {
+        min: 0,
+        max: 500,
+        step: 1,
+        label: 'radius (px)' });
+
+      settings.addBinding(config, 'border', {
+        min: 0,
+        max: 1,
+        step: 0.01,
+        label: 'border' });
+
+      settings.addBinding(config, 'alpha', {
+        min: 0,
+        max: 1,
+        step: 0.01,
+        label: 'alpha' });
+
+      settings.addBinding(config, 'lightness', {
+        min: 0,
+        max: 100,
+        step: 1,
+        label: 'lightness' });
+
+      settings.addBinding(config, 'blur', {
+        min: 0,
+        max: 20,
+        step: 1,
+        label: 'input blur' });
+
+      settings.addBinding(config, 'displace', {
+        min: 0,
+        max: 12,
+        step: 0.1,
+        label: 'output blur' });
+
+      settings.addBinding(config, 'x', {
+        label: 'channel x',
+        options: {
+          r: 'R',
+          g: 'G',
+          b: 'B' } });
+
+
+      settings.addBinding(config, 'y', {
+        label: 'channel y',
+        options: {
+          r: 'R',
+          g: 'G',
+          b: 'B' } });
+
+
+      settings.addBinding(config, 'blend', {
+        options: {
+          normal: 'normal',
+          multiply: 'multiply',
+          screen: 'screen',
+          overlay: 'overlay',
+          darken: 'darken',
+          lighten: 'lighten',
+          'color-dodge': 'color-dodge',
+          'color-burn': 'color-burn',
+          'hard-light': 'hard-light',
+          'soft-light': 'soft-light',
+          difference: 'difference',
+          exclusion: 'exclusion',
+          hue: 'hue',
+          saturation: 'saturation',
+          color: 'color',
+          luminosity: 'luminosity',
+          'plus-darker': 'plus-darker',
+          'plus-lighter': 'plus-lighter' },
+
+        label: 'blend' });
+
+
+      settings.addBinding(config, 'scale', {
+        min: -1000,
+        max: 1000,
+        step: 1,
+        label: 'scale' });
+
+
+      const abb = settings.addFolder({ title: 'chromatic' });
+      abb.addBinding(config, 'r', {
+        min: -100,
+        max: 100,
+        step: 1,
+        label: 'red' });
+
+      abb.addBinding(config, 'g', {
+        min: -100,
+        max: 100,
+        step: 1,
+        label: 'green' });
+
+      abb.addBinding(config, 'b', {
+        min: -100,
+        max: 100,
+        step: 1,
+        label: 'blue' });
+
+
+      document.documentElement.style.setProperty('--size', config.size);
+      Draggable.create('.effect', {
+        type: 'x,y' });
+
+
+      ctrl.on('change', sync);
+      update();
+
+      // on load – we need to align the .effect
+      const { top, left } = document.
+      querySelector('.dock-placeholder').
+      getBoundingClientRect();
+      gsap.set('.effect', {
+        top: top > window.innerHeight ? window.innerHeight * 0.5 : top,
+        left,
+        opacity: 1 });
     </script>
-</body>
+  </body>
+  
 </html>
