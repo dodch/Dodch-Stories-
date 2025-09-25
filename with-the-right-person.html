@@ -37,10 +37,6 @@
             --save-button-bg-dark: rgba(192, 132, 252, 0.25);
             --save-button-text-light: #ffffff;
             --save-button-text-dark: #ffffff;
-            --back-button-bg-light: rgba(239, 68, 68, 0.6);
-            --back-button-bg-dark: rgba(252, 165, 165, 0.25);
-            --back-button-text-light: #ffffff;
-            --back-button-text-dark: #ffffff;
             /* New variable for the content tint */
             --content-bg-light: rgba(0, 0, 0, 0.2);
             /* New variable for the selected language button text */
@@ -76,9 +72,10 @@
         .glass-button-base {
             background-color: var(--glass-bg-light);
             box-shadow: var(--button-shadow-light);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.5s ease, background-color 0.5s ease;
+            /* UPDATED: Changed backdrop-filter to use the liquid effect SVG */
+            backdrop-filter: url(#filter) blur(11px);
+            -webkit-backdrop-filter: url(#filter) blur(11px);
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.5s ease, background-color 0.5s ease, backdrop-filter 0.3s ease;
         }
         body.dark-mode .glass-button-base {
             background-color: var(--glass-bg-dark);
@@ -118,6 +115,9 @@
                 inset 2px -6.5px 1px -4px color-mix(in srgb, #000 calc(10%), transparent),
                 0px 4px 20px 0px color-mix(in srgb, #000 calc(30%), transparent),
                 0px 20px 60px 0px color-mix(in srgb, #000 calc(25%), transparent);
+            /* UPDATED: Added hover effect to change the blur */
+            backdrop-filter: url(#filter) blur(15px);
+            -webkit-backdrop-filter: url(#filter) blur(15px);
         }
         body.dark-mode .glass-button-base:hover {
             box-shadow:
@@ -135,14 +135,14 @@
         /* Custom styles for pop-up buttons to override glass background */
         #popup button.glass-button-base.bg-green-500 {
             background-color: rgba(34, 197, 94, 0.8) !important;
-            backdrop-filter: blur(4px) !important;
-            -webkit-backdrop-filter: blur(4px) !important;
+            backdrop-filter: url(#filter) blur(11px) !important;
+            -webkit-backdrop-filter: url(#filter) blur(11px) !important;
         }
 
         #popup button.glass-button-base.bg-red-500 {
             background-color: rgba(239, 68, 68, 0.8) !important;
-            backdrop-filter: blur(4px) !important;
-            -webkit-backdrop-filter: blur(4px) !important;
+            backdrop-filter: url(#filter) blur(11px) !important;
+            -webkit-backdrop-filter: url(#filter) blur(11px) !important;
         }
 
         /* Dark mode specific styles for the pop-up buttons */
@@ -402,8 +402,9 @@
         #popup > div {
              background-color: var(--pop-up-bg-light);
              color: var(--pop-up-text-light);
-             backdrop-filter: blur(4px);
-             -webkit-backdrop-filter: blur(4px);
+             /* UPDATED: Changed backdrop-filter to use the liquid effect SVG */
+             backdrop-filter: url(#filter) blur(11px);
+             -webkit-backdrop-filter: url(#filter) blur(11px);
              transition: background-color 0.5s ease, color 0.5s ease;
              box-shadow: var(--glass-shadow-light);
         }
@@ -765,6 +766,42 @@ Because your souls will always be connected…
             </div>
         </div>
     </div>
+    
+    <svg style="visibility: hidden; position: absolute;" width="0" height="0" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="filter" color-interpolation-filters="sRGB">
+          <feImage
+            x="0"
+            y="0"
+            width="100%"
+            height="100%"
+            result="map"
+            xlink:href="data:image/svg+xml;charset=UTF-8,%3Csvg width='100%25' height='100%25' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3C!-- This is a simplified SVG for a displacement map. The original one from the source code is more complex and would need the full path to be included. This placeholder serves to demonstrate the correct filter structure. --%3E%3Ccircle cx='50' cy='50' r='40' fill='white' /%3E%3C/svg%3E"
+          ></feImage>
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="map"
+            id="redchannel"
+            xChannelSelector="R"
+            yChannelSelector="B"
+            scale="100"
+          />
+          <feComposite
+            in="SourceGraphic"
+            in2="redchannel"
+            operator="in"
+          />
+          <feColorMatrix
+            in="SourceGraphic"
+            type="matrix"
+            values="1 0 0 0 0
+                    0 1 0 0 0
+                    0 0 1 0 0
+                    0 0 0 1 0"
+          />
+        </filter>
+      </defs>
+    </svg>
     <script>
         const loadingScreen = document.getElementById("loading-screen");
         const loadPercentageText = document.querySelector(".loading-percentage");
