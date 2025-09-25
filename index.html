@@ -95,6 +95,7 @@
   }
   html {
     height: 100%;
+    scroll-behavior: smooth;
   }
   body {
     margin:0;
@@ -745,6 +746,7 @@ symbols of who we are, and who we might become. ✨</p>
   </div>
   <input type="text" id="searchInput" class="search-bar" placeholder="Search stories...">
 </div>
+<div id="favorites-section"></div>
 <div class="grid" id="grid"></div>
 <span id="no-favorites-message">No favorites yet! Click the heart to add some.</span>
 <div class="floating-buttons-container">
@@ -1118,6 +1120,7 @@ async function fetchAndBuildGrid() {
       const heartSvg = filterBtn.querySelector('svg');
       if (showingFavorites) {
         heartSvg.style.fill = 'var(--heart-active)';
+        document.getElementById('favorites-section').scrollIntoView({ behavior: 'smooth' });
       } else {
         heartSvg.style.fill = 'var(--heart-color)';
       }
