@@ -67,8 +67,8 @@
     transition: all 0.5s ease-in-out;
     --panel-blur-start: 10px;
     
-    /* NEW: Viewport variable for the mobile fix */
-    --vph: 100lvh; /* Fallback/Legacy viewport height for fixed elements */
+    /* NEW: Viewport variable for the mobile fix (using largest for fixed elements) */
+    --vph: 100lvh;
   }
   /* Dark mode variables based on device settings */
   @media (prefers-color-scheme: dark) {
@@ -135,8 +135,8 @@
     position: relative;
     overflow-x: hidden;
     transition: all 0.5s ease-in-out;
-    /* Ensure body is at least full viewport height */
-    min-height: 100vh; 
+    /* FIX: Use 100dvh for stable mobile layout height (Dynamic Viewport Height) */
+    min-height: 100dvh; 
   }
   body::before {
     content: '';
@@ -612,7 +612,7 @@
     top: 0;
     left: 0;
     width: 100%;
-    /* FIX: Use 100lvh for stable panel height (Largest Viewport Height) */
+    /* Keep 100lvh for stable panel height (Largest Viewport Height) */
     height: 100lvh; 
     padding: 80px 40px 40px;
     box-sizing: border-box;
