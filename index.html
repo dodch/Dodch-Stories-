@@ -66,6 +66,9 @@
     --button-shadow:var(--glass-shadow);
     transition: all 0.5s ease-in-out;
     --panel-blur-start: 10px;
+    
+    /* NEW: Viewport variable for the mobile fix */
+    --vph: 100lvh; /* Fallback/Legacy viewport height for fixed elements */
   }
   /* Dark mode variables based on device settings */
   @media (prefers-color-scheme: dark) {
@@ -132,17 +135,18 @@
     position: relative;
     overflow-x: hidden;
     transition: all 0.5s ease-in-out;
-    /* FIX 1: Ensure body is at least full viewport height */
+    /* Ensure body is at least full viewport height */
     min-height: 100vh; 
   }
   body::before {
     content: '';
-    /* FIX 1: Revert to position fixed and use 100vh for a fixed, full-viewport background */
+    /* Fixed position for background */
     position: fixed; 
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh; /* Revert to 100vh to cover the visual viewport */
+    /* FIX: Use 100lvh for stable mobile background height (Largest Viewport Height) */
+    height: 100lvh; 
     background-image: var(--bg-url);
     background-position: center;
     background-size: cover;
@@ -181,7 +185,7 @@
     color: var(--glass-text);
     backdrop-filter:blur(4px) url(#filter);
     -webkit-backdrop-filter:blur(4px);
-    position: relative; /* All children are now positioned relative to this */
+    position: relative; 
   }
   .glass-container:hover {
     box-shadow:0 20px 50px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.1), var(--glass-shadow);
@@ -191,7 +195,7 @@
   }
   .glass-content {
     text-align: left;
-    padding: 3rem 2rem 3rem 2rem; /* Added generous top and bottom padding */
+    padding: 3rem 2rem 3rem 2rem; 
     position: relative;
   }
   .title {
@@ -199,14 +203,14 @@
     font-weight: 900;
     margin-bottom: .5rem;
     font-family: 'Montserrat', sans-serif;
-    text-shadow: 0 0 5px rgba(0,0,0,0.5); /* Added subtle shadow */
+    text-shadow: 0 0 5px rgba(0,0,0,0.5); 
   }
   .description {
     font-size: 1rem;
     opacity: .8;
     font-family: 'Open Sans', sans-serif;
   }
-  /* FIX 2: Create a fixed wrapper for the top-right elements to ensure stability */
+  /* Fixed wrapper for the top-right elements */
   .top-right-fixed-wrapper {
       position: fixed;
       top: 0;
@@ -215,21 +219,19 @@
       height: auto;
       padding: 40px; /* Match body padding */
       z-index: 10;
-      /* Use a layer optimization trick */
       will-change: transform; 
       transform: translateZ(0);
-      display: flex; /* Flex container for alignment */
-      justify-content: flex-end; /* Push items to the right */
+      display: flex; 
+      justify-content: flex-end; 
       align-items: center;
   }
   .search-container-wrapper {
-    position: relative; /* Change to relative to be inside the new fixed wrapper */
+    position: relative; 
     top: 0;
     right: 0;
     display: flex;
     align-items: center;
     gap: 1rem;
-    /* Remove fixed position and translateZ here */
     transform: none; 
     padding: 0;
   }
@@ -549,7 +551,7 @@
       100% { box-shadow: 0 0 10px var(--golden-tint), 0 0 20px var(--golden-tint), 0 0 30px var(--golden-tint); transform: scale(1.05); }
   }
   /* --- Info Panel CSS --- */
-  /* FIX 2: Create a fixed wrapper for the top-left elements to ensure stability */
+  /* Fixed wrapper for the top-left elements */
   .top-left-fixed-wrapper {
     position: fixed;
     top: 0;
@@ -565,21 +567,21 @@
     align-items: center;
   }
   .info-container-wrapper {
-    position: relative; /* Change to relative to be inside the new fixed wrapper */
+    position: relative; 
     top: 0;
     left: 0;
     z-index: 20;
     display: flex;
     align-items: center;
     gap: 1rem;
-    transition: opacity 0.5s ease-in-out, visibility 0.5s; /* Added visibility transition */
+    transition: opacity 0.5s ease-in-out, visibility 0.5s; 
     transform: none; 
     padding: 0;
   }
   .info-container-wrapper.hidden {
     opacity: 0;
     pointer-events: none;
-    visibility: hidden; /* Ensures it's fully gone */
+    visibility: hidden; 
   }
   .info-button {
     width: 45px;
@@ -610,7 +612,8 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    /* FIX: Use 100lvh for stable panel height (Largest Viewport Height) */
+    height: 100lvh; 
     padding: 80px 40px 40px;
     box-sizing: border-box;
     background-color: var(--glass-bg);
@@ -1167,7 +1170,7 @@ async function fetchAndBuildGrid() {
     const searchBar = document.getElementById('searchInput');
     const filterBtn = document.getElementById('filterBtn');
     const contactBtn = document.getElementById('contactBtn');
-    const infoContainerWrapper = document.getElementById('infoContainerWrapper'); // Target the wrapper
+    const infoContainerWrapper = document.getElementById('infoContainerWrapper'); 
     
     addTapAnimation(contactBtn);
     addTapAnimation(filterBtn);
@@ -1177,11 +1180,11 @@ async function fetchAndBuildGrid() {
       const isActive = searchBar.classList.toggle('active');
       searchButton.classList.toggle('active', isActive);
       
-      // FIX: Ensure Info button hides when search is active
       if (isActive) {
         searchBar.focus();
         infoContainerWrapper.classList.add('hidden'); 
       } else {
+        // FIX: Ensure search is fully reset when closed
         searchBar.value = '';
         searchBar.blur();
         infoContainerWrapper.classList.remove('hidden'); 
