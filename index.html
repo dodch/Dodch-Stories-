@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
   <link rel="canonical" href="https://www.dodchstories.com/">
   <meta name="google-site-verification" content="WPsemouAlOQyJaztzjjtf6afzzagtg6WWPZh7gd3T8A">
   <title>Dodch Stories | Original Fiction and Creative Writing</title>
@@ -224,6 +224,7 @@
       display: flex; 
       justify-content: flex-end; 
       align-items: center;
+      transition: all 0.2s ease-in-out; /* Add transition for smoothness */
   }
   .search-container-wrapper {
     position: relative; 
@@ -429,6 +430,13 @@
     height:1px;
     margin-top:50px;
   }
+  /* FIX: New class to handle iOS fixed element bug when keyboard is open */
+  .keyboard-open .top-right-fixed-wrapper,
+  .keyboard-open .top-left-fixed-wrapper {
+      position: absolute !important; 
+      /* 'top' will be set by JavaScript on focus */
+      padding: 40px; 
+  }
   /* --- Media Query for smaller screens --- */
   @media (max-width: 600px) {
     .top-right-fixed-wrapper {
@@ -445,6 +453,11 @@
     .floating-buttons-container{
         left:1rem;
         bottom:1rem;
+    }
+    /* Adjust padding for the fixed wrappers when in absolute mode for consistency */
+    .keyboard-open .top-right-fixed-wrapper,
+    .keyboard-open .top-left-fixed-wrapper {
+        padding: 20px;
     }
   }
   .site-footer {
@@ -565,6 +578,7 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    transition: all 0.2s ease-in-out; /* Add transition for smoothness */
   }
   .info-container-wrapper {
     position: relative; 
@@ -1171,7 +1185,9 @@ async function fetchAndBuildGrid() {
     const filterBtn = document.getElementById('filterBtn');
     const contactBtn = document.getElementById('contactBtn');
     const infoContainerWrapper = document.getElementById('infoContainerWrapper'); 
-    
+    const topRightWrapper = document.querySelector('.top-right-fixed-wrapper');
+    const topLeftWrapper = document.querySelector('.top-left-fixed-wrapper');
+
     addTapAnimation(contactBtn);
     addTapAnimation(filterBtn);
     addTapAnimation(searchButton);
@@ -1194,6 +1210,34 @@ async function fetchAndBuildGrid() {
     });
 
     searchBar.addEventListener('input', filterAndRenderPanels);
+    
+    // FIX: iOS Keyboard Position Fix - START
+    searchBar.addEventListener('focus', () => {
+        // When input is focused (keyboard opens), set fixed elements to absolute
+        document.body.classList.add('keyboard-open');
+        
+        // Crucially, manually set the absolute 'top' position to where the fixed element *should* be.
+        const scrollOffset = window.scrollY || document.documentElement.scrollTop;
+        
+        // Get the current padding-top of the body (40px or 20px on mobile)
+        const bodyPaddingTop = parseFloat(getComputedStyle(document.body).paddingTop) || 40;
+        
+        // Set the absolute 'top' position (current scroll position + body padding)
+        const absoluteTopPosition = `${scrollOffset + bodyPaddingTop}px`;
+        
+        topRightWrapper.style.top = absoluteTopPosition;
+        topLeftWrapper.style.top = absoluteTopPosition;
+    });
+
+    searchBar.addEventListener('blur', () => {
+        // When input is blurred (keyboard closes), revert to position:fixed
+        document.body.classList.remove('keyboard-open');
+        
+        // Clean up the manual positioning
+        topRightWrapper.style.removeProperty('top');
+        topLeftWrapper.style.removeProperty('top');
+    });
+    // FIX: iOS Keyboard Position Fix - END
 
     filterBtn.addEventListener('click', () => {
       showingFavorites = !showingFavorites;
@@ -1248,11 +1292,20 @@ async function fetchAndBuildGrid() {
     }
 
     window.addEventListener('scroll', () => {
+      // If the search bar is active (focused/keyboard open), we need to update the absolute 'top'
       if (document.activeElement === searchBar) {
-        searchBar.blur();
+         const scrollOffset = window.scrollY || document.documentElement.scrollTop;
+         const bodyPaddingTop = parseFloat(getComputedStyle(document.body).paddingTop) || 40;
+         const absoluteTopPosition = `${scrollOffset + bodyPaddingTop}px`;
+         
+         topRightWrapper.style.top = absoluteTopPosition;
+         topLeftWrapper.style.top = absoluteTopPosition;
+      } else if (searchBar.classList.contains('active')) {
+        // If search is open but not focused, blur it and close the search bar
+        searchBar.blur(); 
       }
     });
-
+    
     // New logic for the Contact and Social Media pop-ups
     const contactPanel = document.getElementById('contactPanel');
     const closeContactButton = document.getElementById('closeContactButton');
