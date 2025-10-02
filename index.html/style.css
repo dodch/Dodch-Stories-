@@ -145,16 +145,17 @@ h1{margin:0 0 20px;}
   cursor:pointer;
   text-decoration: none;
   color: var(--glass-text);
-  /* Default to the fast, low-quality filter */
-  backdrop-filter:blur(4px) url(#filter-lq);
-  -webkit-backdrop-filter:blur(4px);
   position: relative; 
-}
-/* When the page is NOT scrolling, apply the expensive filter */
-body:not(.is-scrolling) .glass-container {
-  /* Switch to the beautiful, high-quality filter when idle */
-  backdrop-filter: blur(4px) url(#filter-hq);
-  -webkit-backdrop-filter: blur(4px) url(#filter);
+
+  /* --- Graceful Fallback for backdrop-filter --- */
+  /* 1. Apply the simple blur for browsers that don't support SVG filters in backdrop-filter (like Safari on iOS) */
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+
+  /* 2. Use @supports to apply the complex SVG filter ONLY on browsers that can handle it */
+  @supports (backdrop-filter: blur(4px) url('#filter-lq')) {
+    backdrop-filter: blur(4px) url(#filter-lq);
+  }
 }
 
 .glass-container:hover {
