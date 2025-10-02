@@ -27,41 +27,35 @@
         background-color: #1a1a1a;
         color: #f4f4f4;
       }
-
-      /* Loader Styles */
-.loader {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: fit-content;
-  font-size: 40px;
-  font-family: system-ui, sans-serif;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: #0000;
-  -webkit-text-stroke: 1px #000;
-  --l: #0000 45%, #000 0 55%, #0000 0;
-  --g: 0/300% 100% no-repeat text;
-  background: 
-    linear-gradient(-60deg, var(--l)) var(--g),
-    linear-gradient(60deg, var(--l)) var(--g);
-  animation: l7 4s linear infinite;
-}
-.loader:before {
-  content: "Loading";
-}
-@keyframes l7 {
-  0% {
-    background-position: 100%, 0;
-  }
-  50% {
-    background-position: 0, 0;
-  }
-  to {
-    background-position: 0, 100%;
-  }
-}
+      h1 {
+        font-family: 'Poppins', sans-serif;
+        font-size: 2.5em;
+        text-align: center;
+        margin-bottom: 20px;
+        background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        opacity: 0;
+        transform: translateY(-20px);
+        animation: titleFadeIn 1s ease-out forwards, titleGlow 3s ease-in-out infinite 1s;
+      }
+      @keyframes titleFadeIn {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes titleGlow {
+        0%, 100% { text-shadow: 0 0 30px rgba(132, 250, 176, 0.5); }
+        50% { text-shadow: 0 0 50px rgba(143, 211, 244, 0.8); }
+      }
+      p {
+        font-size: 1.2em;
+        margin-bottom: 2rem;
+        font-weight: 400;
+        line-height: 1.8;
+      }
 
       /* Home Button Styles */
 /* Home Button Styles */
@@ -386,8 +380,6 @@
     </style>
   </head>
   <body>
-<!-- Loader -->
-    <div class="loader"></div>
 <a class="home-button" href="index.html">
   <span class="home-icon">← Back</span>
 </a>
@@ -749,12 +741,6 @@
         }
         checkVisibility();
       });
-window.addEventListener("load", function () {
-  const loader = document.querySelector(".loader");
-  if (loader) {
-    loader.style.display = "none";
-  }
-});
     </script>
   </body>
 </html>
