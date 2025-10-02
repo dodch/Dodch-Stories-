@@ -150,16 +150,18 @@ h1{margin:0 0 20px;}
   color: var(--glass-text);
   position: relative;
 
-  /* --- Backdrop Filter Fallback --- */
-  /* Apply the simple blur universally. This will work on iOS Safari. */
+  /* --- Backdrop Filter Logic --- */
+  /* 1. Apply the simple blur by default. This is the crucial fallback for iOS Safari. */
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
 
-/* If JS detects SVG filter support, enhance the blur. This will NOT run on iOS. */
-body.svg-filter-supported .glass-container {
-  -webkit-backdrop-filter: blur(4px) var(--backdrop-svg-filter);
-  backdrop-filter: blur(4px) var(--backdrop-svg-filter);
+/* 2. For browsers that support SVG filters, override the simple blur with the enhanced version. */
+@supports (backdrop-filter: url(#filter-hq)) {
+  .glass-container {
+    -webkit-backdrop-filter: blur(4px) var(--backdrop-svg-filter);
+    backdrop-filter: blur(4px) var(--backdrop-svg-filter);
+  }
 }
 
 .glass-container:hover {
