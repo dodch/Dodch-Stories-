@@ -4,7 +4,8 @@
         "description": "How can someone change you",
         "length": "Short story",
         "date": "19/09/2025",
-        "file": "with-the-right-person",
+        "path": "stories/",
+        "file": "with-the-right-person.html",
         "status": "New",
         "status_color": "red",
         "creator": "Adam Dodch"
@@ -14,6 +15,7 @@
         "description": "العربية Français English",
         "length": "Short story",
         "date": "17/05/2025",
+        "path": "stories/",
         "file": "lost-to-be-found.html",
         "status": "",
         "status_color": "",
@@ -24,7 +26,8 @@
         "description": "Love Warmth Loss Hope...",
         "length": "Long story",
         "date": "10/02/2025",
-        "file": "The-Coldest-Night",
+        "path": "stories/",
+        "file": "The-Coldest-Night.html",
         "status": "First story",
         "status_color": "golden",
         "creator": "Adam dodch"
@@ -34,6 +37,7 @@
         "description": "(Preview)",
         "length": "no text available",
         "date": "Undefined",
+        "path": "stories/",
         "file": "villain.html",
         "status": "",
         "status_color": "",
@@ -44,10 +48,10 @@
         "description": "When the fog clears out, a new story begins",
         "length": "",
         "date": "Next winter",
+        "path": "",
         "file": "",
         "status": "",
         "status_color": "",
         "creator": "Adam Dodch"
     }
 ]
-
