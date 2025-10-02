@@ -4,7 +4,7 @@
         "description": "How can someone change you",
         "length": "Short story",
         "date": "19/09/2025",
-        "file": "with-the-right-person.html",
+        "file": "with-the-right-person",
         "status": "New",
         "status_color": "red",
         "creator": "Adam Dodch"
@@ -24,7 +24,7 @@
         "description": "Love Warmth Loss Hope...",
         "length": "Long story",
         "date": "10/02/2025",
-        "file": "The-Coldest-Night.html",
+        "file": "The-Coldest-Night",
         "status": "First story",
         "status_color": "golden",
         "creator": "Adam dodch"
@@ -50,3 +50,4 @@
         "creator": "Adam Dodch"
     }
 ]
+
