@@ -170,7 +170,7 @@ async function fetchAndBuildGrid() {
     storiesData.forEach(story => {
       const card = document.createElement('a');
       card.className = "glass-container";
-      card.href = story.file;
+      card.href = (story.path || '') + story.file; // Combine path and file for the correct link
       if (!story.file || story.file.trim() === '') {
           card.classList.add('no-link');
           card.removeAttribute('href');
