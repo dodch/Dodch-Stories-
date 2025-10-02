@@ -475,10 +475,19 @@ function setupScrollPerformance() {
 /**
  * Checks if the browser truly supports SVG filters in backdrop-filter.
  * iOS Safari incorrectly reports 'true' for CSS @supports, so a JS check is more reliable.
+ * We will explicitly block Apple mobile devices from getting this feature to avoid the bug.
  * If supported, it adds a class to the body to enable enhanced filters via CSS.
  */
 function detectSVGFilterSupport() {
-  if (window.CSS && CSS.supports('backdrop-filter', 'url("#filter-hq")')) {
+  const isAppleDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+  // If it's an Apple mobile device, do nothing. This prevents the bug.
+  if (isAppleDevice) {
+    return;
+  }
+
+  // For all other browsers, perform the feature check.
+  if (CSS.supports('backdrop-filter', 'url("#filter-hq")')) {
     document.body.classList.add('svg-filter-supported');
   }
 }
