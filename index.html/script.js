@@ -472,8 +472,20 @@ function setupScrollPerformance() {
   }, { passive: true });
 }
 
+/**
+ * Checks if the browser truly supports SVG filters in backdrop-filter.
+ * iOS Safari incorrectly reports 'true' for CSS @supports, so a JS check is more reliable.
+ * If supported, it adds a class to the body to enable enhanced filters via CSS.
+ */
+function detectSVGFilterSupport() {
+  if (window.CSS && CSS.supports('backdrop-filter', 'url("#filter-hq")')) {
+    document.body.classList.add('svg-filter-supported');
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  setupScrollPerformance(); // Add this line to initialize the scroll listener
+  detectSVGFilterSupport(); // Check for real SVG filter support
+  setupScrollPerformance();
   const loadingScreen = document.getElementById('loadingScreen');
   const bgImageUrlLight = getComputedStyle(document.documentElement).getPropertyValue('--bg-url').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
   const bgImageUrlDark = getComputedStyle(document.documentElement).getPropertyValue('--bg-url-dark').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
