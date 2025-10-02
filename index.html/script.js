@@ -459,7 +459,21 @@ function animateButtonsOnLoad() {
     });
 }
 
+function setupScrollPerformance() {
+  let scrollTimeout;
+  const body = document.body;
+
+  window.addEventListener('scroll', () => {
+    body.classList.add('is-scrolling');
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      body.classList.remove('is-scrolling');
+    }, 150); // Adjust timeout as needed
+  }, { passive: true });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  setupScrollPerformance(); // Add this line to initialize the scroll listener
   const loadingScreen = document.getElementById('loadingScreen');
   const bgImageUrlLight = getComputedStyle(document.documentElement).getPropertyValue('--bg-url').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
   const bgImageUrlDark = getComputedStyle(document.documentElement).getPropertyValue('--bg-url-dark').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
