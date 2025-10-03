@@ -31,9 +31,8 @@
   
   /* NEW: Viewport variable for the mobile fix (using largest for fixed elements) */
   --vph: 100lvh;
+  --blur-radius: 3px;
 
-  /* NEW: Variable for dynamic SVG filter URL */
-  --backdrop-svg-filter: url(#filter-hq);
 }
 /* Dark mode variables based on device settings or manual override */
 @media (prefers-color-scheme: dark) {
@@ -143,23 +142,25 @@ h1{margin:0 0 20px;}
   border-radius:3rem;
   padding:20px;
   box-shadow:var(--glass-shadow);
-  will-change: transform;
-  transition: box-shadow 0.2s, background 0.5s ease-in-out;
+  will-change: transform, animation;
+  transition: box-shadow 0.2s, background 0.5s ease-in-out, backdrop-filter 0.4s ease-out, -webkit-backdrop-filter 0.4s ease-out;
   cursor:pointer;
   text-decoration: none;
   color: var(--glass-text);
   position: relative;
+  /* PERFORMANCE TRICK: Tell the browser this is a self-contained component */
+  contain: layout style paint;
 
   /* --- Backdrop Filter Fallback --- */
   /* Apply the simple blur universally. This will work on iOS Safari. */
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(var(--blur-radius));
+  backdrop-filter: blur(var(--blur-radius));
 }
 
 /* If JS detects SVG filter support, enhance the blur. This will NOT run on iOS. */
 body.svg-filter-supported .glass-container {
-  -webkit-backdrop-filter: blur(4px) var(--backdrop-svg-filter);
-  backdrop-filter: blur(4px) var(--backdrop-svg-filter);
+  -webkit-backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
+  backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
 }
 
 .glass-container:hover {
@@ -174,16 +175,19 @@ body.svg-filter-supported .glass-container {
   position: relative;
 }
 .title {
-  font-size: 1.75rem;
+  /* FIX: Use a dominant serif font and a stronger, layered shadow for maximum clarity. */
+  font-size: 2rem;
   font-weight: 900;
   margin-bottom: .5rem;
-  font-family: 'Montserrat', sans-serif;
-  text-shadow: 0 0 5px rgba(0,0,0,0.5); 
+  font-family: 'Playfair Display', serif;
+  text-shadow: 0 2px 3px rgba(0,0,0,0.8), 0 0 10px rgba(0,0,0,0.5);
 }
 .description {
   font-size: 1rem;
   opacity: .8;
   font-family: 'Open Sans', sans-serif;
+  /* FIX: Add a stronger, layered shadow to lift text from the background. */
+  text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 5px rgba(0,0,0,0.5);
 }
 /* Fixed wrapper for the top-right elements */
 .top-right-fixed-wrapper {
@@ -226,15 +230,18 @@ body.svg-filter-supported .glass-container {
   -webkit-backdrop-filter:blur(4px);
   box-shadow:var(--glass-shadow);
   transition: width 0.5s ease-in-out, padding 0.5s ease-in-out, opacity 0.5s ease-in-out, background-color 0.5s ease-in-out;
+  position: absolute;
+  /* FIX: Anchor the search bar to the right, next to the button. */
+  right: 70px; /* button width (60px) + gap (10px) */
+  z-index: 1; /* Ensure it's on top */
 }
 .search-bar:focus{outline:none}
 .search-bar::placeholder{color:var(--search-placeholder);}
 .search-bar.active{
   width:250px;
-  padding:0 20px;
+  padding: 0 20px; /* Reset padding to normal */
   opacity:1;
   visibility:visible;
-  margin-right:1rem;
 }
 .search-button{
   position: relative;
@@ -249,6 +256,7 @@ body.svg-filter-supported .glass-container {
   align-items: center;
   transition: box-shadow 0.5s ease-in-out, background-color 0.5s ease-in-out;
   transition: all 0.3s ease-in-out;
+  z-index: 2; /* Ensure button is on top */
   backdrop-filter:blur(4px);
   -webkit-backdrop-filter:blur(4px);
 }
@@ -258,6 +266,10 @@ body.svg-filter-supported .glass-container {
 }
 .search-button.active {
   background-color: var(--red-tint);
+}
+.search-button.active:hover, .search-button.active:focus-visible {
+  /* FIX: Add a red glow on hover when the button is active (showing the 'X'). */
+  box-shadow: 0 0 15px color-mix(in srgb, var(--red-tint) 50%, transparent), var(--button-shadow);
 }
 .search-button svg.search-icon {
   transform: rotate(0deg) scale(1);
@@ -463,15 +475,14 @@ body.svg-filter-supported .glass-container {
 }
 @keyframes jello-wobble {
   0%   { transform: scale(1,1); }
-  15%  { transform: scale(1.25,0.75) rotate(1deg); }
-  30%  { transform: scale(0.75,1.25) rotate(-1deg); }
-  45%  { transform: scale(1.15,0.85) rotate(0.6deg); }
-  60%  { transform: scale(0.9,1.1) rotate(-0.6deg); }
-  75%  { transform: scale(1.05,0.95) rotate(0.3deg); }
+  25%  { transform: scale(0.9, 1.15) rotate(-1deg); }
+  50%  { transform: scale(1.1, 0.9) rotate(1deg); }
+  75%  { transform: scale(0.95, 1.05) rotate(-0.5deg); }
   100% { transform: scale(1,1) rotate(0); }
 }
 .jello {
-  animation: jello-wobble 0.8s ease;
+  /* A custom cubic-bezier for a more 'bouncy' and realistic feel */
+  animation: jello-wobble 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 /* --- Added CSS for story details and status pills --- */
 .story-length {
@@ -479,21 +490,29 @@ body.svg-filter-supported .glass-container {
   bottom: 40px;
   left: 20px;
   font-size: 0.8rem;
-  opacity: 0.6;
+  opacity: 0.7;
   text-transform: capitalize;
+  font-family: 'Open Sans', sans-serif;
+  /* FIX: Add a stronger, layered shadow for readability. */
+  text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.5);
 }
 .creation-date {
   position: absolute;
   bottom: 40px;
   right: 20px;
   font-size: 0.8rem;
-  opacity: 0.6;
+  opacity: 0.7;
   text-transform: capitalize;
+  font-family: 'Open Sans', sans-serif;
+  /* FIX: Add a stronger, layered shadow for readability. */
+  text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.5);
 }
 .story-creator {
   position: absolute;
   bottom: 20px;
   font-family: 'Quattrocento Sans', sans-serif;
+  /* FIX: Use italic style for a signature feel and add a stronger shadow. */
+  font-style: italic;
   font-size: 0.8rem;
   opacity: 0.8;
   color: var(--golden-tint);
@@ -501,6 +520,7 @@ body.svg-filter-supported .glass-container {
   text-align: center;
   width: 100%;
   left: 0;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 5px rgba(0,0,0,0.7);
 }
 .glass-container.no-link {
     opacity: 0.5;
@@ -642,6 +662,8 @@ body.svg-filter-supported .glass-container {
     overflow-y: auto;
     height: 100%;
     max-width: 600px;
+    /* PERFORMANCE: Promote to its own layer for smooth scrolling over blurred background */
+    will-change: transform;
     padding-top: 2rem;
 }
 .info-panel h2 {
@@ -657,6 +679,26 @@ body.svg-filter-supported .glass-container {
   margin: 0 0 1rem;
   color: var(--glass-text);
   z-index: 100;
+}
+.info-panel ul {
+  /* FIX: Add styling for lists to ensure consistent spacing and appearance. */
+  list-style: none;
+  padding-left: 1rem;
+  margin: 0 0 1rem;
+}
+.info-panel li {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+  color: var(--glass-text);
+  position: relative;
+  padding-left: 1.5rem;
+}
+.info-panel li::before {
+  content: '•';
+  color: var(--golden-tint);
+  position: absolute;
+  left: 0;
 }
 /* --- Styles for the new Contact Panel --- */
 .contact-panel-content, .social-links-content {
@@ -729,6 +771,30 @@ body.svg-filter-supported .glass-container {
 body.info-panel-open {
   overflow: hidden;
 }
+
+/* --- NEW: Disable background blur when a panel is open --- */
+body.info-panel-open .glass-container,
+body.info-panel-open .search-bar,
+body.info-panel-open .search-button,
+body.info-panel-open .floating-button,
+body.info-panel-open .info-button {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  transition: backdrop-filter 0.3s ease-in-out, -webkit-backdrop-filter 0.3s ease-in-out;
+}
+
+/* --- NEW: Disable hover effects when a panel is open --- */
+body.info-panel-open .glass-container:hover,
+body.info-panel-open .search-button:hover,
+body.info-panel-open .floating-button:hover,
+body.info-panel-open .info-button:hover,
+body.info-panel-open .favorite-btn:hover {
+  transform: none;
+  box-shadow: var(--glass-shadow); /* Resets to the default shadow */
+  cursor: default;
+  pointer-events: none; /* Strongest way to prevent interaction */
+}
+
 @media (max-width: 600px) {
   .top-left-fixed-wrapper {
     padding: 20px;
