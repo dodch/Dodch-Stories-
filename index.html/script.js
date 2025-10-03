@@ -209,34 +209,67 @@ async function fetchAndBuildGrid() {
       grid.appendChild(card);
     });
     panels = [...document.querySelectorAll('.glass-container')];
-    
+
     // Load saved state *after* panels are created in the DOM
     loadSavedState();
 
-    // --- Existing Animation Setup (kept for continuity) ---
-    const state = panels.map(() => ({
-      scaleX: 0.1,
-      scaleY: 0.1,
-      vx: 0,
-      vy: 0, 
-      rotX: 0,
-      rotY: 0,
-      vrX: 0,
-      vrY: 0,
-      damping: 0.65 + Math.random() * 0.15
-    }));
+    // --- PERFORMANCE OPTIMIZATION: Use a Map for direct state lookup ---
+    // This is much faster than using an array and indexOf.
+    const state = new Map();
+    panels.forEach(card => {
+      state.set(card, {
+        scaleX: 0.1, scaleY: 0.1,
+        vx: 0, vy: 0,
+        rotX: 0, rotY: 0,
+        vrX: 0, vrY: 0,
+        damping: 0.65 + Math.random() * 0.15
+      });
+    });
+
+    // --- PERFORMANCE OPTIMIZATION: Use a Set to track only visible panels ---
+    // The IntersectionObserver will add/remove panels from this set.
+    const visiblePanels = new Set();
+
+    // Helper function to clamp a value between a min and max
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(value, max));
+    }
+
+    // --- PERFORMANCE OPTIMIZATION: Pre-calculate static properties ---
+    // We'll store properties that don't change every frame to avoid re-calculating.
+    function updateCardStaticProps() {
+      panels.forEach(card => {
+        const s = state.get(card);
+        if (s) {
+          s.height = card.offsetHeight; // card's height
+          s.offsetTop = card.offsetTop; // card's distance from the top of the document
+          s.offsetLeft = card.offsetLeft; // card's distance from the left of the document
+          s.width = card.offsetWidth; // card's width
+        }
+      });
+    }
+    // Initial calculations
+    updateCardStaticProps(); 
+
+    window.addEventListener('resize', updateCardStaticProps); // Recalculate on resize
 
     panels.forEach((card, i) => {
         setTimeout(() => {
-            const impulse = 0.5 + Math.random() * 0.2;
-            state[i].vy -= impulse; 
-            state[i].vx -= (0.1 + Math.random() * 0.1);
+            const s = state.get(card);
+            if (s) { // Ensure state exists before using it
+              const impulse = 0.5 + Math.random() * 0.2;
+              s.vy -= impulse; 
+              s.vx -= (0.1 + Math.random() * 0.1);
+            }
         }, i * 50);
     });
 
     let lastScroll = window.scrollY;
     let lastTime = performance.now();
     let pointer = { x: -9999, y: -9999 };
+    let gridBounds = { top: 0, bottom: 0 }; // To cache grid position
+    let isAnimating = true; // Control the animation loop
+    let canStopAnimating = false; // Prevent animation from stopping too early on load
 
     function frame(now) {
       const dt = (now - lastTime) / 1000;
@@ -247,61 +280,116 @@ async function fetchAndBuildGrid() {
 
       // --- PERFORMANCE FIX: Clamp delta to prevent jumps on sudden scrolls ---
       // This prevents the animation from overreacting to extreme scroll gestures.
-      const maxDelta = 150; // Max scroll change (in pixels) to process per frame.
-      delta = Math.max(-maxDelta, Math.min(delta, maxDelta));
+      delta = clamp(delta, -150, 150);
 
       const vh = window.innerHeight;
       const center = scrollY + vh / 2;
 
-      // --- PERFORMANCE FIX: Batch DOM reads to prevent layout thrashing ---
-      const rects = panels.map(card => card.getBoundingClientRect());
+      // --- PERFORMANCE OPTIMIZATION: Only do expensive hover math if pointer is near the grid ---
+      // Update grid bounds only occasionally to avoid DOM reads every frame.
+      if (now % 100 < 16) { // Roughly every 100ms
+        const gridRect = document.getElementById('grid').getBoundingClientRect();
+        gridBounds.top = gridRect.top;
+        gridBounds.bottom = gridRect.bottom;
+      }
+      const isPointerNearGrid = pointer.y > gridBounds.top - 200 && pointer.y < gridBounds.bottom + 200;
 
-      // Now, loop and perform calculations using the cached values
-      panels.forEach((card, i) => {
-        const rect = rects[i]; // Use the cached rect
-        const s = state[i];
-        const cardCenter = scrollY + rect.top + rect.height / 2;
-        const dist = Math.abs(cardCenter - center) / vh;
-        const scrollImpulse = delta * 0.02 * (1 - dist);
-        const targetScaleYScroll = 1 - scrollImpulse;
-        const targetScaleXScroll = 1 + scrollImpulse * 0.7;
-        // The influence calculation is now set to 0 to remove the hover effect
-        const dx = pointer.x - (rect.left + rect.width / 2);
-        const dy = pointer.y - (rect.top + rect.height / 2);
-        const pointerDist = Math.sqrt(dx * dx + dy * dy);
-        const maxDist = 300; // Increased distance for a wider hover area
-        const influence = Math.max(0, 1 - pointerDist / maxDist);
-        const targetScaleXPointer = 1 + 0.05 * influence; // Subtle zoom
-        const targetScaleYPointer = 1 + 0.05 * influence; // Subtle zoom
-        const targetRotX = 0; // Disabled rotation for a cleaner zoom
-        const targetRotY = 0; // Disabled rotation for a cleaner zoom
-        const targetScaleX = (targetScaleXScroll + targetScaleXPointer) / 2;
-        const targetScaleY = (targetScaleYScroll + targetScaleYPointer) / 2;
-        const d = s.damping;
-        s.vx += (targetScaleX - s.scaleX) * 0.25;
-        s.vx *= d;
-        s.scaleX += s.vx;
-        s.vy += (targetScaleY - s.scaleY) * 0.25;
-        s.vy *= d;
-        s.scaleY += s.vy;
-        s.vrX += (targetRotX - s.rotX) * 0.25;
-        s.vrX *= d;
-        s.rotX += s.vrX;
-        s.vrY += (targetRotY - s.rotY) * 0.25;
-        s.vrY *= d;
-        s.rotY += s.vrY;
-        card.style.transform = `
-          scaleX(${s.scaleX}) scaleY(${s.scaleY})
-          rotateX(${s.rotX}deg) rotateY(${s.rotY}deg)
-        `;
+      // --- EXTREME SMOOTHNESS: Lean animation loop ---
+      let totalVelocity = 0;
+      visiblePanels.forEach((card) => {
+        const s = state.get(card);
+        if (!s) return; // Skip if state is missing
+
+        // Use pre-calculated offsetTop instead of getBoundingClientRect()
+        const cardCenter = s.offsetTop + s.height / 2;
+        const distFromCenter = Math.abs(cardCenter - center);
+
+        // Only calculate physics if the card is reasonably close to the viewport center
+        if (distFromCenter < vh) {
+          const dist = distFromCenter / vh;
+          // --- FIX: Reduce upward scroll stretching to prevent lag ---
+          // We'll keep the scroll effect but make it less intense when scrolling up (negative delta).
+          // This prevents the "jank" you see when scrolling to the top.
+          const impulseMultiplier = delta < 0 ? 0.008 : 0.015; // Use a smaller multiplier for upward scroll
+          const scrollImpulse = delta * impulseMultiplier * (1 - dist);
+
+          const targetScaleYScroll = 1 - scrollImpulse;
+          const targetScaleXScroll = 1 + scrollImpulse * 0.7;
+
+          let influence = 0;
+          if (isPointerNearGrid) {
+              // --- PERFORMANCE FIX: Calculate pointer distance without getBoundingClientRect ---
+              const dx = pointer.x - (s.offsetLeft + s.width / 2.0);
+              const dy = pointer.y - (s.offsetTop - scrollY + s.height / 2.0);
+              const pointerDist = Math.sqrt(dx * dx + dy * dy);
+              influence = Math.max(0, 1 - pointerDist / 275); // Increased influence radius slightly
+          }
+
+          const targetScaleX = (targetScaleXScroll + (1 + 0.05 * influence)) / 2;
+          const targetScaleY = (targetScaleYScroll + (1 + 0.05 * influence)) / 2;
+          const d = s.damping;
+
+          s.vx += (targetScaleX - s.scaleX) * 0.18; s.vx *= d; s.scaleX += s.vx; // Increased springiness
+          s.vy += (targetScaleY - s.scaleY) * 0.18; s.vy *= d; s.scaleY += s.vy; // Increased springiness
+          s.vrX += (0 - s.rotX) * 0.18; s.vrX *= d; s.rotX += s.vrX; // Increased springiness
+          s.vrY += (0 - s.rotY) * 0.18; s.vrY *= d; s.rotY += s.vrY; // Increased springiness
+
+          totalVelocity += Math.abs(s.vx) + Math.abs(s.vy) + Math.abs(s.vrX) + Math.abs(s.vrY);
+
+          // --- PERFORMANCE FIX: Clamp scale to prevent card overlap ---
+          // This prevents overlapping backdrop-filters which is very expensive to render.
+          const finalScaleX = clamp(s.scaleX, 0.8, 1.15);
+          const finalScaleY = clamp(s.scaleY, 0.8, 1.15);
+          card.style.transform = `scaleX(${finalScaleX}) scaleY(${finalScaleY}) rotateX(${s.rotX}deg) rotateY(${s.rotY}deg)`;
+        }
       });
-      requestAnimationFrame(frame);
+
+      // Smartly continue or stop the animation loop
+      if (canStopAnimating && totalVelocity < 0.001 && delta === 0 && !isPointerNearGrid) {
+        isAnimating = false;
+      } else {
+        requestAnimationFrame(frame);
+      }
     }
     requestAnimationFrame(frame);
 
+    // Allow the animation to stop only after the initial entrance effect has had time to run
+    setTimeout(() => {
+      canStopAnimating = true;
+    }, 2000); // 2 seconds
+
+    // --- PERFORMANCE OPTIMIZATION: Setup IntersectionObserver ---
+    // This observer watches which cards are on screen and adds them to the `visiblePanels` set.
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          visiblePanels.add(entry.target);
+        } else {
+          visiblePanels.delete(entry.target);
+          // Reset transform for off-screen elements to be clean
+          entry.target.style.transform = 'scale(1) rotateX(0deg) rotateY(0deg)';
+        }
+      });
+    }, {
+      rootMargin: '200px 0px 200px 0px' // Start animating cards 200px before they enter the screen
+    });
+    panels.forEach(card => observer.observe(card));
+
+    // --- Smart Animation Triggering: Only run the loop when needed ---
+    function ensureAnimating() {
+      if (!isAnimating) {
+        isAnimating = true;
+        requestAnimationFrame(frame);
+      }
+    }
+
     // Add a listener to update the pointer coordinates for the hover effect
-    window.addEventListener('pointermove', e => { pointer.x = e.clientX; pointer.y = e.clientY; });
-    window.addEventListener('pointerleave', () => { pointer.x = -9999; pointer.y = -9999; });
+    window.addEventListener('pointermove', e => {
+        pointer.x = e.clientX;
+        pointer.y = e.clientY;
+        ensureAnimating();
+    });
+    window.addEventListener('pointerleave', () => { pointer.x = -9999; pointer.y = -9999; ensureAnimating(); });
     // --- End Animation Setup ---
 
     const searchButton = document.getElementById('searchButton');
@@ -365,6 +453,12 @@ async function fetchAndBuildGrid() {
       filterAndRenderPanels();
     }
 
+    // Add jello effect on click to each grid panel
+    panels.forEach(panel => {
+      // We use 'pointerdown' as it feels more responsive than 'click'
+      panel.addEventListener('pointerdown', () => applyJelloToGrid(panel));
+    });
+
     const infoButton = document.getElementById('infoButton');
     const infoPanel = document.getElementById('infoPanel');
     const closeInfoButton = document.getElementById('closeInfoButton');
@@ -388,6 +482,7 @@ async function fetchAndBuildGrid() {
       if (document.activeElement === searchBar) {
         searchBar.blur();
       }
+      ensureAnimating(); // Restart animation on scroll
     });
 
     // New logic for the Contact and Social Media pop-ups
@@ -494,7 +589,6 @@ function detectSVGFilterSupport() {
 
 document.addEventListener('DOMContentLoaded', () => {
   detectSVGFilterSupport(); // Check for real SVG filter support
-  setupScrollPerformance();
   const loadingScreen = document.getElementById('loadingScreen');
   const bgImageUrlLight = getComputedStyle(document.documentElement).getPropertyValue('--bg-url').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
   const bgImageUrlDark = getComputedStyle(document.documentElement).getPropertyValue('--bg-url-dark').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
@@ -513,6 +607,7 @@ document.addEventListener('DOMContentLoaded', () => {
         imagesLoadedCount++;
         if (imagesLoadedCount === imagesToLoad.length) {
           loadingScreen.classList.add('hidden');
+          setupScrollPerformance();
           setTimeout(() => {
             fetchAndBuildGrid();
           }, 500);
@@ -522,6 +617,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   } else {
     loadingScreen.classList.add('hidden');
+    setupScrollPerformance();
     setTimeout(() => {
       fetchAndBuildGrid();
     }, 500);
