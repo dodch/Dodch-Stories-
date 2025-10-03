@@ -9,7 +9,7 @@
 
   <meta name="description" content="Dodch Stories is a collection of original stories written with emotion, creativity, and depth. Explore fiction that connects to the heart and imagination.">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quattrocento+Sans|Open+Sans|Montserrat">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quattrocento+Sans:ital@1&family=Open+Sans:wght@400;700&family=Playfair+Display:wght@900&family=Montserrat:wght@900">
   <link rel="manifest" href="site.webmanifest" />
 
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
@@ -60,33 +60,32 @@
     </div>
     <div class="info-content">
       <h2>About Dodch Stories</h2>
-   <p>✨ Here, stories are not just written — they are lived.
-Every word is a mirror of what we can’t say out loud,
-symbols of who we are, and who we might become. ✨</p>
-<p>🌌 Our Storytelling Philosophy</p>
-<p>We believe that everyone carries something special inside — a thought, a feeling, an idea, a perspective that only they can express. Here, we invite writers to bring those hidden parts of themselves to life.</p>
-<p>A story on our site should not just tell events. It should:</p>
-<ul>
-    <li>Reveal what we can’t say with normal words.</li>
-    <li>Carry deep meanings, symbols, and hidden layers for readers to uncover.</li>
-    <li>Reflect the truth of our lives — sometimes directly, sometimes through metaphor or fantasy.</li>
-    <li>Show us what it feels like to be human in a way that is unforgettable.</li>
-</ul>
-<p>⸻</p>
-<p>✨ What Makes a Story Right for Us</p>
-<p>• Modern, relatable, unique — connected to today’s life yet timeless in meaning.</p>
-<p>• Emotional impact — it should stay in the reader’s mind long after they finish.</p>
-<p>• Symbols & hidden meanings — every story is more than what’s on the page.</p>
-<p>• Personal truth — your unique perspective, your special thing, should shine through.</p>
-<p>⸻</p>
-<p>🚫 <strong>What We Avoid</strong></p>
-<p>• Empty writing without purpose or depth.</p>
-<p>• Copy-paste tropes or soulless stories.</p>
-<p>• Work that doesn’t reveal anything new about life, humanity, or ourselves.</p>
-<p>⸻</p>
-<p>🌍 <strong>Why We Exist</strong></p>
-<p>We are not here for ordinary stories.<br>We are here for the stories that transform us — the ones that make us stop, think, feel, and see the world differently.</p>
-<p>Everyone has something unique to share.<br>This is the place to bring it to life.</p>
+      <p>✨ Here, stories are not just written — they are lived.</p>
+      <p>Every word is a mirror of what we can’t say out loud, symbols of who we are, and who we might become. ✨</p>
+      <p>🌌 Our Storytelling Philosophy</p>
+      <p>We believe that everyone carries something special inside — a thought, a feeling, an idea, a perspective that only they can express. Here, we invite writers to bring those hidden parts of themselves to life.</p>
+      <p>A story on our site should not just tell events. It should:</p>
+      <ul>
+          <li>Reveal what we can’t say with normal words.</li>
+          <li>Carry deep meanings, symbols, and hidden layers for readers to uncover.</li>
+          <li>Reflect the truth of our lives — sometimes directly, sometimes through metaphor or fantasy.</li>
+          <li>Show us what it feels like to be human in a way that is unforgettable.</li>
+      </ul>
+      <p>⸻</p>
+      <p>✨ What Makes a Story Right for Us</p>
+      <p>• Modern, relatable, unique — connected to today’s life yet timeless in meaning.</p>
+      <p>• Emotional impact — it should stay in the reader’s mind long after they finish.</p>
+      <p>• Symbols & hidden meanings — every story is more than what’s on the page.</p>
+      <p>• Personal truth — your unique perspective, your special thing, should shine through.</p>
+      <p>⸻</p>
+      <p>🚫 <strong>What We Avoid</strong></p>
+      <p>• Empty writing without purpose or depth.</p>
+      <p>• Copy-paste tropes or soulless stories.</p>
+      <p>• Work that doesn’t reveal anything new about life, humanity, or ourselves.</p>
+      <p>⸻</p>
+      <p>🌍 <strong>Why We Exist</strong></p>
+      <p>We are not here for ordinary stories. We are here for the stories that transform us — the ones that make us stop, think, feel, and see the world differently.</p>
+      <p>Everyone has something unique to share. This is the place to bring it to life.</p>
     </div>
 </div>
 
@@ -136,9 +135,24 @@ symbols of who we are, and who we might become. ✨</p>
   </div>
 </div>
 <svg style="display:none" >
-  <filter id="filter-hq" color-interpolation-filters="linearRGB">
-    <feTurbulence type="fractalNoise" baseFrequency="0.001" numOctaves="4" result="turbulence"/>
-    <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="350"/>
+  <!-- FIX: Expand the filter area to prevent edge artifacts from the strong displacement. -->
+  <filter id="filter-hq" color-interpolation-filters="linearRGB" x="-20%" y="-20%" width="140%" height="140%">
+    <!-- 1. Generate noise for the watery distortion. -->
+    <feTurbulence type="fractalNoise" baseFrequency="0.001" numOctaves="4" seed="5" result="noise"/>
+    <!-- 2. Apply the watery distortion to the source graphic. -->
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="350" xChannelSelector="R" yChannelSelector="G" result="distorted"/>
+    <!-- 3. Create a height map from the card's alpha channel and blur it to create a smooth, convex shape. -->
+    <feGaussianBlur in="SourceAlpha" stdDeviation="10" result="bump"/>
+    <!-- 4. Define a light source. -->
+    <feDistantLight azimuth="235" elevation="50"/>
+    <!-- 5. Create diffuse lighting (soft shadows) to add depth. -->
+    <feDiffuseLighting in="bump" lighting-color="#444" surfaceScale="10" result="diffuse"/>
+    <!-- 6. Create specular lighting (sharp highlights) for a glossy look. Increased specularExponent for sharper highlights. -->
+    <feSpecularLighting in="bump" lighting-color="white" surfaceScale="10" specularConstant="1.5" specularExponent="60" result="specular"/>
+    <!-- 7. Combine the lighting effects. -->
+    <feComposite in="diffuse" in2="specular" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="lighting"/>
+    <!-- 8. Composite the final lighting over the distorted graphic for a high-contrast 3D effect. -->
+    <feComposite in="distorted" in2="lighting" operator="arithmetic" k1="0" k2="1" k3="0.5" k4="0"/>
   </filter>
   <filter id="filter-lq" color-interpolation-filters="linearRGB">
     <feTurbulence type="fractalNoise" baseFrequency="0.1" numOctaves="1" result="turbulence"/>
