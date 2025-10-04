@@ -217,12 +217,15 @@ async function fetchAndBuildGrid() {
     // This is much faster than using an array and indexOf.
     const state = new Map();
     panels.forEach(card => {
+      card.style.opacity = '0'; // Start cards as invisible
       state.set(card, {
-        scaleX: 0.1, scaleY: 0.1,
+        scaleX: 0.95, scaleY: 0.95, // Start slightly smaller for a grow effect
         vx: 0, vy: 0,
         rotX: 0, rotY: 0,
-        vrX: 0, vrY: 0,
-        damping: 0.65 + Math.random() * 0.15
+        vrX: 0, vrY: 0, 
+        // OPTIMIZATION: Increased damping for a smoother, less springy settle.
+        // TUNED: Decreased damping to make the animation faster and more responsive.
+        damping: 0.75 + Math.random() * 0.1 // TUNED: Increased damping for a smoother, more "premium" settle.
       });
     });
 
@@ -251,18 +254,26 @@ async function fetchAndBuildGrid() {
     // Initial calculations
     updateCardStaticProps(); 
 
+    // NEW: Staggered fade-in and gentle physics kick on load
     window.addEventListener('resize', updateCardStaticProps); // Recalculate on resize
 
     panels.forEach((card, i) => {
         setTimeout(() => {
+            card.style.opacity = '1'; // Trigger the CSS fade-in
             const s = state.get(card);
-            if (s) { // Ensure state exists before using it
-              const impulse = 0.5 + Math.random() * 0.2;
-              s.vy -= impulse; 
-              s.vx -= (0.1 + Math.random() * 0.1);
+            if (s) { 
+              // Apply a very gentle impulse to make the card "settle"
+              s.vy -= 0.1 + Math.random() * 0.1; 
+              s.vx -= 0.05 + Math.random() * 0.05;
             }
         }, i * 50);
     });
+
+    // FIX: Delay the tutorial until after the grid card animations have finished.
+    // The animations take about 2 seconds to fully settle.
+    setTimeout(() => {
+      showTutorialOnFirstVisit();
+    }, 1900); // Wait 1.9 seconds before showing the tutorial.
 
     let lastScroll = window.scrollY;
     let lastTime = performance.now();
@@ -286,12 +297,7 @@ async function fetchAndBuildGrid() {
       const center = scrollY + vh / 2;
 
       // --- PERFORMANCE OPTIMIZATION: Only do expensive hover math if pointer is near the grid ---
-      // Update grid bounds only occasionally to avoid DOM reads every frame.
-      if (now % 100 < 16) { // Roughly every 100ms
-        const gridRect = document.getElementById('grid').getBoundingClientRect();
-        gridBounds.top = gridRect.top;
-        gridBounds.bottom = gridRect.bottom;
-      }
+      // The gridBounds are now updated in the 'scroll' event listener to avoid DOM reads in the animation loop.
       const isPointerNearGrid = pointer.y > gridBounds.top - 200 && pointer.y < gridBounds.bottom + 200;
 
       // --- EXTREME SMOOTHNESS: Lean animation loop ---
@@ -310,37 +316,45 @@ async function fetchAndBuildGrid() {
           // --- FIX: Reduce upward scroll stretching to prevent lag ---
           // We'll keep the scroll effect but make it less intense when scrolling up (negative delta).
           // This prevents the "jank" you see when scrolling to the top.
-          const impulseMultiplier = delta < 0 ? 0.008 : 0.015; // Use a smaller multiplier for upward scroll
-          const scrollImpulse = delta * impulseMultiplier * (1 - dist);
+          const impulseMultiplier = delta < 0 ? 0.006 : 0.01; // TUNED: Softened scroll reaction for a more premium feel.
+          const scrollImpulse = delta * impulseMultiplier * (1 - dist); 
 
           const targetScaleYScroll = 1 - scrollImpulse;
           const targetScaleXScroll = 1 + scrollImpulse * 0.7;
 
           let influence = 0;
           if (isPointerNearGrid) {
-              // --- PERFORMANCE FIX: Calculate pointer distance without getBoundingClientRect ---
-              const dx = pointer.x - (s.offsetLeft + s.width / 2.0);
-              const dy = pointer.y - (s.offsetTop - scrollY + s.height / 2.0);
-              const pointerDist = Math.sqrt(dx * dx + dy * dy);
-              influence = Math.max(0, 1 - pointerDist / 275); // Increased influence radius slightly
+            // --- PERFORMANCE FIX: Calculate pointer distance without getBoundingClientRect ---
+            const dx = pointer.x - (s.offsetLeft + s.width / 2.0);
+            const dy = pointer.y - (s.offsetTop - scrollY + s.height / 2.0);
+            const pointerDist = Math.sqrt(dx * dx + dy * dy);
+            influence = Math.max(0, 1 - pointerDist / 275); // Increased influence radius slightly
+
+            // NEW: Add a subtle 3D tilt based on pointer position for a premium feel
+            const maxRot = 8; // Maximum rotation in degrees
+            const targetRotX = (dy / (s.height / 2)) * -maxRot * influence;
+            const targetRotY = (dx / (s.width / 2)) * maxRot * influence;
+            s.vrX += (targetRotX - s.rotX) * 0.12;
+            s.vrY += (targetRotY - s.rotY) * 0.12;
           }
 
-          const targetScaleX = (targetScaleXScroll + (1 + 0.05 * influence)) / 2;
-          const targetScaleY = (targetScaleYScroll + (1 + 0.05 * influence)) / 2;
+          const targetScaleX = (targetScaleXScroll + (1 + 0.03 * influence)) / 2; // TUNED: Softened hover effect.
+          const targetScaleY = (targetScaleYScroll + (1 + 0.03 * influence)) / 2; // TUNED: Softened hover effect.
           const d = s.damping;
 
-          s.vx += (targetScaleX - s.scaleX) * 0.18; s.vx *= d; s.scaleX += s.vx; // Increased springiness
-          s.vy += (targetScaleY - s.scaleY) * 0.18; s.vy *= d; s.scaleY += s.vy; // Increased springiness
-          s.vrX += (0 - s.rotX) * 0.18; s.vrX *= d; s.rotX += s.vrX; // Increased springiness
-          s.vrY += (0 - s.rotY) * 0.18; s.vrY *= d; s.rotY += s.vrY; // Increased springiness
+          s.vx += (targetScaleX - s.scaleX) * 0.12; s.vx *= d; s.scaleX += s.vx; // TUNED: Reduced springiness for a smoother feel.
+          s.vy += (targetScaleY - s.scaleY) * 0.12; s.vy *= d; s.scaleY += s.vy; // TUNED: Reduced springiness for a smoother feel.
+          s.vrX += (0 - s.rotX) * 0.12; s.vrX *= d; s.rotX += s.vrX; // TUNED: Reduced springiness for a smoother feel.
+          s.vrY += (0 - s.rotY) * 0.12; s.vrY *= d; s.rotY += s.vrY; // TUNED: Reduced springiness for a smoother feel.
 
           totalVelocity += Math.abs(s.vx) + Math.abs(s.vy) + Math.abs(s.vrX) + Math.abs(s.vrY);
 
           // --- PERFORMANCE FIX: Clamp scale to prevent card overlap ---
           // This prevents overlapping backdrop-filters which is very expensive to render.
-          const finalScaleX = clamp(s.scaleX, 0.8, 1.15);
-          const finalScaleY = clamp(s.scaleY, 0.8, 1.15);
-          card.style.transform = `scaleX(${finalScaleX}) scaleY(${finalScaleY}) rotateX(${s.rotX}deg) rotateY(${s.rotY}deg)`;
+          // By reducing the max scale, we ensure cards never touch, preventing costly render lag.
+          const finalScaleX = clamp(s.scaleX, 0.8, 1.04);
+          const finalScaleY = clamp(s.scaleY, 0.8, 1.04);
+          card.style.transform = `translateZ(0) scaleX(${finalScaleX}) scaleY(${finalScaleY}) rotateX(${s.rotX}deg) rotateY(${s.rotY}deg)`;
         }
       });
 
@@ -384,12 +398,12 @@ async function fetchAndBuildGrid() {
     }
 
     // Add a listener to update the pointer coordinates for the hover effect
-    window.addEventListener('pointermove', e => {
+    window.addEventListener('pointermove', (e) => {
         pointer.x = e.clientX;
         pointer.y = e.clientY;
         ensureAnimating();
-    });
-    window.addEventListener('pointerleave', () => { pointer.x = -9999; pointer.y = -9999; ensureAnimating(); });
+    }, { passive: true }); // OPTIMIZATION: Use passive listener for pointer events.
+    window.addEventListener('pointerleave', () => { pointer.x = -9999; pointer.y = -9999; });
     // --- End Animation Setup ---
 
     const searchButton = document.getElementById('searchButton');
@@ -464,26 +478,70 @@ async function fetchAndBuildGrid() {
     const closeInfoButton = document.getElementById('closeInfoButton');
     addTapAnimation(infoButton);
     addTapAnimation(closeInfoButton);
-    
+
+    // REFACTOR: Use IntersectionObserver for panel animations.
+    let panelObserver;
+
     function toggleInfoPanel() {
-      infoPanel.classList.toggle('active');
-      body.classList.toggle('info-panel-open');
+      const isActive = infoPanel.classList.toggle('active');
+      body.classList.toggle('info-panel-open', isActive);
+      // FIX: Toggle the close button's visibility since it's now outside the panel.
+      closeInfoButton.classList.toggle('active', isActive);
+      const animItems = infoPanel.querySelectorAll('.panel-anim-item');
+      
+      if (isActive) {
+        // Ensure panel is scrollable to the top before observing
+        infoPanel.scrollTop = 0;
+
+        panelObserver = new IntersectionObserver((entries, observer) => {
+          entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+              // Add a staggered delay for a nice effect as they appear
+              entry.target.style.transitionDelay = `${index * 50}ms`;
+              entry.target.classList.add('in-view');
+              observer.unobserve(entry.target); // Stop observing once animated
+            }
+          });
+        }, {
+          root: infoPanel, // Animate within the panel itself
+          rootMargin: '0px',
+          threshold: 0.1   // Trigger when 10% of the item is visible
+        });
+
+        animItems.forEach(item => panelObserver.observe(item));
+      } else {
+        if (panelObserver) panelObserver.disconnect();
+        animItems.forEach(item => item.classList.remove('in-view'));
+      }
     }
 
     infoButton.addEventListener('click', toggleInfoPanel);
     closeInfoButton.addEventListener('click', toggleInfoPanel);
+
+    // FIX: Add event listener to close the panel when clicking on the background/empty space.
+    infoPanel.addEventListener('click', (event) => {
+      // If the click target is the panel itself (the background) and not a child element...
+      if (event.target === infoPanel) {
+        toggleInfoPanel(); // ...close the panel.
+      }
+    });
 
     // Initial check for Info button visibility if search was active on load (from saved state)
     if (searchBar.classList.contains('active')) {
       infoContainerWrapper.classList.add('hidden');
     }
 
-    window.addEventListener('scroll', () => {
+    // OPTIMIZATION: Use passive listener for scroll events.
+    window.addEventListener('scroll', () => { 
       if (document.activeElement === searchBar) {
         searchBar.blur();
       }
+      // OPTIMIZATION: Update grid bounds here, outside the rAF loop, to prevent layout thrashing.
+      const gridRect = document.getElementById('grid').getBoundingClientRect();
+      gridBounds.top = gridRect.top;
+      gridBounds.bottom = gridRect.bottom;
       ensureAnimating(); // Restart animation on scroll
-    });
+    }, { passive: true });
 
     // New logic for the Contact and Social Media pop-ups
     const contactPanel = document.getElementById('contactPanel');
@@ -507,30 +565,48 @@ async function fetchAndBuildGrid() {
     addTapAnimation(instagramBtn);
     addTapAnimation(facebookBtn);
 
+    // FIX: Refactor panel logic to handle independent close buttons and click-outside-to-close.
     function closeAllPanels() {
         contactPanel.classList.remove('active');
         socialPanel.classList.remove('active');
         body.classList.remove('info-panel-open');
+        // Hide all modal-related close buttons
+        closeContactButton.classList.remove('active');
+        closeSocialButton.classList.remove('active');
     }
 
     contactBtn.addEventListener('click', () => {
+        closeAllPanels(); // Ensure no other panels are open
         contactPanel.classList.add('active');
+        closeContactButton.classList.add('active');
         body.classList.add('info-panel-open');
-    });
-
-    closeContactButton.addEventListener('click', () => {
-        closeAllPanels();
     });
 
     openSocialButton.addEventListener('click', () => {
         contactPanel.classList.remove('active');
+        closeContactButton.classList.remove('active');
         setTimeout(() => {
             socialPanel.classList.add('active');
+            closeSocialButton.classList.add('active');
         }, 300); // Small delay to allow the first panel to fade out
     });
 
+    // Add listeners for all close buttons
+    closeContactButton.addEventListener('click', closeAllPanels);
     closeSocialButton.addEventListener('click', () => {
         closeAllPanels();
+    });
+
+    // Add listeners to close panels when clicking on the background
+    contactPanel.addEventListener('click', (event) => {
+      if (event.target === contactPanel) {
+        closeAllPanels();
+      }
+    });
+    socialPanel.addEventListener('click', (event) => {
+      if (event.target === socialPanel) {
+        closeAllPanels();
+      }
     });
   } catch (error) {
     console.error('Failed to load grid ', error);
@@ -587,6 +663,41 @@ function detectSVGFilterSupport() {
   }
 }
 
+/**
+ * Shows a tutorial panel on the user's first visit.
+ * Uses localStorage to track if the tutorial has been seen.
+ */
+function showTutorialOnFirstVisit() {
+  const hasVisited = localStorage.getItem('hasVisitedBefore');
+  if (hasVisited) {
+    return; // Don't show tutorial if they've visited
+  }
+
+  const tutorialPanel = document.getElementById('tutorialPanel');
+  const startButton = document.getElementById('tutorialStartButton');
+
+  // Add tap animation to the start button
+  addTapAnimation(startButton);
+
+  // FIX: Set a staggered transition delay and add the 'in-view' class to trigger the animation.
+  const animItems = tutorialPanel.querySelectorAll('.panel-anim-item');
+  animItems.forEach((item, index) => {
+    item.style.transitionDelay = `${index * 50}ms`;
+    item.classList.add('in-view'); // This makes the item visible and starts the transition.
+  });
+
+  tutorialPanel.classList.add('active');
+  document.body.classList.add('info-panel-open');
+
+  function closeTutorial() {
+    tutorialPanel.classList.remove('active');
+    document.body.classList.remove('info-panel-open');
+    localStorage.setItem('hasVisitedBefore', 'true');
+  }
+
+  startButton.addEventListener('click', closeTutorial, { once: true });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   detectSVGFilterSupport(); // Check for real SVG filter support
   const loadingScreen = document.getElementById('loadingScreen');
@@ -609,7 +720,7 @@ document.addEventListener('DOMContentLoaded', () => {
           loadingScreen.classList.add('hidden');
           setupScrollPerformance();
           setTimeout(() => {
-            fetchAndBuildGrid();
+            fetchAndBuildGrid(); // This will now handle showing the tutorial internally.
           }, 500);
         }
       };
@@ -619,7 +730,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadingScreen.classList.add('hidden');
     setupScrollPerformance();
     setTimeout(() => {
-      fetchAndBuildGrid();
+      fetchAndBuildGrid(); // This will now handle showing the tutorial internally.
     }, 500);
   }
 });
