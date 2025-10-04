@@ -54,41 +54,41 @@
   </div>
 </div>
 
+<!-- FIX: Move the close button outside the panel to prevent it from scrolling. -->
+<div class="close-button" id="closeInfoButton">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18"></line>
+    <line x1="6" y1="6" x2="18" y2="18"></line>
+  </svg>
+</div>
 <div class="info-panel" id="infoPanel">
-    <div class="close-button" id="closeInfoButton">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    </div>
     <div class="info-content">
-      <h2>About Dodch Stories</h2>
-      <p>✨ Here, stories are not just written — they are lived.</p>
-      <p>Every word is a mirror of what we can’t say out loud, symbols of who we are, and who we might become. ✨</p>
-      <p>🌌 Our Storytelling Philosophy</p>
-      <p>We believe that everyone carries something special inside — a thought, a feeling, an idea, a perspective that only they can express. Here, we invite writers to bring those hidden parts of themselves to life.</p>
-      <p>A story on our site should not just tell events. It should:</p>
+      <h2 class="panel-anim-item">About Dodch Stories</h2>
+      <p class="info-intro panel-anim-item">✨ Here, stories are not just written — they are lived. Every word is a mirror of what we can’t say out loud, symbols of who we are, and who we might become. ✨</p>
+      
+      <h3 class="panel-anim-item">🌌 Our Storytelling Philosophy</h3>
+      <p class="panel-anim-item">We believe that everyone carries something special inside. A story on our site should not just tell events, it should:</p>
       <ul>
-          <li>Reveal what we can’t say with normal words.</li>
-          <li>Carry deep meanings, symbols, and hidden layers for readers to uncover.</li>
-          <li>Reflect the truth of our lives — sometimes directly, sometimes through metaphor or fantasy.</li>
-          <li>Show us what it feels like to be human in a way that is unforgettable.</li>
+          <li class="panel-anim-item">Reveal what we can’t say with normal words.</li>
+          <li class="panel-anim-item">Carry deep meanings, symbols, and hidden layers for readers to uncover.</li>
+          <li class="panel-anim-item">Reflect the truth of our lives — sometimes directly, sometimes through metaphor or fantasy.</li>
+          <li class="panel-anim-item">Show us what it feels like to be human in a way that is unforgettable.</li>
       </ul>
-      <p>⸻</p>
-      <p>✨ What Makes a Story Right for Us</p>
-      <p>• Modern, relatable, unique — connected to today’s life yet timeless in meaning.</p>
-      <p>• Emotional impact — it should stay in the reader’s mind long after they finish.</p>
-      <p>• Symbols & hidden meanings — every story is more than what’s on the page.</p>
-      <p>• Personal truth — your unique perspective, your special thing, should shine through.</p>
-      <p>⸻</p>
-      <p>🚫 <strong>What We Avoid</strong></p>
-      <p>• Empty writing without purpose or depth.</p>
-      <p>• Copy-paste tropes or soulless stories.</p>
-      <p>• Work that doesn’t reveal anything new about life, humanity, or ourselves.</p>
-      <p>⸻</p>
-      <p>🌍 <strong>Why We Exist</strong></p>
-      <p>We are not here for ordinary stories. We are here for the stories that transform us — the ones that make us stop, think, feel, and see the world differently.</p>
-      <p>Everyone has something unique to share. This is the place to bring it to life.</p>
+      <hr class="panel-anim-item">
+      <h3 class="panel-anim-item">✨ What Makes a Story Right for Us</h3>
+      <ul>
+        <li class="panel-anim-item"><strong>Modern & Relatable:</strong> Connected to today’s life yet timeless in meaning.</li>
+        <li class="panel-anim-item"><strong>Emotional Impact:</strong> Stays in the reader’s mind long after they finish.</li>
+        <li class="panel-anim-item"><strong>Symbols & Hidden Meanings:</strong> Every story is more than what’s on the page.</li>
+        <li class="panel-anim-item"><strong>Personal Truth:</strong> Your unique perspective and voice should shine through.</li>
+      </ul>
+      <hr class="panel-anim-item">
+      <h3 class="panel-anim-item">🚫 What We Avoid</h3>
+      <ul>
+        <li class="panel-anim-item">Empty writing without purpose or depth.</li>
+        <li class="panel-anim-item">Copy-paste tropes or soulless stories.</li>
+        <li class="panel-anim-item">Work that doesn’t reveal anything new about life, humanity, or ourselves.</li>
+      </ul>
     </div>
 </div>
 
@@ -100,6 +100,50 @@
     <span class="loading-text-words">C</span>
     <span class="loading-text-words">H</span>
   </div>
+</div>
+
+<!-- NEW: Tutorial Panel for first-time visitors -->
+<div class="info-panel" id="tutorialPanel">
+    <div class="info-content">
+      <h2 class="panel-anim-item">Welcome to Dodch Stories!</h2>
+      <p class="info-intro panel-anim-item">Here’s a quick guide to get you started.</p>
+      <div class="tutorial-section ">
+        <h3 class="tutorial-heading panel-anim-item">Reading & Saving</h3>
+        <ul>
+            <li class="panel-anim-item">
+              <span class="tutorial-icon-text">👆</span>
+              <div><strong>Explore Stories:</strong> Tap on any story card to dive in and read.</div>
+            </li>
+            <li class="panel-anim-item">
+              <span class="tutorial-icon"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span>
+              <div><strong>Add to Favorites:</strong> Click the heart icon on a story to save it for later.</div>
+            </li>
+        </ul>
+      </div>
+      <div class="tutorial-section ">
+        <h3 class="tutorial-heading panel-anim-item">Tools & Filters</h3>
+        <ul>
+            <li class="panel-anim-item">
+              <span class="tutorial-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span>
+              <div><strong>Search:</strong> Use the top-right button to find stories by title, author, or description.</div>
+            </li>
+            <li class="panel-anim-item">
+              <span class="tutorial-icon"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span>
+              <div><strong>Filter Favorites:</strong> Tap the bottom-left heart to see only your saved stories.</div>
+            </li>
+        </ul>
+      </div>
+      <div class="tutorial-section ">
+        <h3 class="tutorial-heading panel-anim-item">Connect & Contribute</h3>
+        <ul>
+          <li class="panel-anim-item">
+            <span class="tutorial-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></span>
+            <div><strong>Get in Touch:</strong> Tap the envelope to submit a story or find us on social media.</div>
+          </li>
+        </ul>
+      </div>
+      <button class="panel-button panel-anim-item" id="tutorialStartButton">Start Exploring</button>
+    </div>
 </div>
 <div class="notifications-container">
   <p class="notification-item"> welcome to my personal website, you can tap on any story grid to read it or add it to favorites, please enjoy ❤️ </p>
@@ -166,13 +210,14 @@
 <footer class="site-footer">
   <p>&copy; 2024 Dodch. All Rights Reserved.</p>
 </footer>
-<div class="info-panel" id="contactPanel">
-    <div class="close-button" id="closeContactButton">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    </div>
+<!-- FIX: Move close buttons outside their panels to ensure they remain fixed. -->
+<div class="close-button" id="closeContactButton">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18"></line>
+    <line x1="6" y1="6" x2="18" y2="18"></line>
+  </svg>
+</div>
+<div class="modal-panel" id="contactPanel">
     <div class="contact-panel-content">
       <a class="panel-button" id="submitStoryBtn" href="mailto:dodchstories@gmail.com">
         Submit Your Story
@@ -182,13 +227,13 @@
       </button>
     </div>
 </div>
-<div class="info-panel" id="socialPanel">
-    <div class="close-button" id="closeSocialButton">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    </div>
+<div class="close-button" id="closeSocialButton">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18"></line>
+    <line x1="6" y1="6" x2="18" y2="18"></line>
+  </svg>
+</div>
+<div class="modal-panel" id="socialPanel">
     <div class="social-links-content">
       <a class="panel-button social-link-button" id="tiktokBtn" href="https://www.tiktok.com/@dodchadam?_t=ZM-8zxCtYC2iXj&_r=1" target="_blank">
         Tiktok
