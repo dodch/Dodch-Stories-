@@ -142,8 +142,10 @@ h1{margin:0 0 20px;}
   border-radius:3rem;
   padding:20px;
   box-shadow:var(--glass-shadow);
-  will-change: transform, animation;
-  transition: box-shadow 0.2s, background 0.5s ease-in-out, backdrop-filter 0.4s ease-out, -webkit-backdrop-filter 0.4s ease-out;
+  /* OPTIMIZATION: Force layer promotion to the GPU for smoother animations. */
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  transition: box-shadow 0.2s, background 0.5s ease-in-out, backdrop-filter 0.4s ease-out, -webkit-backdrop-filter 0.4s ease-out, opacity 0.5s ease-out;
   cursor:pointer;
   text-decoration: none;
   color: var(--glass-text);
@@ -181,6 +183,10 @@ body.svg-filter-supported .glass-container {
   margin-bottom: .5rem;
   font-family: 'Playfair Display', serif;
   text-shadow: 0 2px 3px rgba(0,0,0,0.8), 0 0 10px rgba(0,0,0,0.5);
+  /* NEW: Add transition for hover animation */
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* FIX: Revert to left alignment for titles */
+  text-align: left;
 }
 .description {
   font-size: 1rem;
@@ -188,6 +194,20 @@ body.svg-filter-supported .glass-container {
   font-family: 'Open Sans', sans-serif;
   /* FIX: Add a stronger, layered shadow to lift text from the background. */
   text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 5px rgba(0,0,0,0.5);
+  /* NEW: Add transition for hover animation */
+  transition: all 0.3s ease-out;
+}
+
+/* --- NEW: Premium Text Hover Effect --- */
+.glass-container:hover .title {
+  color: var(--golden-tint);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--golden-tint) 70%, transparent), 0 2px 3px rgba(0,0,0,0.8);
+  transform: translateY(-2px) scale(1.02);
+}
+.glass-container:hover .description {
+  opacity: 1;
+  color: var(--glass-text);
+  transform: translateY(-1px);
 }
 /* Fixed wrapper for the top-right elements */
 .top-right-fixed-wrapper {
@@ -495,6 +515,8 @@ body.svg-filter-supported .glass-container {
   font-family: 'Open Sans', sans-serif;
   /* FIX: Add a stronger, layered shadow for readability. */
   text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.5);
+  /* NEW: Add transition for hover animation */
+  transition: all 0.3s ease-out;
 }
 .creation-date {
   position: absolute;
@@ -506,6 +528,8 @@ body.svg-filter-supported .glass-container {
   font-family: 'Open Sans', sans-serif;
   /* FIX: Add a stronger, layered shadow for readability. */
   text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.5);
+  /* NEW: Add transition for hover animation */
+  transition: all 0.3s ease-out;
 }
 .story-creator {
   position: absolute;
@@ -517,15 +541,25 @@ body.svg-filter-supported .glass-container {
   opacity: 0.8;
   color: var(--golden-tint);
   text-transform: capitalize;
+  /* FIX: Revert to centered alignment for creator text */
   text-align: center;
   width: 100%;
   left: 0;
   text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 5px rgba(0,0,0,0.7);
+  /* NEW: Add transition for hover animation */
+  transition: all 0.3s ease-out;
+}
+.glass-container:hover .story-length,
+.glass-container:hover .creation-date,
+.glass-container:hover .story-creator {
+  opacity: 1;
 }
 .glass-container.no-link {
-    opacity: 0.5;
+    opacity: 0.6;
     cursor: not-allowed;
     pointer-events: none;
+    /* NEW: Add a grayscale filter to visually "grey out" the disabled cards. */
+    filter: grayscale(1);
 }
 /* --- New 'status' pill CSS with glow animations --- */
 .new-pill {
@@ -641,11 +675,11 @@ body.svg-filter-supported .glass-container {
   backdrop-filter: blur(var(--panel-blur-start));
   -webkit-backdrop-filter: blur(var(--panel-blur-start));
   z-index: 100;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+  /* FIX: Make the panel itself scrollable */
+  overflow-y: auto;
+  display: block; /* Change from flex to block */
+  text-align: left;
+  will-change: transform; /* Promote to its own layer for smooth scrolling */
   transform: scale(0.95);
   opacity: 0;
   pointer-events: none;
@@ -659,17 +693,37 @@ body.svg-filter-supported .glass-container {
   -webkit-backdrop-filter: blur(8px);
 }
 .info-content {
-    overflow-y: auto;
-    height: 100%;
     max-width: 600px;
-    /* PERFORMANCE: Promote to its own layer for smooth scrolling over blurred background */
-    will-change: transform;
-    padding-top: 2rem;
+    /* FIX: Center the content block within the scrollable panel */
+    margin: 0 auto;
+    /* Let content define its own height */
+    height: auto;
+}
+.info-intro {
+  font-style: italic;
+  opacity: 0.9;
+  text-align: center; /* Keep the intro centered */
+  margin-bottom: 2rem !important;
+}
+.info-panel hr {
+  border: none;
+  height: 1px;
+  background-color: color-mix(in srgb, var(--glass-text) 20%, transparent);
+  margin: 2rem 0;
+}
+.info-panel h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--golden-tint);
+  margin-bottom: 1rem;
+  text-align: left; /* Ensure subheadings are left-aligned */
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 .info-panel h2 {
   font-size: 2rem;
   font-weight: bold;
   margin-bottom: 1rem;
+  text-align: center; /* Keep main titles centered */
   color: var(--glass-text);
   z-index: 100;
 }
@@ -722,6 +776,8 @@ body.svg-filter-supported .glass-container {
     align-items: center;
     background-color: color-mix(in srgb, var(--blue-tint) 20%, transparent);
     cursor: pointer;
+    /* FIX: Remove default browser border from <button> elements to match <a> tags. */
+    border: none;
 }
 .panel-button:hover, .panel-button:focus-visible {
     transform: scale(1.02);
@@ -743,7 +799,8 @@ body.svg-filter-supported .glass-container {
 }
 /* Close button styling */
 .close-button {
-  position: absolute;
+  /* FIX: Change position to 'fixed' to keep it from scrolling with the panel content. */
+  position: fixed;
   top: 20px;
   right: 20px;
   width: 40px;
@@ -757,6 +814,17 @@ body.svg-filter-supported .glass-container {
   align-items: center;
   transition: all 0.3s ease-in-out;
   z-index: 101;
+  /* FIX: Hide the button by default; JS will show it when its panel is active. */
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.9);
+  transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+.close-button.active {
+  /* FIX: Make the button visible when its panel is active. */
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
 }
 .close-button:hover, .close-button:focus-visible {
   transform: scale(1.1);
@@ -808,4 +876,110 @@ body.info-panel-open .favorite-btn:hover {
   .info-panel p {
       font-size: 1rem;
   }
+
+  /* NEW: Tutorial Panel specific styles for mobile */
+  .tutorial-content ul {
+    padding-left: 0;
+    text-align: left;
+  }
+  .tutorial-content li {
+    padding-left: 0;
+    margin-bottom: 1rem;
+  }
+  .tutorial-content li::before {
+    content: ''; /* Hide the bullet on mobile for a cleaner look */
+  }
+}
+.tutorial-icon, .tutorial-icon-text {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0; /* Prevent icon from shrinking */
+  display: flex; /* Use flex to center the icon/emoji */
+  align-items: center;
+  justify-content: center;
+}
+.tutorial-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: var(--glass-text);
+  stroke-width: 2;
+  fill: none;
+}
+
+/* --- Tutorial Panel Specific Styles --- */
+.tutorial-section {
+  margin-bottom: 2rem;
+}
+.tutorial-heading {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--golden-tint);
+  margin-bottom: 1rem;
+  text-align: left;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+#tutorialStartButton {
+  margin-top: 2rem;
+  width: 100%;
+  /* FIX: Explicitly set the background color and ensure the hover effect is smooth. */
+  background-color: color-mix(in srgb, var(--blue-tint) 20%, transparent);
+}
+#tutorialStartButton:hover, #tutorialStartButton:focus-visible {
+  /* FIX: Add back the scale transform to match other buttons, along with the box-shadow. */
+  transform: scale(1.02);
+  box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 40%, transparent), var(--button-shadow);
+}
+#tutorialPanel .info-content li {
+  display: flex;
+  align-items: flex-start;
+  /* FIX: Remove padding and use a larger gap for better spacing */
+  padding-left: 0;
+  gap: 1.5rem;
+}
+#tutorialPanel .info-content li > div {
+  line-height: 1.5;
+}
+#tutorialPanel li::before {
+  content: none;
+}
+
+/* --- NEW: Styles for Panel Load Animation --- */
+.panel-anim-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+/* REFACTOR: Animate items when they get the 'in-view' class, not just when the panel is active. */
+.panel-anim-item.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* FIX: Create a new 'modal-panel' class to restore the original centered pop-up style for Contact/Social panels. */
+.modal-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100lvh;
+  padding: 40px;
+  box-sizing: border-box;
+  background-color: var(--glass-bg);
+  backdrop-filter: blur(var(--panel-blur-start));
+  -webkit-backdrop-filter: blur(var(--panel-blur-start));
+  z-index: 100;
+  display: flex; /* Use flex to center content */
+  justify-content: center;
+  align-items: center;
+  transform: scale(0.95);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease-in-out, transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), backdrop-filter 0.5s ease-in-out;
+}
+.modal-panel.active {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
