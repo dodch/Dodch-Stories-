@@ -28,8 +28,8 @@
             --button-shadow-light: var(--glass-shadow-light);
             --pop-up-bg-light: rgba(255, 255, 255, 0.7);
             --pop-up-text-light: #1f2937;
-            --main-bg-url-light: url('https://i.ibb.co/W4PTCf4P/F59-EDCDE-25-A7-4-E02-BEBF-16-F94-CEE075-E.png');
-            --main-bg-url-dark: url("https://i.ibb.co/4Z82GLJt/EF83-F245-8482-467-E-AA8-A-AA50-CB9-E7778.png");
+            --main-bg-url-light: url('https://i.ibb.co/XwgDtJ4/IMG-2453.jpg');
+            --main-bg-url-dark: url("https://i.ibb.co/XwgDtJ4/IMG-2453.jpg");
             --main-text-color-light: #f0f0f0;
             --main-text-color-dark: #f0f0f0;
             --text-on-glass-light: #9333EA;
@@ -72,109 +72,6 @@
             --selected-lang-button-text: var(--save-button-text-dark);
             /* New variable for the unselected language button text in dark mode */
             --unselected-lang-text-dark: #C084FC;
-        }
-        /* Stars Container */
-        .stars-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            overflow: hidden;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            background: linear-gradient(27deg, #020111, #191621, #282d4f, #342a53);
-            background-size: 400% 400%;
-            animation: subtleGradientShift 45s ease infinite;
-        }
-        body.dark-mode .stars-container {
-            opacity: 1;
-        }
-        @keyframes subtleGradientShift {
-            0%   { background-position: 0% 50%; transform: rotate(0deg); }
-            50%  { background-position: 100% 50%; transform: rotate(2deg); }
-            100% { background-position: 0% 50%; transform: rotate(0deg); }
-        }
-        /* --- CSS Starfield --- */
-        @keyframes real-twinkle {
-            0%   { opacity: var(--opacity-start); box-shadow: 0 0 5px var(--glow-color-1), 0 0 10px var(--glow-color-1); }
-            20%  { opacity: 1; }
-            40%  { opacity: var(--opacity-mid); }
-            60%  { opacity: 1; box-shadow: 0 0 5px var(--glow-color-2), 0 0 10px var(--glow-color-2); }
-            80%  { opacity: var(--opacity-end); }
-            100% { opacity: var(--opacity-start); box-shadow: 0 0 5px var(--glow-color-1), 0 0 10px var(--glow-color-1); }
-        }
-        .star {
-            position: absolute;
-            background-color: white;
-            border-radius: 50%;
-            animation: real-twinkle var(--duration) infinite ease-in-out;
-            animation-delay: var(--delay);
-            --glow-color-1: #c1e9ff;
-            --glow-color-2: #fef1e0;
-            box-shadow: 0 0 5px var(--glow-color-1), 0 0 10px var(--glow-color-1);
-        }
-        #stars, #stars2, #stars3 {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-        /* --- Hyper-Realistic Meteor Simulation --- */
-        .meteor {
-            position: absolute;
-            top: var(--top-start);
-            left: var(--left-start);
-            transform: rotate(var(--angle)) translateX(var(--travel-dist));
-            transform-origin: right;
-            animation: meteor-travel var(--duration) ease-in var(--delay) forwards;
-            opacity: 0;
-            will-change: transform, opacity;
-        }
-        @keyframes meteor-travel {
-            0% { transform: rotate(var(--angle)) translateX(var(--travel-dist)); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: rotate(var(--angle)) translateX(0); opacity: 0; }
-        }
-        .meteor-head {
-            position: absolute;
-            left: 100%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: radial-gradient(circle, #ffffff 5%, #fef1e0 30%, rgba(143, 211, 244, 0.5) 60%, transparent 80%);
-            box-shadow: 0 0 14px 4px #c1e9ff;
-            animation: flicker 1s infinite alternate;
-        }
-        .meteor.flare .meteor-head {
-            animation: flicker 1s infinite alternate, flare 1.5s ease-out 1;
-            animation-delay: inherit;
-        }
-        @keyframes flicker {
-            from { transform: scale(1); box-shadow: 0 0 12px 3px #c1e9ff; }
-            to { transform: scale(0.9); box-shadow: 0 0 8px 2px #a1d9ef; }
-        }
-        @keyframes flare {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(2); opacity: 0.8; box-shadow: 0 0 25px 8px #ffffff; }
-        }
-        .meteor-tail {
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 200px;
-            height: 2px;
-            border-radius: 2px;
-            background: linear-gradient(to left, transparent 0%, rgba(143, 211, 244, 0.5) 50%, #ffffff 100%);
-            filter: drop-shadow(0 0 10px rgba(143, 211, 244, 0.4));
-            opacity: 0.8;
         }
         .glass-button-base {
             background-color: var(--glass-bg-light);
@@ -272,10 +169,6 @@
             color: var(--main-text-color-light);
         }
         body.dark-mode {
-            background: #020111; /* Fallback for when gradient doesn't load */
-        }
-        body:not(.dark-mode) {
-            background-image: var(--main-bg-url-light);
             color: var(--main-text-color-dark);
         }
         /* --- LOADING SCREEN OVERLAY (fixed on top) --- */
@@ -346,6 +239,32 @@
             filter: blur(15px);
             pointer-events: none;
         }
+        .fixed-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -1;
+            transition: opacity 0.5s ease;
+        }
+        .fixed-background.light-background {
+             background-image: var(--main-bg-url-light);
+             opacity: 1;
+        }
+        .fixed-background.dark-background {
+             background-image: var(--main-bg-url-dark);
+             opacity: 0;
+        }
+        body.dark-mode .fixed-background.light-background {
+            opacity: 0;
+        }
+         body.dark-mode .fixed-background.dark-background {
+            opacity: 1;
+        }
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -406,6 +325,7 @@
         .glow-word {
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
         }
+/* --- text background : --- */
         #content {
             padding: 2rem;
             padding-top: 6rem;
@@ -420,8 +340,8 @@
             transition: opacity 0.5s ease-in-out;
             opacity: 1;
             background-color: var(--content-bg-light);
-            backdrop-filter: blur(2px);
-            -webkit-backdrop-filter: blur(2px);
+            backdrop-filter: blur(0px);
+            -webkit-backdrop-filter: blur(0px);
         }
         body.dark-mode #content {
             background-color: var(--content-bg-dark);
@@ -520,22 +440,19 @@
 <body class="loading">
     <div id="loading-screen">
         <div class="loading-indicator">
-            <span>❤️</span> <span>❤️</span> <span>❤️</span> <span>❤️</span> <span>❤️</span>
+            <span>⭐️</span> <span>⭐️</span> <span></span> <span>⭐️</span> <span>⭐️</span>
         </div>
         <div class="loading-percentage">0%</div>
     </div>
-    <div class="stars-container">
-        <div id="stars"></div>
-        <div id="stars2"></div>
-        <div id="stars3"></div>
-    </div>
+    <div class="fixed-background light-background"></div>
+    <div class="fixed-background dark-background"></div>
     <div id="page-content-wrapper">
         <div id="raw-ar-text" style="display: none;">
-            ‎ arabic pargarphe here 
+            ‎ العربية غير متوفرة حاليا، يمكنك استعمال خاصية الترجمة للمواقع
         </div>
         <div id="raw-fr-text" style="display: none;">
 
-french paragraphe here 
+Français est actuellement indisponible, vous pouvez utiliser la fonction de traduction pour les sites
         </div>
         <div id="raw-en-text" style="display: none;">
             
@@ -1263,7 +1180,7 @@ THE END.
         let isDarkMode = false;
         const contentMap = {
             ar: {
-                title: 'arabic title here ',
+                title: 'أبرد ليلة ',
                 rawTextId: 'raw-ar-text',
                 saveProgress: 'التقدم المحفوظ',
                 savePosition: 'التقدم المحفوظ',
@@ -1277,7 +1194,7 @@ THE END.
                 backHome: 'العودة للصفحة الرئيسية'
             },
             fr: {
-                title: 'french title here  ',
+                title: 'La nuit la plus froide  ',
                 rawTextId: 'raw-fr-text',
                 saveProgress: 'Progression enregistrée',
                 savePosition: 'Progression enregistrée',
@@ -1291,7 +1208,7 @@ THE END.
                 backHome: 'Retour à l\'accueil'
             },
             en: {
-                title: 'english title here',
+                title: 'The coldest night',
                 rawTextId: 'raw-en-text',
                 saveProgress: 'Saved Progress',
                 savePosition: 'Save Position',
@@ -1303,8 +1220,10 @@ THE END.
                 wordNotFound: 'Saved word not found in current text.',
                 noWordSaved: 'No word has been saved for this language yet',
                 backHome: 'Back Home'
-            }
+            },
         };
+        const lightBackgroundDiv = document.querySelector('.fixed-background.light-background');
+        const darkBackgroundDiv = document.querySelector('.fixed-background.dark-background');
         const contentDiv = document.getElementById('content');
         const textElement = document.getElementById('text');
         const titleElement = document.getElementById('title');
@@ -1313,7 +1232,7 @@ THE END.
         const languageButtons = document.querySelectorAll('#ar-button, #fr-button, #en-button');
         const saveButton = document.getElementById('save-progress-button');
         const popupDivInner = document.getElementById('popup').querySelector('div');
-
+        
         function applyTextEffects() {
             const textSpans = textElement.querySelectorAll('span[id^="word-p"]');
             const isDarkModeActive = document.body.classList.contains('dark-mode');
