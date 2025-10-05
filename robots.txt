@@ -1,0 +1,6 @@
+# Allow all search engines to crawl the entire site
+User-agent: *
+Allow: /
+
+# Location of sitemap file
+Sitemap: https://www.dodchstories.com/sitemap.xml
