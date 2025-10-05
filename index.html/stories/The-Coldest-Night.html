@@ -21,6 +21,8 @@
         line-height: 1.8;
         transition: background-color 0.5s ease, color 0.5s ease;
         min-height: 100vh;
+        /* NEW: Use CSS for a high-performance smooth scrolling effect. */
+        scroll-behavior: smooth;
         position: relative;
       }
       body.dark-mode {
@@ -99,15 +101,17 @@
 .home-icon {
   font-size: 1rem; /* Medium arrow size */
   font-weight: bold;
-}
+      }
       .scroll-text,
       .conversation-text {
         opacity: 0;
-        filter: blur(4px);
+        color: transparent; /* Hide text by making it transparent */
         display: inline-block;
+        text-shadow: 0 0 8px rgba(0, 0, 0, 0.5); /* Mimic blur with shadow */
         transform: translateY(15px);
         transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-                    filter 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                    color 0.6s ease-out,
+                    text-shadow 0.6s ease-out,
                     transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         will-change: opacity, filter, transform;
         cursor: pointer;
@@ -121,14 +125,9 @@
       .scroll-text.visible,
       .conversation-text.visible {
         opacity: 1;
-        filter: blur(0);
+        color: inherit; /* Restore original text color */
+        text-shadow: 0 0 0 rgba(0, 0, 0, 0); /* Remove the shadow */
         transform: translateY(0);
-      }
-      .scroll-text.hidden,
-      .conversation-text.hidden {
-        opacity: 0;
-        filter: blur(4px);
-        transform: translateY(15px);
       }
       .scroll-text:hover,
       .conversation-text:hover {
@@ -137,6 +136,12 @@
         transform: translateY(-2px) scale(1.1);
         background: rgba(255, 255, 255, 0.1);
       }
+      /* FIX: Use a light text-shadow in dark mode for a visible blur effect */
+      body.dark-mode .scroll-text,
+      body.dark-mode .conversation-text {
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+      }
+
       .highlighted {
         background-color: rgba(255, 255, 0, 0.6);
         border-radius: 3px;
@@ -355,36 +360,142 @@
         overflow: hidden;
         opacity: 0;
         transition: opacity 0.5s ease;
-        background: linear-gradient(45deg, #0b1026, #2a4171, #1a1b3a, #3b2a71);
+        /* REFINED: A more subtle and sophisticated color palette for the night sky. */
+        background: linear-gradient(27deg, #020111, #191621, #282d4f, #342a53);
         background-size: 400% 400%;
-        animation: gradientShift 30s ease infinite;
-      }
-      body.dark-mode .stars-container {
-        opacity: 1;
+        /* REFINED: A slower, more organic animation that shifts both position and angle. */
+        animation: subtleGradientShift 45s ease infinite;
       }
       body:not(.dark-mode) {
         background: radial-gradient(circle at center, #ffffff, #f4f4f4);
       }
-      @keyframes gradientShift {
-        0% { background-position: 0% 50% }
-        50% { background-position: 100% 50% }
-        100% { background-position: 0% 50% }
+      body.dark-mode .stars-container {
+        opacity: 1;
       }
-      canvas#starfield {
+      @keyframes subtleGradientShift {
+        0%   { background-position: 0% 50%; transform: rotate(0deg); }
+        50%  { background-position: 100% 50%; transform: rotate(2deg); }
+        100% { background-position: 0% 50%; transform: rotate(0deg); }
+      }
+      /* --- NEW: CSS Starfield --- */
+      /* REFINED: More realistic twinkling animation based on atmospheric scintillation. */
+      @keyframes real-twinkle {
+        0%   { opacity: var(--opacity-start); box-shadow: 0 0 5px var(--glow-color-1), 0 0 10px var(--glow-color-1); }
+        20%  { opacity: 1; }
+        40%  { opacity: var(--opacity-mid); }
+        60%  { opacity: 1; box-shadow: 0 0 5px var(--glow-color-2), 0 0 10px var(--glow-color-2); }
+        80%  { opacity: var(--opacity-end); }
+        100% { opacity: var(--opacity-start); box-shadow: 0 0 5px var(--glow-color-1), 0 0 10px var(--glow-color-1); }
+      }
+      .star {
+        position: absolute;
+        background-color: white;
+        border-radius: 50%;
+        /* REFINED: Apply the new animation with randomized properties from JS. */
+        animation: real-twinkle var(--duration) infinite ease-in-out;
+        animation-delay: var(--delay);
+        /* REFINED: Define CSS variables for the animation to use. */
+        --glow-color-1: #c1e9ff;
+        --glow-color-2: #fef1e0;
+        box-shadow: 0 0 5px var(--glow-color-1), 0 0 10px var(--glow-color-1);
+      }
+      #stars, #stars2, #stars3 {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
       }
+      /* --- RE-ENGINEERED: Hyper-Realistic Meteor Simulation --- */
+      .meteor {
+        position: absolute;
+        top: var(--top-start);
+        left: var(--left-start);
+        transform: rotate(var(--angle)) translateX(var(--travel-dist)); /* REFINED: Start at the end point for reverse travel */
+        transform-origin: right; /* REFINED: Set origin to the head's side */
+        animation: meteor-travel var(--duration) ease-in var(--delay) forwards; /* Use forwards to hold the final state */
+        opacity: 0; /* Start invisible */
+        will-change: transform, opacity;
+      }
+
+      @keyframes meteor-travel {
+        0% { transform: rotate(var(--angle)) translateX(var(--travel-dist)); opacity: 0; }
+        10% { opacity: 1; } /* Fade in as it enters atmosphere */
+        90% { opacity: 1; }
+        100% { transform: rotate(var(--angle)) translateX(0); opacity: 0; }
+      }
+
+      .meteor-head {
+        position: absolute;
+        left: 100%; /* NEW: Position the head at the END of the tail */
+        top: 50%;
+        transform: translate(-50%, -50%); /* NEW: Perfectly center the head on the tail's tip */
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #ffffff 5%, #fef1e0 30%, rgba(143, 211, 244, 0.5) 60%, transparent 80%);
+        box-shadow: 0 0 14px 4px #c1e9ff; /* REFINED: A slightly more vibrant glow */
+        animation: flicker 1s infinite alternate;
+      }
+
+      /* Optional flare effect for some meteors */
+      .meteor.flare .meteor-head {
+        animation: flicker 1s infinite alternate, flare 1.5s ease-out 1;
+        animation-delay: inherit; /* Inherit delay from parent */
+      }
+
+      @keyframes flicker {
+        from { transform: scale(1); box-shadow: 0 0 12px 3px #c1e9ff; }
+        to { transform: scale(0.9); box-shadow: 0 0 8px 2px #a1d9ef; }
+      }
+
+      @keyframes flare {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(2); opacity: 0.8; box-shadow: 0 0 25px 8px #ffffff; }
+      }
+
+      .meteor-tail {
+        position: absolute;
+        left: 0; /* NEW: Start the tail at the origin */
+        top: 50%;
+        transform: translateY(-50%);
+        width: 200px;
+        height: 2px; /* REFINED: A slightly thinner, sharper tail */
+        border-radius: 2px;
+        background: linear-gradient(to left, transparent 0%, rgba(143, 211, 244, 0.5) 50%, #ffffff 100%);
+        filter: drop-shadow(0 0 10px rgba(143, 211, 244, 0.4));
+        opacity: 0.8;
+      }
+
+      /* NEW: JS will add this class to trigger the dissipation */
+      .meteor-tail.dissipating {
+        animation: dissipate 1.5s ease-out forwards;
+      }
+
+      @keyframes dissipate {
+        /* Use a mask to create a more organic, breaking-apart effect */
+        0% {
+          opacity: 0.8;
+          mask-image: linear-gradient(to right, #000 100%, transparent 100%);
+        }
+        100% {
+          opacity: 0;
+          mask-image: linear-gradient(to right, #000 0%, transparent 0%);
+        }
+      }
     </style>
   </head>
-  <body>
+  <body class="dark-mode">
 <a class="home-button" href="index.html">
-  <span class="home-icon">← Back</span>
+  <span class="home-icon">&larr; Back</span>
 </a>
     <!-- Stars Container -->
-    <div class="stars-container"></div>
+    <div class="stars-container">
+      <!-- NEW: Divs for CSS stars -->
+      <div id="stars"></div>
+      <div id="stars2"></div>
+      <div id="stars3"></div>
+    </div>
     <!-- Progress Bar -->
     <div class="progress-bar-container">
       <div class="progress-bar" id="progress-bar"></div>
@@ -411,7 +522,7 @@
     <!-- Footer -->
     <footer id="footer">Made by Adam Dodch</footer>
     <!-- Dark Mode and Save Progress Buttons -->
-    <button class="dark-mode-toggle" onclick="toggleDarkMode()">☀️</button>
+    <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙</button>
     <button class="save-progress-toggle" onclick="showSavedProgress()">📥</button>
     <script defer>
       // Cache DOM elements to reduce lookup overhead
@@ -424,27 +535,25 @@
       const footer = document.getElementById("footer");
       let currentWordIndex = null;
       let lastScrollTop = 0;
-      let ticking = false;
-      let gl, starProgram, stars = [], canvas;
-      const starCount = 500; // Reduced star count for better performance
+      let ticking = false; 
 
-      // Intersection Observer for scroll texts
+      // --- REVERT TO ORIGINAL SMOOTH ANIMATION ---
+      // The previous optimization was causing lag. Reverting to the simpler,
+      // more reliable method of observing each word individually.
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             entry.target.classList.add("visible");
-            entry.target.classList.remove("hidden");
           } else {
+            // Re-hide words when they scroll out of view to allow re-animation.
             entry.target.classList.remove("visible");
-            entry.target.classList.add("hidden");
           }
         });
       }, {
-        threshold: 0.3
+        threshold: 0.1 // Trigger when the word is just entering the viewport
       });
 
       document.querySelectorAll(".scroll-text, .conversation-text").forEach(word => {
-        observer.observe(word);
         word.addEventListener("click", function() {
           currentWordIndex = word.dataset.index;
           const rect = word.getBoundingClientRect();
@@ -456,6 +565,7 @@
           savePopUp.offsetWidth; // Trigger reflow
           savePopUp.style.transform = "translate(-50%, -50%) scale(1)";
         });
+        observer.observe(word); // Observe each word
       });
 
       function checkVisibility() {
@@ -477,161 +587,102 @@
           ticking = true;
         }
       }, { passive: true });
+      
+      // --- NEW: CSS Starfield Logic ---
+      function createCssStars() {
+        const starLayers = [
+          { id: 'stars', count: 100, baseSize: 1 },
+          { id: 'stars2', count: 70, baseSize: 2 },
+          { id: 'stars3', count: 40, baseSize: 3 }
+        ];
 
-      function resizeCanvas() {
-        if (canvas && canvas.parentElement) {
-          canvas.width = canvas.parentElement.clientWidth;
-          canvas.height = canvas.parentElement.clientHeight;
-          if (gl) gl.viewport(0, 0, canvas.width, canvas.height);
-        }
-      }
+        starLayers.forEach(layer => {
+          const container = document.getElementById(layer.id);
+          if (!container || container.children.length > 0) return; // Don't create if they exist
 
-      // WebGL Star System functions
-      function initStarfield() {
-        canvas = document.createElement('canvas');
-        canvas.id = 'starfield';
-        document.querySelector('.stars-container').appendChild(canvas);
-        gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-        if (!gl) {
-          console.error('WebGL not supported');
-          return;
-        }
-        // Vertex shader
-        const vertexShader = gl.createShader(gl.VERTEX_SHADER);
-        gl.shaderSource(vertexShader, `
-          attribute vec2 position;
-          attribute float size;
-          attribute float alpha;
-          varying float vAlpha;
-          void main() {
-            gl_Position = vec4(position, 0.0, 1.0);
-            gl_PointSize = size;
-            vAlpha = alpha;
+          let starsHtml = '';
+          for (let i = 0; i < layer.count; i++) {
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+            const size = Math.random() * 0.7 + layer.baseSize;
+            // REFINED: Add more randomized CSS variables for a realistic twinkle.
+            const duration = Math.random() * 3 + 2; // Duration between 2s and 5s
+            const delay = Math.random() * 5; // Delay up to 5s
+            const opacityStart = Math.random() * 0.4 + 0.1; // Start opacity between 0.1 and 0.5
+            const opacityMid = Math.random() * 0.3 + 0.2;   // Mid opacity
+            const opacityEnd = Math.random() * 0.5 + 0.1;   // End opacity
+            starsHtml += `<div class="star" style="top: ${y}%; left: ${x}%; width: ${size}px; height: ${size}px; --duration: ${duration}s; --delay: ${delay}s; --opacity-start: ${opacityStart}; --opacity-mid: ${opacityMid}; --opacity-end: ${opacityEnd};"></div>`;
           }
-        `);
-        gl.compileShader(vertexShader);
-        const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-        gl.shaderSource(fragmentShader, `
-          precision mediump float;
-          varying float vAlpha;
-          void main() {
-            vec2 coord = gl_PointCoord - vec2(0.5);
-            float r = length(coord) * 2.0;
-            float a = 1.0 - smoothstep(0.0, 1.0, r);
-            gl_FragColor = vec4(1.0, 1.0, 1.0, a * vAlpha);
-          }
-        `);
-        gl.compileShader(fragmentShader);
-        starProgram = gl.createProgram();
-        gl.attachShader(starProgram, vertexShader);
-        gl.attachShader(starProgram, fragmentShader);
-        gl.linkProgram(starProgram);
-        gl.useProgram(starProgram);
-        stars = new Float32Array(starCount * 4);
-        for (let i = 0; i < starCount; i++) {
-          const idx = i * 4;
-          stars[idx] = Math.random() * 2 - 1;
-          stars[idx + 1] = Math.random() * 2 - 1;
-          stars[idx + 2] = Math.random() * 2 + 1;
-          stars[idx + 3] = Math.random() * 0.5 + 0.5;
-        }
-        const starBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, starBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, stars, gl.STATIC_DRAW);
-        const positionLoc = gl.getAttribLocation(starProgram, 'position');
-        const sizeLoc = gl.getAttribLocation(starProgram, 'size');
-        const alphaLoc = gl.getAttribLocation(starProgram, 'alpha');
-        gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 16, 0);
-        gl.vertexAttribPointer(sizeLoc, 1, gl.FLOAT, false, 16, 8);
-        gl.vertexAttribPointer(alphaLoc, 1, gl.FLOAT, false, 16, 12);
-        gl.enableVertexAttribArray(positionLoc);
-        gl.enableVertexAttribArray(sizeLoc);
-        gl.enableVertexAttribArray(alphaLoc);
-        gl.clearColor(0.0, 0.0, 0.0, 0.0);
-        gl.enable(gl.BLEND);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
-        window.requestAnimationFrame(drawStars);
-      }
-
-      function drawStars(currentTime) {
-        if (!canvas) return;
-        resizeCanvas();
-        gl.clear(gl.COLOR_BUFFER_BIT);
-        const time = currentTime * 0.001;
-        for (let i = 0; i < starCount; i++) {
-          const idx = i * 4;
-          stars[idx + 3] = 0.5 + 0.5 * Math.sin(time + i);
-        }
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, stars);
-        gl.drawArrays(gl.POINTS, 0, starCount);
-        window.requestAnimationFrame(drawStars);
-      }
-
-      // Improved Shooting Star Function for Realistic, Smooth, and Random Behavior
-      function createShootingStar() {
-        const container = document.querySelector('.stars-container');
-        const shootingStar = document.createElement('div');
-        // Define size and speed based on type weights
-        const sizes = {
-          small: { size: Math.random() * 2 + 2, speed: Math.random() * 1 + 3 },
-          medium: { size: Math.random() * 3 + 4, speed: Math.random() * 1 + 2 },
-          large: { size: Math.random() * 4 + 6, speed: Math.random() * 0.8 + 1.5 }
-        };
-        // Choose type randomly with bias towards smaller stars
-        const type = (Math.random() < 0.6) ? "small" : ((Math.random() < 0.5) ? "medium" : "large");
-        const { size, speed } = sizes[type];
-        // Determine viewport and random starting edge
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-        let startX, startY, endX, endY;
-        const edge = Math.floor(Math.random() * 4); // 0: top, 1: right, 2: bottom, 3: left
-        switch (edge) {
-          case 0: // top edge
-            startX = Math.random() * viewportWidth;
-            startY = -size;
-            endX = startX + viewportWidth * (Math.random() * 0.2 + 0.2);
-            endY = viewportHeight + size;
-            break;
-          case 1: // right edge
-            startX = viewportWidth + size;
-            startY = Math.random() * viewportHeight;
-            endX = -size;
-            endY = startY + viewportHeight * (Math.random() * 0.2 + 0.2);
-            break;
-          case 2: // bottom edge
-            startX = Math.random() * viewportWidth;
-            startY = viewportHeight + size;
-            endX = startX - viewportWidth * (Math.random() * 0.2 + 0.2);
-            endY = -size;
-            break;
-          case 3: // left edge
-          default:
-            startX = -size;
-            startY = Math.random() * viewportHeight;
-            endX = viewportWidth + size;
-            endY = startY - viewportHeight * (Math.random() * 0.2 + 0.2);
-            break;
-        }
-        // Set initial style using CSS transitions for smooth animation
-        shootingStar.style.position = "absolute";
-        shootingStar.style.left = `${startX}px`;
-        shootingStar.style.top = `${startY}px`;
-        shootingStar.style.width = `${size}px`;
-        shootingStar.style.height = `${size}px`;
-        shootingStar.style.background = `radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 70%)`;
-        shootingStar.style.borderRadius = "50%";
-        shootingStar.style.opacity = "0";
-        shootingStar.style.transition = `transform ${speed}s cubic-bezier(0.4, 0, 0.2, 1), opacity ${speed * 0.5}s ease-out`;
-        container.appendChild(shootingStar);
-        // Trigger reflow before starting transition
-        requestAnimationFrame(() => {
-          shootingStar.style.opacity = "1";
-          shootingStar.style.transform = `translate(${endX - startX}px, ${endY - startY}px)`;
+          container.innerHTML = starsHtml;
         });
-        // Remove shooting star after the animation
-        setTimeout(() => {
-          shootingStar.remove();
-        }, speed * 1000);
+      }
+
+      // --- RE-ENGINEERED: Hyper-Realistic Meteor Simulation ---
+      function createMeteors(count = 3) { // REFINED: Start with fewer meteors
+        const container = document.querySelector('.stars-container');
+        if (!container) return;
+
+        for (let i = 0; i < count; i++) {
+          const meteor = document.createElement('div');
+          meteor.className = 'meteor';
+          // FIX: Randomly create one of two types of meteors: head-only or tail-only.
+          const meteorType = Math.random();
+          if (meteorType < 0.5) { // 50% chance: Head only (shooting star)
+            meteor.innerHTML = `<div class="meteor-head"></div>`;
+          } else { // 50% chance: Tail only (comet trail)
+            meteor.innerHTML = `<div class="meteor-tail"></div>`;
+          }
+
+          // --- Deeper Physics & Randomization ---
+          const vw = window.innerWidth;
+          const vh = window.innerHeight;
+
+          // 1. Random start and end points for a straight trajectory
+          const startX = -200 + Math.random() * (vw + 200);
+          const startY = -200 + Math.random() * (vh * 0.5); // Start in the top half
+          const endX = startX + (Math.random() - 0.5) * 800;
+          const endY = startY + vh * 0.8 + Math.random() * (vh * 0.4);
+
+          // 2. Calculate angle and distance for the trajectory
+          const dx = endX - startX;
+          const dy = endY - startY;
+          const angle = Math.atan2(dy, dx) * (180 / Math.PI); // Angle in degrees
+          const travelDistance = Math.hypot(dx, dy);
+ 
+          // 3. Randomize animation properties
+          const duration = Math.random() * 2 + 1.5; // 1.5s to 3.5s
+          const delay = Math.random() * 30; // REFINED: Increase the random delay up to 30s
+ 
+          // 4. Randomly decide if this meteor will have a flare
+          if (Math.random() > 0.7) {
+            meteor.classList.add('flare');
+          }
+ 
+          // 4. Apply as CSS Custom Properties for the animation
+          meteor.style.setProperty('--left-start', `${startX}px`);
+          meteor.style.setProperty('--top-start', `${startY}px`);
+          meteor.style.setProperty('--angle', `${angle}deg`);
+          meteor.style.setProperty('--travel-dist', `${travelDistance}px`);
+          meteor.style.setProperty('--duration', `${duration}s`);
+          meteor.style.setProperty('--delay', `${delay}s`);
+
+          container.appendChild(meteor);
+
+          // --- NEW: JS-driven animation lifecycle ---
+          // When the meteor finishes its travel, trigger the tail dissipation.
+          const handleAnimationEnd = () => {
+            const tail = meteor.querySelector('.meteor-tail');
+            if (tail) {
+              tail.classList.add('dissipating');
+            }
+            // After the tail has had time to dissipate, remove the whole meteor element
+            setTimeout(() => {
+              meteor.remove();
+              createMeteors(1); // Create a new meteor to replace the one that finished
+            }, 1500);
+          };
+          meteor.addEventListener('animationend', handleAnimationEnd, { once: true });
+        }
       }
 
       function toggleDarkMode() {
@@ -639,14 +690,14 @@
         const toggleButton = document.querySelector(".dark-mode-toggle");
         toggleButton.textContent = document.body.classList.contains("dark-mode") ? "🌙" : "☀️";
         footer.classList.toggle("dark-mode");
+
         if (document.body.classList.contains("dark-mode")) {
-          if (!document.querySelector('#starfield')) {
-            initStarfield();
-          }
-          setInterval(createShootingStar, Math.random() * 20000 + 10000);
+          createCssStars(); // Create stars if they don't exist
+          createMeteors(); // Create the new, hyper-realistic meteors
         } else {
-          if (canvas) canvas.remove();
+          // If we want to stop them when toggling off dark mode, we'd need to clear the interval.
         }
+
         toggleButton.classList.add("rotate");
         setTimeout(() => toggleButton.classList.remove("rotate"), 500);
       }
@@ -697,7 +748,7 @@
       }
 
       function scrollToTop() {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
 
       document.addEventListener("keydown", (event) => {
@@ -723,21 +774,32 @@
         });
       }
 
-      window.addEventListener("resize", resizeCanvas);
-
       window.addEventListener("load", () => {
-        document.querySelectorAll(".scroll-text, .conversation-text").forEach(word => {
-          const index = parseInt(word.dataset.index);
-          if (index <= parseInt(localStorage.getItem("savedProgress"))) {
-            word.classList.add("visible");
-          }
-        });
+        // Restore saved progress on load.
+        const savedProgress = parseInt(localStorage.getItem("savedProgress"), 10);
+        if (!isNaN(savedProgress)) {
+          document.querySelectorAll(".scroll-text, .conversation-text").forEach(word => {
+            const wordIndex = parseInt(word.dataset.index, 10);
+            if (wordIndex <= savedProgress) {
+              word.classList.add("visible");
+            }
+          });
+        }
+
         const savedIndex = localStorage.getItem("savedProgress");
         if (savedIndex) {
           const savedWord = document.querySelector(`[data-index="${savedIndex}"]`);
           if (savedWord) {
             savedWord.classList.add("highlighted");
+            // REVERT: Use standard scrollIntoView for initial load.
+            savedWord.scrollIntoView({ behavior: "auto", block: "center" });
           }
+        }
+
+        // NEW: Check if the page loaded in dark mode and create stars if so.
+        if (document.body.classList.contains("dark-mode")) {
+          createCssStars();
+          createMeteors();
         }
         checkVisibility();
       });
