@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,6 +15,11 @@
     <link rel="manifest" href="../../site.webmanifest" />
     <title>With the right person</title>
     <meta name="description" content="A reflection on how the right person can transform your world, making the simplest moments the most valuable.">
+    <!-- Hreflang tags for multilingual SEO -->
+    <link rel="alternate" hreflang="en" href="https://www.dodchstories.com/stories/with-the-right-person.html" />
+    <link rel="alternate" hreflang="fr" href="https://www.dodchstories.com/stories/with-the-right-person.html" />
+    <link rel="alternate" hreflang="ar" href="https://www.dodchstories.com/stories/with-the-right-person.html" />
+    <link rel="alternate" hreflang="x-default" href="https://www.dodchstories.com/stories/with-the-right-person.html" />
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1137,6 +1142,7 @@ You will understand that we are not perfect but you’ll learn to fall in love w
                 body.classList.remove('dark-mode');
                 lightBackgroundDiv.style.opacity = 1;
                 darkBackgroundDiv.style.opacity = 0;
+                document.documentElement.setAttribute('dir', 'ltr');
             }
             changeLanguage(currentLanguage, false);
             applyTextEffects();
@@ -1214,6 +1220,12 @@ You will understand that we are not perfect but you’ll learn to fall in love w
              // Listen for changes in system dark mode preference
              darkModeMediaQuery.addListener(handleDarkModeChange);
 
+             // Set initial direction
+             if (isDarkMode) {
+                document.documentElement.setAttribute('dir', 'ltr');
+             } else {
+                document.documentElement.setAttribute('dir', 'ltr');
+             }
              const preferredLanguage = localStorage.getItem('preferredLanguage');
              let initialLangToLoad = 'en';
              if (preferredLanguage && contentMap[preferredLanguage]) {
