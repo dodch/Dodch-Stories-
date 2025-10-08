@@ -5,6 +5,7 @@ document.addEventListener('contextmenu', event => event.preventDefault());
 let panels = [];
 let allStories = [];
 let showingFavorites = false;
+let localFavoriteCounts = {}; // NEW: Global object to store local favorite counts
 const body = document.body;
 
 // New function to add tap animation
@@ -130,6 +131,11 @@ function loadSavedState() {
         panel.querySelector('.favorite-btn').classList.add('active');
         panel.classList.add('favorited');
       }
+      // NEW: Update displayed count from local storage
+      const countSpan = panel.querySelector('.favorite-count');
+      if (countSpan && localFavoriteCounts[title] !== undefined) {
+        countSpan.textContent = localFavoriteCounts[title];
+      }
     });
   }
 }
@@ -144,6 +150,7 @@ function saveState() {
     const title = panel.querySelector('.title').dataset.originalTitle;
     favoriteTitles.push(title);
   });
+  localStorage.setItem('localFavoriteCounts', JSON.stringify(localFavoriteCounts)); // NEW: Save local favorite counts
   localStorage.setItem('favorites', JSON.stringify(favoriteTitles));
 }
 
@@ -166,6 +173,10 @@ async function fetchAndBuildGrid() {
     const storiesData = await response.json();
     allStories = storiesData; 
     const grid = document.getElementById('grid');
+    // NEW: Load local favorite counts from localStorage
+    const savedLocalCounts = localStorage.getItem('localFavoriteCounts');
+    localFavoriteCounts = savedLocalCounts ? JSON.parse(savedLocalCounts) : {};
+
     grid.innerHTML = '';
     storiesData.forEach(story => {
       const card = document.createElement('a');
@@ -189,6 +200,8 @@ async function fetchAndBuildGrid() {
             4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 
             3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
           </svg>
+          <!-- NEW: Span to display the local favorite count -->
+          <span class="favorite-count">0</span>
         </div>
       `;
       const status = story.status ? story.status : '';
@@ -207,6 +220,11 @@ async function fetchAndBuildGrid() {
           card.appendChild(newPill);
       }
       grid.appendChild(card);
+
+      // NEW: Initialize displayed count for each card
+      const title = story.title;
+      const countSpan = card.querySelector('.favorite-count');
+      if (countSpan) countSpan.textContent = localFavoriteCounts[title] || 0;
     });
     panels = [...document.querySelectorAll('.glass-container')];
 
@@ -457,6 +475,18 @@ async function fetchAndBuildGrid() {
         const panel = btn.closest('.glass-container');
         btn.classList.toggle('active');
         panel.classList.toggle('favorited');
+
+        // NEW: Update local favorite count
+        const title = panel.querySelector('.title').dataset.originalTitle;
+        const countSpan = panel.querySelector('.favorite-count');
+        if (btn.classList.contains('active')) {
+          localFavoriteCounts[title] = (localFavoriteCounts[title] || 0) + 1;
+        } else {
+          localFavoriteCounts[title] = Math.max(0, (localFavoriteCounts[title] || 0) - 1); // Ensure count doesn't go below 0
+        }
+        if (countSpan) countSpan.textContent = localFavoriteCounts[title];
+
+        // Existing logic
         btn.setAttribute('aria-pressed', btn.classList.contains('active'));
         filterAndRenderPanels();
       });
@@ -734,3 +764,45 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 500);
   }
 });
+
+// --- NEW CONCEPTUAL BACKEND INTERACTION FUNCTIONS ---
+
+// This is a MOCK function to simulate fetching a global favorite count from a backend.
+// In a real application, this would be an actual `fetch` call to your server.
+async function fetchGlobalFavoriteCount(storyTitle, countSpanElement) {
+  console.log(`CONCEPTUAL: Fetching global favorite count for "${storyTitle}"`);
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 200));
+
+  // In a real app:
+  // const response = await fetch(`/api/favorites/count?storyId=${encodeURIComponent(storyTitle)}`);
+  // const data = await response.json();
+  // if (data.success) {
+  //   countSpanElement.textContent = data.count;
+  // } else {
+  //   console.error('Failed to fetch global count:', data.message);
+  //   countSpanElement.textContent = 'N/A';
+  // }
+
+  // For this mock, we'll just use a random number for demonstration
+  const mockCount = Math.floor(Math.random() * 100); // Replace with actual backend data
+  countSpanElement.textContent = mockCount;
+  return mockCount;
+}
+
+// This is a MOCK function to simulate sending a favorite/unfavorite action to a backend.
+// In a real application, this would be an actual `fetch` call to your server.
+async function simulateBackendFavoriteUpdate(storyTitle, isFavoriting) {
+  console.log(`CONCEPTUAL: Sending favorite update for "${storyTitle}", action: ${isFavoriting ? 'favorite' : 'unfavorite'}`);
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 300));
+
+  // In a real app, the backend would:
+  // 1. Identify the unique user/device (e.g., from a cookie or session ID).
+  // 2. Update the database (increment/decrement, ensuring uniqueness per user/device).
+  // 3. Return the *new total global count* for that story.
+
+  // For this mock, we'll just return a new random number for demonstration
+  const newMockCount = Math.floor(Math.random() * 100); // Replace with actual backend data
+  return newMockCount;
+}
