@@ -1089,36 +1089,27 @@ où je libérerai encore d’autres douleurs de leur cage.
                 }
                 textElement.innerHTML = '';
                 if (rawText) {
-                    const paragraphs = rawText.split('\n'); // Fixed line break
-                    paragraphs.forEach((paragraph, pIndex) => {
-                         const lines = paragraph.split('\n'); // Fixed line break
-                         lines.forEach((line, lIndex) => {
-                             const trimmedLine = line.trim();
-                             if (trimmedLine === '') {
-                                  const br = document.createElement('br');
-                                  textElement.appendChild(br);
-                             } else {
-                                 const pElement = document.createElement('p');
-                                 pElement.classList.add('mb-4', 'text-lg', 'leading-relaxed');
-                                 const wordsAndSpaces = trimmedLine.match(/\S+|\s+|[.,!?;:]/g);
-                                 if (wordsAndSpaces) {
-                                     wordsAndSpaces.forEach((part, partIndex) => {
-                                         if (part.trim() === '' && !/[.,!?;:]/.test(part)) {
-                                             pElement.appendChild(document.createTextNode(part));
-                                         } else {
-                                             const span = document.createElement('span');
-                                             span.textContent = part;
-                                             span.classList.add('cursor-pointer');
-                                             const uniqueId = `word-p${pIndex}-l${lIndex}-part${partIndex}`;
-                                             span.id = uniqueId;
-                                             span.onclick = () => handleWordClick(uniqueId, span.textContent.trim());
-                                             pElement.appendChild(span);
-                                         }
-                                     });
-                                 }
-                                 textElement.appendChild(pElement);
-                             }
-                         });
+                    const lines = rawText.split('\n');
+                    lines.forEach((line, lIndex) => {
+                        const trimmedLine = line.trim();
+                        if (trimmedLine === '') {
+                            const br = document.createElement('br');
+                            textElement.appendChild(br);
+                        } else {
+                            const pElement = document.createElement('p');
+                            pElement.classList.add('mb-4', 'text-lg', 'leading-relaxed');
+                            const wordsAndSpaces = trimmedLine.match(/\S+|\s+|[.,!?;:]/g) || [];
+                            wordsAndSpaces.forEach((part, partIndex) => {
+                                const span = document.createElement('span');
+                                span.textContent = part;
+                                const uniqueId = `word-l${lIndex}-part${partIndex}`;
+                                span.id = uniqueId;
+                                span.classList.add('cursor-pointer');
+                                span.onclick = () => handleWordClick(uniqueId, span.textContent.trim());
+                                pElement.appendChild(span);
+                            });
+                            textElement.appendChild(pElement);
+                        }
                     });
                 } else {
                      const noTextElement = document.createElement('p');

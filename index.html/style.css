@@ -318,11 +318,28 @@ body.svg-filter-supported .glass-container {
   color: var(--blue-tint);
   text-shadow:0 0 10px var(--blue-tint),0 0 20px var(--blue-tint);
 }
+/* --- NEW: Styles for Favorite Count and Container --- */
+.favorite-container {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Space between the count and the button */
+}
+
+.favorite-count {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--glass-text);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+  transition: color 0.3s ease;
+}
 /* --- Buttons from the second code --- */
 .favorite-btn{
-  position:absolute;
-  top:1rem;
-  right:1rem;
+  position:relative; /* No longer needs to be absolute */
+  top:auto;
+  right:auto;
   width:40px;
   height:40px;
   border-radius:50%;
