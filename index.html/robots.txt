@@ -1,4 +1,5 @@
 # Allow all crawlers to access all content
+# Allow all user agents to crawl the site
 User-agent: *
 Disallow:
 
