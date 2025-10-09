@@ -28,6 +28,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
     <style>
         :root {
             --main-bg-url-light: url('https://i.ibb.co/Zzm7fGQ7/IMG-2465.jpg');
@@ -302,31 +304,23 @@ Because your souls will always be connected…
         <div class="fixed top-0 left-0 right-0 flex flex-col items-start p-4 space-y-2 z-50">
              <div class="flex justify-center space-x-4 mb-2">
                 <button
-                    id="ar-button"
-                    onclick="handleButtonClick(this, 'changeLanguage', 'ar')"
-                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base jello-button"
+                    id="ar-button"                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base"
                 >
                     العربية
                 </button>
                 <button
-                    id="fr-button"
-                    onclick="handleButtonClick(this, 'changeLanguage', 'fr')"
-                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base jello-button"
+                    id="fr-button"                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base"
                 >
                     Français
                 </button>
                 <button
-                    id="en-button"
-                    onclick="handleButtonClick(this, 'changeLanguage', 'en')"
-                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base jello-button"
+                    id="en-button"                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base"
                 >
                     English
                 </button>
              </div>
             <button
-                 id="back-home-button"
-                 onclick="handleButtonClick(this, 'redirectHome')"
-                 class="w-10 h-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base back-home-button-custom inline-flex items-center justify-center jello-button">
+                 id="back-home-button"                 class="w-10 h-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base back-home-button-custom inline-flex items-center justify-center">
                 ⌂
             </button>
         </div>
@@ -398,9 +392,7 @@ You will understand that we are not perfect but you’ll learn to fall in love w
             </div>
         </div>
         <button
-            id="save-progress-button"
-            onclick="handleButtonClick(this, 'scrollToSavedWord')"
-            class="fixed bottom-4 left-4 px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base save-button-custom jello-button"
+            id="save-progress-button"            class="fixed bottom-4 left-4 px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base save-button-custom"
             style="z-index: 60;"
         >
             Saved Progress
@@ -411,14 +403,12 @@ You will understand that we are not perfect but you’ll learn to fall in love w
                 <p id="popup-text" class="mb-4 text-sm"></p>
                 <div class="flex justify-end space-x-2">
                     <button
-                        onclick="handleButtonClick(this, 'savePosition')"
-                        class="glass-button-base jello-button bg-green-500 text-white px-4 py-2 rounded-full focus:outline-none"
+                        class="glass-button-base bg-green-500 text-white px-4 py-2 rounded-full focus:outline-none"
                     >
                         Save
                     </button>
                     <button
-                        onclick="handleButtonClick(this, 'closePopup')"
-                        class="glass-button-base jello-button bg-red-500 text-white px-4 py-2 rounded-full focus:outline-none"
+                        class="glass-button-base bg-red-500 text-white px-4 py-2 rounded-full focus:outline-none"
                     >
                         Exit
                     </button>

@@ -180,7 +180,7 @@ body.svg-filter-supported .glass-container {
   /* FIX: Use a dominant serif font and a stronger, layered shadow for maximum clarity. */
   font-size: 2rem;
   font-weight: 900;
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
   font-family: 'Playfair Display', serif;
   text-shadow: 0 2px 3px rgba(0,0,0,0.8), 0 0 10px rgba(0,0,0,0.5);
   /* NEW: Add transition for hover animation */

@@ -96,33 +96,18 @@ body.dark-mode .back-home-button-custom {
      padding: 1.5rem;
 }
 
-.glass-button-base:hover {
-     transform: scale(1.1);
-     box-shadow:
-        inset 0 0 0 1px color-mix(in srgb, #fff calc(10%), transparent),
-        inset 1.8px 3px 0px -2px color-mix(in srgb, #fff calc(90%), transparent),
-        inset -2px -2px 0px -2px color-mix(in srgb, #fff calc(80%), transparent),
-        inset -3px -8px 1px -6px color-mix(in srgb, #fff calc(60%), transparent),
-        inset -0.3px -1px 4px 0px color-mix(in srgb, #000 calc(12%), transparent),
-        inset -1.5px 2.5px 0px -2px color-mix(in srgb, #000 calc(20%), transparent),
-        inset 0px 3px 4px -2px color-mix(in srgb, #000 calc(20%), transparent),
-        inset 2px -6.5px 1px -4px color-mix(in srgb, #000 calc(10%), transparent),
-        0px 4px 20px 0px color-mix(in srgb, #000 calc(30%), transparent),
-        0px 20px 60px 0px color-mix(in srgb, #000 calc(25%), transparent);
+.glass-button-base:hover, .glass-button-base:focus-visible {
+    transform: scale(1.05);
 }
 
-body.dark-mode .glass-button-base:hover {
-    box-shadow:
-        inset 0 0 0 1px color-mix(in srgb, #fff calc(10%), transparent),
-        inset 1.8px 3px 0px -2px color-mix(in srgb, #fff calc(90%), transparent),
-        inset -2px -2px 0px -2px color-mix(in srgb, #fff calc(80%), transparent),
-        inset -3px -8px 1px -6px color-mix(in srgb, #fff calc(60%), transparent),
-        inset -0.3px -1px 4px 0px color-mix(in srgb, #000 calc(12%), transparent),
-        inset -1.5px 2.5px 0px -2px color-mix(in srgb, #000 calc(20%), transparent),
-        inset 0px 3px 4px -2px color-mix(in srgb, #000 calc(20%), transparent),
-        inset 2px -6.5px 1px -4px color-mix(in srgb, #000 calc(10%), transparent),
-        0px 4px 20px 0px color-mix(in srgb, #000 calc(40%), transparent),
-        0px 20px 60px 0px color-mix(in srgb, #000 calc(35%), transparent);
+/* Unifying hover glow effects to match index.html */
+#ar-button:hover, #fr-button:hover, #en-button:hover,
+#save-progress-button:hover, #save-progress-button:focus-visible {
+    box-shadow: 0 0 15px color-mix(in srgb, var(--save-button-bg-light) 50%, transparent), var(--button-shadow-light);
+}
+
+#back-home-button:hover, #back-home-button:focus-visible {
+    box-shadow: 0 0 15px color-mix(in srgb, var(--back-button-bg-light) 50%, transparent), var(--button-shadow-light);
 }
 
 /* Custom styles for pop-up buttons to override glass background */
@@ -345,7 +330,7 @@ button.tapped {
 }
 
 .glow-word {
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+    animation: glow-animation 2s ease-in-out infinite;
 }
 
 #content {
@@ -357,7 +342,8 @@ button.tapped {
     margin-right: auto;
     max-width: 800px;
     border-radius: 0.5rem;
-    margin-top: 1rem;
+    /* FIX: Increase top margin to prevent title from overlapping with fixed buttons on load. */
+    margin-top: 4rem;
     margin-bottom: 1rem;
     transition: opacity 0.5s ease-in-out;
     opacity: 1;
@@ -376,18 +362,21 @@ body.dark-mode #content {
 
 #text span {
     cursor: pointer;
-    display: inline;
-    transition: text-shadow 0.3s ease, color 0.3s ease, -webkit-text-fill-color 0.3s ease;
+    display: inline; /* Revert to inline to fix spacing */
+    position: relative; /* Allow positioning for hover effect */
+    transition: text-shadow 0.3s ease, color 0.3s ease, -webkit-text-fill-color 0.3s ease, top 0.2s ease-out;
     opacity: 1;
-    transform: none;
+    top: 0; /* Initial position */
 }
 
 #text span:hover {
      color: var(--text-on-glass-light);
+     top: -2px; /* Lift the word on hover */
 }
 
 body.dark-mode #text span:hover {
      color: var(--text-on-glass-dark);
+     top: -2px; /* Lift the word on hover */
 }
 
 body:not(.dark-mode) #text span:not(.glow-word) {
@@ -407,30 +396,18 @@ body.dark-mode #text span:not(.glow-word) {
 }
 
 #text span.glow-word {
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
     text-shadow: none !important;
      -webkit-text-stroke: none !important;
      text-stroke: none !important;
      -webkit-text-fill-color: initial !important;
      color: initial !important;
      opacity: 1 !important;
-     transform: none !important;
      transition-delay: 0ms !important;
      transition-duration: 0.3s !important;
 }
 
 #save-progress-button {
     z-index: 60;
-}
-
-body.dark-mode #content h1 {
-     color: white;
-     transition: color 0.5s ease;
-}
-
- body:not(.dark-mode) #content h1 {
-     color: inherit;
-     transition: color 0.5s ease;
 }
 
 /* New styles for pop-up */
@@ -443,6 +420,14 @@ body.dark-mode #content h1 {
      box-shadow: var(--glass-shadow-light);
 }
 
+#content h1 {
+    /* FIX: Make title bigger and golden for better visual hierarchy. */
+    font-size: 2.75rem; /* Increased from text-3xl (1.875rem) */
+    color: gold;
+    font-family: 'Cinzel', serif;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.8), 0 0 15px rgba(255,215,0,0.5);
+}
+
 body.dark-mode #popup > div {
      background-color: var(--pop-up-bg-dark);
      color: var(--pop-up-text-dark);
@@ -453,27 +438,29 @@ body.dark-mode #popup > div {
      transition: background-color 0.3s ease;
 }
 
+#text {
+    font-family: 'Lora', serif;
+    line-height: 1.75;
+}
+
 #text p {
     margin-bottom: 1rem;
 }
 
 /* Jello Button Effect */
-.jello-button {
-    transition: all 0.9s ease-in-out;
+.squash {
+  transform: scale(0.85, 0.9);
 }
-
-.jello-button.animate {
-    animation: jello-horizontal 0.9s both;
+@keyframes jello-wobble {
+  0%   { transform: scale(1,1); }
+  25%  { transform: scale(0.9, 1.15) rotate(-1deg); }
+  50%  { transform: scale(1.1, 0.9) rotate(1deg); }
+  75%  { transform: scale(0.95, 1.05) rotate(-0.5deg); }
+  100% { transform: scale(1,1) rotate(0); }
 }
-
-@keyframes jello-horizontal {
-    0% { transform: scale3d(1, 1, 1); }
-    30% { transform: scale3d(1.25, 0.75, 1); }
-    40% { transform: scale3d(0.75, 1.25, 1); }
-    50% { transform: scale3d(1.15, 0.85, 1); }
-    65% { transform: scale3d(0.95, 1.05, 1); }
-    75% { transform: scale3d(1.05, 0.95, 1); }
-    100% { transform: scale3d(1, 1, 1); }
+.jello {
+  /* A custom cubic-bezier for a more 'bouncy' and realistic feel */
+  animation: jello-wobble 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 /* Story-specific styles can be added here or in an inline <style> tag in the HTML */
@@ -486,4 +473,30 @@ body.dark-mode #popup > div {
 .story-blur #content {
     backdrop-filter: blur(2px);
     -webkit-backdrop-filter: blur(2px);
+}
+
+/* Animation for story paragraphs */
+.story-anim-item {
+    opacity: 0;
+    transform: translateY(40px);
+    /* FIX: Create a 3D rendering context to prevent parent transform from interfering with child hover transforms. */
+    transform-style: preserve-3d;
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.story-anim-item.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@keyframes glow-animation {
+  0% {
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 1);
+  }
+  100% {
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+  }
 }

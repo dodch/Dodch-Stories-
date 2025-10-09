@@ -7,6 +7,7 @@ let tempSavedWordId = '';
 let tempSavedWordText = '';
 let highlightedWordElement = null;
 let isDarkMode = false;
+let storyObserver; // For paragraph animations
 
 // contentMap will be defined in each story's HTML file
 
@@ -98,12 +99,17 @@ function changeLanguage(lang, fromLoad = false) {
             const lines = rawText.split('\n');
             lines.forEach((line, lIndex) => {
                 const trimmedLine = line.trim();
+                const pElement = document.createElement('p');
+                pElement.classList.add('mb-4', 'text-lg', 'leading-relaxed');
+
                 if (trimmedLine === '') {
-                    const br = document.createElement('br');
-                    textElement.appendChild(br);
+                    // Use a non-breaking space to ensure the paragraph has height
+                    pElement.innerHTML = '&nbsp;';
                 } else {
-                    const pElement = document.createElement('p');
-                    pElement.classList.add('mb-4', 'text-lg', 'leading-relaxed');
+                    // Check if the line is just the separator
+                    if (trimmedLine !== '⸻') {
+                        pElement.classList.add('story-anim-item');
+                    }
                     const wordsAndSpaces = trimmedLine.match(/\S+|\s+|[.,!?;:]/g) || [];
                     wordsAndSpaces.forEach((part, partIndex) => {
                         const span = document.createElement('span');
@@ -114,8 +120,8 @@ function changeLanguage(lang, fromLoad = false) {
                         span.onclick = () => handleWordClick(uniqueId, span.textContent.trim());
                         pElement.appendChild(span);
                     });
-                    textElement.appendChild(pElement);
                 }
+                textElement.appendChild(pElement);
             });
         } else {
              const noTextElement = document.createElement('p');
@@ -124,6 +130,7 @@ function changeLanguage(lang, fromLoad = false) {
              textElement.appendChild(noTextElement);
              console.warn(`No raw text found for language: ${lang}`);
         }
+        setupStoryObserver();
         document.getElementById('save-progress-button').textContent = content.saveProgress;
         document.getElementById('popup-title').textContent = content.savePosition;
         document.getElementById('popup').querySelector('.bg-green-500').textContent = content.save;
@@ -133,15 +140,10 @@ function changeLanguage(lang, fromLoad = false) {
         const savedProgressForCurrentLang = allSavedProgress[currentLanguage];
         if (fromLoad && savedProgressForCurrentLang && savedProgressForCurrentLang.id) {
               setTimeout(() => {
-                  scrollToSavedWord(false);
+                  scrollToSavedWord(false, false); // On initial load, scroll instantly
               }, 100);
         }
         contentDiv.classList.remove('content-fading');
-        if (isDarkMode) {
-            titleElement.style.color = 'white';
-        } else {
-             titleElement.style.color = 'inherit';
-        }
     }, 500);
 }
 
@@ -177,10 +179,12 @@ function savePosition() {
     closePopup();
 }
 
-function scrollToSavedWord(performChecks = true) {
+function scrollToSavedWord(performChecks = true, smooth = true) {
     const savedProgressForCurrentLang = allSavedProgress[currentLanguage];
     if (!savedProgressForCurrentLang || !savedProgressForCurrentLang.id) {
-        alert(contentMap[currentLanguage].noWordSaved);
+        if (performChecks) { // Only alert if the user clicked the button
+            alert(contentMap[currentLanguage].noWordSaved);
+        }
         return;
     }
     const savedWordId = savedProgressForCurrentLang.id;
@@ -189,7 +193,7 @@ function scrollToSavedWord(performChecks = true) {
     if (targetElement) {
          highlightWord();
          requestAnimationFrame(() => {
-            targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            targetElement.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'center' });
          });
     } else {
         console.warn(`${contentMap[currentLanguage].wordNotFound} (ID: ${savedWordId}, Text: "${savedWordText}")`);
@@ -255,32 +259,58 @@ function handleDarkModeChange(mediaQuery) {
     highlightWord();
 }
 
-function animateJello(element) {
-    element.classList.remove('animate');
-    void element.offsetWidth; // This is a trick to force a reflow
-    element.classList.add('animate');
+function addTapAnimation(element) {
+  element.addEventListener('pointerdown', () => {
+    element.classList.add('squash');
+  });
+  element.addEventListener('pointerup', () => {
+    element.classList.remove('squash');
+    // Ensure jello animation can be re-triggered
+    element.classList.remove('jello');
+    void element.offsetWidth; // force reflow
+    element.classList.add('jello');
+  });
+  // Also remove squash if the pointer leaves the button while pressed
+  element.addEventListener('pointerleave', () => {
+    element.classList.remove('squash');
+  });
 }
 
-function handleButtonClick(element, action, ...args) {
-    animateJello(element);
-    
-    switch (action) {
-        case 'changeLanguage':
-            changeLanguage(...args);
-            break;
-        case 'scrollToSavedWord':
-            scrollToSavedWord();
-            break;
-        case 'savePosition':
-            savePosition();
-            break;
-        case 'closePopup':
-            closePopup();
-            break;
-        case 'redirectHome':
-            window.location.href = '/';
-            break;
+function setupStoryObserver() {
+    if (storyObserver) {
+        storyObserver.disconnect();
     }
+
+    const animatedItems = textElement.querySelectorAll('.story-anim-item');
+
+    storyObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('in-view');
+            } else {
+                // Reset the state when it goes out of view to allow re-animation
+                entry.target.classList.remove('in-view'); 
+            }
+        });
+    }, {
+        threshold: 0.01
+    });
+
+    // This logic now correctly calculates delays based only on animatable items.
+    let visibleItemIndex = 0;
+    animatedItems.forEach(item => {
+        const rect = item.getBoundingClientRect();
+
+        if (rect.top < window.innerHeight && rect.bottom >= 0) {
+            // Apply a staggered delay only to items visible on load
+            item.style.transitionDelay = `${visibleItemIndex * 50}ms`;
+            visibleItemIndex++;
+        } else {
+            // Items off-screen should animate in immediately when they become visible
+            item.style.transitionDelay = '0ms';
+        }
+        storyObserver.observe(item);
+    });
 }
 
 let load = 0;
@@ -331,4 +361,26 @@ document.addEventListener('DOMContentLoaded', () => {
         initialLangToLoad = preferredLanguage;
      }
      changeLanguage(initialLangToLoad, true);
+
+     // Apply new tap animations to all buttons
+    document.querySelectorAll('button').forEach(button => {
+        addTapAnimation(button);
+        // Add specific actions for each button
+        if (button.id.includes('-button')) { // Language buttons
+            const lang = button.id.split('-')[0];
+            if (contentMap[lang]) {
+                button.addEventListener('click', () => changeLanguage(lang));
+            }
+        } else if (button.id === 'save-progress-button') {
+            button.addEventListener('click', () => scrollToSavedWord());
+        } else if (button.id === 'back-home-button') { // FIX: Use a relative path to ensure it works on local filesystem and servers.
+            button.addEventListener('click', () => window.location.href = '../');
+        } else if (button.closest('#popup')) { // Popup buttons
+            if (button.textContent.trim().toLowerCase() === 'save' || button.textContent.trim() === 'حفظ' || button.textContent.trim() === 'enregistrer') {
+                button.addEventListener('click', savePosition);
+            } else {
+                button.addEventListener('click', closePopup);
+            }
+        }
+    });
 });
