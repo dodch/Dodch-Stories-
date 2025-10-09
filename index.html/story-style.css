@@ -424,21 +424,16 @@ body.dark-mode #text span:not(.glow-word) {
 
 /* New styles for pop-up */
 #popup {
-    /* REFACTOR: Control visibility with opacity and pointer-events for smooth transitions. */
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s ease-in-out;
-}
-
-#popup.active {
-    opacity: 1;
-    pointer-events: auto;
+    /* REFACTOR: Control visibility with display property, not opacity. */
+    display: none;
 }
 
 #popup > div {
     /* REFACTOR: The bouncy animation is now on the inner div. */
-    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-    transform: scale(0.9);
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.3s ease-out;
+    transform: scale(0.85);
+    opacity: 0;
+    pointer-events: none;
 }
 
 #content h1 {
@@ -449,8 +444,10 @@ body.dark-mode #text span:not(.glow-word) {
     text-shadow: 0 2px 5px rgba(0,0,0,0.8), 0 0 15px rgba(255,215,0,0.5);
 }
 
-#popup.active > div {
+#popup > div.active {
     transform: scale(1);
+    opacity: 1;
+    pointer-events: auto;
 }
 
 body.dark-mode #popup button.bg-green-500:hover, body.dark-mode #popup button.bg-green-500:focus-visible {

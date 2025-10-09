@@ -110,48 +110,78 @@ function changeLanguage(lang, fromLoad = false) {
                     // Check if the line is just the separator
                     if (trimmedLine !== '⸻') {
                         pElement.classList.add('story-anim-item');
-                    }
-                    // REFACTOR: New, robust drop cap logic.
-                    const parts = trimmedLine.split(/(\s+)/); // Split by spaces, keeping the spaces
-                    parts.forEach((part, partIndex) => {
-                        if (part.trim() !== '') { // It's a word
-                            if (isFirstWordOfStory) {
-                                const firstLetter = part.charAt(0);
-                                const restOfWord = part.substring(1);
+                        
+                        // REFACTOR: New, definitive drop cap logic.
+                        if (isFirstWordOfStory) {
+                            const firstWordMatch = trimmedLine.match(/\S+/); // Find the first sequence of non-space characters
+                            if (firstWordMatch) {
+                                const firstWord = firstWordMatch[0];
+                                const firstLetter = firstWord.charAt(0);
+                                const restOfWord = firstWord.substring(1);
+                                const afterFirstWord = trimmedLine.substring(firstWordMatch.index + firstWord.length);
 
                                 // Create the drop cap span
                                 const dropCapSpan = document.createElement('span');
                                 dropCapSpan.className = 'drop-cap';
                                 dropCapSpan.textContent = firstLetter;
+                                
+                                // FIX: Adjust float for RTL languages like Arabic
+                                if (lang === 'ar') {
+                                    dropCapSpan.style.float = 'right';
+                                    dropCapSpan.style.marginLeft = '0.5rem'; // Add some space for RTL
+                                }
                                 pElement.appendChild(dropCapSpan);
 
                                 // Create a span for the rest of the word if it exists
-                                if (restOfWord) {
-                                    const restOfWordSpan = document.createElement('span');
-                                    restOfWordSpan.textContent = restOfWord;
-                                    const uniqueId = `word-l${lIndex}-part${partIndex}`;
-                                    restOfWordSpan.id = uniqueId;
-                                    restOfWordSpan.classList.add('cursor-pointer');
-                                    restOfWordSpan.onclick = () => handleWordClick(uniqueId, restOfWordSpan.textContent.trim());
-                                    pElement.appendChild(restOfWordSpan);
-                                }
+                                const firstWordSpan = document.createElement('span');
+                                firstWordSpan.textContent = restOfWord;
+                                // Use a consistent ID structure for the first word.
+                                const uniqueId = `word-l${lIndex}-p0`;
+                                firstWordSpan.id = uniqueId;
+                                firstWordSpan.classList.add('cursor-pointer');
+                                // The click handler should refer to the full word for context.
+                                firstWordSpan.onclick = () => handleWordClick(uniqueId, firstWord.trim());
+                                pElement.appendChild(firstWordSpan);
+                                
+                                // Process the rest of the line
+                                const remainingWords = afterFirstWord.trim().split(/\s+/);
+                                pElement.appendChild(document.createTextNode(' ')); // Add space after first word
+                                remainingWords.forEach((word, wIndex) => {
+                                    if (word) {
+                                        const wordSpan = document.createElement('span');
+                                        const uniqueId = `word-l${lIndex}-p${wIndex + 1}`;
+                                        wordSpan.id = uniqueId;
+                                        wordSpan.textContent = word;
+                                        wordSpan.classList.add('cursor-pointer');
+                                        wordSpan.onclick = () => handleWordClick(uniqueId, wordSpan.textContent.trim());
+                                        pElement.appendChild(wordSpan);
+                                        pElement.appendChild(document.createTextNode(' '));
+                                    }
+                                });
+
                                 isFirstWordOfStory = false; // We've processed the first word, don't do it again.
                             } else {
-                                // For all other words, wrap them in a span.
-                                const span = document.createElement('span');
-                                span.textContent = part;
-                                const uniqueId = `word-l${lIndex}-part${partIndex}`;
-                                span.id = uniqueId;
-                                span.classList.add('cursor-pointer');
-                                span.onclick = () => handleWordClick(uniqueId, span.textContent.trim());
-                                pElement.appendChild(span);
+                                pElement.textContent = trimmedLine; // Fallback for lines without words
                             }
-                        } else { // It's a space
-                            const span = document.createElement('span');
-                            span.textContent = part; // Keep the space
-                            pElement.appendChild(span);
+                        } else {
+                            // For all other lines, split into words and create spans
+                            const words = trimmedLine.split(/\s+/);
+                            words.forEach((word, wIndex) => {
+                                if (word) {
+                                    const wordSpan = document.createElement('span');
+                                    const uniqueId = `word-l${lIndex}-p${wIndex}`;
+                                    wordSpan.id = uniqueId;
+                                    wordSpan.textContent = word;
+                                    wordSpan.classList.add('cursor-pointer');
+                                    wordSpan.onclick = () => handleWordClick(uniqueId, wordSpan.textContent.trim());
+                                    pElement.appendChild(wordSpan);
+                                    pElement.appendChild(document.createTextNode(' '));
+                                }
+                            });
                         }
-                    });
+                    } else {
+                        pElement.textContent = trimmedLine;
+                    }
                 }
                 textElement.appendChild(pElement);
             });
@@ -184,14 +214,31 @@ function handleWordClick(spanId, wordText) {
     tempSavedWordText = wordText;
     document.getElementById('popup-text').textContent = `${contentMap[currentLanguage].savePosition} ${contentMap[currentLanguage].atWord}: "${wordText}"?`;
     const popup = document.getElementById('popup');
-    popup.classList.add('active');
+    popup.style.display = 'flex'; // Show the container immediately
+
+    const popupInner = popup.querySelector('.glass-popup');
+    // Add jello effect
+    popupInner.classList.remove('jello');
+    void popupInner.offsetWidth; // force reflow
+    popupInner.classList.add('jello');
+    // Apply active class to the inner element for the animation
+    popupInner.classList.add('active');
 }
 
 function closePopup() {
     const popup = document.getElementById('popup');
-    popup.classList.remove('active');
+    const popupInner = popup.querySelector('.glass-popup');
+    // Remove the active class from the inner element to trigger the fade-out animation
+    popupInner.classList.remove('active');
     tempSavedWordId = '';
     tempSavedWordText = '';
+    // Hide the container after the animation
+    setTimeout(() => {
+        // Check if the popup is still meant to be hidden before setting display to none
+        if (!popupInner.classList.contains('active')) {
+            popup.style.display = 'none';
+        }
+    }, 400);
 }
 
 function savePosition() {
