@@ -687,10 +687,12 @@ function setupScrollPerformance() {
  * If supported, it adds a class to the body to enable enhanced filters via CSS.
  */
 function detectSVGFilterSupport() {
-  const isAppleDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  // FIX: Broaden detection to include Safari on macOS, iPadOS, and iOS, which all have issues with complex SVG filters.
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  const isApplePlatform = /Mac|iPod|iPhone|iPad/.test(navigator.platform) || (navigator.userAgent.includes("Mac") && "ontouchend" in document);
 
-  // If it's an Apple mobile device, do nothing. This prevents the bug.
-  if (isAppleDevice) {
+  // If it's Safari on an Apple device, do not apply the SVG filter to avoid performance issues and rendering bugs.
+  if (isSafari && isApplePlatform) {
     return;
   }
 
