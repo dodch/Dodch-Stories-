@@ -373,8 +373,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } else if (button.id === 'save-progress-button') {
             button.addEventListener('click', () => scrollToSavedWord());
-        } else if (button.id === 'back-home-button') { // FIX: Use a relative path to ensure it works on local filesystem and servers.
-            button.addEventListener('click', () => window.location.href = '../');
+        } else if (button.id === 'back-home-button') {
+            button.addEventListener('click', () => window.location.href = 'https://www.dodchstories.com');
         } else if (button.closest('#popup')) { // Popup buttons
             if (button.textContent.trim().toLowerCase() === 'save' || button.textContent.trim() === 'حفظ' || button.textContent.trim() === 'enregistrer') {
                 button.addEventListener('click', savePosition);
