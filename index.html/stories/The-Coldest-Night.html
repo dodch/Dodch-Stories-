@@ -30,6 +30,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Licorice&display=swap" rel="stylesheet">
     <style>
         :root {
             --main-bg-url-light: url('https://i.ibb.co/XwgDtJ4/IMG-2453.jpg');
@@ -46,7 +47,36 @@
     </div>
     <div class="fixed-background light-background"></div>
     <div class="fixed-background dark-background"></div>
+    <!-- SVG Filter for HQ Glass Effect -->
+    <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" aria-hidden="true">
+        <filter id="filter-popup">
+            <feTurbulence type="fractalNoise" baseFrequency="0.015 0.025" numOctaves="1" result="warp" />
+            <feDisplacementMap xChannelSelector="R" yChannelSelector="G" scale="30" in="SourceGraphic" in2="warp" />
+        </filter>
+    </svg>
+
     <div id="page-content-wrapper">
+        <!-- REFACTOR: Moved fixed header buttons INSIDE the main content wrapper to fix layout issues. -->
+        <div class="fixed top-0 left-0 right-0 flex flex-col items-start p-4 space-y-2 z-50">
+            <div class="flex justify-center space-x-4 mb-2">
+                <button
+                   id="ar-button"                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base"
+               >
+                   العربية
+               </button>
+               <button
+                   id="fr-button"                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base"
+               >
+                   Français
+               </button>
+               <button
+                   id="en-button"                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base"
+               >
+                   English
+               </button>
+            </div>
+            <button id="back-home-button" class="w-10 h-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base back-home-button-custom inline-flex items-center justify-center">⌂</button>
+        </div>
         <div id="raw-ar-text" style="display: none;">
             ‎ العربية غير متوفرة حاليا، يمكنك استعمال خاصية الترجمة للمواقع
         </div>
@@ -704,29 +734,6 @@ He turned.
 
 THE END.
         </div>
-        <div class="fixed top-0 left-0 right-0 flex flex-col items-start p-4 space-y-2 z-50">
-             <div class="flex justify-center space-x-4 mb-2">
-                 <button
-                    id="ar-button"                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base"
-                >
-                    العربية
-                </button>
-                <button
-                    id="fr-button"                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base"
-                >
-                    Français
-                </button>
-                <button
-                    id="en-button"                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base"
-                >
-                    English
-                </button>
-             </div>
-             <button
-                 id="back-home-button"                 class="w-10 h-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base back-home-button-custom inline-flex items-center justify-center">
-                ⌂
-            </button>
-        </div>
         <div id="content" class="rounded-lg mx-auto content-fading">
             <h1 id="title" class="text-3xl font-bold mb-4"></h1>
             <div id="text" class="text-lg leading-relaxed">
@@ -1057,7 +1064,7 @@ THE END.
         >
             Saved Progress
         </button>
-        <div id="popup" class="hidden fixed inset-0 flex items-center justify-center z-50">
+        <div id="popup" class="fixed inset-0 flex items-center justify-center z-50">
             <div class="glass-button-base glass-popup shadow-lg w-64 fade-in">
                 <h2 id="popup-title" class="text-lg font-bold mb-2">Save Position</h2>
                 <p id="popup-text" class="mb-4 text-sm"></p>

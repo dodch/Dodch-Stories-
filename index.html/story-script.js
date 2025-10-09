@@ -97,6 +97,7 @@ function changeLanguage(lang, fromLoad = false) {
         textElement.innerHTML = '';
         if (rawText) {
             const lines = rawText.split('\n');
+            let isFirstWordOfStory = true; // Flag to handle the very first word for the drop cap
             lines.forEach((line, lIndex) => {
                 const trimmedLine = line.trim();
                 const pElement = document.createElement('p');
@@ -110,15 +111,46 @@ function changeLanguage(lang, fromLoad = false) {
                     if (trimmedLine !== '⸻') {
                         pElement.classList.add('story-anim-item');
                     }
-                    const wordsAndSpaces = trimmedLine.match(/\S+|\s+|[.,!?;:]/g) || [];
-                    wordsAndSpaces.forEach((part, partIndex) => {
-                        const span = document.createElement('span');
-                        span.textContent = part;
-                        const uniqueId = `word-l${lIndex}-part${partIndex}`;
-                        span.id = uniqueId;
-                        span.classList.add('cursor-pointer');
-                        span.onclick = () => handleWordClick(uniqueId, span.textContent.trim());
-                        pElement.appendChild(span);
+                    // REFACTOR: New, robust drop cap logic.
+                    const parts = trimmedLine.split(/(\s+)/); // Split by spaces, keeping the spaces
+                    parts.forEach((part, partIndex) => {
+                        if (part.trim() !== '') { // It's a word
+                            if (isFirstWordOfStory) {
+                                const firstLetter = part.charAt(0);
+                                const restOfWord = part.substring(1);
+
+                                // Create the drop cap span
+                                const dropCapSpan = document.createElement('span');
+                                dropCapSpan.className = 'drop-cap';
+                                dropCapSpan.textContent = firstLetter;
+                                pElement.appendChild(dropCapSpan);
+
+                                // Create a span for the rest of the word if it exists
+                                if (restOfWord) {
+                                    const restOfWordSpan = document.createElement('span');
+                                    restOfWordSpan.textContent = restOfWord;
+                                    const uniqueId = `word-l${lIndex}-part${partIndex}`;
+                                    restOfWordSpan.id = uniqueId;
+                                    restOfWordSpan.classList.add('cursor-pointer');
+                                    restOfWordSpan.onclick = () => handleWordClick(uniqueId, restOfWordSpan.textContent.trim());
+                                    pElement.appendChild(restOfWordSpan);
+                                }
+                                isFirstWordOfStory = false; // We've processed the first word, don't do it again.
+                            } else {
+                                // For all other words, wrap them in a span.
+                                const span = document.createElement('span');
+                                span.textContent = part;
+                                const uniqueId = `word-l${lIndex}-part${partIndex}`;
+                                span.id = uniqueId;
+                                span.classList.add('cursor-pointer');
+                                span.onclick = () => handleWordClick(uniqueId, span.textContent.trim());
+                                pElement.appendChild(span);
+                            }
+                        } else { // It's a space
+                            const span = document.createElement('span');
+                            span.textContent = part; // Keep the space
+                            pElement.appendChild(span);
+                        }
                     });
                 }
                 textElement.appendChild(pElement);
@@ -151,19 +183,15 @@ function handleWordClick(spanId, wordText) {
     tempSavedWordId = spanId;
     tempSavedWordText = wordText;
     document.getElementById('popup-text').textContent = `${contentMap[currentLanguage].savePosition} ${contentMap[currentLanguage].atWord}: "${wordText}"?`;
-    document.getElementById('popup').classList.remove('hidden');
-    document.getElementById('popup').classList.remove('fade-out');
-    document.getElementById('popup').classList.add('fade-in');
+    const popup = document.getElementById('popup');
+    popup.classList.add('active');
 }
 
 function closePopup() {
-    document.getElementById('popup').classList.remove('fade-in');
-    document.getElementById('popup').classList.add('fade-out');
+    const popup = document.getElementById('popup');
+    popup.classList.remove('active');
     tempSavedWordId = '';
     tempSavedWordText = '';
-    setTimeout(() => {
-        document.getElementById('popup').classList.add('hidden');
-    }, 300);
 }
 
 function savePosition() {
@@ -178,6 +206,7 @@ function savePosition() {
     }
     closePopup();
 }
+
 
 function scrollToSavedWord(performChecks = true, smooth = true) {
     const savedProgressForCurrentLang = allSavedProgress[currentLanguage];
@@ -366,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('button').forEach(button => {
         addTapAnimation(button);
         // Add specific actions for each button
-        if (button.id.includes('-button')) { // Language buttons
+        if (['ar-button', 'fr-button', 'en-button'].includes(button.id)) { // Language buttons
             const lang = button.id.split('-')[0];
             if (contentMap[lang]) {
                 button.addEventListener('click', () => changeLanguage(lang));
