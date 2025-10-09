@@ -329,12 +329,31 @@ body.svg-filter-supported .glass-container {
 }
 
 .favorite-count {
-  font-size: 1.2rem;
-  font-weight: bold;
+  /* FIX: Revert to the fancier, tilted font while keeping the scroll animation. */
+  font-family: 'Quattrocento Sans', sans-serif;
+  font-style: italic;
+  font-size: 1.4rem;
+  font-weight: 400;
   color: var(--glass-text);
   text-shadow: 0 1px 3px rgba(0,0,0,0.7);
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, transform 0.2s ease-out;
 }
+
+/* FIX: Change the animation to a vertical "scroll blur" effect. */
+@keyframes count-scroll-blur {
+  0% { opacity: 0; filter: blur(4px); transform: translateY(-100%); }
+  50% { opacity: 1; filter: blur(0); transform: translateY(0); }
+  70% { transform: translateY(-10%); }
+  80% { transform: translateY(5%); }
+  90% { transform: translateY(-2%); }
+  100% { opacity: 1; filter: blur(0); transform: translateY(0); }
+}
+
+.count-animated {
+  /* A custom cubic-bezier for a more 'bouncy' and realistic feel */
+  animation: count-scroll-blur 0.5s ease-out;
+}
+
 /* --- Buttons from the second code --- */
 .favorite-btn{
   position:relative; /* No longer needs to be absolute */

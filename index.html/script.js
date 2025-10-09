@@ -486,7 +486,12 @@ async function fetchAndBuildGrid() {
         } else {
           localFavoriteCounts[title] = Math.max(0, (localFavoriteCounts[title] || 0) - 1); // Ensure count doesn't go below 0
         }
-        if (countSpan) countSpan.textContent = localFavoriteCounts[title];
+        if (countSpan) {
+            countSpan.textContent = localFavoriteCounts[title];
+            countSpan.classList.remove('count-animated');
+            void countSpan.offsetWidth; // Force reflow to restart animation
+            countSpan.classList.add('count-animated');
+        }
 
         // Existing logic
         btn.setAttribute('aria-pressed', btn.classList.contains('active'));
