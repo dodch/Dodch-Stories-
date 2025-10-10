@@ -233,13 +233,17 @@ function handleWordClick(spanId, wordText) {
     const popup = document.getElementById('popup');
     popup.style.display = 'flex'; // Show the container immediately
 
-    const popupInner = popup.querySelector('.glass-popup');
-    // Add jello effect
-    popupInner.classList.remove('jello');
-    void popupInner.offsetWidth; // force reflow
-    popupInner.classList.add('jello');
-    // Apply active class to the inner element for the animation
-    popupInner.classList.add('active');
+    const popupInner = popup.querySelector('.glass-popup');    
+    // FIX: Separate the animations to prevent conflicts.
+    // 1. First, apply the 'active' class to trigger the scale-up and fade-in transition.
+    popupInner.classList.add('active'); 
+
+    // 2. Then, after a short delay (allowing the first transition to start), apply the jello animation.
+    setTimeout(() => {
+        popupInner.classList.remove('jello');
+        void popupInner.offsetWidth; // force reflow
+        popupInner.classList.add('jello');
+    }, 50); // 50ms delay is enough for the initial animation to begin.
 }
 
 function closePopup() {
