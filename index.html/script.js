@@ -385,6 +385,10 @@ async function fetchAndBuildGrid() {
             card.style.setProperty('--pointer-y', `${pointer.y - (s.offsetTop - scrollY)}px`);
             // NEW: Set the spotlight opacity based on proximity (influence)
             card.style.setProperty('--spotlight-opacity', influence);
+          } else {
+            // FIX: Explicitly set opacity to 0 if the pointer is not influencing the card.
+            // This ensures the light fades out when the finger is lifted on mobile.
+            card.style.setProperty('--spotlight-opacity', 0);
           }
 
           const targetScaleX = (targetScaleXScroll + (1 + 0.03 * influence)) / 2; // TUNED: Softened hover effect.
@@ -424,7 +428,9 @@ async function fetchAndBuildGrid() {
       });
 
       // FIX: Intelligently stop the animation loop if the pointer is not near any elements.
-      if (canStopAnimating && totalVelocity < 0.001 && delta === 0 && !isPointerNearAnElement) {
+      // FIX: The loop should continue if a touch was *just* released, to allow fade-out.
+      const justReleasedTouch = wasTouching && !isTouching;
+      if (canStopAnimating && totalVelocity < 0.001 && delta === 0 && !isPointerNearAnElement && !justReleasedTouch) {
         isAnimating = false;
       } else {
         requestAnimationFrame(frame);
@@ -441,6 +447,7 @@ async function fetchAndBuildGrid() {
     // This observer watches which cards are on screen and adds them to the `visiblePanels` set.
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
+        const card = entry.target;
         if (entry.isIntersecting) {
           visiblePanels.add(entry.target);
         } else {
@@ -448,6 +455,8 @@ async function fetchAndBuildGrid() {
           // Reset transform for off-screen elements to be clean
           entry.target.style.transform = 'scale(1) rotateX(0deg) rotateY(0deg)';
         }
+        // FIX: Ensure spotlight is off for elements that are not visible or being animated.
+        card.style.setProperty('--spotlight-opacity', 0);
       });
     }, {
       rootMargin: '200px 0px 200px 0px' // Start animating cards 200px before they enter the screen

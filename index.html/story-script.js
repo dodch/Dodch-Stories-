@@ -472,24 +472,30 @@ function initializeShineEffect() {
 
     function updateShine() {
         let isPointerNearAnElement = false;
+        let wasTouching = isTouching; // Remember the touch state from the start of the frame.
+
         // FIX: On touch devices, only apply hover effect if a touch is active.
         // On non-touch devices, apply it always.
-        if ((isTouchDevice && isTouching) || !isTouchDevice) {
-            shineElements.forEach(elem => {
+        shineElements.forEach(elem => {
+            let influence = 0;
+            if ((isTouchDevice && isTouching) || !isTouchDevice) {
                 const rect = elem.getBoundingClientRect();
                 const dx = pointer.x - (rect.left + rect.width / 2);
                 const dy = pointer.y - (rect.top + rect.height / 2);
                 const dist = Math.sqrt(dx * dx + dy * dy);
-                const influence = Math.max(0, 1 - dist / 150); // 150px influence radius
+                influence = Math.max(0, 1 - dist / 150); // 150px influence radius
                 if (influence > 0) isPointerNearAnElement = true;
+
                 elem.style.setProperty('--pointer-x', `${pointer.x - rect.left}px`);
                 elem.style.setProperty('--pointer-y', `${pointer.y - rect.top}px`);
-                elem.style.setProperty('--spotlight-opacity', influence);
-            });
-        }
+            }
+            // This is the key fix: always update the opacity, setting it to 0 if there's no influence.
+            elem.style.setProperty('--spotlight-opacity', influence);
+        });
 
         // FIX: Intelligently stop the animation loop if the pointer is not near any elements.
-        if (isPointerNearAnElement || (isTouchDevice && isTouching)) {
+        const justReleasedTouch = wasTouching && !isTouching;
+        if (isPointerNearAnElement || isTouching || justReleasedTouch) {
             requestAnimationFrame(updateShine);
         } else {
             isAnimating = false;
