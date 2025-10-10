@@ -65,16 +65,12 @@ function changeLanguage(lang, fromLoad = false) {
     languageButtons.forEach(button => {
         button.classList.add('unselected-language');
         button.classList.remove('selected-language');
-        // Set the text color for unselected buttons
-        button.style.color = body.classList.contains('dark-mode') ? 'var(--unselected-lang-text-dark)' : 'var(--unselected-lang-text-light)';
     });
     // Then, apply selected state to the new button
     const newButton = document.getElementById(`${lang}-button`);
     if(newButton) {
         newButton.classList.remove('unselected-language');
         newButton.classList.add('selected-language');
-         // Set the text color for the newly selected button
-        newButton.style.color = body.classList.contains('dark-mode') ? 'var(--save-button-text-dark)' : 'var(--save-button-text-light)';
     }
     currentLanguage = lang;
     if (!fromLoad) {
@@ -139,8 +135,11 @@ function changeLanguage(lang, fromLoad = false) {
                                 const uniqueId = `word-l${lIndex}-p0`;
                                 firstWordSpan.id = uniqueId;
                                 firstWordSpan.classList.add('cursor-pointer');
-                                // The click handler should refer to the full word for context.
-                                firstWordSpan.onclick = () => handleWordClick(uniqueId, firstWord.trim());
+                                // FIX: Use pointerup and prevent default to avoid double-firing on touch devices.
+                                firstWordSpan.addEventListener('pointerup', (e) => {
+                                    e.preventDefault(); // Prevents the browser from firing a 'click' event after the 'pointerup'.
+                                    handleWordClick(uniqueId, firstWord.trim());
+                                });
                                 pElement.appendChild(firstWordSpan);
                                 
                                 // Process the rest of the line
@@ -153,7 +152,11 @@ function changeLanguage(lang, fromLoad = false) {
                                         wordSpan.id = uniqueId;
                                         wordSpan.textContent = word;
                                         wordSpan.classList.add('cursor-pointer');
-                                        wordSpan.onclick = () => handleWordClick(uniqueId, wordSpan.textContent.trim());
+                                        // FIX: Use pointerup and prevent default.
+                                        wordSpan.addEventListener('pointerup', (e) => {
+                                            e.preventDefault();
+                                            handleWordClick(uniqueId, wordSpan.textContent.trim());
+                                        });
                                         pElement.appendChild(wordSpan);
                                         pElement.appendChild(document.createTextNode(' '));
                                     }
@@ -173,7 +176,11 @@ function changeLanguage(lang, fromLoad = false) {
                                     wordSpan.id = uniqueId;
                                     wordSpan.textContent = word;
                                     wordSpan.classList.add('cursor-pointer');
-                                    wordSpan.onclick = () => handleWordClick(uniqueId, wordSpan.textContent.trim());
+                                    // FIX: Use pointerup and prevent default.
+                                    wordSpan.addEventListener('pointerup', (e) => {
+                                        e.preventDefault();
+                                        handleWordClick(uniqueId, wordSpan.textContent.trim());
+                                    });
                                     pElement.appendChild(wordSpan);
                                     pElement.appendChild(document.createTextNode(' '));
                                 }
@@ -319,8 +326,12 @@ function highlightWord() {
 }
 
 function handleDarkModeChange(mediaQuery) {
-    isDarkMode = mediaQuery.matches;
-    if (isDarkMode) {
+    const wasDarkMode = body.classList.contains('dark-mode');
+    const isNowDarkMode = mediaQuery.matches;
+
+    if (wasDarkMode === isNowDarkMode) return; // No change needed
+
+    if (isNowDarkMode) {
         body.classList.add('dark-mode');
         lightBackgroundDiv.style.opacity = 0;
         darkBackgroundDiv.style.opacity = 1;
@@ -328,9 +339,9 @@ function handleDarkModeChange(mediaQuery) {
         body.classList.remove('dark-mode');
         lightBackgroundDiv.style.opacity = 1;
         darkBackgroundDiv.style.opacity = 0;
-        document.documentElement.setAttribute('dir', 'ltr');
     }
-    changeLanguage(currentLanguage, false);
+    // Re-apply language to update styles correctly after the theme has changed.
+    changeLanguage(currentLanguage, true); // Use 'true' to prevent fade-out/fade-in
     applyTextEffects();
     highlightWord();
 }
@@ -389,6 +400,64 @@ function setupStoryObserver() {
     });
 }
 
+/**
+ * NEW: Initializes the proximity shine effect for all glass buttons on the page.
+ * It tracks the pointer and updates CSS variables on the buttons to create a light reflection effect.
+ */
+function initializeShineEffect() {
+    const shineElements = document.querySelectorAll('.glass-button-base');
+    // FIX: Start the animation loop immediately to handle cases where the mouse is already over an element on load.
+    let pointer = { x: -9999, y: -9999 };
+    let isAnimating = false;
+
+    function ensureAnimating() {
+        if (!isAnimating) {
+            isAnimating = true;
+            requestAnimationFrame(updateShine);
+        }
+    }
+
+    window.addEventListener('pointermove', (e) => {
+        pointer.x = e.clientX;
+        pointer.y = e.clientY;
+        ensureAnimating();
+    }, { passive: true });
+
+    window.addEventListener('pointerleave', () => {
+        pointer.x = -9999;
+        pointer.y = -9999;
+        ensureAnimating();
+    });
+
+    // FIX: Also trigger animation on scroll to recalculate element positions.
+    window.addEventListener('scroll', ensureAnimating, { passive: true });
+
+    function updateShine() {
+        let isPointerNearAnElement = false;
+        shineElements.forEach(elem => {
+            const rect = elem.getBoundingClientRect();
+            const dx = pointer.x - (rect.left + rect.width / 2);
+            const dy = pointer.y - (rect.top + rect.height / 2);
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const influence = Math.max(0, 1 - dist / 150); // 150px influence radius
+            if (influence > 0) isPointerNearAnElement = true;
+            elem.style.setProperty('--pointer-x', `${pointer.x - rect.left}px`);
+            elem.style.setProperty('--pointer-y', `${pointer.y - rect.top}px`);
+            elem.style.setProperty('--spotlight-opacity', influence);
+        });
+
+        // FIX: Intelligently stop the animation loop if the pointer is not near any elements.
+        if (isPointerNearAnElement) {
+            requestAnimationFrame(updateShine);
+        } else {
+            isAnimating = false;
+        }
+    }
+
+    // Initial call to get things started
+    ensureAnimating();
+}
+
 let load = 0;
 let interval = setInterval(updateLoadingText, 30);
 function updateLoadingText() {
@@ -437,6 +506,9 @@ document.addEventListener('DOMContentLoaded', () => {
         initialLangToLoad = preferredLanguage;
      }
      changeLanguage(initialLangToLoad, true);
+
+     // NEW: Initialize the shine effect for all buttons on the story page.
+     initializeShineEffect();
 
      // Apply new tap animations to all buttons
     document.querySelectorAll('button').forEach(button => {

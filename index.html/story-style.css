@@ -80,6 +80,29 @@ body.dark-mode {
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.5s ease, background-color 0.5s ease;
 }
 
+/* --- NEW: Proximity shine effect for all glass buttons --- */
+.glass-button-base::before {
+  content: ''; /* Required for pseudo-element */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background:
+    /* 1. A sharp, bright highlight for the core reflection */
+    radial-gradient(circle at var(--pointer-x) var(--pointer-y),
+      rgba(255, 255, 255, 0.8) 0%, /* Intense center */
+      rgba(255, 255, 255, 0.2) 35%, /* Sharp falloff */
+      transparent 50%
+    ),
+    /* 2. A larger, softer underlying glow for a natural feel */
+    radial-gradient(circle at var(--pointer-x) var(--pointer-y), rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+  opacity: var(--spotlight-opacity, 0);
+  pointer-events: none; /* Ensure it doesn't block clicks on the button */
+  transition: opacity 0.4s ease-out;
+}
+
 body.dark-mode .glass-button-base {
     background-color: var(--glass-bg-dark);
     box-shadow: var(--button-shadow-dark);
@@ -472,11 +495,11 @@ body.dark-mode #popup button.bg-red-500:hover, body.dark-mode #popup button.bg-r
     font-family: 'Licorice', cursive;
     font-size: 7.5rem; /* Script fonts need to be larger to have impact */
     font-weight: 400; /* This font only supports normal weight */
-    color: gold; /* A solid gold color is more readable for script fonts */
+    color: inherit; /* FIX: Use the parent text color (white) instead of gold. */
     text-shadow: 0 2px 3px rgba(0,0,0,0.5);
     float: left; /* Allow text to wrap around the letter */
     line-height: 0.7; /* Adjust vertical alignment for the new font */
-    padding-right: 0.2rem; /* Reduce padding for a tighter wrap */
+    padding-right: 0.8rem; /* FIX: Increase padding to prevent text overlap. */
     padding-top: 0.4rem;
     margin-bottom: -0.5rem; /* Fine-tune vertical spacing */
     text-indent: 0; /* Ensure the drop-cap itself is not indented */
@@ -525,13 +548,15 @@ body.dark-mode #popup button.bg-red-500:hover, body.dark-mode #popup button.bg-r
 /* Animation for story paragraphs */
 .story-anim-item {
     opacity: 0;
-    transform: translateY(40px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    transform: translateY(20px);
+    filter: blur(4px);
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out, filter 0.4s ease-out;
 }
 
 .story-anim-item.in-view {
     opacity: 1;
     transform: translateY(0);
+    filter: blur(0);
 }
 
 @keyframes glow-animation {
@@ -544,4 +569,32 @@ body.dark-mode #popup button.bg-red-500:hover, body.dark-mode #popup button.bg-r
   100% {
     box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
   }
+}
+
+/* --- NEW: Custom Scrollbar Styling --- */
+/* For Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #4c1d95; /* FIX: Use a contrasting dark purple for the track. */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #a78bfa; /* FIX: Use a very bright, high-contrast purple for the thumb. */
+  border-radius: 10px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  box-shadow: var(--glass-shadow-light);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #c4b5fd; /* FIX: Make hover state even brighter. */
+}
+
+/* For Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #a78bfa #4c1d95; /* thumb color, track color */
 }

@@ -202,7 +202,6 @@ async function fetchAndBuildGrid() {
             4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 
             3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
           </svg>
-          <!-- NEW: Span to display the local favorite count -->
           </div>
         </div>
       `;
@@ -272,11 +271,21 @@ async function fetchAndBuildGrid() {
       });
     }
     // Initial calculations
-    updateCardStaticProps(); 
+    updateCardStaticProps();
+
+    // FIX: Create a dedicated function to update grid bounds and call it on load and resize.
+    // This ensures the hover effect works immediately without needing to scroll first.
+    function updateGridBounds() {
+        const gridRect = document.getElementById('grid').getBoundingClientRect();
+        gridBounds.top = gridRect.top + window.scrollY;
+        gridBounds.bottom = gridRect.bottom + window.scrollY;
+    }
 
     // NEW: Staggered fade-in and gentle physics kick on load
-    window.addEventListener('resize', updateCardStaticProps); // Recalculate on resize
-
+    window.addEventListener('resize', () => {
+        updateCardStaticProps();
+        updateGridBounds();
+    });
     panels.forEach((card, i) => {
         setTimeout(() => {
             card.style.opacity = '1'; // Trigger the CSS fade-in
@@ -318,10 +327,11 @@ async function fetchAndBuildGrid() {
 
       // --- PERFORMANCE OPTIMIZATION: Only do expensive hover math if pointer is near the grid ---
       // The gridBounds are now updated in the 'scroll' event listener to avoid DOM reads in the animation loop.
-      const isPointerNearGrid = pointer.y > gridBounds.top - 200 && pointer.y < gridBounds.bottom + 200;
+      const isPointerNearGrid = pointer.y > gridBounds.top - 200 - scrollY && pointer.y < gridBounds.bottom + 200 - scrollY;
 
       // --- EXTREME SMOOTHNESS: Lean animation loop ---
       let totalVelocity = 0;
+      let isPointerNearAnElement = false; // FIX: Track if pointer is near any element.
       visiblePanels.forEach((card) => {
         const s = state.get(card);
         if (!s) return; // Skip if state is missing
@@ -349,6 +359,7 @@ async function fetchAndBuildGrid() {
             const dy = pointer.y - (s.offsetTop - scrollY + s.height / 2.0);
             const pointerDist = Math.sqrt(dx * dx + dy * dy);
             influence = Math.max(0, 1 - pointerDist / 275); // Increased influence radius slightly
+            if (influence > 0) isPointerNearAnElement = true;
 
             // NEW: Add a subtle 3D tilt based on pointer position for a premium feel
             const maxRot = 8; // Maximum rotation in degrees
@@ -356,6 +367,12 @@ async function fetchAndBuildGrid() {
             const targetRotY = (dx / (s.width / 2)) * maxRot * influence;
             s.vrX += (targetRotX - s.rotX) * 0.12;
             s.vrY += (targetRotY - s.rotY) * 0.12;
+            
+            // REFACTOR: Set CSS variables for the spotlight effect using pre-calculated values to avoid layout thrashing.
+            card.style.setProperty('--pointer-x', `${pointer.x - s.offsetLeft}px`);
+            card.style.setProperty('--pointer-y', `${pointer.y - (s.offsetTop - scrollY)}px`);
+            // NEW: Set the spotlight opacity based on proximity (influence)
+            card.style.setProperty('--spotlight-opacity', influence);
           }
 
           const targetScaleX = (targetScaleXScroll + (1 + 0.03 * influence)) / 2; // TUNED: Softened hover effect.
@@ -378,8 +395,24 @@ async function fetchAndBuildGrid() {
         }
       });
 
-      // Smartly continue or stop the animation loop
-      if (canStopAnimating && totalVelocity < 0.001 && delta === 0 && !isPointerNearGrid) {
+      // NEW: Animate button shine based on proximity
+      document.querySelectorAll('.shine-button').forEach(button => {
+        const rect = button.getBoundingClientRect();
+        const dx = pointer.x - (rect.left + rect.width / 2);
+        const dy = pointer.y - (rect.top + rect.height / 2);
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        // Calculate influence based on distance (stronger effect closer to the button)
+        const influence = Math.max(0, 1 - dist / 150); // 150px is the influence radius
+        if (influence > 0) isPointerNearAnElement = true;
+
+        button.style.setProperty('--pointer-x', `${pointer.x - rect.left}px`);
+        button.style.setProperty('--pointer-y', `${pointer.y - rect.top}px`);
+        button.style.setProperty('--spotlight-opacity', influence);
+      });
+
+      // FIX: Intelligently stop the animation loop if the pointer is not near any elements.
+      if (canStopAnimating && totalVelocity < 0.001 && delta === 0 && !isPointerNearAnElement) {
         isAnimating = false;
       } else {
         requestAnimationFrame(frame);
@@ -422,8 +455,15 @@ async function fetchAndBuildGrid() {
         pointer.x = e.clientX;
         pointer.y = e.clientY;
         ensureAnimating();
-    }, { passive: true }); // OPTIMIZATION: Use passive listener for pointer events.
-    window.addEventListener('pointerleave', () => { pointer.x = -9999; pointer.y = -9999; });
+    }, { passive: true });
+
+    window.addEventListener('pointerleave', () => { 
+        // FIX: Reset pointer and run the animation loop one last time to ensure all hover effects are gracefully removed.
+        // This prevents the "stuck" light effect if the mouse leaves the window quickly.
+        pointer.x = -9999; 
+        pointer.y = -9999; 
+        ensureAnimating();
+    });
     // --- End Animation Setup ---
 
     const searchButton = document.getElementById('searchButton');
@@ -516,6 +556,12 @@ async function fetchAndBuildGrid() {
     addTapAnimation(infoButton);
     addTapAnimation(closeInfoButton);
 
+    // NEW: Add shine effect element to all relevant buttons
+    document.querySelectorAll('.search-button, .floating-button, .info-button').forEach(button => {
+        button.classList.add('shine-button');
+        button.insertAdjacentHTML('beforeend', '<div class="shine-effect"></div>');
+    });
+
     // REFACTOR: Use IntersectionObserver for panel animations.
     let panelObserver;
 
@@ -574,9 +620,7 @@ async function fetchAndBuildGrid() {
         searchBar.blur();
       }
       // OPTIMIZATION: Update grid bounds here, outside the rAF loop, to prevent layout thrashing.
-      const gridRect = document.getElementById('grid').getBoundingClientRect();
-      gridBounds.top = gridRect.top;
-      gridBounds.bottom = gridRect.bottom;
+      updateGridBounds();
       ensureAnimating(); // Restart animation on scroll
     }, { passive: true });
 
@@ -645,6 +689,11 @@ async function fetchAndBuildGrid() {
         closeAllPanels();
       }
     });
+
+    // FIX: Initial call to get the animation loop started on load.
+    // FIX: Initial calculation of grid bounds on load.
+    updateGridBounds();
+    ensureAnimating();
   } catch (error) {
     console.error('Failed to load grid ', error);
     document.getElementById('grid').innerHTML = '<p style="color:#fff;">Failed to load stories. Check that stories.json exists.</p>';
