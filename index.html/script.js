@@ -311,6 +311,10 @@ async function fetchAndBuildGrid() {
     let isAnimating = true; // Control the animation loop
     let canStopAnimating = false; // Prevent animation from stopping too early on load
 
+    // NEW: Detect if it's a touch device to adjust hover logic
+    const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    let isTouching = false; // Track if a touch is currently active
+
     function frame(now) {
       const dt = (now - lastTime) / 1000;
       lastTime = now;
@@ -337,7 +341,11 @@ async function fetchAndBuildGrid() {
         if (!s) return; // Skip if state is missing
 
         // Use pre-calculated offsetTop instead of getBoundingClientRect()
-        const cardCenter = s.offsetTop + s.height / 2;
+        // FIX: Use pre-calculated offsetTop instead of getBoundingClientRect()
+        // FIX: Ensure s.offsetTop and s.height are valid numbers before calculation
+        const cardTop = typeof s.offsetTop === 'number' ? s.offsetTop : 0;
+        const cardHeight = typeof s.height === 'number' ? s.height : 0;
+        const cardCenter = cardTop + cardHeight / 2;
         const distFromCenter = Math.abs(cardCenter - center);
 
         // Only calculate physics if the card is reasonably close to the viewport center
@@ -350,13 +358,17 @@ async function fetchAndBuildGrid() {
           const scrollImpulse = delta * impulseMultiplier * (1 - dist); 
 
           const targetScaleYScroll = 1 - scrollImpulse;
-          const targetScaleXScroll = 1 + scrollImpulse * 0.7;
+          const targetScaleXScroll = 1 + scrollImpulse * 0.5; // TUNED: Reduced horizontal stretch for a more subtle effect.
 
           let influence = 0;
-          if (isPointerNearGrid) {
+          // FIX: On touch devices, only apply hover effect if a touch is active.
+          // On non-touch devices, apply it when the pointer is near the grid.
+          if ((isTouchDevice && isTouching) || (!isTouchDevice && isPointerNearGrid)) {
             // --- PERFORMANCE FIX: Calculate pointer distance without getBoundingClientRect ---
-            const dx = pointer.x - (s.offsetLeft + s.width / 2.0);
-            const dy = pointer.y - (s.offsetTop - scrollY + s.height / 2.0);
+            const cardLeft = typeof s.offsetLeft === 'number' ? s.offsetLeft : 0;
+            const cardWidth = typeof s.width === 'number' ? s.width : 0;
+            const dx = pointer.x - (cardLeft + cardWidth / 2.0);
+            const dy = pointer.y - (cardTop - scrollY + cardHeight / 2.0);
             const pointerDist = Math.sqrt(dx * dx + dy * dy);
             influence = Math.max(0, 1 - pointerDist / 275); // Increased influence radius slightly
             if (influence > 0) isPointerNearAnElement = true;
@@ -364,12 +376,12 @@ async function fetchAndBuildGrid() {
             // NEW: Add a subtle 3D tilt based on pointer position for a premium feel
             const maxRot = 8; // Maximum rotation in degrees
             const targetRotX = (dy / (s.height / 2)) * -maxRot * influence;
-            const targetRotY = (dx / (s.width / 2)) * maxRot * influence;
+            const targetRotY = (dx / (cardWidth / 2)) * maxRot * influence;
             s.vrX += (targetRotX - s.rotX) * 0.12;
             s.vrY += (targetRotY - s.rotY) * 0.12;
             
             // REFACTOR: Set CSS variables for the spotlight effect using pre-calculated values to avoid layout thrashing.
-            card.style.setProperty('--pointer-x', `${pointer.x - s.offsetLeft}px`);
+            card.style.setProperty('--pointer-x', `${pointer.x - cardLeft}px`);
             card.style.setProperty('--pointer-y', `${pointer.y - (s.offsetTop - scrollY)}px`);
             // NEW: Set the spotlight opacity based on proximity (influence)
             card.style.setProperty('--spotlight-opacity', influence);
@@ -456,6 +468,20 @@ async function fetchAndBuildGrid() {
         pointer.y = e.clientY;
         ensureAnimating();
     }, { passive: true });
+
+    // NEW: Add touch event listeners to handle the effect on mobile
+    if (isTouchDevice) {
+        window.addEventListener('touchstart', (e) => {
+            isTouching = true;
+            pointer.x = e.touches[0].clientX;
+            pointer.y = e.touches[0].clientY;
+            ensureAnimating();
+        }, { passive: true });
+
+        window.addEventListener('touchend', () => {
+            isTouching = false; // When the finger is lifted, the touch ends
+        }, { passive: true });
+    }
 
     window.addEventListener('pointerleave', () => { 
         // FIX: Reset pointer and run the animation loop one last time to ensure all hover effects are gracefully removed.

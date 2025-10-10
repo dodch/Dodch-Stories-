@@ -408,12 +408,19 @@ function initializeShineEffect() {
     const shineElements = document.querySelectorAll('.glass-button-base');
     // FIX: Start the animation loop immediately to handle cases where the mouse is already over an element on load.
     let pointer = { x: -9999, y: -9999 };
+    // NEW: Detect if it's a touch device to adjust hover logic
+    const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    let isTouching = false; // Track if a touch is currently active
     let isAnimating = false;
 
     function ensureAnimating() {
         if (!isAnimating) {
             isAnimating = true;
-            requestAnimationFrame(updateShine);
+            // FIX: Use rAF to prevent multiple loops from starting.
+            // This ensures we only have one updateShine loop running at a time.
+            requestAnimationFrame(() => {
+                updateShine();
+            });
         }
     }
 
@@ -422,6 +429,20 @@ function initializeShineEffect() {
         pointer.y = e.clientY;
         ensureAnimating();
     }, { passive: true });
+
+    // NEW: Add touch event listeners to handle the effect on mobile
+    if (isTouchDevice) {
+        window.addEventListener('touchstart', (e) => {
+            isTouching = true;
+            pointer.x = e.touches[0].clientX;
+            pointer.y = e.touches[0].clientY;
+            ensureAnimating();
+        }, { passive: true });
+
+        window.addEventListener('touchend', () => {
+            isTouching = false; // When the finger is lifted, the touch ends
+        }, { passive: true });
+    }
 
     window.addEventListener('pointerleave', () => {
         pointer.x = -9999;
@@ -434,20 +455,24 @@ function initializeShineEffect() {
 
     function updateShine() {
         let isPointerNearAnElement = false;
-        shineElements.forEach(elem => {
-            const rect = elem.getBoundingClientRect();
-            const dx = pointer.x - (rect.left + rect.width / 2);
-            const dy = pointer.y - (rect.top + rect.height / 2);
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            const influence = Math.max(0, 1 - dist / 150); // 150px influence radius
-            if (influence > 0) isPointerNearAnElement = true;
-            elem.style.setProperty('--pointer-x', `${pointer.x - rect.left}px`);
-            elem.style.setProperty('--pointer-y', `${pointer.y - rect.top}px`);
-            elem.style.setProperty('--spotlight-opacity', influence);
-        });
+        // FIX: On touch devices, only apply hover effect if a touch is active.
+        // On non-touch devices, apply it always.
+        if ((isTouchDevice && isTouching) || !isTouchDevice) {
+            shineElements.forEach(elem => {
+                const rect = elem.getBoundingClientRect();
+                const dx = pointer.x - (rect.left + rect.width / 2);
+                const dy = pointer.y - (rect.top + rect.height / 2);
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const influence = Math.max(0, 1 - dist / 150); // 150px influence radius
+                if (influence > 0) isPointerNearAnElement = true;
+                elem.style.setProperty('--pointer-x', `${pointer.x - rect.left}px`);
+                elem.style.setProperty('--pointer-y', `${pointer.y - rect.top}px`);
+                elem.style.setProperty('--spotlight-opacity', influence);
+            });
+        }
 
         // FIX: Intelligently stop the animation loop if the pointer is not near any elements.
-        if (isPointerNearAnElement) {
+        if (isPointerNearAnElement || (isTouchDevice && isTouching)) {
             requestAnimationFrame(updateShine);
         } else {
             isAnimating = false;
