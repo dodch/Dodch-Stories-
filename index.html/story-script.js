@@ -9,6 +9,10 @@ let highlightedWordElement = null;
 let isDarkMode = false;
 let storyObserver; // For paragraph animations
 
+// FIX: Add a flag to prevent immediate re-triggering of the popup on mobile.
+// This will block the "ghost click" that happens after a touch event.
+let blockPopupTrigger = false;
+
 // contentMap will be defined in each story's HTML file
 
 const lightBackgroundDiv = document.querySelector('.fixed-background.light-background');
@@ -217,6 +221,12 @@ function changeLanguage(lang, fromLoad = false) {
 }
 
 function handleWordClick(spanId, wordText) {
+    // FIX: If the popup was just closed by a touch event, don't reopen it immediately.
+    // This is the core fix for the "double popup" and "auto-save" bug on mobile.
+    if (blockPopupTrigger) {
+        return;
+    }
+
     tempSavedWordId = spanId;
     tempSavedWordText = wordText;
     document.getElementById('popup-text').textContent = `${contentMap[currentLanguage].savePosition} ${contentMap[currentLanguage].atWord}: "${wordText}"?`;
@@ -242,6 +252,13 @@ function closePopup() {
     // Hide the container after the animation
     setTimeout(() => {
         // Check if the popup is still meant to be hidden before setting display to none
+        // FIX: On touch devices, briefly block re-opening the popup to prevent ghost clicks.
+        const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        if (isTouchDevice) {
+            blockPopupTrigger = true;
+            setTimeout(() => { blockPopupTrigger = false; }, 300); // Unblock after a short delay.
+        }
+
         if (!popupInner.classList.contains('active')) {
             popup.style.display = 'none';
         }
@@ -549,10 +566,15 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (button.id === 'back-home-button') {
             button.addEventListener('click', () => window.location.href = 'https://www.dodchstories.com');
         } else if (button.closest('#popup')) { // Popup buttons
+            // FIX: Use 'pointerup' instead of 'click' for popup buttons to prevent "ghost clicks" on mobile.
+            // This ensures the interaction is consistent with the word selection.
             if (button.textContent.trim().toLowerCase() === 'save' || button.textContent.trim() === 'حفظ' || button.textContent.trim() === 'enregistrer') {
-                button.addEventListener('click', savePosition);
+                button.addEventListener('pointerup', (e) => {
+                    e.preventDefault();
+                    savePosition();
+                });
             } else {
-                button.addEventListener('click', closePopup);
+                button.addEventListener('pointerup', closePopup);
             }
         }
     });
