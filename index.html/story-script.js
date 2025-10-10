@@ -395,9 +395,8 @@ function setupStoryObserver() {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('in-view');
-            } else {
-                // Reset the state when it goes out of view to allow re-animation
-                entry.target.classList.remove('in-view'); 
+                // FIX: Stop observing the element after it has animated in once.
+                observer.unobserve(entry.target);
             }
         });
     }, {

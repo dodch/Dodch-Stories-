@@ -336,6 +336,7 @@ async function fetchAndBuildGrid() {
       // --- EXTREME SMOOTHNESS: Lean animation loop ---
       let totalVelocity = 0;
       let isPointerNearAnElement = false; // FIX: Track if pointer is near any element.
+      let wasTouching = isTouching; // Remember the touch state from the start of the frame.
       visiblePanels.forEach((card) => {
         const s = state.get(card);
         if (!s) return; // Skip if state is missing
@@ -430,7 +431,7 @@ async function fetchAndBuildGrid() {
       // FIX: Intelligently stop the animation loop if the pointer is not near any elements.
       // FIX: The loop should continue if a touch was *just* released, to allow fade-out.
       const justReleasedTouch = wasTouching && !isTouching;
-      if (canStopAnimating && totalVelocity < 0.001 && delta === 0 && !isPointerNearAnElement && !justReleasedTouch) {
+      if (canStopAnimating && totalVelocity < 0.001 && delta === 0 && !isPointerNearAnElement && !justReleasedTouch && !isTouching) {
         isAnimating = false;
       } else {
         requestAnimationFrame(frame);
