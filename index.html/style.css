@@ -190,19 +190,20 @@ body.svg-filter-supported .glass-container {
   content: ''; /* Required for pseudo-element */
 }
 
+.glass-container.force-hover-off:hover {
+  pointer-events: none;
+}
+
 .shine-effect {
   background: radial-gradient(120px circle at var(--pointer-x) var(--pointer-y), rgba(255, 255, 255, 0.5), transparent 40%);
 }
 
-.glass-container:hover {
-  /* The ::before pseudo-element now handles the entire hover light effect */
-}
 .glass-container.favorited{
   background-color:color-mix(in srgb,var(--heart-active) 25%,transparent)
 }
 .glass-content {
   text-align: left;
-  padding: 3rem 2rem 3rem 2rem; 
+  padding: 3rem 2rem 3rem 2rem;
   position: relative;
 }
 .title {
@@ -212,8 +213,6 @@ body.svg-filter-supported .glass-container {
   margin-bottom: 0.5rem;
   font-family: 'Playfair Display', serif;
   text-shadow: 0 2px 3px rgba(0,0,0,0.8), 0 0 10px rgba(0,0,0,0.5);
-  /* NEW: Add transition for hover animation */
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   /* FIX: Revert to left alignment for titles */
   text-align: left;
 }
@@ -223,20 +222,21 @@ body.svg-filter-supported .glass-container {
   font-family: 'Open Sans', sans-serif;
   /* FIX: Add a stronger, layered shadow to lift text from the background. */
   text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 5px rgba(0,0,0,0.5);
-  /* NEW: Add transition for hover animation */
-  transition: all 0.3s ease-out;
 }
 
-/* --- NEW: Premium Text Hover Effect --- */
-.glass-container:hover .title {
-  color: var(--golden-tint);
-  text-shadow: 0 0 10px color-mix(in srgb, var(--golden-tint) 70%, transparent), 0 2px 3px rgba(0,0,0,0.8);
-  transform: translateY(-2px) scale(1.02);
-}
-.glass-container:hover .description {
-  opacity: 1;
-  color: var(--glass-text);
-  transform: translateY(-1px);
+/* --- NEW: Premium Text Hover Effect (for non-touch devices) --- */
+/* This media query applies hover effects only on devices that can truly hover. */
+@media (hover: hover) and (pointer: fine) {
+  .glass-container:hover .title {
+    color: var(--golden-tint);
+    text-shadow: 0 0 10px color-mix(in srgb, var(--golden-tint) 70%, transparent), 0 2px 3px rgba(0,0,0,0.8);
+    transform: translateY(-2px) scale(1.02);
+  }
+  .glass-container:hover .description {
+    opacity: 1;
+    color: var(--glass-text);
+    transform: translateY(-1px);
+  }
 }
 /* Fixed wrapper for the top-right elements */
 .top-right-fixed-wrapper {
