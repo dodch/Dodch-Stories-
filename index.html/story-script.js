@@ -26,28 +26,6 @@ const saveButton = document.getElementById('save-progress-button');
 const popupDivInner = document.getElementById('popup').querySelector('div');
 
 function applyTextEffects() {
-    const textSpans = textElement.querySelectorAll('span[id^="word-"]');
-    const isDarkModeActive = document.body.classList.contains('dark-mode');
-    textSpans.forEach(span => {
-         if (!span.classList.contains('glow-word')) {
-             if (isDarkModeActive) {
-                 span.style.textShadow = '0 0 1px rgba(255, 255, 255, 0.5)';
-                 span.style.webkitTextStroke = 'none';
-                 span.style.textStroke = 'none';
-                 span.style.webkitTextFillColor = 'white';
-                 span.style.color = 'white';
-             } else {
-                 span.style.textShadow = '0 0 1px rgba(0, 0, 0, 0.5)';
-                 span.style.webkitTextStroke = 'none';
-                 span.style.textStroke = 'none';
-                 span.style.webkitTextFillColor = 'initial';
-                 span.style.color = 'inherit';
-             }
-         }
-     });
-}
-
-function clearSavedProgress() {
      delete allSavedProgress[currentLanguage];
      localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
      if (highlightedWordElement) {
@@ -209,7 +187,6 @@ function changeLanguage(lang, fromLoad = false) {
         document.getElementById('popup').querySelector('.bg-green-500').textContent = content.save;
         document.getElementById('popup').querySelector('.bg-red-500').textContent = content.exit;
         highlightWord();
-        applyTextEffects();
         const savedProgressForCurrentLang = allSavedProgress[currentLanguage];
         if (fromLoad && savedProgressForCurrentLang && savedProgressForCurrentLang.id) {
               setTimeout(() => {
@@ -363,7 +340,6 @@ function handleDarkModeChange(mediaQuery) {
     }
     // Re-apply language to update styles correctly after the theme has changed.
     changeLanguage(currentLanguage, true); // Use 'true' to prevent fade-out/fade-in
-    applyTextEffects();
     highlightWord();
 }
 
