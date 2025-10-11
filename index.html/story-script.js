@@ -1,6 +1,9 @@
 const loadingScreen = document.getElementById("loading-screen");
 const loadPercentageText = document.querySelector(".loading-percentage");
 const body = document.body;
+// FIX: Create a unique key for each story to namespace saved progress.
+// This prevents progress from one story from conflicting with another.
+const storyKey = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
 let currentLanguage = 'en';
 let allSavedProgress = {};
 let tempSavedWordId = '';
@@ -24,6 +27,13 @@ const backHomeButton = document.getElementById('back-home-button');
 const languageButtons = document.querySelectorAll('#ar-button, #fr-button, #en-button');
 const saveButton = document.getElementById('save-progress-button');
 const popupDivInner = document.getElementById('popup').querySelector('div');
+
+function clearSavedProgress() {
+    if (allSavedProgress[storyKey]) {
+        delete allSavedProgress[storyKey][currentLanguage];
+        localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
+    }
+}
 
 function changeLanguage(lang, fromLoad = false) {
     if (contentDiv.classList.contains('content-fading') && !fromLoad) {
@@ -176,7 +186,7 @@ function changeLanguage(lang, fromLoad = false) {
         document.getElementById('popup').querySelector('.bg-green-500').textContent = content.save;
         document.getElementById('popup').querySelector('.bg-red-500').textContent = content.exit;
         highlightWord();
-        const savedProgressForCurrentLang = allSavedProgress[currentLanguage];
+        const savedProgressForCurrentLang = allSavedProgress[storyKey] ? allSavedProgress[storyKey][currentLanguage] : null;
         if (fromLoad && savedProgressForCurrentLang && savedProgressForCurrentLang.id) {
               setTimeout(() => {
                   scrollToSavedWord(false, false); // On initial load, scroll instantly
@@ -237,7 +247,11 @@ function closePopup() {
 
 function savePosition() {
     if (tempSavedWordId) {
-        allSavedProgress[currentLanguage] = {
+        // FIX: Ensure the story key object exists before assigning to it.
+        if (!allSavedProgress[storyKey]) {
+            allSavedProgress[storyKey] = {};
+        }
+        allSavedProgress[storyKey][currentLanguage] = {
             id: tempSavedWordId,
             text: tempSavedWordText
         };
@@ -250,7 +264,7 @@ function savePosition() {
 
 
 function scrollToSavedWord(performChecks = true, smooth = true) {
-    const savedProgressForCurrentLang = allSavedProgress[currentLanguage];
+    const savedProgressForCurrentLang = allSavedProgress[storyKey] ? allSavedProgress[storyKey][currentLanguage] : null;
     if (!savedProgressForCurrentLang || !savedProgressForCurrentLang.id) {
         if (performChecks) { // Only alert if the user clicked the button
             alert(contentMap[currentLanguage].noWordSaved);
@@ -291,7 +305,7 @@ function highlightWord() {
        highlightedWordElement.style.color = '';
        highlightedWordElement = null;
    }
-   const savedProgressForCurrentLang = allSavedProgress[currentLanguage];
+   const savedProgressForCurrentLang = allSavedProgress[storyKey] ? allSavedProgress[storyKey][currentLanguage] : null;
    if (!savedProgressForCurrentLang || !savedProgressForCurrentLang.id) {
        return;
    }
