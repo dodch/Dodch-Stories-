@@ -2,17 +2,18 @@
 :root {
     --glass-bg-light: rgba(255, 255, 255, 0.05);
     --glass-text-light: #ffffff;
+    /* REFACTOR: Enhanced shadow for more depth and contrast, matching the main page. */
     --glass-shadow-light:
-        inset 0 0 0 1px color-mix(in srgb, #fff calc(10%), transparent),
-        inset 1.8px 3px 0px -2px color-mix(in srgb, #fff calc(90%), transparent),
-        inset -2px -2px 0px -2px color-mix(in srgb, #fff calc(80%), transparent),
-        inset -3px -8px 1px -6px color-mix(in srgb, #fff calc(60%), transparent),
-        inset -0.3px -1px 4px 0px color-mix(in srgb, #000 calc(12%), transparent),
-        inset -1.5px 2.5px 0px -2px color-mix(in srgb, #000 calc(20%), transparent),
-        inset 0px 3px 4px -2px color-mix(in srgb, #000 calc(20%), transparent),
-        inset 2px -6.5px 1px -4px color-mix(in srgb, #000 calc(10%), transparent),
-        0px 2px 10px 0px color-mix(in srgb, #000 calc(20%), transparent),
-        0px 10px 30px 0px color-mix(in srgb, #000 calc(15%), transparent);
+        /* Inner highlights for a sharp, glassy edge */
+        inset 0 0 0 1.5px color-mix(in srgb, #fff 15%, transparent),
+        inset 1px 2px 1px -1px color-mix(in srgb, #fff 80%, transparent),
+        inset -1px -1px 1px -1px color-mix(in srgb, #fff 70%, transparent),
+        /* Inner shadows for depth */
+        inset 0px 2px 4px -2px color-mix(in srgb, #000 30%, transparent),
+        inset 2px -4px 2px -3px color-mix(in srgb, #000 20%, transparent),
+        /* Outer drop shadow for separation from the background */
+        0px 4px 12px 0px color-mix(in srgb, #000 25%, transparent),
+        0px 15px 35px 0px color-mix(in srgb, #000 20%, transparent);
     --button-shadow-light: var(--glass-shadow-light);
     --pop-up-bg-light: rgba(255, 255, 255, 0.7);
     --pop-up-text-light: #1f2937;
@@ -52,17 +53,18 @@ body.svg-filter-supported #popup > div::before {
 body.dark-mode {
     --glass-bg-dark: rgba(0, 0, 0, 0.25);
     --glass-text-dark: #f0f0f0;
+    /* REFACTOR: Enhanced shadow for more depth and contrast in dark mode, matching the main page. */
     --glass-shadow-dark:
-        inset 0 0 0 1px color-mix(in srgb, #fff calc(10%), transparent),
-        inset 1.8px 3px 0px -2px color-mix(in srgb, #fff calc(90%), transparent),
-        inset -2px -2px 0px -2px color-mix(in srgb, #fff calc(80%), transparent),
-        inset -3px -8px 1px -6px color-mix(in srgb, #fff calc(60%), transparent),
-        inset -0.3px -1px 4px 0px color-mix(in srgb, #000 calc(12%), transparent),
-        inset -1.5px 2.5px 0px -2px color-mix(in srgb, #000 calc(20%), transparent),
-        inset 0px 3px 4px -2px color-mix(in srgb, #000 calc(20%), transparent),
-        inset 2px -6.5px 1px -4px color-mix(in srgb, #000 calc(10%), transparent),
-        0px 2px 10px 0px color-mix(in srgb, #000 calc(40%), transparent),
-        0px 10px 30px 0px color-mix(in srgb, #000 calc(30%), transparent);
+        /* Inner highlights for a sharp, glassy edge */
+        inset 0 0 0 1.5px color-mix(in srgb, #fff 12%, transparent),
+        inset 1px 2px 1px -1px color-mix(in srgb, #fff 70%, transparent),
+        inset -1px -1px 1px -1px color-mix(in srgb, #fff 60%, transparent),
+        /* Inner shadows for depth */
+        inset 0px 2px 4px -2px color-mix(in srgb, #000 40%, transparent),
+        inset 2px -4px 2px -3px color-mix(in srgb, #000 30%, transparent),
+        /* Outer drop shadow for separation from the background */
+        0px 5px 15px 0px color-mix(in srgb, #000 40%, transparent),
+        0px 20px 40px 0px color-mix(in srgb, #000 35%, transparent);
     --button-shadow-dark: var(--glass-shadow-dark);
     --pop-up-bg-dark: rgba(31, 41, 55, 0.9);
     --pop-up-text-dark: #f0f0f0;
