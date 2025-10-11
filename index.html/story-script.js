@@ -66,9 +66,11 @@ function changeLanguage(lang, fromLoad = false) {
         // The backHomeTextSpan element does not exist, so this line is removed.
         if (lang === 'ar') {
             contentDiv.dir = 'rtl';
+            document.getElementById('popup-text').dir = 'rtl'; // FIX: Set popup text direction
             textElement.style.textAlign = 'right';
         } else {
             contentDiv.dir = 'ltr';
+            document.getElementById('popup-text').dir = 'ltr'; // FIX: Revert popup text direction
             textElement.style.textAlign = 'left';
         }
         textElement.innerHTML = '';
@@ -205,7 +207,7 @@ function handleWordClick(spanId, wordText) {
 
     tempSavedWordId = spanId;
     tempSavedWordText = wordText;
-    document.getElementById('popup-text').textContent = `${contentMap[currentLanguage].savePosition} ${contentMap[currentLanguage].atWord}: "${wordText}"?`;
+    document.getElementById('popup-text').textContent = `${contentMap[currentLanguage].savePosition}: "${wordText}"${contentMap[currentLanguage].questionMark}`;
     const popup = document.getElementById('popup');
     popup.style.display = 'flex'; // Show the container immediately
 
@@ -255,7 +257,7 @@ function savePosition() {
             id: tempSavedWordId,
             text: tempSavedWordText
         };
-        console.log(`${contentMap[currentLanguage].positionSaved} ${contentMap[currentLanguage].forWord}: "${tempSavedWordText}" (ID: ${tempSavedWordId}) in language "${currentLanguage}"`);
+        console.log(`${contentMap[currentLanguage].positionSaved} "${tempSavedWordText}" (ID: ${tempSavedWordId}) in language "${currentLanguage}"`);
         localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
         highlightWord();
     }
