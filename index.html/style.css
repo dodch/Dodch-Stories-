@@ -422,8 +422,8 @@ body.svg-filter-supported .glass-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: background-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
-  transition: all 0.3s ease-in-out;
+  /* FIX: Consolidate transitions and ensure a smooth glow for the box-shadow. */
+  transition: background-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out, transform 0.3s ease-in-out;
 }
 .favorite-btn:hover, .favorite-btn:focus-visible {
   /* REFACTOR: Combine the glow with the base button shadow for a more integrated look. */
