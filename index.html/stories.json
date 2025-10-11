@@ -2,7 +2,7 @@
     {
         "title": "With the right person",
         "description": "How can someone change you",
-        "length": "Short story",
+        "length": "auto biography",
         "date": "19/09/2025",
         "path": "stories/",
         "file": "with-the-right-person.html",
@@ -13,7 +13,7 @@
     {
         "title": "Lost to be found",
         "description": "العربية Français English",
-        "length": "Short story",
+        "length": "auto biography",
         "date": "17/05/2025",
         "path": "stories/",
         "file": null,
