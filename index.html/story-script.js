@@ -25,17 +25,6 @@ const languageButtons = document.querySelectorAll('#ar-button, #fr-button, #en-b
 const saveButton = document.getElementById('save-progress-button');
 const popupDivInner = document.getElementById('popup').querySelector('div');
 
-function applyTextEffects() {
-     delete allSavedProgress[currentLanguage];
-     localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
-     if (highlightedWordElement) {
-        highlightedWordElement.classList.remove('bg-yellow-200', 'bg-yellow-600', 'rounded', 'glow-word');
-        applyTextEffects();
-        highlightedWordElement = null;
-     }
-     console.log(`Saved progress for ${currentLanguage.toUpperCase()} cleared.`);
-}
-
 function changeLanguage(lang, fromLoad = false) {
     if (contentDiv.classList.contains('content-fading') && !fromLoad) {
          return;
@@ -294,7 +283,12 @@ function scrollToSavedWord(performChecks = true, smooth = true) {
 function highlightWord() {
    if (highlightedWordElement) {
        highlightedWordElement.classList.remove('bg-yellow-200', 'bg-yellow-600', 'rounded', 'glow-word');
-       applyTextEffects();
+       // FIX: Reset inline styles on the previously highlighted word so it reverts to the default text color and shadow.
+       highlightedWordElement.style.textShadow = '';
+       highlightedWordElement.style.webkitTextStroke = '';
+       highlightedWordElement.style.textStroke = '';
+       highlightedWordElement.style.webkitTextFillColor = '';
+       highlightedWordElement.style.color = '';
        highlightedWordElement = null;
    }
    const savedProgressForCurrentLang = allSavedProgress[currentLanguage];
