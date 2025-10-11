@@ -108,6 +108,24 @@ body {
   /* FIX: Use 100dvh for stable mobile layout height (Dynamic Viewport Height) */
   min-height: 100dvh; 
 }
+
+/* --- NEW: Mobile Keyboard Fix --- */
+/* When the keyboard is active, switch fixed elements to absolute to prevent layout bugs on scroll. */
+body.keyboard-active::before,
+body.keyboard-active .top-left-fixed-wrapper,
+body.keyboard-active .top-right-fixed-wrapper,
+body.keyboard-active .floating-buttons-container {
+  position: absolute;
+}
+/* Adjust the top position of the background when it's absolute. */
+body.keyboard-active::before {
+  top: var(--scroll-y, 0);
+}
+/* Adjust the top position of the header buttons when they're absolute. */
+body.keyboard-active .top-left-fixed-wrapper,
+body.keyboard-active .top-right-fixed-wrapper {
+    top: var(--scroll-y, 0);
+}
 body::before {
   content: '';
   /* Fixed position for background */
@@ -194,6 +212,20 @@ body.svg-filter-supported .glass-container {
   pointer-events: none; /* Ensure it doesn't block clicks on the card */
   transition: opacity 0.4s ease-out;
   content: ''; /* Required for pseudo-element */
+}
+/* NEW: Add a second pseudo-element to create a soft, convex highlight for a "puffy" 3D look. */
+.glass-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.15) 0%, transparent 80%);
+  opacity: 0.8;
+  pointer-events: none;
+  transition: opacity 0.5s ease-out;
 }
 
 .glass-container.force-hover-off:hover {
@@ -301,15 +333,26 @@ body.svg-filter-supported .glass-container {
   backdrop-filter:blur(4px);
   -webkit-backdrop-filter:blur(4px);
   box-shadow:var(--glass-shadow);
-  transition: width 0.5s ease-in-out, padding 0.5s ease-in-out, opacity 0.5s ease-in-out, background-color 0.5s ease-in-out;
+  /* FIX: Add visibility to the transition and set a delay for smooth closing. */
+  transition: width 0.5s ease-in-out, padding 0.5s ease-in-out, opacity 0.5s ease-in-out, background-color 0.5s ease-in-out, visibility 0s 0.5s, transform 0.3s ease-out, box-shadow 0.3s ease-out;
   position: absolute;
   /* FIX: Anchor the search bar to the right, next to the button. */
   right: 70px; /* button width (60px) + gap (10px) */
   z-index: 1; /* Ensure it's on top */
 }
 .search-bar:focus{outline:none}
+/* NEW: Add a subtle lift and glow on hover for the search bar. */
+.search-bar:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 30%, transparent), var(--button-shadow);
+}
+
 .search-bar::placeholder{color:var(--search-placeholder);}
 .search-bar.active{
+  /* NEW: Add jello animation on expand. */
+  animation: jello-wobble 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* FIX: Reset the transition delay so it becomes visible immediately. */
+  transition-delay: 0s;
   width:250px;
   padding: 0 20px; /* Reset padding to normal */
   opacity:1;

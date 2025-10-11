@@ -529,6 +529,16 @@ async function fetchAndBuildGrid() {
       saveState();
     });
 
+    // NEW: Add a fix for mobile keyboard behavior.
+    // When the search input is focused, add a class to the body to adjust fixed element positioning.
+    searchBar.addEventListener('focus', () => {
+        document.body.classList.add('keyboard-active');
+    });
+    // When the search input is blurred, remove the class.
+    searchBar.addEventListener('blur', () => {
+        document.body.classList.remove('keyboard-active');
+    });
+
     searchBar.addEventListener('input', filterAndRenderPanels);
 
     filterBtn.addEventListener('click', () => {

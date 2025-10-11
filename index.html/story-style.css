@@ -82,7 +82,7 @@ body.dark-mode {
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.5s ease, background-color 0.5s ease;
 }
 
-/* --- NEW: Proximity shine effect for all glass buttons --- */
+/* --- NEW: Proximity shine effect for all glass buttons on the story page --- */
 .glass-button-base::before {
   content: ''; /* Required for pseudo-element */
   position: absolute;
@@ -92,14 +92,11 @@ body.dark-mode {
   bottom: 0;
   border-radius: inherit;
   background:
-    /* 1. A sharp, bright highlight for the core reflection */
     radial-gradient(circle at var(--pointer-x) var(--pointer-y),
       rgba(255, 255, 255, 0.8) 0%, /* Intense center */
       rgba(255, 255, 255, 0.2) 35%, /* Sharp falloff */
       transparent 50%
-    ),
-    /* 2. A larger, softer underlying glow for a natural feel */
-    radial-gradient(circle at var(--pointer-x) var(--pointer-y), rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+    );
   opacity: var(--spotlight-opacity, 0);
   pointer-events: none; /* Ensure it doesn't block clicks on the button */
   transition: opacity 0.4s ease-out;
