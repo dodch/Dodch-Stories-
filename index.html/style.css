@@ -171,6 +171,7 @@ h1{margin:0 0 20px;}
   margin-top: 100px;
   transition: all 0.5s ease-in-out;
 }
+
 .glass-container {
   background:var(--glass-bg);
   border-radius:3rem;
@@ -181,6 +182,7 @@ h1{margin:0 0 20px;}
   will-change: transform, opacity;
   overflow: hidden; /* To contain the shine effect */
   transition: box-shadow 0.2s, background 0.5s ease-in-out, backdrop-filter 0.4s ease-out, -webkit-backdrop-filter 0.4s ease-out, opacity 0.5s ease-out;
+  transform-style: preserve-3d; /* NEW: Enable 3D transformations for children */
   cursor:pointer;
   text-decoration: none;
   color: var(--glass-text);
@@ -192,6 +194,11 @@ h1{margin:0 0 20px;}
   /* Apply the simple blur universally. This will work on iOS Safari. */
   -webkit-backdrop-filter: blur(var(--blur-radius));
   backdrop-filter: blur(var(--blur-radius));
+}
+
+/* FIX: Explicitly disable pointer events on cards during scroll to prevent unwanted CSS :hover effects. */
+body.is-scrolling .glass-container {
+  pointer-events: none;
 }
 
 /* If JS detects SVG filter support, enhance the blur. This will NOT run on iOS. */
@@ -293,12 +300,12 @@ body.svg-filter-supported .glass-container {
 /* --- NEW: Premium Text Hover Effect (for non-touch devices) --- */
 /* This media query applies hover effects only on devices that can truly hover. */
 @media (hover: hover) and (pointer: fine) {
-  .glass-container:hover .title {
+  body:not(.is-scrolling) .glass-container:hover .title {
     color: var(--golden-tint);
     text-shadow: 0 0 10px color-mix(in srgb, var(--golden-tint) 70%, transparent), 0 2px 3px rgba(0,0,0,0.8);
     transform: translateY(-2px) scale(1.02);
   }
-  .glass-container:hover .description {
+  body:not(.is-scrolling) .glass-container:hover .description {
     opacity: 1;
     color: var(--glass-text);
     transform: translateY(-1px);
@@ -366,7 +373,7 @@ body.svg-filter-supported .glass-container {
 }
 .search-bar:focus{outline:none}
 /* NEW: Add a subtle lift and glow on hover for the search bar. */
-.search-bar:hover {
+body:not(.is-scrolling) .search-bar:hover {
     transform: scale(1.02);
     box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 30%, transparent), var(--button-shadow);
 }
@@ -399,15 +406,18 @@ body.svg-filter-supported .glass-container {
   backdrop-filter:blur(4px);
   -webkit-backdrop-filter:blur(4px);
   overflow: hidden; /* Contain the shine effect */
+  /* REFACTOR: Start button as invisible for fade-in animation. */
+  opacity: 0;
+  transform: scale(0.95);
 }
-.search-button:hover, .search-button:focus-visible {
+body:not(.is-scrolling) .search-button:hover, .search-button:focus-visible {
   transform: scale(1.05);
   box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 50%, transparent), var(--button-shadow);
 }
 .search-button.active {
   background-color: var(--red-tint);
 }
-.search-button.active:hover, .search-button.active:focus-visible {
+body:not(.is-scrolling) .search-button.active:hover, .search-button.active:focus-visible {
   /* FIX: Add a red glow on hover when the button is active (showing the 'X'). */
   box-shadow: 0 0 15px color-mix(in srgb, var(--red-tint) 50%, transparent), var(--button-shadow);
 }
@@ -499,7 +509,7 @@ body.svg-filter-supported .glass-container {
   /* FIX: Consolidate transitions and ensure a smooth glow for the box-shadow. */
   transition: background-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out, transform 0.3s ease-in-out;
 }
-.favorite-btn:hover, .favorite-btn:focus-visible {
+body:not(.is-scrolling) .favorite-btn:hover, .favorite-btn:focus-visible {
   /* REFACTOR: Combine the glow with the base button shadow for a more integrated look. */
   transform: scale(1.05);
   box-shadow: 0 0 20px 5px color-mix(in srgb, var(--red-tint) 50%, transparent), var(--button-shadow);
@@ -542,8 +552,11 @@ body.svg-filter-supported .glass-container {
   transition: all 0.3s ease-in-out;
   overflow: hidden; /* Contain the shine effect */
   transform-origin: center;
+  /* REFACTOR: Start button as invisible for fade-in animation. */
+  opacity: 0;
+  transform: scale(0.95);
 }
-.floating-button:hover, .floating-button:focus-visible {
+body:not(.is-scrolling) .floating-button:hover, .floating-button:focus-visible {
   /* REFACTOR: Combine the glow with the base button shadow for a more integrated look. */
   transform: scale(1.05);
   box-shadow: 0 0 25px 5px color-mix(in srgb, var(--purple-tint) 50%, transparent), var(--button-shadow);
@@ -551,13 +564,13 @@ body.svg-filter-supported .glass-container {
 #filterBtn.floating-button {
     background-color: color-mix(in srgb,var(--red-tint) 20%,transparent);
 }
-#filterBtn.floating-button:hover, #filterBtn.floating-button:focus-visible {
+body:not(.is-scrolling) #filterBtn.floating-button:hover, #filterBtn.floating-button:focus-visible {
     box-shadow: 0 0 25px 5px color-mix(in srgb, var(--red-tint) 50%, transparent), var(--button-shadow);
 }
 #contactBtn.floating-button {
     background-color: color-mix(in srgb,var(--blue-tint) 20%,transparent);
 }
-#contactBtn.floating-button:hover, #contactBtn.floating-button:focus-visible {
+body:not(.is-scrolling) #contactBtn.floating-button:hover, #contactBtn.floating-button:focus-visible {
     box-shadow: 0 0 25px 5px color-mix(in srgb, var(--blue-tint) 50%, transparent), var(--button-shadow);
 }
 .floating-button svg{
@@ -739,9 +752,9 @@ body.svg-filter-supported .glass-container {
   /* NEW: Add transition for hover animation */
   transition: all 0.3s ease-out;
 }
-.glass-container:hover .story-length,
-.glass-container:hover .creation-date,
-.glass-container:hover .story-creator {
+body:not(.is-scrolling) .glass-container:hover .story-length,
+body:not(.is-scrolling) .glass-container:hover .creation-date,
+body:not(.is-scrolling) .glass-container:hover .story-creator {
   opacity: 1;
 }
 .glass-container.no-link {
@@ -860,8 +873,11 @@ body.svg-filter-supported .glass-container {
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   overflow: hidden; /* Contain the shine effect */
+  /* REFACTOR: Start button as invisible for fade-in animation. */
+  opacity: 0;
+  transform: scale(0.95);
 }
-.info-button:hover, .info-button:focus-visible {
+body:not(.is-scrolling) .info-button:hover, .info-button:focus-visible {
   transform: scale(1.05);
   box-shadow: 0 0 15px color-mix(in srgb, var(--red-tint) 50%, transparent), var(--button-shadow);
 }
@@ -1019,21 +1035,21 @@ html {
     /* FIX: Remove default browser border from <button> elements to match <a> tags. */
     border: none;
 }
-.panel-button:hover, .panel-button:focus-visible {
+body:not(.is-scrolling) .panel-button:hover, .panel-button:focus-visible {
     transform: scale(1.02);
     box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 40%, transparent), var(--button-shadow);
 }
 .panel-button.social {
     background-color: color-mix(in srgb, var(--purple-tint) 20%, transparent);
 }
-.panel-button.social:hover, .panel-button.social:focus-visible {
+.panel-button.social:hover, body:not(.is-scrolling) .panel-button.social:focus-visible {
     box-shadow: 0 0 15px color-mix(in srgb, var(--purple-tint) 40%, transparent), var(--button-shadow);
 }
 .social-link-button {
     padding: 1rem;
     background-color: color-mix(in srgb, var(--golden-tint) 20%, transparent);
 }
-.social-link-button:hover, .social-link-button:focus-visible {
+body:not(.is-scrolling) .social-link-button:hover, .social-link-button:focus-visible {
     transform: scale(1.02);
     box-shadow: 0 0 15px color-mix(in srgb, var(--golden-tint) 40%, transparent), var(--button-shadow);
 }
@@ -1261,7 +1277,7 @@ body.info-panel-open #seriesModal .glass-content {
 }
 
 /* On hover, the entire stack element lifts and scales */
-.series-stack:hover {
+body:not(.is-scrolling) .series-stack:hover {
   transform: scale(1.03) translateY(-10px);
   transition: transform 0.3s ease-out;
 }
@@ -1290,7 +1306,7 @@ body.info-panel-open #seriesModal .glass-content {
 }
 
 /* FIX: On hover, make the stacked cards visible and move them into position. */
-.series-stack:hover::before {
+body:not(.is-scrolling) .series-stack:hover::before {
   opacity: 1;
   transform: translateY(14px) scale(0.96); /* Furthest back card */
   z-index: -2;
@@ -1298,17 +1314,17 @@ body.info-panel-open #seriesModal .glass-content {
   background: color-mix(in srgb, var(--golden-tint) 20%, var(--glass-bg));
 }
 
-.series-stack:hover::after {
+body:not(.is-scrolling) .series-stack:hover::after {
   opacity: 1;
   transform: translateY(7px) scale(0.98); /* Middle card */
   z-index: -1;
 }
 /* FIX: On hover, smoothly move the pill and favorite button down to make space for the stacked cards. */
-.series-stack:hover .new-pill {
+body:not(.is-scrolling) .series-stack:hover .new-pill {
   top: 2.5rem;
 }
 
-.series-stack:hover .favorite-container {
+body:not(.is-scrolling) .series-stack:hover .favorite-container {
   top: 2rem;
 }
 

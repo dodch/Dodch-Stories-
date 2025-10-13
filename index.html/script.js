@@ -280,15 +280,15 @@ async function fetchAndBuildGrid() {
     // This is much faster than using an array and indexOf.
     const state = new Map();
     panels.forEach(card => {
-      card.style.opacity = '0'; // Start cards as invisible
+      card.style.opacity = '0';
       state.set(card, {
         scaleX: 0.95, scaleY: 0.95, // Start slightly smaller for a grow effect
         vx: 0, vy: 0,
         rotX: 0, rotY: 0,
         vrX: 0, vrY: 0, 
-        // OPTIMIZATION: Increased damping for a smoother, less springy settle.
-        // TUNED: Decreased damping to make the animation faster and more responsive.
-        damping: 0.75 + Math.random() * 0.1 // TUNED: Increased damping for a smoother, more "premium" settle.
+        yOffset: 0, vyOffset: 0,
+        // TUNED: Damping is crucial for the feel. A slightly lower value makes it more "springy".
+        damping: 0.85 + Math.random() * 0.05
       });
     });
 
@@ -336,8 +336,7 @@ async function fetchAndBuildGrid() {
             const s = state.get(card);
             if (s) { 
               // Apply a very gentle impulse to make the card "settle"
-              s.vy -= 0.1 + Math.random() * 0.1; 
-              s.vx -= 0.05 + Math.random() * 0.05;
+              s.vy -= 0.05 + Math.random() * 0.05; 
             }
         }, i * 50);
     });
@@ -353,7 +352,8 @@ async function fetchAndBuildGrid() {
     let pointer = { x: -9999, y: -9999 };
     let gridBounds = { top: 0, bottom: 0 }; // To cache grid position
     let isAnimating = true; // Control the animation loop
-    let canStopAnimating = false; // Prevent animation from stopping too early on load
+    // REFACTOR: This will now be used to intelligently stop the animation loop when nothing is moving.
+    let canStopAnimating = false;
 
     // NEW: Detect if it's a touch device to adjust hover logic
     const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
@@ -389,57 +389,73 @@ async function fetchAndBuildGrid() {
         // Only calculate physics if the card is reasonably close to the viewport center
         if (distFromCenter < vh) {
           const dist = distFromCenter / vh;
-          // --- FIX: Reduce upward scroll stretching to prevent lag ---
-          // We'll keep the scroll effect but make it less intense when scrolling up (negative delta).
-          // This prevents the "jank" you see when scrolling to the top.
-          const impulseMultiplier = delta < 0 ? 0.004 : 0.007; // TUNED: Further softened scroll reaction to reduce lag.
-          const scrollImpulse = delta * impulseMultiplier * (1 - dist); 
+          
+          // --- REFACTOR: Velocity-based animation intensity ---
+          // 1. Create a "speed factor" that increases with scroll speed (delta).
+          // This makes fast scrolls more dramatic and slow scrolls more subtle.
+          const scrollSpeed = Math.abs(delta);
+          const speedFactor = clamp(1 + scrollSpeed / 100, 1, 2.0); // TUNED: Reduced speed factor ramp-up and max value.
+
+          // 2. Parallax "follow-through" effect, now moderated by speedFactor.
+          // TUNED: Reduced base intensity for a more subtle effect on slow scrolls.
+          const parallaxImpulse = delta * -0.1 * speedFactor * (1 - dist); // TUNED: Reduced base intensity.
+          s.vyOffset += parallaxImpulse;
+
+          // 3. Subtle scale reaction to scroll, also moderated by speedFactor.
+          const scrollImpulse = delta * 0.003 * speedFactor * (1 - dist); // TUNED: Reduced base intensity.
+
+          // 4. Perspective skew based on vertical position. TUNED: Reduced base intensity.
+          const perspectiveSkew = (cardCenter - center) / vh * -10; // TUNED: Reduced base intensity.
 
           const targetScaleYScroll = 1 - scrollImpulse;
-          const targetScaleXScroll = 1 + scrollImpulse * 0.3; // TUNED: Further reduced horizontal stretch for a more subtle effect.
+          const targetScaleXScroll = 1 + scrollImpulse * 0.3;
 
           let influence = 0;
-          // On touch devices, only apply hover effect if a touch is active. On non-touch devices, apply it when the pointer is near the grid. // TUNED: Reduced springiness for a smoother feel.
-          if ((isTouchDevice && isTouching) || (!isTouchDevice && isPointerNearGrid)) {
-            // --- PERFORMANCE FIX: Calculate pointer distance without getBoundingClientRect ---
-            const cardLeft = typeof s.offsetLeft === 'number' ? s.offsetLeft : 0;
+          let targetRotX = perspectiveSkew; // Start with the perspective skew
+          let targetRotY = 0;
+
+          // 5. Calculate Hover Effect (only if not scrolling to save performance)
+          if (!body.classList.contains('is-scrolling') && ((isTouchDevice && isTouching) || (!isTouchDevice && isPointerNearGrid))) {
+            // FIX: Use the correct pre-calculated properties from the state object (s.offsetLeft and s.width).
             const cardWidth = typeof s.width === 'number' ? s.width : 0;
-            const dx = pointer.x - (cardLeft + cardWidth / 2.0);
+            const dx = pointer.x - (s.offsetLeft + cardWidth / 2.0);
             const dy = pointer.y - (cardTop - scrollY + cardHeight / 2.0);
             const pointerDist = Math.sqrt(dx * dx + dy * dy);
-            influence = Math.max(0, 1 - pointerDist / 275); // Increased influence radius slightly
+            influence = Math.max(0, 1 - pointerDist / 275);
 
-            // NEW: Add a subtle 3D tilt based on pointer position for a premium feel
-            const maxRot = 8; // Maximum rotation in degrees
-            const targetRotX = (dy / (s.height / 2)) * -maxRot * influence;
-            const targetRotY = (dx / (cardWidth / 2)) * maxRot * influence;
-            s.vrX += (targetRotX - s.rotX) * 0.12;
-            s.vrY += (targetRotY - s.rotY) * 0.12;
+            const maxRot = 10; // More responsive rotation on hover
+            targetRotX += (dy / (s.height / 2)) * -maxRot * influence;
+            targetRotY += (dx / (cardWidth / 2)) * maxRot * influence;
 
-            card.style.setProperty('--pointer-x', `${pointer.x - cardLeft}px`);
+            card.style.setProperty('--pointer-x', `${pointer.x - s.offsetLeft}px`);
             card.style.setProperty('--pointer-y', `${pointer.y - (s.offsetTop - scrollY)}px`);
             card.style.setProperty('--spotlight-opacity', influence);
           } else {
             card.style.setProperty('--spotlight-opacity', 0);
           }
-
-          const targetScaleX = (targetScaleXScroll + (1 + 0.03 * influence)) / 2; // TUNED: Softened hover effect. // TUNED: Reduced springiness for a smoother feel.
-          const targetScaleY = (targetScaleYScroll + (1 + 0.03 * influence)) / 2; // TUNED: Softened hover effect. // TUNED: Reduced springiness for a smoother feel.
+          
+          // 6. Apply Physics Simulation
+          const springiness = 0.1;
           const d = s.damping;
- // TUNED: Reduced springiness for a smoother feel.
-          s.vx += (targetScaleX - s.scaleX) * 0.12; s.vx *= d; s.scaleX += s.vx; // TUNED: Reduced springiness for a smoother feel.
-          s.vy += (targetScaleY - s.scaleY) * 0.12; s.vy *= d; s.scaleY += s.vy; // TUNED: Reduced springiness for a smoother feel.
-          s.vrX += (0 - s.rotX) * 0.12; s.vrX *= d; s.rotX += s.vrX; // TUNED: Reduced springiness for a smoother feel.
-          s.vrY += (0 - s.rotY) * 0.12; s.vrY *= d; s.rotY += s.vrY; // TUNED: Reduced springiness for a smoother feel.
 
-          totalVelocity += Math.abs(s.vx) + Math.abs(s.vy) + Math.abs(s.vrX) + Math.abs(s.vrY);
+          s.vrX += (targetRotX - s.rotX) * springiness;
+          s.vrY += (targetRotY - s.rotY) * springiness;
 
-          // --- PERFORMANCE FIX: Clamp scale to prevent card overlap ---
-          // This prevents overlapping backdrop-filters which is very expensive to render. // TUNED: Reduced springiness for a smoother feel.
-          // By reducing the max scale, we ensure cards never touch, preventing costly render lag. // TUNED: Reduced springiness for a smoother feel.
-          const finalScaleX = clamp(s.scaleX, 0.8, 1.04);
-          const finalScaleY = clamp(s.scaleY, 0.8, 1.04);
-          card.style.transform = `translateZ(0) scaleX(${finalScaleX}) scaleY(${finalScaleY}) rotateX(${s.rotX}deg) rotateY(${s.rotY}deg)`;
+          const targetScaleX = (targetScaleXScroll + (1 + 0.05 * influence)) / 2;
+          const targetScaleY = (targetScaleYScroll + (1 + 0.05 * influence)) / 2;
+          s.vx += (targetScaleX - s.scaleX) * springiness; s.vx *= d; s.scaleX += s.vx;
+          s.vy += (targetScaleY - s.scaleY) * springiness; s.vy *= d; s.scaleY += s.vy;
+          
+          s.vrX *= d; s.rotX += s.vrX;
+          s.vrY *= d; s.rotY += s.vrY;
+          
+          s.vyOffset += (0 - s.yOffset) * springiness; s.vyOffset *= d; s.yOffset += s.vyOffset;
+
+          totalVelocity += Math.abs(s.vx) + Math.abs(s.vy) + Math.abs(s.vrX) + Math.abs(s.vrY) + Math.abs(s.vyOffset);
+
+          const finalScaleX = clamp(s.scaleX, 0.8, 1.05);
+          const finalScaleY = clamp(s.scaleY, 0.8, 1.05);
+          card.style.transform = `translate3d(0, ${s.yOffset}px, 0) scaleX(${finalScaleX}) scaleY(${finalScaleY}) rotateX(${s.rotX}deg) rotateY(${s.rotY}deg)`;
         }
       });
 
@@ -457,10 +473,14 @@ async function fetchAndBuildGrid() {
         button.style.setProperty('--spotlight-opacity', influence);
       });
 
-      // FIX: Keep the animation loop running continuously to prevent "jumpy" behavior on scroll. // TUNED: Reduced springiness for a smoother feel.
-      // The previous logic stopped the loop to save performance, but restarting it caused visual jank. // TUNED: Reduced springiness for a smoother feel.
-      // The physics calculations are lightweight enough to run continuously without significant performance cost. // TUNED: Reduced springiness for a smoother feel.
-      requestAnimationFrame(frame);
+      // --- REFACTOR: Smart Animation Loop ---
+      // If total velocity is very low and we're allowed to stop, then stop the loop.
+      if (canStopAnimating && totalVelocity < 0.001 && delta === 0 && !isTouching) {
+        isAnimating = false;
+      } else {
+        // Otherwise, keep the animation going.
+        requestAnimationFrame(frame);
+      }
     }
     requestAnimationFrame(frame);
 
@@ -490,10 +510,10 @@ async function fetchAndBuildGrid() {
     panels.forEach(card => observer.observe(card));
 
     // --- Smart Animation Triggering: Only run the loop when needed ---
-    // REFACTOR: This function is now only used to start the loop if it ever stops, but the main logic change is to keep it running.
     function ensureAnimating() {
       if (!isAnimating) {
         isAnimating = true;
+        requestAnimationFrame(frame); // Restart the loop
       }
     }
 
@@ -842,12 +862,15 @@ function animateButtonsOnLoad() {
     const infoButton = document.getElementById('infoButton');
     const buttonsToAnimate = [infoButton, searchButton, filterBtn, contactBtn];
     buttonsToAnimate.forEach((button, i) => {
+    // REFACTOR: Add a staggered fade-in effect similar to the grid cards.
+    setTimeout(() => {
+      button.style.opacity = '1';
+      button.style.transform = 'scale(1)';
+      button.classList.add('jello');
       setTimeout(() => {
-        button.classList.add('jello');
-        setTimeout(() => {
-          button.classList.remove('jello');
-        }, 800);
-      }, i * 200 + 100);
+        button.classList.remove('jello');
+      }, 800); // Remove jello class after animation
+    }, i * 150 + 200); // Stagger the animation start time
     });
 }
 
