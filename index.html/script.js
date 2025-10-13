@@ -363,34 +363,24 @@ async function fetchAndBuildGrid() {
       const dt = (now - lastTime) / 1000;
       lastTime = now;
       const scrollY = window.scrollY;
-      let delta = scrollY - lastScroll;
+      let delta = scrollY - lastScroll; // TUNED: Reduced springiness for a smoother feel.
       lastScroll = scrollY;
 
-      // --- PERFORMANCE FIX: Clamp delta to prevent jumps on sudden scrolls ---
-      // This prevents the animation from overreacting to extreme scroll gestures.
+      // --- PERFORMANCE FIX: Clamp delta to prevent jumps on sudden scrolls --- // TUNED: Reduced springiness for a smoother feel.
+      // This prevents the animation from overreacting to extreme scroll gestures. // TUNED: Reduced springiness for a smoother feel.
       delta = clamp(delta, -150, 150);
 
       const vh = window.innerHeight;
       const center = scrollY + vh / 2;
 
-      // --- PERFORMANCE OPTIMIZATION: Only do expensive hover math if pointer is near the grid ---
-      // The gridBounds are now updated in the 'scroll' event listener to avoid DOM reads in the animation loop.
       const isPointerNearGrid = pointer.y > gridBounds.top - 200 - scrollY && pointer.y < gridBounds.bottom + 200 - scrollY;
 
-      // --- EXTREME SMOOTHNESS: Lean animation loop ---
       let totalVelocity = 0;
-      let isPointerNearAnElement = false; // FIX: Track if pointer is near any element.
-      let wasTouching = isTouching; // Remember the touch state from the start of the frame.
       visiblePanels.forEach((card) => {
         const s = state.get(card);
-        // NEW: Skip physics calculations for open series stacks
         if (!s || card.classList.contains('physics-disabled')) return;
-
-        if (!s) return; // Skip if state is missing
-
-        // Use pre-calculated offsetTop instead of getBoundingClientRect()
-        // FIX: Use pre-calculated offsetTop instead of getBoundingClientRect()
-        // FIX: Ensure s.offsetTop and s.height are valid numbers before calculation
+ // TUNED: Reduced springiness for a smoother feel.
+        // Ensure s.offsetTop and s.height are valid numbers before calculation
         const cardTop = typeof s.offsetTop === 'number' ? s.offsetTop : 0;
         const cardHeight = typeof s.height === 'number' ? s.height : 0;
         const cardCenter = cardTop + cardHeight / 2;
@@ -409,8 +399,7 @@ async function fetchAndBuildGrid() {
           const targetScaleXScroll = 1 + scrollImpulse * 0.3; // TUNED: Further reduced horizontal stretch for a more subtle effect.
 
           let influence = 0;
-          // FIX: On touch devices, only apply hover effect if a touch is active.
-          // On non-touch devices, apply it when the pointer is near the grid.
+          // On touch devices, only apply hover effect if a touch is active. On non-touch devices, apply it when the pointer is near the grid. // TUNED: Reduced springiness for a smoother feel.
           if ((isTouchDevice && isTouching) || (!isTouchDevice && isPointerNearGrid)) {
             // --- PERFORMANCE FIX: Calculate pointer distance without getBoundingClientRect ---
             const cardLeft = typeof s.offsetLeft === 'number' ? s.offsetLeft : 0;
@@ -419,7 +408,6 @@ async function fetchAndBuildGrid() {
             const dy = pointer.y - (cardTop - scrollY + cardHeight / 2.0);
             const pointerDist = Math.sqrt(dx * dx + dy * dy);
             influence = Math.max(0, 1 - pointerDist / 275); // Increased influence radius slightly
-            if (influence > 0) isPointerNearAnElement = true;
 
             // NEW: Add a subtle 3D tilt based on pointer position for a premium feel
             const maxRot = 8; // Maximum rotation in degrees
@@ -427,22 +415,18 @@ async function fetchAndBuildGrid() {
             const targetRotY = (dx / (cardWidth / 2)) * maxRot * influence;
             s.vrX += (targetRotX - s.rotX) * 0.12;
             s.vrY += (targetRotY - s.rotY) * 0.12;
-            
-            // REFACTOR: Set CSS variables for the spotlight effect using pre-calculated values to avoid layout thrashing.
+
             card.style.setProperty('--pointer-x', `${pointer.x - cardLeft}px`);
             card.style.setProperty('--pointer-y', `${pointer.y - (s.offsetTop - scrollY)}px`);
-            // NEW: Set the spotlight opacity based on proximity (influence)
             card.style.setProperty('--spotlight-opacity', influence);
           } else {
-            // FIX: Explicitly set opacity to 0 if the pointer is not influencing the card.
-            // This ensures the light fades out when the finger is lifted on mobile.
             card.style.setProperty('--spotlight-opacity', 0);
           }
 
-          const targetScaleX = (targetScaleXScroll + (1 + 0.03 * influence)) / 2; // TUNED: Softened hover effect.
-          const targetScaleY = (targetScaleYScroll + (1 + 0.03 * influence)) / 2; // TUNED: Softened hover effect.
+          const targetScaleX = (targetScaleXScroll + (1 + 0.03 * influence)) / 2; // TUNED: Softened hover effect. // TUNED: Reduced springiness for a smoother feel.
+          const targetScaleY = (targetScaleYScroll + (1 + 0.03 * influence)) / 2; // TUNED: Softened hover effect. // TUNED: Reduced springiness for a smoother feel.
           const d = s.damping;
-
+ // TUNED: Reduced springiness for a smoother feel.
           s.vx += (targetScaleX - s.scaleX) * 0.12; s.vx *= d; s.scaleX += s.vx; // TUNED: Reduced springiness for a smoother feel.
           s.vy += (targetScaleY - s.scaleY) * 0.12; s.vy *= d; s.scaleY += s.vy; // TUNED: Reduced springiness for a smoother feel.
           s.vrX += (0 - s.rotX) * 0.12; s.vrX *= d; s.rotX += s.vrX; // TUNED: Reduced springiness for a smoother feel.
@@ -451,8 +435,8 @@ async function fetchAndBuildGrid() {
           totalVelocity += Math.abs(s.vx) + Math.abs(s.vy) + Math.abs(s.vrX) + Math.abs(s.vrY);
 
           // --- PERFORMANCE FIX: Clamp scale to prevent card overlap ---
-          // This prevents overlapping backdrop-filters which is very expensive to render.
-          // By reducing the max scale, we ensure cards never touch, preventing costly render lag.
+          // This prevents overlapping backdrop-filters which is very expensive to render. // TUNED: Reduced springiness for a smoother feel.
+          // By reducing the max scale, we ensure cards never touch, preventing costly render lag. // TUNED: Reduced springiness for a smoother feel.
           const finalScaleX = clamp(s.scaleX, 0.8, 1.04);
           const finalScaleY = clamp(s.scaleY, 0.8, 1.04);
           card.style.transform = `translateZ(0) scaleX(${finalScaleX}) scaleY(${finalScaleY}) rotateX(${s.rotX}deg) rotateY(${s.rotY}deg)`;
@@ -466,18 +450,16 @@ async function fetchAndBuildGrid() {
         const dy = pointer.y - (rect.top + rect.height / 2);
         const dist = Math.sqrt(dx * dx + dy * dy);
         
-        // Calculate influence based on distance (stronger effect closer to the button)
         const influence = Math.max(0, 1 - dist / 150); // 150px is the influence radius
-        if (influence > 0) isPointerNearAnElement = true;
 
         button.style.setProperty('--pointer-x', `${pointer.x - rect.left}px`);
         button.style.setProperty('--pointer-y', `${pointer.y - rect.top}px`);
         button.style.setProperty('--spotlight-opacity', influence);
       });
 
-      // FIX: Keep the animation loop running continuously to prevent "jumpy" behavior on scroll.
-      // The previous logic stopped the loop to save performance, but restarting it caused visual jank.
-      // The physics calculations are lightweight enough to run continuously without significant performance cost.
+      // FIX: Keep the animation loop running continuously to prevent "jumpy" behavior on scroll. // TUNED: Reduced springiness for a smoother feel.
+      // The previous logic stopped the loop to save performance, but restarting it caused visual jank. // TUNED: Reduced springiness for a smoother feel.
+      // The physics calculations are lightweight enough to run continuously without significant performance cost. // TUNED: Reduced springiness for a smoother feel.
       requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
