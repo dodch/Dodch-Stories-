@@ -1348,24 +1348,19 @@ body.info-panel-open #seriesModal .glass-content {
 
 .series-parts-grid {
   /* REFACTOR: Change from a multi-column grid to a single-column flex layout. */
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Center the cards within the column */
+  /* REFACTOR: Use a grid layout to perfectly match the main page's card sizing. */
+  display: grid; /* FIX: Use the same responsive grid layout as the main page. */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 2rem;
   width: 100%;
-   /* REFACTOR: Set a max-width appropriate for a single column of cards. */
-   max-width: 450px;
   margin: 0 auto;
   padding: 1rem;
   /* REFACTOR: Add a small top margin to create space below the fixed title. */
-  margin-top: 1rem;
+  margin-top: 1rem; /* FIX: Ensure padding is included within the element's total width to prevent horizontal overflow. */
+  box-sizing: border-box;
 }
 
-/* FIX: Constrain the width of the part cards to match the main grid cards. */
-.series-parts-grid .glass-container {
-  width: 100%;
-  max-width: 350px; /* Match the approximate width of the main grid cards */
-}
+/* FIX: The grid container now handles sizing, so no special width is needed on the cards. */
 
 /* --- NEW: Top & Bottom Vignettes for Main Page --- */
 .top-vignette-main {
