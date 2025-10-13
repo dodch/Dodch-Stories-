@@ -22,17 +22,6 @@
         "creator": "Adam Dodch"
     },
     {
-        "title": "Villain",
-        "description": "(Preview)",
-        "length": "no text available",
-        "date": "Undefined",
-        "path": "stories/",
-        "file": "villain.html",
-        "status": "",
-        "status_color": "",
-        "creator": "Adam Dodch"
-    },
-    {
         "type": "series",
         "id": "coldest-night-series",
         "title": "Winter Tales",
@@ -65,5 +54,16 @@
                 "creator": "Adam Dodch"
             }
         ]
+    },
+    {
+        "title": "Villain",
+        "description": "(Preview)",
+        "length": "no text available",
+        "date": "Undefined",
+        "path": "stories/",
+        "file": "villain.html",
+        "status": "",
+        "status_color": "",
+        "creator": "Adam Dodch"
     }
 ]

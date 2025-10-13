@@ -1151,6 +1151,12 @@ body.info-panel-open #seriesModal .glass-content {
   .tutorial-content li::before {
     content: ''; /* Hide the bullet on mobile for a cleaner look */
   }
+
+  /* FIX: Adjust padding on the series modal for mobile to ensure the grid is centered. */
+  #seriesModal {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
 }
 .tutorial-icon, .tutorial-icon-text {
   width: 24px;
