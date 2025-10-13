@@ -1,6 +1,43 @@
 const loadingScreen = document.getElementById("loading-screen");
 const loadPercentageText = document.querySelector(".loading-percentage");
 const body = document.body;
+
+// --- NEW: Dynamic Performance Adjuster (Copied from main script.js) ---
+let performanceLevel = 4; // Default to the highest level
+
+async function determinePerformanceLevel() {
+    let score = 0;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return 1;
+    }
+    if (navigator.connection && navigator.connection.saveData) {
+        return 2;
+    }
+    const cores = navigator.hardwareConcurrency || 2;
+    if (cores <= 2) score += 1;      // Low-end mobile
+    else if (cores <= 4) score += 3; // Mid-range mobile / older desktop
+    else if (cores <= 7) score += 5; // Modern mobile / decent desktop
+    else score += 7;                 // High-end desktop
+
+    const startTime = performance.now();
+    for (let i = 0; i < 1e6; i++) { Math.sqrt(i); }
+    const duration = performance.now() - startTime;
+
+    if (duration > 60) score += 0; // Very slow
+    else if (duration > 30) score += 1;
+    else if (duration > 15) score += 2;
+    else score += 4;
+
+    if (score <= 3) return 1; // Extremely Slow (e.g., 2 cores, slow JS)
+    if (score <= 5) return 2; // Slow (e.g., 4 cores, slow JS)
+    if (score <= 7) return 3; // Moderate (e.g., 4 cores, fast JS)
+    return 4;                 // Good (most modern devices)
+}
+
+function applyPerformanceStyles(level) {
+    document.body.classList.add(`perf-level-${level}`);
+}
+
 // FIX: Create a unique key for each story to namespace saved progress.
 // This prevents progress from one story from conflicting with another.
 const storyKey = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
@@ -411,6 +448,12 @@ function setupStoryObserver() {
  * It tracks the pointer and updates CSS variables on the buttons to create a light reflection effect.
  */
 function initializeShineEffect() {
+    // NEW: Disable shine effect for lower performance levels
+    if (performanceLevel <= 2) {
+        console.log(`Performance Level ${performanceLevel}: Disabling shine effect.`);
+        return;
+    }
+
     const shineElements = document.querySelectorAll('.glass-button-base'); // All buttons have this class
     let pointer = { x: -9999, y: -9999 };
     const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);

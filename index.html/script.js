@@ -7,6 +7,49 @@ let allStories = [];
 let showingFavorites = false;
 let localFavoriteCounts = {}; // NEW: Global object to store local favorite counts
 const body = document.body;
+let performanceLevel = 4; // Default to the highest level
+
+// --- NEW: Dynamic Performance Adjuster ---
+async function determinePerformanceLevel() {
+    let score = 0;
+
+    // 1. Check for user preference for reduced motion first (strongest signal)
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return 1; // Force lowest level if user wants no motion
+    }
+
+    // 2. Check for data saver mode
+    if (navigator.connection && navigator.connection.saveData) {
+        return 2; // Cap at level 2 if data saver is on
+    }
+
+    // 3. Score based on hardware concurrency (CPU cores)
+    const cores = navigator.hardwareConcurrency || 2;
+    if (cores <= 2) score += 1;      // Low-end mobile
+    else if (cores <= 4) score += 3; // Mid-range mobile / older desktop
+    else if (cores <= 7) score += 5; // Modern mobile / decent desktop
+    else score += 7;                 // High-end desktop
+
+    // 4. Run a quick JS benchmark
+    const startTime = performance.now();
+    for (let i = 0; i < 1e6; i++) { Math.sqrt(i); } // A simple, consistent task
+    const duration = performance.now() - startTime;
+
+    if (duration > 60) score += 0; // Very slow
+    else if (duration > 30) score += 1;
+    else if (duration > 15) score += 2;
+    else score += 4;
+
+    // 5. Determine level from total score
+    if (score <= 3) return 1; // Extremely Slow (e.g., 2 cores, slow JS)
+    if (score <= 5) return 2; // Slow (e.g., 4 cores, slow JS)
+    if (score <= 7) return 3; // Moderate (e.g., 4 cores, fast JS)
+    return 4;                 // Good (most modern devices)
+}
+
+function applyPerformanceStyles(level) {
+    document.body.classList.add(`perf-level-${level}`);
+}
 
 // New function to add tap animation
 function addTapAnimation(element) {
@@ -280,6 +323,11 @@ async function fetchAndBuildGrid() {
     // This is much faster than using an array and indexOf.
     const state = new Map();
     panels.forEach(card => {
+      // NEW: Disable physics for performance levels 1 and 2
+      if (performanceLevel <= 2) {
+          card.classList.add('physics-disabled');
+      }
+
       card.style.opacity = '0';
       state.set(card, {
         scaleX: 0.95, scaleY: 0.95, // Start slightly smaller for a grow effect
@@ -378,7 +426,7 @@ async function fetchAndBuildGrid() {
       let totalVelocity = 0;
       visiblePanels.forEach((card) => {
         const s = state.get(card);
-        if (!s || card.classList.contains('physics-disabled')) return;
+        if (!s || card.classList.contains('physics-disabled')) return; // Skip physics if disabled
  // TUNED: Reduced springiness for a smoother feel.
         // Ensure s.offsetTop and s.height are valid numbers before calculation
         const cardTop = typeof s.offsetTop === 'number' ? s.offsetTop : 0;
@@ -894,6 +942,12 @@ function setupScrollPerformance() {
  * If supported, it adds a class to the body to enable enhanced filters via CSS.
  */
 function detectSVGFilterSupport() {
+  // NEW: Performance override - disable SVG for levels 1, 2, and 3
+  if (performanceLevel <= 3) {
+      console.log(`Performance Level ${performanceLevel}: Disabling SVG filters.`);
+      return;
+  }
+
   // FIX: Broaden detection to include Safari on macOS, iPadOS, and iOS, which all have issues with complex SVG filters.
   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   const isApplePlatform = /Mac|iPod|iPhone|iPad/.test(navigator.platform) || (navigator.userAgent.includes("Mac") && "ontouchend" in document);
@@ -944,8 +998,13 @@ function showTutorialOnFirstVisit() {
   startButton.addEventListener('click', closeTutorial, { once: true });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  detectSVGFilterSupport(); // Check for real SVG filter support
+document.addEventListener('DOMContentLoaded', async () => {
+  // --- NEW: Run performance check first ---
+  performanceLevel = await determinePerformanceLevel();
+  console.log(`Device Performance Level: ${performanceLevel}`);
+  applyPerformanceStyles(performanceLevel);
+
+  detectSVGFilterSupport(); // Check for SVG support *after* determining performance level
   const loadingScreen = document.getElementById('loadingScreen');
   const bgImageUrlLight = getComputedStyle(document.documentElement).getPropertyValue('--bg-url').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
   const bgImageUrlDark = getComputedStyle(document.documentElement).getPropertyValue('--bg-url-dark').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();

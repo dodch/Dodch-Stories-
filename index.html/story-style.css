@@ -1,617 +1,210 @@
-/* --- GLASS EFFECT VARIABLES & STYLES --- */
+/* General Story Page Styles */
 :root {
-    --glass-bg-light: rgba(255, 255, 255, 0.05);
-    --glass-text-light: #ffffff;
-    /* REFACTOR: Enhanced shadow for more depth and contrast, matching the main page. */
-    --glass-shadow-light:
-        /* Inner highlights for a sharp, glassy edge */
-        inset 0 0 0 1.5px color-mix(in srgb, #fff 15%, transparent),
-        inset 1px 2px 1px -1px color-mix(in srgb, #fff 80%, transparent),
-        inset -1px -1px 1px -1px color-mix(in srgb, #fff 70%, transparent),
-        /* Inner shadows for depth */
-        inset 0px 2px 4px -2px color-mix(in srgb, #000 30%, transparent),
-        inset 2px -4px 2px -3px color-mix(in srgb, #000 20%, transparent),
-        /* Outer drop shadow for separation from the background */
-        0px 4px 12px 0px color-mix(in srgb, #000 25%, transparent),
-        0px 15px 35px 0px color-mix(in srgb, #000 20%, transparent);
-    --button-shadow-light: var(--glass-shadow-light);
-    --pop-up-bg-light: rgba(255, 255, 255, 0.7);
-    --pop-up-text-light: #1f2937;
-    /* --main-bg-url-light will be defined in each story's inline style */
-    /* --main-bg-url-dark will be defined in each story's inline style */
-    --main-text-color-light: #f0f0f0;
-    --main-text-color-dark: #f0f0f0;
-    --text-on-glass-light: #9333EA;
-    --save-button-bg-light: rgba(147, 51, 234, 0.6);
-    --save-button-bg-dark: rgba(192, 132, 252, 0.25);
-    --save-button-text-light: #ffffff;
-    --save-button-text-dark: #ffffff;
-    --back-button-bg-light: rgba(239, 68, 68, 0.6);
-    --back-button-bg-dark: rgba(252, 165, 165, 0.25);
-    --back-button-text-light: #ffffff;
-    --back-button-text-dark: #ffffff;
-    --content-bg-light: rgba(0, 0, 0, 0.2);
-    --selected-lang-button-text: var(--save-button-text-light);
-    --unselected-lang-text-light: #f0f0f0;
-}
-
-/* REFACTOR: Apply SVG filter using a more stable pseudo-element method. */
-body.svg-filter-supported #popup > div::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 2rem; /* Match the parent's border-radius */
-  filter: url(#filter-popup);
-  /* This is a trick: we filter the background of the parent element */
-  background: inherit;
-  z-index: -1; /* Place it behind the content but in front of the main background */
-}
-
-body.dark-mode {
-    --glass-bg-dark: rgba(0, 0, 0, 0.25);
-    --glass-text-dark: #f0f0f0;
-    /* REFACTOR: Enhanced shadow for more depth and contrast in dark mode, matching the main page. */
-    --glass-shadow-dark:
-        /* Inner highlights for a sharp, glassy edge */
-        inset 0 0 0 1.5px color-mix(in srgb, #fff 12%, transparent),
-        inset 1px 2px 1px -1px color-mix(in srgb, #fff 70%, transparent),
-        inset -1px -1px 1px -1px color-mix(in srgb, #fff 60%, transparent),
-        /* Inner shadows for depth */
-        inset 0px 2px 4px -2px color-mix(in srgb, #000 40%, transparent),
-        inset 2px -4px 2px -3px color-mix(in srgb, #000 30%, transparent),
-        /* Outer drop shadow for separation from the background */
-        0px 5px 15px 0px color-mix(in srgb, #000 40%, transparent),
-        0px 20px 40px 0px color-mix(in srgb, #000 35%, transparent);
-    --button-shadow-dark: var(--glass-shadow-dark);
-    --pop-up-bg-dark: rgba(31, 41, 55, 0.9);
-    --pop-up-text-dark: #f0f0f0;
-    --text-on-glass-dark: #C084FC;
-    --content-bg-dark: rgba(0, 0, 0, 0.2);
-    --selected-lang-button-text: var(--save-button-text-dark);
-    --unselected-lang-text-dark: #C084FC;
-}
-
-.glass-button-base {
-    background-color: var(--glass-bg-light);
-    box-shadow: var(--button-shadow-light);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.5s ease, background-color 0.5s ease;
-}
-
-/* --- NEW: Proximity shine effect for all glass buttons on the story page --- */
-.glass-button-base::before {
-  content: ''; /* Required for pseudo-element */
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: inherit;
-  background:
-    radial-gradient(circle at var(--pointer-x) var(--pointer-y),
-      rgba(255, 255, 255, 0.8) 0%, /* Intense center */
-      rgba(255, 255, 255, 0.2) 35%, /* Sharp falloff */
-      transparent 50%
-    );
-  opacity: var(--spotlight-opacity, 0);
-  pointer-events: none; /* Ensure it doesn't block clicks on the button */
-  transition: opacity 0.4s ease-out;
-}
-
-body.dark-mode .glass-button-base {
-    background-color: var(--glass-bg-dark);
-    box-shadow: var(--button-shadow-dark);
-}
-
-.save-button-custom {
-    background-color: var(--save-button-bg-light);
-    color: var(--save-button-text-light);
-}
-
-body.dark-mode .save-button-custom {
-    background-color: var(--save-button-bg-dark);
-    color: var(--save-button-text-dark);
-}
-
-.back-home-button-custom {
-    background-color: var(--back-button-bg-light);
-    color: var(--back-button-text-light);
-    font-size: 1.25rem;
-}
-
-body.dark-mode .back-home-button-custom {
-    background-color: var(--back-button-bg-dark);
-    color: var(--back-button-text-dark);
-}
-
-.glass-popup {
-     border-radius: 2rem;
-     padding: 1.5rem;
-}
-
-.glass-button-base:hover, .glass-button-base:focus-visible {
-    transform: scale(1.05);
-}
-
-/* --- Button Hover Glow Effects --- */
-/* Purple/Violet Glow for Save and Language buttons */
-#save-progress-button:hover, #save-progress-button:focus-visible, .selected-language:hover, .selected-language:focus-visible, .unselected-language:hover, .unselected-language:focus-visible {
-    box-shadow: 0 0 25px 5px color-mix(in srgb, var(--save-button-bg-light) 70%, transparent), var(--button-shadow-light);
-}
-body.dark-mode #save-progress-button:hover, body.dark-mode #save-progress-button:focus-visible, body.dark-mode .selected-language:hover, body.dark-mode .selected-language:focus-visible, body.dark-mode .unselected-language:hover, body.dark-mode .unselected-language:focus-visible {
-    box-shadow: 0 0 25px 5px color-mix(in srgb, var(--save-button-bg-dark) 70%, transparent), var(--button-shadow-dark);
-}
-/* Red Glow for Back Home button */
-#back-home-button:hover, #back-home-button:focus-visible {
-    box-shadow: 0 0 25px 5px color-mix(in srgb, var(--back-button-bg-light) 70%, transparent), var(--button-shadow-light);
-}
-body.dark-mode #back-home-button:hover, body.dark-mode #back-home-button:focus-visible {
-    box-shadow: 0 0 25px 5px color-mix(in srgb, var(--back-button-bg-dark) 70%, transparent), var(--button-shadow-dark);
-}
-
-/* Glow for Popup Buttons */
-#popup button.bg-green-500:hover, #popup button.bg-green-500:focus-visible {
-    box-shadow: 0 0 15px 2px rgba(34, 197, 94, 0.7), var(--button-shadow-light);
-}
-
-#popup button.bg-red-500:hover, #popup button.bg-red-500:focus-visible {
-    box-shadow: 0 0 15px 2px rgba(239, 68, 68, 0.7), var(--button-shadow-light);
-}
-
-
-/* Custom styles for pop-up buttons to override glass background */
-#popup button.glass-button-base.bg-green-500 {
-    background-color: rgba(34, 197, 94, 0.8) !important;
-    backdrop-filter: blur(4px) !important;
-    -webkit-backdrop-filter: blur(4px) !important;
-}
-
-#popup button.glass-button-base.bg-red-500 {
-    background-color: rgba(239, 68, 68, 0.8) !important;
-    backdrop-filter: blur(4px) !important;
-    -webkit-backdrop-filter: blur(4px) !important;
-}
-
-/* Dark mode specific styles for the pop-up buttons */
-body.dark-mode #popup button.bg-green-500 {
-    background-color: rgba(74, 222, 128, 0.4) !important;
-}
-
-body.dark-mode #popup button.bg-red-500 {
-    background-color: rgba(252, 165, 165, 0.4) !important;
-}
-
-/* --- END OF GLASS EFFECT STYLES --- */
-/* --- Basic Styling --- */
-* {
-    box-sizing: border-box;
+    --main-bg-url-light: url('https://i.ibb.co/Zzm7fGQ7/IMG-2465.jpg');
+    --main-bg-url-dark: url("https://i.ibb.co/F4BLKf9t/IMG-2305.jpg");
+    --glass-text-story: #333;
+    --glass-text-story-dark: #f0f0f0;
+    --blur-radius: 3px;
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Roboto', sans-serif;
-    min-height: 100vh;
-    position: relative;
-    z-index: 1;
-    transition: color 0.5s ease;
-    color: var(--main-text-color-light);
+    font-family: 'Lora', serif;
+    transition: background-color 0.5s ease-in-out;
+    color: var(--glass-text-story);
+    background-color: #f4f4f4;
+    overflow-x: hidden;
 }
 
 body.dark-mode {
-    color: var(--main-text-color-dark);
+    color: var(--glass-text-story-dark);
+    background-color: #1a1a1a;
 }
 
-/* --- LOADING SCREEN OVERLAY (fixed on top) --- */
-#loading-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.9);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-  transition: opacity 0.5s ease;
+body.loading {
+    overflow: hidden;
 }
 
-#loading-screen.hidden {
-  opacity: 0;
-  pointer-events: none;
+body.story-blur #page-content-wrapper {
+    backdrop-filter: blur(var(--blur-radius));
+    -webkit-backdrop-filter: blur(var(--blur-radius));
 }
 
-/* --- LOADING INDICATOR CONTAINER (holds hearts) --- */
-.loading-indicator {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 15px;
+/* --- NEW: Performance Level Adjustments for Story Pages --- */
+
+/* Level 1: Extremely Slow Devices */
+.perf-level-1.story-blur #page-content-wrapper,
+.perf-level-1 .glass-button-base {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+.perf-level-1 .glass-button-base {
+    background-color: rgba(74, 74, 74, 0.8); /* Plain grey, slightly transparent */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Simpler shadow */
+}
+.perf-level-1 .story-anim-item {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
 }
 
-/* --- LOADING HEART ANIMATION --- */
-.loading-indicator span {
-    display: inline-block;
-    width: 15px;
-    height: 15px;
-    margin: 0 5px;
-    color: white;
-    font-size: 15px;
-    opacity: 0;
-    transform: scale(0.5);
-    animation: pulse-heart 1.4s ease-in-out infinite;
+/* Level 2: Slow Devices */
+.perf-level-2.story-blur #page-content-wrapper,
+.perf-level-2 .glass-button-base {
+    -webkit-backdrop-filter: blur(var(--blur-radius)); /* Basic blur */
+    backdrop-filter: blur(var(--blur-radius));
+}
+.perf-level-2 .story-anim-item {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
 }
 
-/* Add delays to create the trailing effect */
-.loading-indicator span:nth-child(1) { animation-delay: 0s; }
-.loading-indicator span:nth-child(2) { animation-delay: 0.2s; }
-.loading-indicator span:nth-child(3) { animation-delay: 0.4s; }
-.loading-indicator span:nth-child(4) { animation-delay: 0.6s; }
-.loading-indicator span:nth-child(5) { animation-delay: 0.8s; }
+/* Disable tap/jello animations for levels 1 & 2 */
+.perf-level-1 .jello, .perf-level-2 .jello { animation: none; }
+.perf-level-1 .squash, .perf-level-2 .squash { transform: none; }
 
-@keyframes pulse-heart {
-    0% { opacity: 0; transform: scale(0.5); }
-    50% { opacity: 1; transform: scale(1.1); }
-    100% { opacity: 0; transform: scale(0.5); }
-}
 
-/* --- LOADING PERCENTAGE TEXT --- */
-.loading-percentage {
-  color: #fff;
-  font-size: 24px;
-  font-family: "Ubuntu", sans-serif;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-}
- /* --- Wrapper for main page content --- */
-#page-content-wrapper {
-    transition: filter 0.5s ease-in-out;
-    position: relative;
-    z-index: 0;
-    width: 100%;
-    /* FIX: Add padding to the main wrapper to push all content below the fixed header buttons. */
-    padding-top: 8rem;
-    min-height: 100vh;
-}
-
-body.loading #page-content-wrapper {
-    filter: blur(15px);
-    pointer-events: none;
-}
-
+/* Background Image Styles */
 .fixed-background {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
-    z-index: -1;
-    transition: opacity 0.5s ease;
+    z-index: -10;
+    transition: opacity 1s ease-in-out;
 }
 
-.fixed-background.light-background {
-     background-image: var(--main-bg-url-light);
-     opacity: 1;
-}
-
-.fixed-background.dark-background {
-     background-image: var(--main-bg-url-dark);
-     opacity: 0;
-}
-
-body.dark-mode .fixed-background.light-background {
-    opacity: 0;
-}
-
- body.dark-mode .fixed-background.dark-background {
+.light-background {
+    background-image: var(--main-bg-url-light);
     opacity: 1;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+.dark-background {
+    background-image: var(--main-bg-url-dark);
+    opacity: 0;
 }
 
-@keyframes fadeOut {
-    from {
-        opacity: 1;
-        transform: scale(1);
-    }
-    to {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-}
+body.dark-mode .light-background { opacity: 0; }
+body.dark-mode .dark-background { opacity: 1; }
 
-/* New styles for unselected language buttons */
-.unselected-language {
-    opacity: 0.8;
-    filter: grayscale(60%);
-    transform: scale(0.98);
-    transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+/* Content Wrapper */
+#page-content-wrapper {
+    padding-top: 120px;
+    padding-bottom: 100px;
+    min-height: 100vh;
+    transition: backdrop-filter 0.5s ease-in-out, -webkit-backdrop-filter 0.5s ease-in-out;
 }
-
-.selected-language {
-     background-color: var(--save-button-bg-light);
-     color: var(--selected-lang-button-text);
-     transform: scale(1.05);
-     opacity: 1;
-     filter: grayscale(0%);
-     box-shadow: var(--button-shadow-light);
-}
-/* FIX: Add a slightly larger hover scale for the selected button to make the hover effect visible. */
-.selected-language:hover, .selected-language:focus-visible {
-    transform: scale(1.1);
-}
-
-
-body.dark-mode .selected-language {
-     background-color: var(--save-button-bg-dark);
-}
-
-button {
-     transition: color 0.3s ease, background-color 0.3s ease, transform 0.1s ease-out, box-shadow 0.3s ease;
-}
-
-button.tapped {
-    transform: scale(0.97);
-}
-
-.glow-word {
-    /* REFACTOR: Use a more performant text-shadow animation instead of box-shadow. */
-    animation: glow-text-animation 2s ease-in-out infinite;
-}
-
 
 #content {
-    padding: 2rem;
-    /* REFACTOR: Padding is now handled by the parent wrapper. */
-    position: relative;
-    z-index: 1;
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 800px;
-    border-radius: 0.5rem;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+    max-width: 700px;
     transition: opacity 0.5s ease-in-out;
-    opacity: 1;
-    background-color: var(--content-bg-light);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
 }
 
-body.dark-mode #content {
-    background-color: var(--content-bg-dark);
-}
-
-#content.content-fading {
+.content-fading {
     opacity: 0;
 }
 
-#text span {
-    cursor: pointer;
-    display: inline; /* Revert to inline to fix spacing */
-    position: relative; /* Allow positioning for hover effect */
-    transition: text-shadow 0.3s ease, color 0.3s ease, -webkit-text-fill-color 0.3s ease, top 0.2s ease-out;
-    opacity: 1;
-    top: 0; /* Initial position */
-}
-
-#text span:hover {
-    color: var(--text-on-glass-light) !important;
-    text-shadow: 0 0 8px color-mix(in srgb, var(--text-on-glass-light) 80%, transparent) !important;
-    top: -2px;
-}
-
-body.dark-mode #text span:hover {
-    color: var(--text-on-glass-dark) !important;
-    text-shadow: 0 0 10px color-mix(in srgb, var(--text-on-glass-dark) 80%, transparent) !important;
-    top: -2px;
-}
-
-#save-progress-button {
-    z-index: 60;
-}
-
-/* New styles for pop-up */
-#popup {
-    /* REFACTOR: Control visibility with display property, not opacity. */
-    display: none;
-}
-
-#popup > div {
-    /* REFACTOR: The bouncy animation is now on the inner div. */
-    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.3s ease-out;
-    transform: scale(0.85);
-    opacity: 0;
-    pointer-events: none;
-}
-
-#content h1 {
-    /* FIX: Make title bigger and golden for better visual hierarchy. */
-    font-size: 2.75rem; /* Increased from text-3xl (1.875rem) */
-    color: gold;
+/* Text and Title Styles */
+#title {
     font-family: 'Cinzel', serif;
-    text-shadow: 0 2px 5px rgba(0,0,0,0.8), 0 0 15px rgba(255,215,0,0.5);
-}
-
-#popup > div.active {
-    transform: scale(1);
-    opacity: 1;
-    pointer-events: auto;
-}
-
-body.dark-mode #popup button.bg-green-500:hover, body.dark-mode #popup button.bg-green-500:focus-visible {
-    box-shadow: 0 0 15px 2px rgba(74, 222, 128, 0.7), var(--button-shadow-dark);
-}
-body.dark-mode #popup button.bg-red-500:hover, body.dark-mode #popup button.bg-red-500:focus-visible {
-    box-shadow: 0 0 15px 2px rgba(252, 165, 165, 0.7), var(--button-shadow-dark);
-}
-
-#popup button.bg-green-500, #popup button.bg-red-500 {
-     transition: background-color 0.3s ease;
-}
-
-#text {
-    font-family: 'Lora', serif;
-    line-height: 1.75;
-    /* FIX: Use a refined, multi-layered shadow for maximum readability and contrast without blurriness. */
-    text-shadow: 0 1px 1px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.6);
-}
-
-/* --- NEW: Robust Drop Cap Styling --- */
-.drop-cap {
-    /* REFACTOR: Use the 'Licorice' script font for a fancier, handwritten feel. */
-    font-family: 'Licorice', cursive;
-    font-size: 7.5rem; /* Script fonts need to be larger to have impact */
-    font-weight: 400;
-    color: inherit; /* FIX: Revert to parent color. It will now be purple ONLY on hover. */
-    text-shadow: 0 2px 3px rgba(0,0,0,0.5);
-    float: left; /* Allow text to wrap around the letter */
-    line-height: 0.7; /* Adjust vertical alignment for the new font */
-    padding-right: 0.8rem; /* FIX: Increase padding to prevent text overlap. */
-    padding-top: 0.4rem;
-    margin-bottom: -0.5rem; /* Fine-tune vertical spacing */
-    text-indent: 0; /* Ensure the drop-cap itself is not indented */
-    transition: text-shadow 0.3s ease, color 0.3s ease, top 0.2s ease-out; /* Add transition */
-    cursor: pointer; /* Add pointer cursor */
-}
-
-/* NEW: Add hover effect specifically for the drop cap */
-.drop-cap:hover {
-    color: var(--text-on-glass-light);
-    text-shadow: 0 0 10px color-mix(in srgb, var(--text-on-glass-light) 80%, transparent);
-}
-
-body.dark-mode .drop-cap:hover {
-    color: var(--text-on-glass-dark);
-    text-shadow: 0 0 12px color-mix(in srgb, var(--text-on-glass-dark) 80%, transparent);
-}
-/* --- End of Drop Cap Styling --- */
-
-/* --- Arabic Font Styling --- */
-/* Apply Amiri font when the content is in Arabic (RTL) */
-#content[dir="rtl"] #text {
-    font-family: 'Amiri', serif;
-    font-size: 1.3rem; /* Slightly larger for better readability in Arabic */
-    /* FIX: Apply the same refined, multi-layered shadow for Arabic text. */
-    text-shadow: 0 1px 1px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.6);
-    line-height: 2;
-}
-
-/* Adjust the drop cap for the Amiri font */
-#content[dir="rtl"] .drop-cap {
-    font-family: 'Amiri', serif;
+    text-align: center;
 }
 
 #text p {
-    margin-bottom: 1rem;
+    font-family: 'Amiri', serif;
+    font-size: 1.25rem;
+    line-height: 2;
 }
 
-/* Jello Button Effect */
-.squash {
-  transform: scale(0.85, 0.9);
-}
-@keyframes jello-wobble {
-  0%   { transform: scale(1,1); }
-  25%  { transform: scale(0.9, 1.15) rotate(-1deg); }
-  50%  { transform: scale(1.1, 0.9) rotate(1deg); }
-  75%  { transform: scale(0.95, 1.05) rotate(-0.5deg); }
-  100% { transform: scale(1,1) rotate(0); }
-}
-.jello {
-  /* A custom cubic-bezier for a more 'bouncy' and realistic feel */
-  animation: jello-wobble 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+/* Drop Cap */
+.drop-cap {
+    font-family: 'Licorice', cursive;
+    font-size: 4.5em;
+    float: left;
+    line-height: 0.7;
+    margin-right: 0.1em;
+    margin-top: 0.05em;
+    color: inherit;
 }
 
-/* Story-specific styles can be added here or in an inline <style> tag in the HTML */
-.story-blur #content {
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
+/* Buttons */
+.glass-button-base {
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(var(--blur-radius));
+    -webkit-backdrop-filter: blur(var(--blur-radius));
+    color: var(--glass-text-story);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+    will-change: transform;
+    transition: all 0.3s ease-in-out;
 }
 
-/* Animation for story paragraphs */
+body.dark-mode .glass-button-base {
+    background-color: rgba(0, 0, 0, 0.2);
+    color: var(--glass-text-story-dark);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.back-home-button-custom { font-size: 1.5rem; }
+.save-button-custom { z-index: 60; }
+
+/* Language Buttons */
+.selected-language {
+    background-color: rgba(0, 122, 255, 0.3);
+    border-color: rgba(0, 122, 255, 0.5);
+}
+
+body.dark-mode .selected-language {
+    background-color: rgba(0, 122, 255, 0.4);
+}
+
+/* Popup */
+#popup { display: none; }
+.glass-popup {
+    width: 256px;
+    padding: 1rem;
+    text-align: center;
+    transform: scale(0.95);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.4s ease-out;
+}
+.glass-popup.active {
+    transform: scale(1);
+    opacity: 1;
+}
+
+/* Animations */
 .story-anim-item {
     opacity: 0;
     transform: translateY(20px);
-    filter: blur(4px);
-    transition: opacity 0.4s ease-out, transform 0.4s ease-out, filter 0.4s ease-out;
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
-
 .story-anim-item.in-view {
     opacity: 1;
     transform: translateY(0);
-    filter: blur(0);
 }
 
-/* REFACTOR: New, more performant keyframe animation for glowing text. */
-@keyframes glow-text-animation {
-  /* FIX: Animate only the text-shadow to avoid conflicts with other color properties. */
-  0%   { text-shadow: 0 0 8px rgba(255, 215, 0, 0.6), 0 1px 1px rgba(0,0,0,0.8); }
-  50%  { text-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 1px 1px rgba(0,0,0,0.8); }
-  100% { text-shadow: 0 0 8px rgba(255, 215, 0, 0.6), 0 1px 1px rgba(0,0,0,0.8); }
+.squash { transform: scale(0.9); }
+@keyframes jello-wobble {
+  0%   { transform: scale(1,1); }
+  25%  { transform: scale(0.9, 1.15); }
+  50%  { transform: scale(1.1, 0.9); }
+  75%  { transform: scale(0.95, 1.05); }
+  100% { transform: scale(1,1); }
+}
+.jello { animation: jello-wobble 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+
+/* Loading Screen */
+#loading-screen {
+    /* Styles for loading screen */
 }
 
-/* --- NEW: Custom Scrollbar Styling --- */
-/* For Webkit browsers (Chrome, Safari, Edge) */
-::-webkit-scrollbar {
-  width: 12px;
-}
-
-::-webkit-scrollbar-track {
-  background: #4c1d95; /* FIX: Use a contrasting dark purple for the track. */
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #a78bfa; /* FIX: Use a very bright, high-contrast purple for the thumb. */
-  border-radius: 10px;
-  border: 2px solid rgba(0, 0, 0, 0.2);
-  box-shadow: var(--glass-shadow-light);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #c4b5fd; /* FIX: Make hover state even brighter. */
-}
-
-/* For Firefox */
-html {
-  scrollbar-width: thin;
-  scrollbar-color: #a78bfa #4c1d95; /* thumb color, track color */
-}
-
-/* --- NEW: Top Gradient Blur Vignette --- */
+/* Vignette */
 .top-vignette {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 150px; /* The height of the gradient effect */
-    z-index: 40; /* Position it behind the buttons (z-50) but above the content */
-    pointer-events: none; /* Make sure it doesn't block any clicks */
-    /* NEW: Add a background gradient to create the shadow effect. */
-    background: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, transparent 100%);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    /* 
-      FIX: Use a mask with a linear gradient to make the backdrop-filter fade out.
-      The blur will be fully visible where the mask is black and fade to invisible where the mask is transparent.
-    */
-    mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+    /* Styles for top vignette */
 }

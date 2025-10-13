@@ -214,6 +214,30 @@ body.svg-filter-supported .glass-container {
   backdrop-filter: blur(var(--blur-radius));
 }
 
+/* --- NEW: Performance Level Adjustments --- */
+
+/* Level 1: Extremely Slow Devices */
+.perf-level-1 .glass-container {
+    background: #4a4a4a; /* Plain grey, non-transparent */
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: var(--stack-shadow); /* Use simpler shadow */
+}
+.perf-level-1 .glass-container::before,
+.perf-level-1 .glass-container::after {
+    display: none; /* Disable all pseudo-element effects */
+}
+
+/* Level 2: Slow Devices */
+.perf-level-2 .glass-container {
+    -webkit-backdrop-filter: blur(var(--blur-radius)); /* Basic blur */
+    backdrop-filter: blur(var(--blur-radius));
+}
+/* Disable complex pseudo-element effects for level 2 */
+.perf-level-2 .glass-container::before,
+.perf-level-2 .glass-container::after {
+    display: none;
+}
 
 /* --- REFACTOR: Advanced proximity shine effect for cards and buttons --- */
 .glass-container::before, .shine-effect {
