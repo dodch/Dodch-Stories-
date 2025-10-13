@@ -16,20 +16,9 @@
         "length": "auto biography",
         "date": "17/05/2025",
         "path": "stories/",
-        "file": null,
+        "file": "",
         "status": "under update",
         "status_color": "purple",
-        "creator": "Adam Dodch"
-    },
-    {
-        "title": "The coldest night",
-        "description": "Love Warmth Loss Hope...",
-        "length": "Long story",
-        "date": "10/02/2025",
-        "path": "stories/",
-        "file": "The-Coldest-Night.html",
-        "status": "First story",
-        "status_color": "golden",
         "creator": "Adam Dodch"
     },
     {
@@ -44,14 +33,37 @@
         "creator": "Adam Dodch"
     },
     {
-        "title": "Behind the fog",
-        "description": "When the fog clears out, a new story begins",
-        "length": "",
-        "date": "Next winter",
-        "path": "",
-        "file": null,
-        "status": "",
-        "status_color": "",
-        "creator": "Adam Dodch"
+        "type": "series",
+        "id": "coldest-night-series",
+        "title": "Winter Tales",
+        "description": "A story of love, loss, and the mysteries that lie behind the fog.",
+        "date": "Winter 2025",
+        "status": "Series",
+        "status_color": "golden",
+        "creator": "Adam Dodch",
+        "parts": [
+            {
+                "title": "The coldest night",
+                "description": "Part 1: Love, Warmth, Loss, Hope...",
+                "length": "Long story",
+                "date": "10/02/2025",
+                "path": "stories/",
+                "file": "The-Coldest-Night.html",
+                "status": "Part 1",
+                "status_color": "golden",
+                "creator": "Adam Dodch"
+            },
+            {
+                "title": "Behind the fog",
+                "description": "Part 2: When the fog clears out, a new story begins",
+                "length": "Coming soon",
+                "date": "Next winter",
+                "path": "",
+                "file": null,
+                "status": "Part 2",
+                "status_color": "golden",
+                "creator": "Adam Dodch"
+            }
+        ]
     }
 ]

@@ -178,56 +178,100 @@ async function fetchAndBuildGrid() {
     localFavoriteCounts = savedLocalCounts ? JSON.parse(savedLocalCounts) : {};
 
     grid.innerHTML = '';
-    storiesData.forEach(story => {
-      const card = document.createElement('a');
-      card.className = "glass-container";
-      card.href = (story.path || '') + story.file; // Combine path and file for the correct link
-      if (!story.file || story.file.trim() === '') {
-          card.classList.add('no-link');
-          card.removeAttribute('href');
-      }
-      card.innerHTML = `
-        <div class="glass-content">
-          <h3 class="title" data-original-title="${story.title}">${story.title}</h3>
-          <p class="description" data-original-description="${story.description}">${story.description}</p>
-        </div>
-        <span class="story-length">${story.length}</span>
-        <span class="creation-date">${story.date}</span>
-        <p class="story-creator">made by ${story.creator}</p>
-        <div class="favorite-container">
-          <span class="favorite-count">0</span>
-          <div class="favorite-btn glass-button-base">
-          <svg viewBox="0 0 24 24">
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 
-            4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 
-            3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-          </svg>
-          </div>
-        </div>
-      `;
-      const status = story.status ? story.status : '';
-      const statusColor = story.status_color ? story.status_color.toLowerCase() : '';
-      if (status) {
-          const newPill = document.createElement('span');
-          newPill.className = "new-pill";
-          newPill.textContent = status;
-          if (statusColor.includes('red')) {
-              newPill.classList.add('red');
-          } else if (statusColor.includes('purple')) {
-              newPill.classList.add('purple');
-          } else if (statusColor.includes('golden')) {
-              newPill.classList.add('golden');
-          }
-          card.appendChild(newPill);
-      }
-      grid.appendChild(card);
 
+    // --- NEW: Function to create a story card (used for both single stories and series parts) ---
+    function createStoryCard(storyData, options = {}) {
+        const card = document.createElement('a');
+        card.className = "glass-container";
+        // Use a special class for series parts to prevent them from being added to the main `panels` array for physics
+        if (storyData.isPart) {
+            card.classList.add('series-part-card');
+        }
+        if (options.simpleBlur) {
+            card.classList.add('simple-blur');
+        }
+
+        card.href = (storyData.path || '') + storyData.file;
+        // FIX: Only apply 'no-link' to actual stories, not to the series cover card.
+        if ((!storyData.file || storyData.file.trim() === '') && storyData.type !== 'series') {
+            card.classList.add('no-link');
+            card.removeAttribute('href');
+        }
+
+        card.innerHTML = `
+            <div class="glass-content">
+              <h3 class="title" data-original-title="${storyData.title}">${storyData.title}</h3>
+              <p class="description" data-original-description="${storyData.description}">${storyData.description}</p>
+            </div>
+            <span class="story-length">${storyData.length || ''}</span>
+            <span class="creation-date">${storyData.date}</span>
+            <p class="story-creator">made by ${storyData.creator}</p>
+            <div class="favorite-container">
+              <span class="favorite-count">0</span>
+              <div class="favorite-btn glass-button-base">
+                <svg viewBox="0 0 24 24">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+              </div>
+            </div>
+        `;
+
+        const status = storyData.status ? storyData.status : '';
+        const statusColor = storyData.status_color ? storyData.status_color.toLowerCase() : '';
+        if (status) {
+            const newPill = document.createElement('span');
+            newPill.className = "new-pill";
+            newPill.textContent = status;
+            if (statusColor.includes('red')) newPill.classList.add('red');
+            else if (statusColor.includes('purple')) newPill.classList.add('purple');
+            else if (statusColor.includes('golden')) newPill.classList.add('golden');
+            card.appendChild(newPill);
+        }
+
+        return card;
+    }
+
+
+    storiesData.forEach(story => {
+      // --- NEW: Handle series and single stories differently ---
+      if (story.type === 'series') {
+          // Create a container for the stack
+          // Create a single element that is both the card and the stack container.
+          const seriesCard = createStoryCard(story);
+          seriesCard.classList.add('series-stack');
+          seriesCard.removeAttribute('href'); // The container itself isn't a direct link.
+          seriesCard.id = story.id; // Use the new ID from JSON
+
+          // Add click listener to the whole stack
+          seriesCard.addEventListener('click', (e) => {
+              // Find the card that was actually clicked on
+              const clickedCard = e.target.closest('a.glass-container');
+              // If the clicked element is a valid link, let the browser handle it and do nothing else.
+              if (clickedCard && clickedCard.hasAttribute('href')) return;
+              e.preventDefault(); // Prevent any default behavior for non-link clicks
+              openSeriesModal(story);
+          });
+          grid.appendChild(seriesCard); // Add the unified card/stack to the grid
+      } else {
+          // This is a regular, single story
+          const singleStoryCard = createStoryCard(story);
+          grid.appendChild(singleStoryCard);
+      }
+      
       // NEW: Initialize displayed count for each card
       const title = story.title;
-      const countSpan = card.querySelector('.favorite-count');
-      if (countSpan) countSpan.textContent = localFavoriteCounts[title] || 0;
+      // Find the card or stack we just added to update its count
+      const addedCard = grid.lastElementChild;
+      if (addedCard) {
+          // For series, the favorite count is on the first child (the info card)
+          const cardForCount = addedCard.classList.contains('series-stack') ? addedCard : addedCard;
+          const countSpan = cardForCount.querySelector('.favorite-count');
+          if (countSpan && localFavoriteCounts[title] !== undefined) countSpan.textContent = localFavoriteCounts[title];
+      }
     });
-    panels = [...document.querySelectorAll('.glass-container')];
+    // Correctly select panels for physics, excluding those inside a series stack
+    panels = [...document.querySelectorAll('.grid > .glass-container, .grid > .series-stack')];
+    // Also add the series stacks to the physics simulation
 
     // Load saved state *after* panels are created in the DOM
     loadSavedState();
@@ -339,6 +383,9 @@ async function fetchAndBuildGrid() {
       let wasTouching = isTouching; // Remember the touch state from the start of the frame.
       visiblePanels.forEach((card) => {
         const s = state.get(card);
+        // NEW: Skip physics calculations for open series stacks
+        if (!s || card.classList.contains('physics-disabled')) return;
+
         if (!s) return; // Skip if state is missing
 
         // Use pre-calculated offsetTop instead of getBoundingClientRect()
@@ -355,11 +402,11 @@ async function fetchAndBuildGrid() {
           // --- FIX: Reduce upward scroll stretching to prevent lag ---
           // We'll keep the scroll effect but make it less intense when scrolling up (negative delta).
           // This prevents the "jank" you see when scrolling to the top.
-          const impulseMultiplier = delta < 0 ? 0.006 : 0.01; // TUNED: Softened scroll reaction for a more premium feel.
+          const impulseMultiplier = delta < 0 ? 0.004 : 0.007; // TUNED: Further softened scroll reaction to reduce lag.
           const scrollImpulse = delta * impulseMultiplier * (1 - dist); 
 
           const targetScaleYScroll = 1 - scrollImpulse;
-          const targetScaleXScroll = 1 + scrollImpulse * 0.5; // TUNED: Reduced horizontal stretch for a more subtle effect.
+          const targetScaleXScroll = 1 + scrollImpulse * 0.3; // TUNED: Further reduced horizontal stretch for a more subtle effect.
 
           let influence = 0;
           // FIX: On touch devices, only apply hover effect if a touch is active.
@@ -428,14 +475,10 @@ async function fetchAndBuildGrid() {
         button.style.setProperty('--spotlight-opacity', influence);
       });
 
-      // FIX: Intelligently stop the animation loop if the pointer is not near any elements.
-      // FIX: The loop should continue if a touch was *just* released, to allow fade-out.
-      const justReleasedTouch = wasTouching && !isTouching;
-      if (canStopAnimating && totalVelocity < 0.001 && delta === 0 && !isPointerNearAnElement && !justReleasedTouch && !isTouching) {
-        isAnimating = false;
-      } else {
-        requestAnimationFrame(frame);
-      }
+      // FIX: Keep the animation loop running continuously to prevent "jumpy" behavior on scroll.
+      // The previous logic stopped the loop to save performance, but restarting it caused visual jank.
+      // The physics calculations are lightweight enough to run continuously without significant performance cost.
+      requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
 
@@ -449,12 +492,12 @@ async function fetchAndBuildGrid() {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         const card = entry.target;
+        // FIX: Always keep the animation running, but only add intersecting panels to the set for physics calculations.
+        // This ensures the animation loop doesn't stop, providing a smoother scroll experience.
         if (entry.isIntersecting) {
-          visiblePanels.add(entry.target);
+          visiblePanels.add(card);
         } else {
-          visiblePanels.delete(entry.target);
-          // Reset transform for off-screen elements to be clean
-          entry.target.style.transform = 'scale(1) rotateX(0deg) rotateY(0deg)';
+          visiblePanels.delete(card);
         }
         // FIX: Ensure spotlight is off for elements that are not visible or being animated.
         card.style.setProperty('--spotlight-opacity', 0);
@@ -465,10 +508,10 @@ async function fetchAndBuildGrid() {
     panels.forEach(card => observer.observe(card));
 
     // --- Smart Animation Triggering: Only run the loop when needed ---
+    // REFACTOR: This function is now only used to start the loop if it ever stops, but the main logic change is to keep it running.
     function ensureAnimating() {
       if (!isAnimating) {
         isAnimating = true;
-        requestAnimationFrame(frame);
       }
     }
 
@@ -590,10 +633,23 @@ async function fetchAndBuildGrid() {
       filterAndRenderPanels();
     }
 
+    // NEW: Efficient function to apply a jello animation to a grid panel on click.
+    function applyJelloToGrid(panel) {
+      // PERFORMANCE: Prevent re-triggering the animation if it's already running.
+      if (panel.classList.contains('jello-grid')) {
+        return;
+      }
+      panel.classList.add('jello-grid');
+      // EFFICIENCY: Use 'animationend' to automatically clean up the class when the animation is done.
+      panel.addEventListener('animationend', () => {
+        panel.classList.remove('jello-grid');
+      }, { once: true }); // The { once: true } option removes the event listener automatically.
+    }
+
     // Add jello effect on click to each grid panel
     panels.forEach(panel => {
       // We use 'pointerdown' as it feels more responsive than 'click'
-      panel.addEventListener('pointerdown', () => applyJelloToGrid(panel));
+      panel.addEventListener('pointerdown', () => applyJelloToGrid(panel), { passive: true });
     });
 
     const infoButton = document.getElementById('infoButton');
@@ -668,6 +724,8 @@ async function fetchAndBuildGrid() {
       // OPTIMIZATION: Update grid bounds here, outside the rAF loop, to prevent layout thrashing.
       updateGridBounds();
       ensureAnimating(); // Restart animation on scroll
+      // FIX: Update the scroll-y variable for the mobile keyboard fix.
+      document.documentElement.style.setProperty('--scroll-y', `${window.scrollY}px`);
     }, { passive: true });
 
     // New logic for the Contact and Social Media pop-ups
@@ -700,6 +758,8 @@ async function fetchAndBuildGrid() {
         // Hide all modal-related close buttons
         closeContactButton.classList.remove('active');
         closeSocialButton.classList.remove('active');
+        // NEW: Also close the series modal if it's open
+        closeSeriesModal();
     }
 
     contactBtn.addEventListener('click', () => {
@@ -740,6 +800,53 @@ async function fetchAndBuildGrid() {
     // FIX: Initial calculation of grid bounds on load.
     updateGridBounds();
     ensureAnimating();
+
+    // --- NEW: Series Modal Logic (re-implemented cleanly) ---
+    const seriesModal = document.getElementById('seriesModal');
+    const closeSeriesModalButton = document.getElementById('closeSeriesModalButton');
+    const seriesModalTitle = document.getElementById('seriesModalTitle');
+    const seriesPartsGrid = document.getElementById('seriesPartsGrid');
+
+    addTapAnimation(closeSeriesModalButton);
+
+    function openSeriesModal(seriesData) {
+        closeAllPanels(); // Close any other open panels
+
+        seriesModalTitle.textContent = seriesData.title;
+        seriesPartsGrid.innerHTML = ''; // Clear previous parts
+
+        seriesData.parts.forEach(partData => {
+            partData.isPart = true; // Mark as a part to apply correct classes
+            const partCard = createStoryCard(partData);
+            // The cards inside the modal should not be affected by physics and have no transform.
+            partCard.style.transform = 'none';
+            seriesPartsGrid.appendChild(partCard);
+            addTapAnimation(partCard); // Add jello effect on tap
+            
+            // FIX: Remove the favorite button container from cards inside the series modal.
+            const favoriteContainer = partCard.querySelector('.favorite-container');
+            if (favoriteContainer) {
+                favoriteContainer.remove();
+            }
+        });
+
+        seriesModal.classList.add('active');
+        closeSeriesModalButton.classList.add('active');
+        body.classList.add('info-panel-open');
+    }
+
+    function closeSeriesModal() {
+        seriesModal.classList.remove('active');
+        closeSeriesModalButton.classList.remove('active');
+        body.classList.remove('info-panel-open');
+    }
+
+    closeSeriesModalButton.addEventListener('click', closeSeriesModal);
+    seriesModal.addEventListener('click', (event) => {
+        if (event.target === seriesModal) {
+            closeSeriesModal();
+        }
+    });
   } catch (error) {
     console.error('Failed to load grid ', error);
     document.getElementById('grid').innerHTML = '<p style="color:#fff;">Failed to load stories. Check that stories.json exists.</p>';

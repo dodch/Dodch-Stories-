@@ -56,28 +56,30 @@
         </filter>
     </svg>
 
-    <div id="page-content-wrapper">
-        <!-- REFACTOR: Moved fixed header buttons INSIDE the main content wrapper to fix layout issues. -->
-        <div class="fixed top-0 left-0 right-0 flex flex-col items-start p-4 space-y-2 z-50">
-            <div class="flex justify-center space-x-4 mb-2">
-                <button
-                   id="ar-button"                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base"
-               >
-                   العربية
-               </button>
-               <button
-                   id="fr-button"                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base"
-               >
-                   Français
-               </button>
-               <button
-                   id="en-button"                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base"
-               >
-                   English
-               </button>
-            </div>
-            <button id="back-home-button" class="w-10 h-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base back-home-button-custom inline-flex items-center justify-center">⌂</button>
+    <!-- NEW: Add the top gradient blur vignette -->
+    <div class="top-vignette"></div>
+    <!-- FIX: Move the fixed buttons OUTSIDE the page-content-wrapper to prevent them from scrolling with the page. -->
+    <div class="fixed top-0 left-0 right-0 flex flex-col items-start p-4 space-y-2 z-50">
+        <div class="flex justify-center space-x-4 mb-2">
+            <button
+               id="ar-button"                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base shine-button"
+           >
+               العربية
+           </button>
+           <button
+               id="fr-button"                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base shine-button"
+           >
+               Français
+           </button>
+           <button
+               id="en-button"                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base shine-button"
+           >
+               English
+           </button>
         </div>
+        <button id="back-home-button" class="w-10 h-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base back-home-button-custom inline-flex items-center justify-center shine-button">⌂</button>
+    </div>
+    <div id="page-content-wrapper">
         <div id="raw-ar-text" style="display: none;">
             ليتني كنتُ شخصًا استثنائيًا. ليتني كنتُ أكثر مما أنا عليه.
 أهمسُ بها لنفسي وأنا أحدّق في مرآة الحمام الضبابية.

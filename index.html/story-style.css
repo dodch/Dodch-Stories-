@@ -268,7 +268,6 @@ body.dark-mode {
   font-family: "Ubuntu", sans-serif;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
-
  /* --- Wrapper for main page content --- */
 #page-content-wrapper {
     transition: filter 0.5s ease-in-out;
@@ -373,8 +372,10 @@ button.tapped {
 }
 
 .glow-word {
-    animation: glow-animation 2s ease-in-out infinite;
+    /* REFACTOR: Use a more performant text-shadow animation instead of box-shadow. */
+    animation: glow-text-animation 2s ease-in-out infinite;
 }
+
 
 #content {
     padding: 2rem;
@@ -558,16 +559,12 @@ body.dark-mode .drop-cap:hover {
     filter: blur(0);
 }
 
-@keyframes glow-animation {
-  0% {
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(255, 215, 0, 1);
-  }
-  100% {
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
-  }
+/* REFACTOR: New, more performant keyframe animation for glowing text. */
+@keyframes glow-text-animation {
+  /* FIX: Animate only the text-shadow to avoid conflicts with other color properties. */
+  0%   { text-shadow: 0 0 8px rgba(255, 215, 0, 0.6), 0 1px 1px rgba(0,0,0,0.8); }
+  50%  { text-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 1px 1px rgba(0,0,0,0.8); }
+  100% { text-shadow: 0 0 8px rgba(255, 215, 0, 0.6), 0 1px 1px rgba(0,0,0,0.8); }
 }
 
 /* --- NEW: Custom Scrollbar Styling --- */
@@ -596,4 +593,25 @@ body.dark-mode .drop-cap:hover {
 html {
   scrollbar-width: thin;
   scrollbar-color: #a78bfa #4c1d95; /* thumb color, track color */
+}
+
+/* --- NEW: Top Gradient Blur Vignette --- */
+.top-vignette {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 150px; /* The height of the gradient effect */
+    z-index: 40; /* Position it behind the buttons (z-50) but above the content */
+    pointer-events: none; /* Make sure it doesn't block any clicks */
+    /* NEW: Add a background gradient to create the shadow effect. */
+    background: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, transparent 100%);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    /* 
+      FIX: Use a mask with a linear gradient to make the backdrop-filter fade out.
+      The blur will be fully visible where the mask is black and fade to invisible where the mask is transparent.
+    */
+    mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
 }

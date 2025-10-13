@@ -27,6 +27,10 @@
     /* Outer drop shadow for separation from the background */
     0px 4px 12px 0px color-mix(in srgb, #000 25%, transparent),
     0px 15px 35px 0px color-mix(in srgb, #000 20%, transparent);
+  /* NEW: A simpler shadow for the stacked cards, without the inset borders. */
+  --stack-shadow:
+    0px 4px 12px 0px color-mix(in srgb, #000 25%, transparent),
+    0px 15px 35px 0px color-mix(in srgb, #000 20%, transparent);
   --button-shadow:var(--glass-shadow);
   transition: all 0.5s ease-in-out;
   --panel-blur-start: 10px;
@@ -62,6 +66,9 @@
       /* Outer drop shadow for separation from the background */
       0px 5px 15px 0px color-mix(in srgb, #000 40%, transparent),
       0px 20px 40px 0px color-mix(in srgb, #000 35%, transparent);
+    --stack-shadow:
+      0px 5px 15px 0px color-mix(in srgb, #000 40%, transparent),
+      0px 20px 40px 0px color-mix(in srgb, #000 35%, transparent);
     --button-shadow:var(--glass-shadow);
   }
 }
@@ -88,6 +95,9 @@ body.dark-mode {
     inset 0px 2px 4px -2px color-mix(in srgb, #000 40%, transparent),
     inset 2px -4px 2px -3px color-mix(in srgb, #000 30%, transparent),
     /* Outer drop shadow for separation from the background */
+    0px 5px 15px 0px color-mix(in srgb, #000 40%, transparent),
+    0px 20px 40px 0px color-mix(in srgb, #000 35%, transparent);
+  --stack-shadow:
     0px 5px 15px 0px color-mix(in srgb, #000 40%, transparent),
     0px 20px 40px 0px color-mix(in srgb, #000 35%, transparent);
   --button-shadow:var(--glass-shadow);
@@ -190,6 +200,14 @@ body.svg-filter-supported .glass-container {
   backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
 }
 
+/* NEW: A simpler, performance-optimized blur for stacked cards */
+.simple-blur {
+  /* This overrides the complex SVG filter from the main class */
+  -webkit-backdrop-filter: blur(var(--blur-radius));
+  backdrop-filter: blur(var(--blur-radius));
+}
+
+
 /* --- REFACTOR: Advanced proximity shine effect for cards and buttons --- */
 .glass-container::before, .shine-effect {
   position: absolute;
@@ -214,7 +232,8 @@ body.svg-filter-supported .glass-container {
   content: ''; /* Required for pseudo-element */
 }
 /* NEW: Add a second pseudo-element to create a soft, convex highlight for a "puffy" 3D look. */
-.glass-container::after {
+/* FIX: Exclude .series-stack to prevent this from overriding the stacking pseudo-element. */
+.glass-container:not(.series-stack)::after {
   content: '';
   position: absolute;
   top: 0;
@@ -243,6 +262,11 @@ body.svg-filter-supported .glass-container {
   text-align: left;
   padding: 3rem 2rem 3rem 2rem;
   position: relative;
+  /*
+    FIX: This z-index ensures the text content sits on top of the series-stack's
+    pseudo-elements without disrupting the layout of sibling elements like the favorite button.
+  */
+  z-index: 1;
 }
 .title {
   /* FIX: Use a dominant serif font and a stronger, layered shadow for maximum clarity. */
@@ -421,8 +445,15 @@ body.svg-filter-supported .glass-container {
   right: 1rem;
   display: flex;
   align-items: center;
+  /*
+    FIX: Set a z-index to ensure the favorite button and count always appear
+    on top of the card's content and any pseudo-elements (like the series stack).
+  */
+  z-index: 2;
   gap: 0.5rem; /* Space between the count and the button */
 }
+/* FIX: Add transition for smooth position changes on hover. */
+.favorite-container, .new-pill { transition: top 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
 
 .favorite-count {
   /* FIX: Revert to the fancier, tilted font while keeping the scroll animation. */
@@ -578,11 +609,17 @@ body.svg-filter-supported .glass-container {
 @keyframes blur-text{0%{filter:blur(0)}100%{filter:blur(4px)}}
 .notifications-container{
   position:fixed;top:3.5rem;right:100px;display:flex;align-items:center;overflow:hidden;
-  white-space:nowrap;z-index:5;height:60px;width:calc(100% - 100px);pointer-events:none;
+  white-space:nowrap;z-index:7;height:60px;width:calc(100% - 100px);pointer-events:none;
+  /* FIX: Promote the entire container to its own layer to fully isolate the animation from the main grid. */
+  will-change: transform;
+  transform: translateZ(0);
 }
 .notifications-container .notification-item{
   color:var(--notification-text);font-size:1.25rem;font-weight:bold;
   animation:slide-left 15s linear infinite;display:inline-block;animation-delay:-5s;
+  /* FIX: Promote the scrolling text to its own compositor layer to isolate it from the main grid's heavy animations, ensuring a smooth scroll. */
+  will-change: transform;
+  transform: translateZ(0);
 }
 @keyframes slide-left{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
 .panel-hidden{
@@ -617,6 +654,9 @@ body.svg-filter-supported .glass-container {
   color: var(--glass-text);
   opacity: 0.7;
   font-size: 0.9rem;
+  /* FIX: Add position and z-index to ensure it sits on top of the bottom vignette. */
+  position: relative;
+  z-index: 7;
   transition: color 0.5s ease-in-out;
 }
 .made-by-who {
@@ -640,6 +680,20 @@ body.svg-filter-supported .glass-container {
   /* A custom cubic-bezier for a more 'bouncy' and realistic feel */
   animation: jello-wobble 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
+
+/* --- NEW: Enhanced Jello Animation for Grid Cards --- */
+@keyframes jello-grid-squish {
+  0%   { transform: scale(1, 1); }
+  30%  { transform: scale(1.02, 0.98) rotate(-0.5deg); }
+  50%  { transform: scale(0.98, 1.02) rotate(0.5deg); }
+  70%  { transform: scale(1.01, 0.99) rotate(-0.2deg); }
+  100% { transform: scale(1, 1) rotate(0); }
+}
+.jello-grid {
+  /* FIX: Use the new, more detailed animation for a better visual effect. */
+  animation: jello-grid-squish 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
 /* --- Added CSS for story details and status pills --- */
 .story-length {
   position: absolute;
@@ -710,31 +764,53 @@ body.svg-filter-supported .glass-container {
     z-index: 10;
     transform-origin: center;
     text-shadow: 0 0 5px rgba(0,0,0,0.5);
+    /* REFACTOR: Use a pseudo-element for a more performant glow animation. */
+    /* FIX: Removed 'position: relative' which was causing a layout bug. 'position: absolute' is correct. */
+    overflow: visible; /* Allow the glow to extend beyond the pill's bounds. */
+}
+/* REFACTOR: Create the glow effect using a pseudo-element with blur and opacity. */
+.new-pill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background-color: inherit; /* Match the pill's color */
+    filter: blur(12px); /* Create the soft glow */
+    z-index: -1;
+    opacity: 0.7;
+    /* FIX: Use the CSS variables for the glow effect and ensure smooth transitions. */
+    opacity: var(--glow-opacity, 0.7);
+    transform: scale(var(--glow-scale, 1));
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
 }
 .new-pill.red {
     background-color: var(--red-tint);
-    animation: glow-red 1.5s infinite alternate ease-in-out;
-}
-@keyframes glow-red {
-    0% { box-shadow: 0 0 5px var(--red-tint), 0 0 10px var(--red-tint), 0 0 15px var(--red-tint); transform: scale(1); }
-    100% { box-shadow: 0 0 10px var(--red-tint), 0 0 20px var(--red-tint), 0 0 30px var(--red-tint); transform: scale(1.05); }
+    /* REFACTOR: Animate the more performant transform and opacity properties. */
+    animation: pulse-glow 1.5s infinite alternate ease-in-out;
 }
 .new-pill.purple {
     background-color: var(--purple-tint);
-    animation: glow-purple 1.5s infinite alternate ease-in-out;
-}
-@keyframes glow-purple {
-    0% { box-shadow: 0 0 5px var(--purple-tint), 0 0 10px var(--purple-tint), 0 0 15px var(--purple-tint); transform: scale(1); }
-    100% { box-shadow: 0 0 10px var(--purple-tint), 0 0 20px var(--purple-tint), 0 0 30px var(--purple-tint); transform: scale(1.05); }
+    animation: pulse-glow 1.5s infinite alternate ease-in-out;
 }
 .new-pill.golden {
     background-color: var(--golden-tint);
     color: black;
-    animation: glow-golden 1.5s infinite alternate ease-in-out;
+    animation: pulse-glow 1.5s infinite alternate ease-in-out;
 }
-@keyframes glow-golden {
-    0% { box-shadow: 0 0 5px var(--golden-tint), 0 0 10px var(--golden-tint), 0 0 15px var(--golden-tint); transform: scale(1); }
-    100% { box-shadow: 0 0 10px var(--golden-tint), 0 0 20px var(--golden-tint), 0 0 30px var(--golden-tint); transform: scale(1.05); }
+/* REFACTOR: A single, performant keyframe animation for all glows. */
+@keyframes pulse-glow {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.05);
+        /* Animate the pseudo-element's opacity and scale for a breathing effect */
+        --glow-opacity: 1;
+        --glow-scale: 1.4;
+    }
 }
 /* --- Info Panel CSS --- */
 /* Fixed wrapper for the top-left elements */
@@ -1016,16 +1092,38 @@ body.info-panel-open .info-button {
 }
 
 /* --- NEW: Disable hover effects when a panel is open --- */
-body.info-panel-open .glass-container:hover,
-body.info-panel-open .search-button:hover,
-body.info-panel-open .floating-button:hover,
-body.info-panel-open .info-button:hover,
-body.info-panel-open .favorite-btn:hover {
+/* FIX: Make the selector more specific to only target the main grid cards, not cards inside a modal. */
+body.info-panel-open .grid > .glass-container:hover,
+body.info-panel-open .grid > .series-stack:hover,
+body.info-panel-open .top-right-fixed-wrapper .search-button:hover,
+body.info-panel-open .floating-buttons-container .floating-button:hover {
   transform: none;
   box-shadow: var(--glass-shadow); /* Resets to the default shadow */
   cursor: default;
   pointer-events: none; /* Strongest way to prevent interaction */
 }
+
+/* FIX: Re-enable the backdrop filter specifically for cards inside an active series modal. */
+body.info-panel-open #seriesModal .glass-container {
+  -webkit-backdrop-filter: blur(var(--blur-radius));
+  backdrop-filter: blur(var(--blur-radius));
+  pointer-events: auto; /* Ensure cards inside the modal are interactive */
+}
+/* FIX: Re-enable pointer events and hover effects for buttons and content inside the series modal. */
+body.info-panel-open #seriesModal .favorite-btn,
+body.info-panel-open #seriesModal .glass-content {
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+/* FIX: Add the enhanced text shadow to series part cards for better contrast and consistency. */
+.series-parts-grid .title {
+    text-shadow: 0 2px 3px rgba(0,0,0,0.8), 0 0 10px rgba(0,0,0,0.5);
+}
+.series-parts-grid .description {
+    text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 5px rgba(0,0,0,0.5);
+}
+
 
 @media (max-width: 600px) {
   .top-left-fixed-wrapper {
@@ -1146,4 +1244,150 @@ body.info-panel-open .favorite-btn:hover {
   pointer-events: auto;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+}
+
+/* --- Series Stack Styles --- */
+.series-stack {
+  position: relative; /* Anchor for pseudo-elements and the main card */
+  cursor: pointer;
+  /* FIX: Restore the default glass background. This makes the top card opaque relative to the stack behind it. */
+  background: var(--glass-bg);
+}
+
+/* On hover, the entire stack element lifts and scales */
+.series-stack:hover {
+  transform: scale(1.03) translateY(-10px);
+  transition: transform 0.3s ease-out;
+}
+
+/* Create the "ghost" cards behind the main one using pseudo-elements on the container */
+.series-stack::before,
+.series-stack::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%; /* Perfectly match the container's size */
+  height: 100%; /* Perfectly match the container's size */
+  border-radius: 3rem; /* Exactly match the main card's border-radius */
+
+  /* The backdrop-filter applies to the card body */
+  z-index: -1; /* Sit behind the main card's content. */
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smoother transition */
+  /* FIX: Set the background and shadow for the stacked cards. */
+  background: var(--glass-bg);
+  box-shadow: var(--glass-shadow);
+  /* FIX: Make the stacked cards invisible by default. */
+  opacity: 0;
+  /* FIX: Start the cards directly behind the main card. */
+  transform: translateY(0) scale(1);
+}
+
+/* FIX: On hover, make the stacked cards visible and move them into position. */
+.series-stack:hover::before {
+  opacity: 1;
+  transform: translateY(14px) scale(0.96); /* Furthest back card */
+  z-index: -2;
+  /* FIX: Add a distinctive golden tint to the third card in the stack. */
+  background: color-mix(in srgb, var(--golden-tint) 20%, var(--glass-bg));
+}
+
+.series-stack:hover::after {
+  opacity: 1;
+  transform: translateY(7px) scale(0.98); /* Middle card */
+  z-index: -1;
+}
+/* FIX: On hover, smoothly move the pill and favorite button down to make space for the stacked cards. */
+.series-stack:hover .new-pill {
+  top: 2.5rem;
+}
+
+.series-stack:hover .favorite-container {
+  top: 2rem;
+}
+
+.series-stack.open {
+  cursor: default;
+  pointer-events: none;
+}
+
+/* --- NEW: Styles for the Series Modal, mimicking the Info Panel --- */
+#seriesModal {
+  /* This makes the modal scrollable if content overflows */
+  overflow-y: auto;
+  /* REFACTOR: Remove flex alignment to allow block-level centering and scrolling. */
+  display: block;
+  /* REFACTOR: Adjust padding to account for the new fixed title. */
+  padding-top: 120px;
+  padding-bottom: 40px;
+}
+
+#seriesModalTitle {
+  /* REFACTOR: Make the title a fixed header within the modal for better context. */
+  position: fixed;
+  top: 40px; /* Position it below the close button */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  text-align: center;
+  z-index: 101; /* Ensure it's above the grid but below the close button if needed */
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--glass-text);
+  text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  /* Prevent the title from blocking clicks on the modal background for closing */
+  pointer-events: none;
+}
+
+.series-parts-grid {
+  /* REFACTOR: Change from a multi-column grid to a single-column flex layout. */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center the cards within the column */
+  gap: 2rem;
+  width: 100%;
+   /* REFACTOR: Set a max-width appropriate for a single column of cards. */
+   max-width: 450px;
+  margin: 0 auto;
+  padding: 1rem;
+  /* REFACTOR: Add a small top margin to create space below the fixed title. */
+  margin-top: 1rem;
+}
+
+/* FIX: Constrain the width of the part cards to match the main grid cards. */
+.series-parts-grid .glass-container {
+  width: 100%;
+  max-width: 350px; /* Match the approximate width of the main grid cards */
+}
+
+/* --- NEW: Top & Bottom Vignettes for Main Page --- */
+.top-vignette-main {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 150px;
+    z-index: 6; /* Sit behind the header buttons (z-index 10+) and notification bar (z-index 7) */
+    pointer-events: none;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, transparent 100%);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+}
+
+.bottom-vignette-main {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    z-index: 6; /* Sit behind the floating buttons (z-index 10) */
+    pointer-events: none;
+    background: linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 100%);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    mask-image: linear-gradient(to top, black 50%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to top, black 50%, transparent 100%);
 }
