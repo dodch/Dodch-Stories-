@@ -394,18 +394,18 @@ async function fetchAndBuildGrid() {
           // 1. Create a "speed factor" that increases with scroll speed (delta).
           // This makes fast scrolls more dramatic and slow scrolls more subtle.
           const scrollSpeed = Math.abs(delta);
-          const speedFactor = clamp(1 + scrollSpeed / 100, 1, 2.0); // TUNED: Reduced speed factor ramp-up and max value.
+          const speedFactor = clamp(1 + scrollSpeed / 150, 1, 1.5); // TUNED: Further reduced speed factor ramp-up and max value for less intensity.
 
           // 2. Parallax "follow-through" effect, now moderated by speedFactor.
           // TUNED: Reduced base intensity for a more subtle effect on slow scrolls.
-          const parallaxImpulse = delta * -0.1 * speedFactor * (1 - dist); // TUNED: Reduced base intensity.
+          const parallaxImpulse = delta * -0.07 * speedFactor * (1 - dist); // TUNED: Further reduced base intensity for a gentler parallax.
           s.vyOffset += parallaxImpulse;
 
           // 3. Subtle scale reaction to scroll, also moderated by speedFactor.
-          const scrollImpulse = delta * 0.003 * speedFactor * (1 - dist); // TUNED: Reduced base intensity.
+          const scrollImpulse = delta * 0.002 * speedFactor * (1 - dist); // TUNED: Further reduced base intensity for a more subtle scale effect.
 
           // 4. Perspective skew based on vertical position. TUNED: Reduced base intensity.
-          const perspectiveSkew = (cardCenter - center) / vh * -10; // TUNED: Reduced base intensity.
+          const perspectiveSkew = (cardCenter - center) / vh * -8; // TUNED: Further reduced base intensity for less skew.
 
           const targetScaleYScroll = 1 - scrollImpulse;
           const targetScaleXScroll = 1 + scrollImpulse * 0.3;
