@@ -7,48 +7,47 @@ let allStories = [];
 let showingFavorites = false;
 let localFavoriteCounts = {}; // NEW: Global object to store local favorite counts
 const body = document.body;
-let performanceLevel = 4; // Default to the highest level
+let backgroundSets = []; // To store background image data
+let performanceLevel = 3; // Default to highest
 
-// --- NEW: Dynamic Performance Adjuster ---
+// --- NEW: Simplified 3-Tier Performance System ---
 async function determinePerformanceLevel() {
-    let score = 0;
+    // Level 1: Weak (no blur), Level 2: Moderate (blur), Level 3: Good (SVG filter)
 
-    // 1. Check for user preference for reduced motion first (strongest signal)
+    // Strongest signal: User preference for reduced motion.
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        return 1; // Force lowest level if user wants no motion
+        console.log("Performance Level 1 (Weak): User prefers reduced motion.");
+        return 1;
     }
 
-    // 2. Check for data saver mode
+    // Next signal: Data saver mode. Cap at moderate.
     if (navigator.connection && navigator.connection.saveData) {
-        return 2; // Cap at level 2 if data saver is on
+        console.log("Performance Level 2 (Moderate): Data saver enabled.");
+        return 2;
     }
 
-    // 3. Score based on hardware concurrency (CPU cores)
+    // Hardware check: CPU cores.
     const cores = navigator.hardwareConcurrency || 2;
-    if (cores <= 2) score += 1;      // Low-end mobile
-    else if (cores <= 4) score += 3; // Mid-range mobile / older desktop
-    else if (cores <= 7) score += 5; // Modern mobile / decent desktop
-    else score += 7;                 // High-end desktop
+    if (cores <= 2) return 1; // Weak
+    if (cores <= 4) return 2; // Moderate
 
-    // 4. Run a quick JS benchmark
-    const startTime = performance.now();
-    for (let i = 0; i < 1e6; i++) { Math.sqrt(i); } // A simple, consistent task
-    const duration = performance.now() - startTime;
+    // If we have many cores, do a final check for SVG filter support.
+    // This is the main feature of the "Good" level.
+    if (CSS.supports('backdrop-filter', 'url("#filter-hq")')) {
+        return 3; // Good
+    }
 
-    if (duration > 60) score += 0; // Very slow
-    else if (duration > 30) score += 1;
-    else if (duration > 15) score += 2;
-    else score += 4;
-
-    // 5. Determine level from total score
-    if (score <= 3) return 1; // Extremely Slow (e.g., 2 cores, slow JS)
-    if (score <= 5) return 2; // Slow (e.g., 4 cores, slow JS)
-    if (score <= 7) return 3; // Moderate (e.g., 4 cores, fast JS)
-    return 4;                 // Good (most modern devices)
+    // Fallback for powerful devices that don't support the SVG filter.
+    return 2;
 }
 
 function applyPerformanceStyles(level) {
+    // Remove any existing performance level classes before adding the new one.
+    for (let i = 1; i <= 3; i++) {
+        document.body.classList.remove(`perf-level-${i}`);
+    }
     document.body.classList.add(`perf-level-${level}`);
+    localStorage.setItem('performanceLevel', level); // NEW: Save the level to localStorage
 }
 
 // New function to add tap animation
@@ -324,7 +323,7 @@ async function fetchAndBuildGrid() {
     const state = new Map();
     panels.forEach(card => {
       // NEW: Disable physics for performance levels 1 and 2
-      if (performanceLevel <= 2) {
+      if (performanceLevel < 3) {
           card.classList.add('physics-disabled');
       }
 
@@ -499,6 +498,14 @@ async function fetchAndBuildGrid() {
           
           s.vyOffset += (0 - s.yOffset) * springiness; s.vyOffset *= d; s.yOffset += s.vyOffset;
 
+          // FIX: Also apply the shine effect logic here for main grid cards.
+          // This was previously in a separate block and could be consolidated.
+          if (influence > 0) {
+            card.style.setProperty('--pointer-x', `${pointer.x - s.offsetLeft}px`);
+            card.style.setProperty('--pointer-y', `${pointer.y - (s.offsetTop - scrollY)}px`);
+            card.style.setProperty('--spotlight-opacity', influence);
+          }
+
           totalVelocity += Math.abs(s.vx) + Math.abs(s.vy) + Math.abs(s.vrX) + Math.abs(s.vrY) + Math.abs(s.vyOffset);
 
           const finalScaleX = clamp(s.scaleX, 0.8, 1.05);
@@ -520,6 +527,22 @@ async function fetchAndBuildGrid() {
         button.style.setProperty('--pointer-y', `${pointer.y - rect.top}px`);
         button.style.setProperty('--spotlight-opacity', influence);
       });
+
+      // FIX: Add shine effect for cards inside the series modal.
+      if (seriesModal.classList.contains('active')) {
+        document.querySelectorAll('#seriesModal .glass-container').forEach(card => {
+            const rect = card.getBoundingClientRect();
+            const dx = pointer.x - (rect.left + rect.width / 2);
+            const dy = pointer.y - (rect.top + rect.height / 2);
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            // Use the same large influence radius as the main grid cards.
+            const influence = Math.max(0, 1 - dist / 275);
+
+            card.style.setProperty('--pointer-x', `${pointer.x - rect.left}px`);
+            card.style.setProperty('--pointer-y', `${pointer.y - rect.top}px`);
+            card.style.setProperty('--spotlight-opacity', influence);
+        });
+      }
 
       // --- REFACTOR: Smart Animation Loop ---
       // If total velocity is very low and we're allowed to stop, then stop the loop.
@@ -622,10 +645,27 @@ async function fetchAndBuildGrid() {
       saveState();
     });
 
+    // NEW: Easter egg to show the performance button
+    searchBar.addEventListener('input', () => {
+        const perfBtn = document.getElementById('perfBtn');
+        if (searchBar.value.toLowerCase() === 'celexo5') {
+            perfBtn.style.opacity = '1';
+            perfBtn.style.pointerEvents = 'auto';
+            perfBtn.classList.add('jello');
+            setTimeout(() => {
+                perfBtn.classList.remove('jello');
+            }, 800);
+        }
+    });
+
     // NEW: Add a fix for mobile keyboard behavior.
     // When the search input is focused, add a class to the body to adjust fixed element positioning.
     searchBar.addEventListener('focus', () => {
-        document.body.classList.add('keyboard-active');
+        // FIX: Only apply the keyboard fix on touch devices to prevent unwanted movement on desktop.
+        const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        if (isTouchDevice) {
+            document.body.classList.add('keyboard-active');
+        }
     });
     // When the search input is blurred, remove the class.
     searchBar.addEventListener('blur', () => {
@@ -908,7 +948,8 @@ function animateButtonsOnLoad() {
     const filterBtn = document.getElementById('filterBtn');
     const contactBtn = document.getElementById('contactBtn');
     const infoButton = document.getElementById('infoButton');
-    const buttonsToAnimate = [infoButton, searchButton, filterBtn, contactBtn];
+    const perfBtn = document.getElementById('perfBtn'); // FIX: Get the new performance button
+    const buttonsToAnimate = [infoButton, searchButton, filterBtn, contactBtn]; // FIX: Remove perfBtn from default animation
     buttonsToAnimate.forEach((button, i) => {
     // REFACTOR: Add a staggered fade-in effect similar to the grid cards.
     setTimeout(() => {
@@ -920,6 +961,22 @@ function animateButtonsOnLoad() {
       }, 800); // Remove jello class after animation
     }, i * 150 + 200); // Stagger the animation start time
     });
+
+    // NEW: Logic for the performance button
+    if (perfBtn) {
+        addTapAnimation(perfBtn);
+        perfBtn.addEventListener('click', () => {
+            // Cycle through levels 1-3
+            performanceLevel = (performanceLevel % 3) + 1;
+            console.log(`Manually set Performance Level to: ${performanceLevel}`);
+            applyPerformanceStyles(performanceLevel);
+
+            // Re-run SVG detection and rebuild the grid to apply new settings
+            document.body.classList.remove('svg-filter-supported');
+            if (performanceLevel === 3) detectSVGFilterSupport();
+            fetchAndBuildGrid();
+        });
+    }
 }
 
 function setupScrollPerformance() {
@@ -942,21 +999,6 @@ function setupScrollPerformance() {
  * If supported, it adds a class to the body to enable enhanced filters via CSS.
  */
 function detectSVGFilterSupport() {
-  // NEW: Performance override - disable SVG for levels 1, 2, and 3
-  if (performanceLevel <= 3) {
-      console.log(`Performance Level ${performanceLevel}: Disabling SVG filters.`);
-      return;
-  }
-
-  // FIX: Broaden detection to include Safari on macOS, iPadOS, and iOS, which all have issues with complex SVG filters.
-  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-  const isApplePlatform = /Mac|iPod|iPhone|iPad/.test(navigator.platform) || (navigator.userAgent.includes("Mac") && "ontouchend" in document);
-
-  // If it's Safari on an Apple device, do not apply the SVG filter to avoid performance issues and rendering bugs.
-  if (isSafari && isApplePlatform) {
-    return;
-  }
-
   // For all other browsers, perform the feature check.
   if (CSS.supports('backdrop-filter', 'url("#filter-hq")')) {
     document.body.classList.add('svg-filter-supported');
@@ -998,44 +1040,72 @@ function showTutorialOnFirstVisit() {
   startButton.addEventListener('click', closeTutorial, { once: true });
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  // --- NEW: Run performance check first ---
-  performanceLevel = await determinePerformanceLevel();
-  console.log(`Device Performance Level: ${performanceLevel}`);
-  applyPerformanceStyles(performanceLevel);
+// --- NEW: Dynamic Background Changer ---
+function changeBackground() {
+  if (backgroundSets.length === 0) return;
 
-  detectSVGFilterSupport(); // Check for SVG support *after* determining performance level
-  const loadingScreen = document.getElementById('loadingScreen');
-  const bgImageUrlLight = getComputedStyle(document.documentElement).getPropertyValue('--bg-url').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
-  const bgImageUrlDark = getComputedStyle(document.documentElement).getPropertyValue('--bg-url-dark').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
-  const imagesToLoad = [];
-  
-  if (bgImageUrlLight && bgImageUrlLight.startsWith('http')) imagesToLoad.push(bgImageUrlLight);
-  if (bgImageUrlDark && bgImageUrlDark.startsWith('http')) imagesToLoad.push(bgImageUrlDark);
-  
-  let imagesLoadedCount = 0;
-  animateButtonsOnLoad();
+  const randomIndex = Math.floor(Math.random() * backgroundSets.length);
+  const selectedSet = backgroundSets[randomIndex];
 
-  if (imagesToLoad.length > 0) {
-    imagesToLoad.forEach(url => {
-      const img = new Image();
-      img.onload = img.onerror = () => {
-        imagesLoadedCount++;
-        if (imagesLoadedCount === imagesToLoad.length) {
-          loadingScreen.classList.add('hidden');
-          setupScrollPerformance();
-          setTimeout(() => {
-            fetchAndBuildGrid(); // This will now handle showing the tutorial internally.
-          }, 500);
-        }
-      };
-      img.src = url;
-    });
-  } else {
-    loadingScreen.classList.add('hidden');
-    setupScrollPerformance();
+  const styleElement = document.getElementById('dynamic-styles') || document.createElement('style');
+  styleElement.id = 'dynamic-styles';
+  styleElement.innerHTML = `
+    :root {
+      --bg-url: url("${selectedSet.light.url}");
+      --bg-url-dark: url("${selectedSet.dark.url}");
+    }
+  `;
+  document.head.appendChild(styleElement);
+}
+
+async function initializePage() {
+    performanceLevel = await determinePerformanceLevel();
+    applyPerformanceStyles(performanceLevel);
+
+    if (performanceLevel === 3) detectSVGFilterSupport();
+
+    const loadingScreen = document.getElementById('loadingScreen');
+    animateButtonsOnLoad();
+
+    // Preload the current background images
+    const bgLight = getComputedStyle(document.documentElement).getPropertyValue('--bg-url').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
+    const bgDark = getComputedStyle(document.documentElement).getPropertyValue('--bg-url-dark').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
+    const imagesToPreload = [bgLight, bgDark].filter(url => url && url.startsWith('http'));
+
+    if (imagesToPreload.length > 0) {
+      await Promise.all(imagesToPreload.map(url => new Promise((resolve) => {
+        const img = new Image();
+        img.onload = img.onerror = resolve;
+        img.src = url;
+      })));
+    }
+
+    // Once images are preloaded, hide loading screen and build grid
     setTimeout(() => {
-      fetchAndBuildGrid(); // This will now handle showing the tutorial internally.
-    }, 500);
+      loadingScreen.classList.add('hidden');
+      setupScrollPerformance();
+      setTimeout(() => {
+        fetchAndBuildGrid(); // This will now handle showing the tutorial internally.
+      }, 500);
+    }, 500); // FIX: Added missing duration and closing parenthesis
+};
+
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const response = await fetch('backgrounds.json');
+    backgroundSets = await response.json();
+    // Don't call initializePage here if it's a bfcache load, pageshow will handle it.
+  } catch (error) {
+    console.error("Failed to load backgrounds.json:", error);
+  }
+  // For initial load, run the initialization.
+  initializePage();
+});
+
+// FIX: Use the 'pageshow' event to handle back/forward cache navigations.
+window.addEventListener('pageshow', function(event) {
+  // If the page is being loaded from the bfcache, event.persisted will be true.
+  if (event.persisted) {
+    initializePage(); // Re-run initialization to set the correct background.
   }
 });

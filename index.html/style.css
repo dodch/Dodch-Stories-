@@ -214,33 +214,78 @@ body.svg-filter-supported .glass-container {
   backdrop-filter: blur(var(--blur-radius));
 }
 
-/* --- NEW: Performance Level Adjustments --- */
+/* --- NEW: 3-Tier Performance Level Adjustments --- */
 
-/* Level 1: Extremely Slow Devices */
-.perf-level-1 .glass-container {
-    background: #4a4a4a; /* Plain grey, non-transparent */
+/* Level 1 (Weak): No blur, simple transparency. */
+.perf-level-1 .glass-container,
+.perf-level-1 .glass-button-base,
+.perf-level-1 .search-bar,
+.perf-level-1 .modal-panel,
+.perf-level-1 .info-panel {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-    box-shadow: var(--stack-shadow); /* Use simpler shadow */
+    box-shadow: var(--glass-shadow); /* FIX: Restore glass border for grids and panels */
+    background: linear-gradient(145deg, #4a5568, #2d3748); /* NEW: Nice solid gradient */
+    color: #ffffff;
 }
-.perf-level-1 .glass-container::before,
-.perf-level-1 .glass-container::after {
-    display: none; /* Disable all pseudo-element effects */
+body.dark-mode .perf-level-1 .glass-container,
+body.dark-mode .perf-level-1 .modal-panel,
+body.dark-mode .perf-level-1 .info-panel {
+    background: linear-gradient(145deg, #2d3748, #1a202c); /* NEW: Darker solid gradient */
+}
+/* FIX: Add a specific rule for favorited cards in level 1 to ensure they turn pink. */
+.perf-level-1 .glass-container.favorited {
+    background: linear-gradient(145deg, #ef4444, #d946ef, #8b5cf6); /* NEW: Richer, multi-color gradient */
+}
+body.dark-mode .perf-level-1 .glass-container.favorited {
+    background: linear-gradient(145deg, #c12a4d, #a855f7, #6d28d9); /* NEW: Darker multi-color gradient */
+}
+/* NEW: Solid backgrounds for buttons on level 1, preserving their color identity */
+.perf-level-1 .glass-button-base,
+.perf-level-1 .search-bar {
+    background: none; /* FIX: Remove default transparent background before applying solid color. */
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: var(--glass-shadow); /* NEW: Restore glass border for buttons */
+}
+/* FIX: Increase specificity to ensure solid colors are applied correctly. */
+.perf-level-1 .search-button, .perf-level-1 .search-bar, .perf-level-1 #contactBtn.floating-button {
+    background-color: var(--blue-tint);
+}
+.perf-level-1 #filterBtn.floating-button {
+    background-color: var(--red-tint);
+}
+.perf-level-1 #infoButton.info-button {
+    background-color: var(--red-tint);
+}
+.perf-level-1 #perfBtn.floating-button {
+    background-color: var(--golden-tint);
+}
+body.dark-mode .perf-level-1 .search-button, body.dark-mode .perf-level-1 .search-bar, body.dark-mode .perf-level-1 #contactBtn.floating-button {
+    background-color: #005a8c; /* Dark solid blue */
+}
+body.dark-mode .perf-level-1 #filterBtn.floating-button {
+    background-color: #a62244; /* Dark solid red */
+}
+body.dark-mode .perf-level-1 #infoButton.info-button {
+    background-color: #a62244; /* Dark solid red */
+}
+body.dark-mode .perf-level-1 #perfBtn.floating-button {
+    background-color: #b38600; /* Dark solid gold */
 }
 
-/* Level 2: Slow Devices */
-.perf-level-2 .glass-container {
+/* Level 2 (Moderate): Basic blur, no SVG filter or pseudo-element effects. */
+.perf-level-2 .glass-container,
+.perf-level-2 .glass-button-base,
+.perf-level-2 .search-bar,
+.perf-level-2 .modal-panel,
+.perf-level-2 .info-panel {
     -webkit-backdrop-filter: blur(var(--blur-radius)); /* Basic blur */
     backdrop-filter: blur(var(--blur-radius));
 }
-/* Disable complex pseudo-element effects for level 2 */
-.perf-level-2 .glass-container::before,
-.perf-level-2 .glass-container::after {
-    display: none;
-}
 
 /* --- REFACTOR: Advanced proximity shine effect for cards and buttons --- */
-.glass-container::before, .shine-effect {
+.glass-container::before {
   position: absolute;
   top: 0;
   left: 0;
@@ -262,6 +307,23 @@ body.svg-filter-supported .glass-container {
   transition: opacity 0.4s ease-out;
   content: ''; /* Required for pseudo-element */
 }
+
+/* NEW: Simpler, more focused shine effect specifically for buttons. */
+.shine-effect {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: inherit;
+  background: radial-gradient(120px circle at var(--pointer-x) var(--pointer-y), rgba(255, 255, 255, 0.5), transparent 40%);
+  opacity: var(--spotlight-opacity, 0);
+  pointer-events: none;
+  transition: opacity 0.4s ease-out;
+}
+
+/* Disable expensive pseudo-elements on lower performance tiers */
+.perf-level-1 .glass-container::before, .perf-level-1 .shine-effect,
+.perf-level-2 .glass-container::before, .perf-level-2 .shine-effect,
+.perf-level-1 .glass-container:not(.series-stack)::after,
+.perf-level-2 .glass-container:not(.series-stack)::after {
+    display: none;
+}
 /* NEW: Add a second pseudo-element to create a soft, convex highlight for a "puffy" 3D look. */
 /* FIX: Exclude .series-stack to prevent this from overriding the stacking pseudo-element. */
 .glass-container:not(.series-stack)::after {
@@ -280,10 +342,6 @@ body.svg-filter-supported .glass-container {
 
 .glass-container.force-hover-off:hover {
   pointer-events: none;
-}
-
-.shine-effect {
-  background: radial-gradient(120px circle at var(--pointer-x) var(--pointer-y), rgba(255, 255, 255, 0.5), transparent 40%);
 }
 
 .glass-container.favorited{
@@ -596,6 +654,15 @@ body:not(.is-scrolling) #filterBtn.floating-button:hover, #filterBtn.floating-bu
 }
 body:not(.is-scrolling) #contactBtn.floating-button:hover, #contactBtn.floating-button:focus-visible {
     box-shadow: 0 0 25px 5px color-mix(in srgb, var(--blue-tint) 50%, transparent), var(--button-shadow);
+}
+/* NEW: Style for the performance button */
+#perfBtn.floating-button {
+    background-color: color-mix(in srgb, var(--golden-tint) 20%, transparent);
+    /* NEW: Hide the button by default for the easter egg feature. */
+    pointer-events: none;
+}
+body:not(.is-scrolling) #perfBtn.floating-button:hover, #perfBtn.floating-button:focus-visible {
+    box-shadow: 0 0 25px 5px color-mix(in srgb, var(--golden-tint) 50%, transparent), var(--button-shadow);
 }
 .floating-button svg{
   width:30px;
@@ -1066,7 +1133,7 @@ body:not(.is-scrolling) .panel-button:hover, .panel-button:focus-visible {
 .panel-button.social {
     background-color: color-mix(in srgb, var(--purple-tint) 20%, transparent);
 }
-.panel-button.social:hover, body:not(.is-scrolling) .panel-button.social:focus-visible {
+body:not(.is-scrolling) .panel-button.social:hover, .panel-button.social:focus-visible {
     box-shadow: 0 0 15px color-mix(in srgb, var(--purple-tint) 40%, transparent), var(--button-shadow);
 }
 .social-link-button {
@@ -1431,4 +1498,10 @@ body:not(.is-scrolling) .series-stack:hover .favorite-container {
     -webkit-backdrop-filter: blur(4px);
     mask-image: linear-gradient(to top, black 50%, transparent 100%);
     -webkit-mask-image: linear-gradient(to top, black 50%, transparent 100%);
+}
+
+/* NEW: Hide vignettes on lowest performance level */
+.perf-level-1 .top-vignette-main,
+.perf-level-1 .bottom-vignette-main {
+    display: none;
 }

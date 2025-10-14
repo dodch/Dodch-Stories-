@@ -1,0 +1,22 @@
+[
+    {
+        "light": {
+            "url": "https://i.ibb.co/kgFHBj6d/IMG-2497.jpg",
+            "dominant": "#6c7a89"
+        },
+        "dark": {
+            "url": "https://i.ibb.co/bRzJ8zRw/IMG-2498.jpg",
+            "dominant": "#2c2a4a"
+        }
+    },
+    {
+        "light": {
+            "url": "https://i.ibb.co/Zzm7fGQ7/IMG-2465.jpg",
+            "dominant": "#e7a99c"
+        },
+        "dark": {
+            "url": "https://i.ibb.co/F4BLKf9t/IMG-2305.jpg",
+            "dominant": "#3b4a5e"
+        }
+    }
+]

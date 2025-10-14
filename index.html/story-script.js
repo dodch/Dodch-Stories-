@@ -1,43 +1,6 @@
 const loadingScreen = document.getElementById("loading-screen");
 const loadPercentageText = document.querySelector(".loading-percentage");
 const body = document.body;
-
-// --- NEW: Dynamic Performance Adjuster (Copied from main script.js) ---
-let performanceLevel = 4; // Default to the highest level
-
-async function determinePerformanceLevel() {
-    let score = 0;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        return 1;
-    }
-    if (navigator.connection && navigator.connection.saveData) {
-        return 2;
-    }
-    const cores = navigator.hardwareConcurrency || 2;
-    if (cores <= 2) score += 1;      // Low-end mobile
-    else if (cores <= 4) score += 3; // Mid-range mobile / older desktop
-    else if (cores <= 7) score += 5; // Modern mobile / decent desktop
-    else score += 7;                 // High-end desktop
-
-    const startTime = performance.now();
-    for (let i = 0; i < 1e6; i++) { Math.sqrt(i); }
-    const duration = performance.now() - startTime;
-
-    if (duration > 60) score += 0; // Very slow
-    else if (duration > 30) score += 1;
-    else if (duration > 15) score += 2;
-    else score += 4;
-
-    if (score <= 3) return 1; // Extremely Slow (e.g., 2 cores, slow JS)
-    if (score <= 5) return 2; // Slow (e.g., 4 cores, slow JS)
-    if (score <= 7) return 3; // Moderate (e.g., 4 cores, fast JS)
-    return 4;                 // Good (most modern devices)
-}
-
-function applyPerformanceStyles(level) {
-    document.body.classList.add(`perf-level-${level}`);
-}
-
 // FIX: Create a unique key for each story to namespace saved progress.
 // This prevents progress from one story from conflicting with another.
 const storyKey = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
@@ -48,6 +11,42 @@ let tempSavedWordText = '';
 let highlightedWordElement = null;
 let isDarkMode = false;
 let storyObserver; // For paragraph animations
+let performanceLevel = 3; // Default to highest
+
+// --- NEW: Simplified 3-Tier Performance System (mirrors main script) ---
+async function determinePerformanceLevel() {
+    // NEW: First, check if a performance level is already set from the main page.
+    const savedLevel = localStorage.getItem('performanceLevel');
+    if (savedLevel && !isNaN(savedLevel)) {
+        console.log(`Using saved Performance Level from main page: ${savedLevel}`);
+        return parseInt(savedLevel, 10);
+    }
+
+    // If no saved level, determine it automatically.
+    // Level 1: Weak (no blur), Level 2: Moderate (blur), Level 3: Good (SVG filter on popups)
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        console.log("Performance Level 1 (Weak): User prefers reduced motion.");
+        return 1;
+    }
+
+    if (navigator.connection && navigator.connection.saveData) {
+        console.log("Performance Level 2 (Moderate): Data saver enabled.");
+        return 2;
+    }
+
+    const cores = navigator.hardwareConcurrency || 2;
+    if (cores <= 2) return 1;
+    if (cores <= 4) return 2;
+
+    // The popup SVG filter is the main "Good" feature on story pages.
+    if (CSS.supports('filter', 'url("#filter-popup")')) {
+        return 3;
+    }
+
+    return 2; // Fallback for powerful devices without SVG filter support.
+}
+
 
 // FIX: Add a flag to prevent immediate re-triggering of the popup on mobile.
 // This will block the "ghost click" that happens after a touch event.
@@ -125,7 +124,10 @@ function changeLanguage(lang, fromLoad = false) {
                 } else {
                     // Check if the line is just the separator
                     if (trimmedLine !== '⸻') {
-                        pElement.classList.add('story-anim-item');
+                        // FIX: Only add the animation class if performance level is not the lowest.
+                        if (performanceLevel > 1) {
+                            pElement.classList.add('story-anim-item');
+                        }
                         
                         // REFACTOR: New, definitive drop cap logic.
                         if (isFirstWordOfStory) {
@@ -448,13 +450,12 @@ function setupStoryObserver() {
  * It tracks the pointer and updates CSS variables on the buttons to create a light reflection effect.
  */
 function initializeShineEffect() {
-    // NEW: Disable shine effect for lower performance levels
-    if (performanceLevel <= 2) {
-        console.log(`Performance Level ${performanceLevel}: Disabling shine effect.`);
+    const shineElements = document.querySelectorAll('.glass-button-base'); // All buttons have this class
+    // NEW: Disable shine effect on lower performance levels
+    if (performanceLevel < 3) {
         return;
     }
 
-    const shineElements = document.querySelectorAll('.glass-button-base'); // All buttons have this class
     let pointer = { x: -9999, y: -9999 };
     const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
     let isTouching = false; // Track if a touch is currently active
@@ -559,56 +560,64 @@ window.addEventListener('load', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-     const savedProgressJson = localStorage.getItem('allSavedProgress');
-     try {
-         allSavedProgress = JSON.parse(savedProgressJson) || {};
-     } catch (e) {
-         console.error("Failed to parse saved progress from localStorage:", e);
-         allSavedProgress = {};
-         localStorage.removeItem('allSavedProgress');
-     }
-
-     const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-     handleDarkModeChange(darkModeMediaQuery);
-     darkModeMediaQuery.addListener(handleDarkModeChange);
-
-     // Set initial direction, this is the only call needed.
-     document.documentElement.setAttribute('dir', 'ltr');
-
-     const preferredLanguage = localStorage.getItem('preferredLanguage');
-     let initialLangToLoad = 'en';
-     if (preferredLanguage && contentMap[preferredLanguage]) {
-        initialLangToLoad = preferredLanguage;
-     }
-     changeLanguage(initialLangToLoad, true);
-
-     // NEW: Initialize the shine effect for all buttons on the story page.
-     initializeShineEffect();
-
-     // Apply new tap animations to all buttons
-    document.querySelectorAll('button').forEach(button => {
-        addTapAnimation(button);
-        // Add specific actions for each button
-        if (['ar-button', 'fr-button', 'en-button'].includes(button.id)) { // Language buttons
-            const lang = button.id.split('-')[0];
-            if (contentMap[lang]) {
-                button.addEventListener('click', () => changeLanguage(lang));
-            }
-        } else if (button.id === 'save-progress-button') {
-            button.addEventListener('click', () => scrollToSavedWord());
-        } else if (button.id === 'back-home-button') {
-            button.addEventListener('click', () => window.location.href = 'https://www.dodchstories.com');
-        } else if (button.closest('#popup')) { // Popup buttons
-            // FIX: Use 'pointerup' instead of 'click' for popup buttons to prevent "ghost clicks" on mobile.
-            // This ensures the interaction is consistent with the word selection.
-            if (button.textContent.trim().toLowerCase() === 'save' || button.textContent.trim() === 'حفظ' || button.textContent.trim() === 'enregistrer') {
-                button.addEventListener('pointerup', (e) => {
-                    e.preventDefault();
-                    savePosition();
-                });
-            } else {
-                button.addEventListener('pointerup', closePopup);
-            }
+    // FIX: Use a self-invoking async function to correctly handle 'await' for performance checks.
+    (async () => {
+        const savedProgressJson = localStorage.getItem('allSavedProgress');
+        try {
+            allSavedProgress = JSON.parse(savedProgressJson) || {};
+        } catch (e) {
+            console.error("Failed to parse saved progress from localStorage:", e);
+            allSavedProgress = {};
+            localStorage.removeItem('allSavedProgress');
         }
-    });
+
+        // --- NEW: Run performance check first ---
+        performanceLevel = await determinePerformanceLevel();
+        console.log(`Story Page Performance Level: ${performanceLevel}`);
+        document.body.classList.add(`perf-level-${performanceLevel}`);
+
+        const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        handleDarkModeChange(darkModeMediaQuery);
+        darkModeMediaQuery.addListener(handleDarkModeChange);
+
+        // Set initial direction, this is the only call needed.
+        document.documentElement.setAttribute('dir', 'ltr');
+
+        const preferredLanguage = localStorage.getItem('preferredLanguage');
+        let initialLangToLoad = 'en';
+        if (preferredLanguage && contentMap[preferredLanguage]) {
+           initialLangToLoad = preferredLanguage;
+        }
+        changeLanguage(initialLangToLoad, true);
+
+        // NEW: Initialize the shine effect for all buttons on the story page.
+        initializeShineEffect();
+
+        // Apply new tap animations to all buttons
+       document.querySelectorAll('button').forEach(button => {
+           addTapAnimation(button);
+           // Add specific actions for each button
+           if (['ar-button', 'fr-button', 'en-button'].includes(button.id)) { // Language buttons
+               const lang = button.id.split('-')[0];
+               if (contentMap[lang]) {
+                   button.addEventListener('click', () => changeLanguage(lang));
+               }
+           } else if (button.id === 'save-progress-button') {
+               button.addEventListener('click', () => scrollToSavedWord());
+           } else if (button.id === 'back-home-button') {
+               button.addEventListener('click', () => window.location.href = 'https://www.dodchstories.com');
+           } else if (button.closest('#popup')) { // Popup buttons
+               // FIX: Use 'pointerup' instead of 'click' for popup buttons to prevent "ghost clicks" on mobile.
+               // This ensures the interaction is consistent with the word selection.
+               if (button.textContent.trim().toLowerCase() === 'save' || button.textContent.trim() === 'حفظ' || button.textContent.trim() === 'enregistrer') {
+                   button.addEventListener('pointerup', (e) => {
+                       e.preventDefault();
+                       savePosition();
+                   });
+               } else {
+                   button.addEventListener('pointerup', closePopup);
+               }
+           }
+       });
+    })();
 });
