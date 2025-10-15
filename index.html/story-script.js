@@ -13,38 +13,66 @@ let isDarkMode = false;
 let storyObserver; // For paragraph animations
 let performanceLevel = 3; // Default to highest
 
-// --- NEW: Simplified 3-Tier Performance System (mirrors main script) ---
+// --- NEW: Unified Performance System (mirrors main script) ---
+async function benchmarkPerformance() {
+    return new Promise(resolve => {
+        // This is a lightweight test that doesn't need a visible element.
+        const startTime = performance.now();
+        let iterations = 50;
+        function runIteration(i) {
+            if (i < iterations) {
+                // Perform some CPU-bound tasks
+                let a = 0;
+                for (let j = 0; j < 1000000; j++) {
+                    a += Math.sqrt(j);
+                }
+                requestAnimationFrame(() => runIteration(i + 1));
+            } else {
+                const endTime = performance.now();
+                const duration = endTime - startTime;
+                resolve(duration);
+            }
+        }
+        runIteration(0);
+    });
+}
+
 async function determinePerformanceLevel() {
-    // NEW: First, check if a performance level is already set from the main page.
+    // --- Step 1: Check for a user-saved preference first ---
     const savedLevel = localStorage.getItem('performanceLevel');
     if (savedLevel && !isNaN(savedLevel)) {
         console.log(`Using saved Performance Level from main page: ${savedLevel}`);
         return parseInt(savedLevel, 10);
     }
 
-    // If no saved level, determine it automatically.
-    // Level 1: Weak (no blur), Level 2: Moderate (blur), Level 3: Good (SVG filter on popups)
-
+    // --- Step 2: Check for system-level user preferences ---
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         console.log("Performance Level 1 (Weak): User prefers reduced motion.");
         return 1;
     }
-
     if (navigator.connection && navigator.connection.saveData) {
         console.log("Performance Level 2 (Moderate): Data saver enabled.");
         return 2;
     }
 
-    const cores = navigator.hardwareConcurrency || 2;
-    if (cores <= 2) return 1;
-    if (cores <= 4) return 2;
+    // --- Step 3: Run the benchmark for an objective performance score ---
+    const benchmarkDuration = await benchmarkPerformance();
+    console.log(`Benchmark Duration: ${benchmarkDuration}ms`);
 
-    // The popup SVG filter is the main "Good" feature on story pages.
-    if (CSS.supports('filter', 'url("#filter-popup")')) {
-        return 3;
+    let level;
+    if (benchmarkDuration > 750) { level = 1; } // Weak
+    else if (benchmarkDuration <= 350) { level = 3; } // Good
+    else { level = 2; } // Moderate
+
+    // --- Step 4: Final sanity checks and overrides ---
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS && level === 3) {
+        console.log("Capping performance for iOS device to Level 2.");
+        level = 2; // iOS reports SVG support but renders it poorly. Cap at moderate.
     }
 
-    return 2; // Fallback for powerful devices without SVG filter support.
+    console.log(`Auto-determined Performance Level: ${level}`);
+    return level;
 }
 
 

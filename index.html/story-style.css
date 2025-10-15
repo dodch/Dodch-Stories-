@@ -595,22 +595,18 @@ body.dark-mode .drop-cap:hover {
   animation: jello-wobble 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* Story-specific styles can be added here or in an inline <style> tag in the HTML */
-.story-blur #content {
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-}
-
 /* Animation for story paragraphs */
 .story-anim-item {
     opacity: 0;
+    /* REFACTOR: Add back the blur effect for a smoother animation. */
+    filter: blur(5px);
     transform: translateY(20px);
-    filter: blur(4px);
-    transition: opacity 0.4s ease-out, transform 0.4s ease-out, filter 0.4s ease-out;
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out, filter 0.5s ease-out;
 }
 
 .story-anim-item.in-view {
     opacity: 1;
+    /* FIX: Add transform and filter to complete the animation. */
     transform: translateY(0);
     filter: blur(0);
 }

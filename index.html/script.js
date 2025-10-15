@@ -11,34 +11,75 @@ let backgroundSets = []; // To store background image data
 let performanceLevel = 3; // Default to highest
 
 // --- NEW: Simplified 3-Tier Performance System ---
-async function determinePerformanceLevel() {
-    // Level 1: Weak (no blur), Level 2: Moderate (blur), Level 3: Good (SVG filter)
+async function benchmarkPerformance() {
+    return new Promise(resolve => {
+        const testElement = document.createElement('div');
+        testElement.style.cssText = 'position:absolute;top:0;left:0;width:100px;height:100px;opacity:0;';
+        document.body.appendChild(testElement);
 
-    // Strongest signal: User preference for reduced motion.
+        const startTime = performance.now();
+
+        // Perform a series of DOM manipulations and CSS transitions
+        let iterations = 50;
+        function runIteration(i) {
+            if (i < iterations) {
+                requestAnimationFrame(() => {
+                    testElement.style.transform = `rotate(${i * 5}deg) scale(${1 + (i % 10) * 0.01})`;
+                    testElement.style.opacity = String((i % 10) * 0.1);
+                    runIteration(i + 1);
+                });
+            } else {
+                const endTime = performance.now();
+                const duration = endTime - startTime;
+                document.body.removeChild(testElement);
+                resolve(duration);
+            }
+        }
+
+        runIteration(0);
+    });
+}
+
+async function determinePerformanceLevel() {
+    // --- Step 1: Check for a user-saved preference first ---
+    const savedLevel = localStorage.getItem('performanceLevel');
+    if (savedLevel && !isNaN(savedLevel)) {
+        console.log(`Using saved Performance Level: ${savedLevel}`);
+        return parseInt(savedLevel, 10);
+    }
+
+    // --- Step 2: Check for system-level user preferences ---
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         console.log("Performance Level 1 (Weak): User prefers reduced motion.");
         return 1;
     }
-
-    // Next signal: Data saver mode. Cap at moderate.
     if (navigator.connection && navigator.connection.saveData) {
         console.log("Performance Level 2 (Moderate): Data saver enabled.");
         return 2;
     }
 
-    // Hardware check: CPU cores.
-    const cores = navigator.hardwareConcurrency || 2;
-    if (cores <= 2) return 1; // Weak
-    if (cores <= 4) return 2; // Moderate
+    // --- Step 3: Run the benchmark for an objective performance score ---
+    const benchmarkDuration = await benchmarkPerformance();
+    console.log(`Benchmark Duration: ${benchmarkDuration}ms`);
 
-    // If we have many cores, do a final check for SVG filter support.
-    // This is the main feature of the "Good" level.
-    if (CSS.supports('backdrop-filter', 'url("#filter-hq")')) {
-        return 3; // Good
+    let level;
+    if (benchmarkDuration > 750) {
+        level = 1; // Weak
+    } else if (benchmarkDuration <= 350) {
+        level = 3; // Good
+    } else {
+        level = 2; // Moderate
     }
 
-    // Fallback for powerful devices that don't support the SVG filter.
-    return 2;
+    // --- Step 4: Final sanity checks and overrides ---
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS && level === 3) {
+        console.log("Capping performance for iOS device to Level 2.");
+        level = 2; // iOS reports SVG support but renders it poorly. Cap at moderate.
+    }
+
+    console.log(`Auto-determined Performance Level: ${level}`);
+    return level;
 }
 
 function applyPerformanceStyles(level) {
@@ -1100,6 +1141,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   // For initial load, run the initialization.
   initializePage();
+
 });
 
 // FIX: Use the 'pageshow' event to handle back/forward cache navigations.
