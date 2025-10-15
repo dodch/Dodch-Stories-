@@ -13,6 +13,10 @@ let performanceLevel = 3; // Default to highest
 // --- NEW: Simplified 3-Tier Performance System ---
 async function benchmarkPerformance() {
     // FIX: Use a more accurate FPS-based benchmark instead of a simple duration test.
+    // REFACTOR: Run the test multiple times and take the best score to avoid penalizing
+    // the device for a single, momentary stutter. This provides a more reliable result.
+    const runs = 3;
+    let bestFps = 0;
     // This measures the device's ability to maintain a smooth frame rate, which is a better
     // indicator of real-world rendering performance.
     return new Promise(resolve => {
@@ -20,34 +24,42 @@ async function benchmarkPerformance() {
         testElement.style.cssText = 'position:absolute;top:0;left:0;width:100px;height:100px;opacity:0;';
         document.body.appendChild(testElement);
 
-        let frameCount = 0;
-        const duration = 1000; // Run the test for 1 second.
-        let lastFrameTime = performance.now();
+        let runCount = 0;
 
-        function animate(time) {
-            // Animate the element to create a rendering load.
-            const progress = (time % duration) / duration;
-            testElement.style.transform = `rotate(${progress * 360}deg) scale(${1 + Math.sin(progress * Math.PI) * 0.1})`;
+        function runSingleTest() {
+            let frameCount = 0;
+            const duration = 350; // Run each test for a shorter duration.
+            const startTime = performance.now();
 
-            frameCount++;
-            lastFrameTime = time;
-        }
-
-        const startTime = performance.now();
-        function runTest() {
-            const now = performance.now();
-            if (now - startTime < duration) {
-                animate(now);
-                requestAnimationFrame(runTest);
-            } else {
-                // Calculate average FPS.
-                const fps = frameCount / (duration / 1000);
-                document.body.removeChild(testElement);
-                resolve(fps);
+            function animate(time) {
+                const progress = (time % duration) / duration;
+                testElement.style.transform = `rotate(${progress * 360}deg) scale(${1 + Math.sin(progress * Math.PI) * 0.1})`;
+                frameCount++;
             }
+
+            function testLoop() {
+                const now = performance.now();
+                if (now - startTime < duration) {
+                    animate(now);
+                    requestAnimationFrame(testLoop);
+                } else {
+                    const fps = frameCount / (duration / 1000);
+                    if (fps > bestFps) {
+                        bestFps = fps;
+                    }
+                    runCount++;
+                    if (runCount < runs) {
+                        requestAnimationFrame(runSingleTest); // Schedule the next run
+                    } else {
+                        document.body.removeChild(testElement);
+                        resolve(bestFps);
+                    }
+                }
+            }
+            requestAnimationFrame(testLoop);
         }
-        
-        requestAnimationFrame(runTest);
+
+        runSingleTest(); // Start the first test
     });
 }
 
@@ -1111,13 +1123,6 @@ function changeBackground() {
 }
 
 async function initializePage() {
-    performanceLevel = await determinePerformanceLevel();
-    applyPerformanceStyles(performanceLevel);
-
-    if (performanceLevel === 3) detectSVGFilterSupport();
-
-    const loadingScreen = document.getElementById('loadingScreen');
-    animateButtonsOnLoad();
 
     // Preload the current background images
     const bgLight = getComputedStyle(document.documentElement).getPropertyValue('--bg-url').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
@@ -1132,15 +1137,29 @@ async function initializePage() {
       })));
     }
 
-    // Once images are preloaded, hide loading screen and build grid
+    // Once images are preloaded, we can proceed.
+    // The loading screen will be hidden by the 'load' event listener.
+    setupScrollPerformance();
+    fetchAndBuildGrid();
+}
+
+window.addEventListener('load', async () => {
+    // FIX: Run the benchmark after the page and all its resources are fully loaded.
+    // This ensures the main thread is idle, giving a much more accurate performance reading.
+    performanceLevel = await determinePerformanceLevel();
+    applyPerformanceStyles(performanceLevel);
+    if (performanceLevel === 3) detectSVGFilterSupport();
+
+    // Now that performance is set, animate buttons and hide the loading screen.
+    animateButtonsOnLoad();
+    const loadingScreen = document.getElementById('loadingScreen');
     setTimeout(() => {
       loadingScreen.classList.add('hidden');
-      setupScrollPerformance();
       setTimeout(() => {
-        fetchAndBuildGrid(); // This will now handle showing the tutorial internally.
-      }, 500);
-    }, 500); // FIX: Added missing duration and closing parenthesis
-};
+        loadingScreen.remove();
+      }, 600);
+    }, 200); // A small delay to let the final animations start.
+});
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
