@@ -38,14 +38,7 @@ async function benchmarkPerformance() {
 }
 
 async function determinePerformanceLevel() {
-    // --- Step 1: Check for a user-saved preference first ---
-    const savedLevel = localStorage.getItem('performanceLevel');
-    if (savedLevel && !isNaN(savedLevel)) {
-        console.log(`Using saved Performance Level from main page: ${savedLevel}`);
-        return parseInt(savedLevel, 10);
-    }
-
-    // --- Step 2: Check for system-level user preferences ---
+    // --- Step 1: Check for system-level user preferences ---
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         console.log("Performance Level 1 (Weak): User prefers reduced motion.");
         return 1;
@@ -55,7 +48,7 @@ async function determinePerformanceLevel() {
         return 2;
     }
 
-    // --- Step 3: Run the benchmark for an objective performance score ---
+    // --- Step 2: Run the benchmark for an objective performance score ---
     const benchmarkDuration = await benchmarkPerformance();
     console.log(`Benchmark Duration: ${benchmarkDuration}ms`);
 
@@ -64,7 +57,7 @@ async function determinePerformanceLevel() {
     else if (benchmarkDuration <= 350) { level = 3; } // Good
     else { level = 2; } // Moderate
 
-    // --- Step 4: Final sanity checks and overrides ---
+    // --- Step 3: Final sanity checks and overrides ---
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     if (isIOS && level === 3) {
         console.log("Capping performance for iOS device to Level 2.");

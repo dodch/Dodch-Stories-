@@ -52,14 +52,7 @@ async function benchmarkPerformance() {
 }
 
 async function determinePerformanceLevel() {
-    // --- Step 1: Check for a user-saved preference first ---
-    const savedLevel = localStorage.getItem('performanceLevel');
-    if (savedLevel && !isNaN(savedLevel)) {
-        console.log(`Using saved Performance Level: ${savedLevel}`);
-        return parseInt(savedLevel, 10);
-    }
-
-    // --- Step 2: Check for system-level user preferences ---
+    // --- Step 1: Check for system-level user preferences ---
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         console.log("Performance Level 1 (Weak): User prefers reduced motion.");
         return 1;
@@ -69,7 +62,7 @@ async function determinePerformanceLevel() {
         return 2;
     }
 
-    // --- Step 3: Run the benchmark for an objective performance score ---
+    // --- Step 2: Run the benchmark for an objective performance score ---
     const averageFps = await benchmarkPerformance();
     console.log(`Benchmark Result: ~${Math.round(averageFps)} FPS`);
 
@@ -82,7 +75,7 @@ async function determinePerformanceLevel() {
         level = 2; // Moderate
     }
 
-    // --- Step 4: Final sanity checks and overrides ---
+    // --- Step 3: Final sanity checks and overrides ---
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     if (isIOS && level === 3) {
         console.log("Capping performance for iOS device to Level 2.");
@@ -99,7 +92,8 @@ function applyPerformanceStyles(level) {
         document.body.classList.remove(`perf-level-${i}`);
     }
     document.body.classList.add(`perf-level-${level}`);
-    localStorage.setItem('performanceLevel', level); // NEW: Save the level to localStorage
+    // Only the manual button should save a preference.
+    // We clear any old auto-detected preference.
 }
 
 // New function to add tap animation
@@ -1021,7 +1015,7 @@ function animateButtonsOnLoad() {
             // Cycle through levels 1-3
             performanceLevel = (performanceLevel % 3) + 1;
             console.log(`Manually set Performance Level to: ${performanceLevel}`);
-            applyPerformanceStyles(performanceLevel);
+            // This change is now for the current session only and is not saved.
 
             // Re-run SVG detection and rebuild the grid to apply new settings
             document.body.classList.remove('svg-filter-supported');
