@@ -1087,6 +1087,10 @@ function showTutorialOnFirstVisit() {
     tutorialPanel.classList.remove('active');
     document.body.classList.remove('info-panel-open');
     localStorage.setItem('hasVisitedBefore', 'true');
+    // FIX: Smoothly scroll to the main grid after closing the tutorial.
+    // This moves focus away from the bottom of the screen, preventing the button
+    // from being hidden by the browser's UI on mobile.
+    document.getElementById('grid').scrollIntoView({ behavior: 'smooth' });
   }
 
   startButton.addEventListener('click', closeTutorial, { once: true });
