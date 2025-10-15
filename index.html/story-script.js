@@ -15,52 +15,25 @@ let performanceLevel = 3; // Default to highest
 
 // --- NEW: Unified Performance System (mirrors main script) ---
 async function benchmarkPerformance() {
-    // REFACTOR: Run the test multiple times and take the best score to avoid penalizing
-    // the device for a single, momentary stutter. This provides a more reliable result.
-    const runs = 3;
-    let bestFps = 0;
-
     return new Promise(resolve => {
-        const testElement = document.createElement('div');
-        testElement.style.cssText = 'position:absolute;top:0;left:0;width:100px;height:100px;opacity:0;';
-        document.body.appendChild(testElement);
-
-        let runCount = 0;
-
-        function runSingleTest() {
-            let frameCount = 0;
-            const duration = 350; // Run each test for a shorter duration.
-            const startTime = performance.now();
-
-            function animate(time) {
-                const progress = (time % duration) / duration;
-                testElement.style.transform = `rotate(${progress * 360}deg) scale(${1 + Math.sin(progress * Math.PI) * 0.1})`;
-                frameCount++;
-            }
-
-            function testLoop() {
-                const now = performance.now();
-                if (now - startTime < duration) {
-                    animate(now);
-                    requestAnimationFrame(testLoop);
-                } else {
-                    const fps = frameCount / (duration / 1000);
-                    if (fps > bestFps) {
-                        bestFps = fps;
-                    }
-                    runCount++;
-                    if (runCount < runs) {
-                        requestAnimationFrame(runSingleTest); // Schedule the next run
-                    } else {
-                        document.body.removeChild(testElement);
-                        resolve(bestFps);
-                    }
+        // This is a lightweight test that doesn't need a visible element.
+        const startTime = performance.now();
+        let iterations = 50;
+        function runIteration(i) {
+            if (i < iterations) {
+                // Perform some CPU-bound tasks
+                let a = 0;
+                for (let j = 0; j < 1000000; j++) {
+                    a += Math.sqrt(j);
                 }
+                requestAnimationFrame(() => runIteration(i + 1));
+            } else {
+                const endTime = performance.now();
+                const duration = endTime - startTime;
+                resolve(duration);
             }
-            requestAnimationFrame(testLoop);
         }
-
-        runSingleTest(); // Start the first test
+        runIteration(0);
     });
 }
 
@@ -83,12 +56,12 @@ async function determinePerformanceLevel() {
     }
 
     // --- Step 3: Run the benchmark for an objective performance score ---
-    const averageFps = await benchmarkPerformance();
-    console.log(`Benchmark Result: ~${Math.round(averageFps)} FPS`);
+    const benchmarkDuration = await benchmarkPerformance();
+    console.log(`Benchmark Duration: ${benchmarkDuration}ms`);
 
     let level;
-    if (averageFps < 45) { level = 1; } // Weak (struggles to maintain a decent frame rate)
-    else if (averageFps >= 58) { level = 3; } // Good (consistently smooth)
+    if (benchmarkDuration > 750) { level = 1; } // Weak
+    else if (benchmarkDuration <= 350) { level = 3; } // Good
     else { level = 2; } // Moderate
 
     // --- Step 4: Final sanity checks and overrides ---
@@ -601,21 +574,16 @@ function updateLoadingText() {
   }
 }
 
-window.addEventListener('load', async () => {
-    // FIX: Run the benchmark after the page and all its resources are fully loaded.
-    performanceLevel = await determinePerformanceLevel();
-    console.log(`Story Page Performance Level: ${performanceLevel}`);
-    document.body.classList.add(`perf-level-${performanceLevel}`);
-
-    // Re-run language change to apply correct styles now that performance level is known
-    changeLanguage(currentLanguage, true);
-
-    if (load < 100) {
-        loadPercentageText.innerText = '100%';
-    }
+window.addEventListener('load', () => {
+     if (load < 100) {
+         loadPercentageText.innerText = '100%';
+     }
     setTimeout(() => {
         body.classList.remove('loading');
         loadingScreen.classList.add('hidden');
+        setTimeout(() => {
+            loadingScreen.remove();
+         }, 600);
     }, 500);
 });
 
@@ -630,6 +598,11 @@ document.addEventListener('DOMContentLoaded', () => {
             allSavedProgress = {};
             localStorage.removeItem('allSavedProgress');
         }
+
+        // --- NEW: Run performance check first ---
+        performanceLevel = await determinePerformanceLevel();
+        console.log(`Story Page Performance Level: ${performanceLevel}`);
+        document.body.classList.add(`perf-level-${performanceLevel}`);
 
         const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
         handleDarkModeChange(darkModeMediaQuery);
