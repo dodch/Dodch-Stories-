@@ -606,7 +606,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // --- NEW: Run performance check first ---
-        performanceLevel = await determinePerformanceLevel();
+        // FIX: Check for a manually set performance level from the main page.
+        // REFACTOR: Read from sessionStorage to maintain consistency across the session.
+        const manualLevel = sessionStorage.getItem('manualPerformanceLevel');
+        if (manualLevel) { // If a manual level is found...
+            performanceLevel = parseInt(manualLevel, 10);
+            console.log(`Using manually set Performance Level from main page: ${performanceLevel}`);
+        } else {
+            performanceLevel = await determinePerformanceLevel();
+        }
         console.log(`Story Page Performance Level: ${performanceLevel}`);
         document.body.classList.add(`perf-level-${performanceLevel}`);
 

@@ -221,13 +221,13 @@ body.svg-filter-supported .glass-container {
 
 /* Level 1 (Weak): No blur, simple transparency. */
 /* FIX: Increase specificity by adding 'body' to ensure these rules override the 'body.svg-filter-supported' rule. */
-/* REFACTOR: Create an even more specific selector to win the specificity war against the .svg-filter-supported rule. */
-/* FIX: Remove .glass-button-base from this rule. Buttons have their own specific solid colors for level 1. */
-body.perf-level-1 .glass-container, body.perf-level-1 .search-bar, body.perf-level-1 .modal-panel, body.perf-level-1 .info-panel,
-body.perf-level-1.svg-filter-supported .glass-container,
-body.perf-level-1.svg-filter-supported .search-bar,
-body.perf-level-1.svg-filter-supported .modal-panel,
-body.perf-level-1.svg-filter-supported .info-panel {
+/* REFACTOR: Create an even more specific selector to win the specificity war against the .svg-filter-supported rule.
+   This ensures that the solid background for level 1 is always applied correctly. */
+body.perf-level-1 .glass-container,
+body.perf-level-1 .search-bar,
+body.perf-level-1 .modal-panel,
+body.perf-level-1 .info-panel,
+body.perf-level-1.svg-filter-supported .glass-container {
     -webkit-backdrop-filter: none;
     backdrop-filter: none !important;
     box-shadow: var(--glass-shadow); /* FIX: Restore glass border for grids and panels */
@@ -235,6 +235,13 @@ body.perf-level-1.svg-filter-supported .info-panel {
     color: #ffffff;
 }
 body.dark-mode .perf-level-1 .modal-panel,
+body.dark-mode.perf-level-1.svg-filter-supported .glass-container,
+body.dark-mode.perf-level-1 .glass-container,
+body.dark-mode.perf-level-1 .search-bar,
+body.dark-mode.perf-level-1 .modal-panel,
+body.dark-mode.perf-level-1 .info-panel {
+    background: linear-gradient(145deg, #2d3748, #1a202c) !important; /* NEW: Darker solid gradient */
+}
 body.dark-mode .perf-level-1 .info-panel {
     background: linear-gradient(145deg, #2d3748, #1a202c) !important; /* NEW: Darker solid gradient */
 }
@@ -246,13 +253,10 @@ body.dark-mode .perf-level-1 .glass-container.favorited {
     background: linear-gradient(145deg, #c12a4d, #a855f7, #6d28d9); /* NEW: Darker multi-color gradient */
 }
 /* FIX: Increase specificity for solid button backgrounds on level 1. */
-body.perf-level-1 .glass-button-base, body.perf-level-1 .search-bar,
-body.perf-level-1.svg-filter-supported .glass-button-base,
-body.perf-level-1.svg-filter-supported .search-bar {
+body.perf-level-1 .glass-button-base, body.perf-level-1 .search-bar {
     background: none; /* FIX: Remove default transparent background before applying solid color. */
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-    box-shadow: var(--glass-shadow); /* NEW: Restore glass border for buttons */
 }
 /* FIX: Increase specificity to ensure solid colors are applied correctly. */
 body.perf-level-1 .search-button, body.perf-level-1 .search-bar {
@@ -288,13 +292,14 @@ body.dark-mode .perf-level-1 #perfBtn.floating-button {
 }
 
 /* Level 2 (Moderate): Basic blur, no SVG filter or pseudo-element effects. */
-.perf-level-2 .glass-container,
-.perf-level-2 .glass-button-base,
-.perf-level-2 .search-bar,
-.perf-level-2 .modal-panel,
-.perf-level-2 .info-panel {
-    -webkit-backdrop-filter: blur(var(--blur-radius)); /* Basic blur */
-    backdrop-filter: blur(var(--blur-radius));
+/* FIX: Increase specificity by adding 'body' to ensure this rule overrides the 'body.svg-filter-supported' rule. */
+body.perf-level-2 .glass-container,
+body.perf-level-2 .glass-button-base,
+body.perf-level-2 .search-bar,
+body.perf-level-2 .modal-panel,
+body.perf-level-2 .info-panel {
+    -webkit-backdrop-filter: blur(var(--blur-radius)) !important; /* Basic blur */
+    backdrop-filter: blur(var(--blur-radius)) !important;
 }
 
 /* --- REFACTOR: Advanced proximity shine effect for cards and buttons --- */

@@ -92,8 +92,6 @@ function applyPerformanceStyles(level) {
         document.body.classList.remove(`perf-level-${i}`);
     }
     document.body.classList.add(`perf-level-${level}`);
-    // Only the manual button should save a preference.
-    // We clear any old auto-detected preference.
 }
 
 // New function to add tap animation
@@ -233,13 +231,6 @@ function saveState() {
   localStorage.setItem('showingFavorites', showingFavorites);
   localStorage.setItem('searchValue', searchBar.value);
   const favoriteTitles = [];
-  document.querySelectorAll('.glass-container .favorite-btn.active').forEach(btn => {
-    const panel = btn.closest('.glass-container');
-    const title = panel.querySelector('.title').dataset.originalTitle;
-    favoriteTitles.push(title);
-  });
-  localStorage.setItem('localFavoriteCounts', JSON.stringify(localFavoriteCounts)); // NEW: Save local favorite counts
-  localStorage.setItem('favorites', JSON.stringify(favoriteTitles));
 }
 
 function initializeHeartColor() {
@@ -1012,17 +1003,21 @@ function animateButtonsOnLoad() {
     if (perfBtn) {
         addTapAnimation(perfBtn);
         perfBtn.addEventListener('click', () => {
-            // Cycle through levels 1-3
-            performanceLevel = (performanceLevel % 3) + 1;
-            console.log(`Manually set Performance Level to: ${performanceLevel}`);
-            // FIX: Actually apply the performance styles. This was the root cause of the Level 1 bug.
-            applyPerformanceStyles(performanceLevel);
-            // FIX: Explicitly remove the svg-filter-supported class before rebuilding.
-            // This prevents a CSS specificity conflict where the Level 3 blur effect would
-            // override the solid background of Level 1.
-            document.body.classList.remove('svg-filter-supported');
-            if (performanceLevel === 3) detectSVGFilterSupport();
-            fetchAndBuildGrid();
+            // FIX: Correctly cycle through performance levels 1 (Low), 2 (Mid), 3 (High).
+            // The current level is read from the global `performanceLevel` variable.
+            let nextLevel = (performanceLevel % 3) + 1;
+            console.log(`Manually setting Performance Level to: ${nextLevel}`);
+
+            // Store the manual override in sessionStorage so it persists on the story pages.
+            sessionStorage.setItem('manualPerformanceLevel', nextLevel);
+
+            // Re-initialize the page to apply the new setting and rebuild the grid.
+            isInitialized = false;
+            // FIX: Pass the new level directly to initializePage to avoid race conditions.
+            // This also requires rebuilding the grid after initialization.
+            initializePage(nextLevel).then(() => {
+                fetchAndBuildGrid();
+            });
         });
     }
 }
@@ -1110,8 +1105,27 @@ function changeBackground() {
   document.head.appendChild(styleElement);
 }
 
-async function initializePage() {
-    performanceLevel = await determinePerformanceLevel();
+let isInitialized = false; // FIX: Add a flag to prevent double initialization.
+async function initializePage(manualLevelOverride = null) {
+    if (isInitialized) return; // Prevent this from running more than once.
+    isInitialized = true;
+
+    // FIX: If a manual level is passed from the button click, use it directly.
+    // Otherwise, check sessionStorage (for reloads) or run the benchmark.
+    if (manualLevelOverride) {
+        performanceLevel = manualLevelOverride;
+        console.log(`Applying manually selected Performance Level: ${performanceLevel}`);
+    } else {
+        // On a normal page load, clear any previous manual setting to force a fresh benchmark.
+        sessionStorage.removeItem('manualPerformanceLevel');
+        const sessionLevel = sessionStorage.getItem('manualPerformanceLevel');
+        if (sessionLevel) {
+            performanceLevel = parseInt(sessionLevel, 10);
+            console.log(`Using manually set Performance Level from session: ${performanceLevel}`);
+        } else {
+        performanceLevel = await determinePerformanceLevel();
+        }
+    }
     applyPerformanceStyles(performanceLevel);
 
     if (performanceLevel === 3) detectSVGFilterSupport();
@@ -1142,23 +1156,25 @@ async function initializePage() {
     }, 500); // FIX: Added missing duration and closing parenthesis
 };
 
-document.addEventListener('DOMContentLoaded', async () => {
-  try {
-    const response = await fetch('backgrounds.json');
-    backgroundSets = await response.json();
-    // Don't call initializePage here if it's a bfcache load, pageshow will handle it.
-  } catch (error) {
-    console.error("Failed to load backgrounds.json:", error);
-  }
-  // For initial load, run the initialization.
-  initializePage();
+async function loadDataAndInitialize() {
+    try {
+        const response = await fetch('backgrounds.json');
+        backgroundSets = await response.json();
+    } catch (error) {
+        console.error("Failed to load backgrounds.json:", error);
+    }
+    initializePage();
+}
 
-});
+document.addEventListener('DOMContentLoaded', loadDataAndInitialize);
 
 // FIX: Use the 'pageshow' event to handle back/forward cache navigations.
 window.addEventListener('pageshow', function(event) {
   // If the page is being loaded from the bfcache, event.persisted will be true.
   if (event.persisted) {
-    initializePage(); // Re-run initialization to set the correct background.
+    // REFACTOR: Don't re-run the entire initialization. Just reset the flag and re-run the data load.
+    // This prevents the double-execution bug while ensuring content is fresh.
+    isInitialized = false;
+    loadDataAndInitialize();
   }
 });
