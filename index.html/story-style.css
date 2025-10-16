@@ -279,39 +279,43 @@ body.dark-mode {
 /* --- NEW: Performance Level Adjustments for Story Pages --- */
 
 /* Level 1 (Weak): No blur, simple transparency. */
-.perf-level-1 .glass-button-base,
-.perf-level-1 #popup > div,
-.perf-level-1 #content {
+/* FIX: Increase specificity to only target buttons on the story page, not globally. */
+/* FIX: Increase specificity by adding 'body' to ensure these rules override the 'body.svg-filter-supported' rule. */
+/* REFACTOR: Create an even more specific selector to win the specificity war against the .svg-filter-supported rule. */
+/* FIX: Remove .glass-button-base from this rule. Buttons have their own specific solid colors for level 1. */
+body.perf-level-1 #popup > div, body.perf-level-1 #content,
+body.perf-level-1.svg-filter-supported #popup > div,
+body.perf-level-1.svg-filter-supported #content {
     background: none;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
     box-shadow: var(--glass-shadow-light); /* NEW: Restore glass border for buttons */
     background-color: transparent !important; /* FIX: Force remove the default transparent color */
 }
-.perf-level-1 #content, .perf-level-1 #popup > div {
-    background: linear-gradient(145deg, #4a5568, #2d3748); /* NEW: Nice solid gradient */
+body.perf-level-1 #content, body.perf-level-1 #popup > div {
+    background: linear-gradient(145deg, #4a5568, #2d3748) !important; /* NEW: Nice solid gradient */
 }
 /* FIX: Definitive solid backgrounds for story page buttons on level 1 */
-.perf-level-1 button.selected-language, .perf-level-1 button.unselected-language, .perf-level-1 button.save-button-custom {
+body.perf-level-1 button.selected-language, body.perf-level-1 button.unselected-language, body.perf-level-1 button.save-button-custom {
     background-color: var(--save-button-solid-light) !important;
 }
-.perf-level-1 button.back-home-button-custom {
+body.perf-level-1 button.back-home-button-custom {
     background-color: var(--back-button-solid-light) !important;
 }
 
-body.dark-mode .perf-level-1 .glass-button-base,
-body.dark-mode .perf-level-1 #popup > div,
-body.dark-mode .perf-level-1 #content {
+body.dark-mode.perf-level-1 .glass-button-base,
+body.dark-mode.perf-level-1 #popup > div,
+body.dark-mode.perf-level-1 #content {
     box-shadow: var(--glass-shadow-dark); /* NEW: Restore glass border for buttons */
     background-color: transparent !important;
 }
-body.dark-mode .perf-level-1 #content, body.dark-mode .perf-level-1 #popup > div {
-    background: linear-gradient(145deg, #2d3748, #1a202c); /* NEW: Darker solid gradient */
+body.dark-mode.perf-level-1 #content, body.dark-mode.perf-level-1 #popup > div {
+    background: linear-gradient(145deg, #2d3748, #1a202c) !important; /* NEW: Darker solid gradient */
 }
-body.dark-mode .perf-level-1 button.selected-language, body.dark-mode .perf-level-1 button.unselected-language, body.dark-mode .perf-level-1 button.save-button-custom {
+body.dark-mode.perf-level-1 button.selected-language, body.dark-mode.perf-level-1 button.unselected-language, body.dark-mode.perf-level-1 button.save-button-custom {
     background-color: var(--save-button-solid-dark) !important;
 }
-body.dark-mode .perf-level-1 button.back-home-button-custom {
+body.dark-mode.perf-level-1 button.back-home-button-custom {
     background-color: var(--back-button-solid-dark) !important;
 }
 

@@ -15,9 +15,9 @@ let performanceLevel = 3; // Default to highest
 
 // --- NEW: Unified Performance System (mirrors main script) ---
 async function benchmarkPerformance() {
-    // FIX: Use the more accurate FPS-based benchmark from the main script.
-    // This measures the device's ability to maintain a smooth frame rate, which is a better
-    // indicator of real-world rendering performance for the effects on this page.
+    // REFACTOR: This is the unified FPS-based benchmark from the main script.
+    // It measures the device's ability to maintain a smooth frame rate, which is the most
+    // accurate indicator of real-world rendering performance for the visual effects on this site.
     return new Promise(resolve => {
         const testElement = document.createElement('div');
         testElement.style.cssText = 'position:absolute;top:0;left:0;width:100px;height:100px;opacity:0;pointer-events:none;';
@@ -26,9 +26,9 @@ async function benchmarkPerformance() {
         let frameCount = 0;
         const duration = 1000; // Run the test for 1 second.
 
-        function animate(time) {
+        function animate() {
             // Animate the element to create a rendering load.
-            const progress = (time % duration) / duration;
+            const progress = (performance.now() % duration) / duration;
             testElement.style.transform = `rotate(${progress * 360}deg) scale(${1 + Math.sin(progress * Math.PI) * 0.1})`;
             frameCount++;
         }
@@ -36,7 +36,7 @@ async function benchmarkPerformance() {
         const startTime = performance.now();
         function runTest(now) {
             if (now - startTime < duration) {
-                animate(now);
+                animate();
                 requestAnimationFrame(runTest);
             } else {
                 // Calculate average FPS.

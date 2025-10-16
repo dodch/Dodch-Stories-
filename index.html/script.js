@@ -1000,7 +1000,7 @@ function animateButtonsOnLoad() {
     // REFACTOR: Add a staggered fade-in effect similar to the grid cards.
     setTimeout(() => {
       button.style.opacity = '1';
-      button.style.transform = 'scale(1)';
+      // FIX: Remove inline transform. CSS will now handle the initial state and animation.
       button.classList.add('jello');
       setTimeout(() => {
         button.classList.remove('jello');
@@ -1015,9 +1015,11 @@ function animateButtonsOnLoad() {
             // Cycle through levels 1-3
             performanceLevel = (performanceLevel % 3) + 1;
             console.log(`Manually set Performance Level to: ${performanceLevel}`);
-            // This change is now for the current session only and is not saved.
-
-            // Re-run SVG detection and rebuild the grid to apply new settings
+            // FIX: Actually apply the performance styles. This was the root cause of the Level 1 bug.
+            applyPerformanceStyles(performanceLevel);
+            // FIX: Explicitly remove the svg-filter-supported class before rebuilding.
+            // This prevents a CSS specificity conflict where the Level 3 blur effect would
+            // override the solid background of Level 1.
             document.body.classList.remove('svg-filter-supported');
             if (performanceLevel === 3) detectSVGFilterSupport();
             fetchAndBuildGrid();

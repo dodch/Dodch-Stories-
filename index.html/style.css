@@ -12,6 +12,7 @@
   --blue-tint:#00aaff;
   --purple-tint:#a366ff;
   --red-tint:#ff3366;
+  --green-tint: #4ade80; /* A nice, vibrant light green */
   --golden-tint:gold;
   --glass-bg:color-mix(in srgb,var(--tint-color) 10%,transparent);
   --glass-text:#f0f0f0;
@@ -51,6 +52,7 @@
     --blue-tint:#00aaff;
     --purple-tint:#a366ff;
     --red-tint:#ff3366;
+    --green-tint: #4ade80;
     --golden-tint:gold;
     --glass-bg:rgba(0,0,0,0.35);
     --glass-text:#f0f0f0;
@@ -82,6 +84,7 @@ body.dark-mode {
   --blue-tint:#00aaff;
   --purple-tint:#a366ff;
   --red-tint:#ff3366;
+  --green-tint: #4ade80;
   --golden-tint:gold;
   --glass-bg:rgba(0,0,0,0.35);
   --glass-text:#f0f0f0;
@@ -217,21 +220,23 @@ body.svg-filter-supported .glass-container {
 /* --- NEW: 3-Tier Performance Level Adjustments --- */
 
 /* Level 1 (Weak): No blur, simple transparency. */
-.perf-level-1 .glass-container,
-.perf-level-1 .glass-button-base,
-.perf-level-1 .search-bar,
-.perf-level-1 .modal-panel,
-.perf-level-1 .info-panel {
+/* FIX: Increase specificity by adding 'body' to ensure these rules override the 'body.svg-filter-supported' rule. */
+/* REFACTOR: Create an even more specific selector to win the specificity war against the .svg-filter-supported rule. */
+/* FIX: Remove .glass-button-base from this rule. Buttons have their own specific solid colors for level 1. */
+body.perf-level-1 .glass-container, body.perf-level-1 .search-bar, body.perf-level-1 .modal-panel, body.perf-level-1 .info-panel,
+body.perf-level-1.svg-filter-supported .glass-container,
+body.perf-level-1.svg-filter-supported .search-bar,
+body.perf-level-1.svg-filter-supported .modal-panel,
+body.perf-level-1.svg-filter-supported .info-panel {
     -webkit-backdrop-filter: none;
-    backdrop-filter: none;
+    backdrop-filter: none !important;
     box-shadow: var(--glass-shadow); /* FIX: Restore glass border for grids and panels */
-    background: linear-gradient(145deg, #4a5568, #2d3748); /* NEW: Nice solid gradient */
+    background: linear-gradient(145deg, #4a5568, #2d3748) !important; /* NEW: Nice solid gradient */
     color: #ffffff;
 }
-body.dark-mode .perf-level-1 .glass-container,
 body.dark-mode .perf-level-1 .modal-panel,
 body.dark-mode .perf-level-1 .info-panel {
-    background: linear-gradient(145deg, #2d3748, #1a202c); /* NEW: Darker solid gradient */
+    background: linear-gradient(145deg, #2d3748, #1a202c) !important; /* NEW: Darker solid gradient */
 }
 /* FIX: Add a specific rule for favorited cards in level 1 to ensure they turn pink. */
 .perf-level-1 .glass-container.favorited {
@@ -240,29 +245,37 @@ body.dark-mode .perf-level-1 .info-panel {
 body.dark-mode .perf-level-1 .glass-container.favorited {
     background: linear-gradient(145deg, #c12a4d, #a855f7, #6d28d9); /* NEW: Darker multi-color gradient */
 }
-/* NEW: Solid backgrounds for buttons on level 1, preserving their color identity */
-.perf-level-1 .glass-button-base,
-.perf-level-1 .search-bar {
+/* FIX: Increase specificity for solid button backgrounds on level 1. */
+body.perf-level-1 .glass-button-base, body.perf-level-1 .search-bar,
+body.perf-level-1.svg-filter-supported .glass-button-base,
+body.perf-level-1.svg-filter-supported .search-bar {
     background: none; /* FIX: Remove default transparent background before applying solid color. */
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     box-shadow: var(--glass-shadow); /* NEW: Restore glass border for buttons */
 }
 /* FIX: Increase specificity to ensure solid colors are applied correctly. */
-.perf-level-1 .search-button, .perf-level-1 .search-bar, .perf-level-1 #contactBtn.floating-button {
+body.perf-level-1 .search-button, body.perf-level-1 .search-bar {
     background-color: var(--blue-tint);
 }
-.perf-level-1 #filterBtn.floating-button {
+body.perf-level-1 #contactBtn.floating-button {
+    background-color: var(--green-tint);
+}
+body.perf-level-1 #filterBtn.floating-button {
     background-color: var(--red-tint);
 }
-.perf-level-1 #infoButton.info-button {
+body.perf-level-1 #infoButton.info-button {
     background-color: var(--red-tint);
 }
-.perf-level-1 #perfBtn.floating-button {
-    background-color: var(--golden-tint);
+body.perf-level-1 #perfBtn.floating-button {
+    background-color: var(--golden-tint) !important;
 }
-body.dark-mode .perf-level-1 .search-button, body.dark-mode .perf-level-1 .search-bar, body.dark-mode .perf-level-1 #contactBtn.floating-button {
+/* FIX: Increase specificity for dark mode solid button backgrounds on level 1. */
+body.dark-mode.perf-level-1 .search-button, body.dark-mode.perf-level-1 .search-bar {
     background-color: #005a8c; /* Dark solid blue */
+}
+body.dark-mode.perf-level-1 #contactBtn.floating-button {
+    background-color: #166534; /* Dark solid green */
 }
 body.dark-mode .perf-level-1 #filterBtn.floating-button {
     background-color: #a62244; /* Dark solid red */
@@ -466,7 +479,7 @@ body:not(.is-scrolling) .search-bar:hover {
   animation: jello-wobble 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   /* FIX: Reset the transition delay so it becomes visible immediately. */
   transition-delay: 0s;
-  width:250px;
+  width:300px; /* FIX: Extended the search bar width for better usability. */
   padding: 0 20px; /* Reset padding to normal */
   opacity:1;
   visibility:visible;
@@ -497,7 +510,7 @@ body:not(.is-scrolling) .search-button:hover, .search-button:focus-visible {
   box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 50%, transparent), var(--button-shadow);
 }
 .search-button.active {
-  background-color: var(--red-tint);
+  background-color: var(--red-tint) !important; /* FIX: Ensure the red color is applied when active. */
 }
 body:not(.is-scrolling) .search-button.active:hover, .search-button.active:focus-visible {
   /* FIX: Add a red glow on hover when the button is active (showing the 'X'). */
@@ -634,34 +647,36 @@ body:not(.is-scrolling) .favorite-btn:hover, .favorite-btn:focus-visible {
   transition: all 0.3s ease-in-out;
   overflow: hidden; /* Contain the shine effect */
   transform-origin: center;
-  /* REFACTOR: Start button as invisible for fade-in animation. */
+  /* FIX: Set the initial state for the load animation, previously handled by JS. */
   opacity: 0;
   transform: scale(0.95);
-}
-body:not(.is-scrolling) .floating-button:hover, .floating-button:focus-visible {
-  /* REFACTOR: Combine the glow with the base button shadow for a more integrated look. */
-  transform: scale(1.05);
-  box-shadow: 0 0 25px 5px color-mix(in srgb, var(--purple-tint) 50%, transparent), var(--button-shadow);
 }
 #filterBtn.floating-button {
     background-color: color-mix(in srgb,var(--red-tint) 20%,transparent);
 }
+/* FIX: Remove generic hover rule that was causing color conflicts.
+   Each button now has its own specific hover rule. */
 body:not(.is-scrolling) #filterBtn.floating-button:hover, #filterBtn.floating-button:focus-visible {
+    transform: scale(1.05);
     box-shadow: 0 0 25px 5px color-mix(in srgb, var(--red-tint) 50%, transparent), var(--button-shadow);
 }
+/* FIX: Change contact button to use the new green tint. */
 #contactBtn.floating-button {
-    background-color: color-mix(in srgb,var(--blue-tint) 20%,transparent);
+    background-color: color-mix(in srgb,var(--green-tint) 20%,transparent);
 }
 body:not(.is-scrolling) #contactBtn.floating-button:hover, #contactBtn.floating-button:focus-visible {
-    box-shadow: 0 0 25px 5px color-mix(in srgb, var(--blue-tint) 50%, transparent), var(--button-shadow);
+    transform: scale(1.05);
+    box-shadow: 0 0 25px 5px color-mix(in srgb, var(--green-tint) 50%, transparent), var(--button-shadow);
 }
 /* NEW: Style for the performance button */
 #perfBtn.floating-button {
     background-color: color-mix(in srgb, var(--golden-tint) 20%, transparent);
-    /* NEW: Hide the button by default for the easter egg feature. */
+    /* FIX: Hide the button by default. The easter egg JS will override this with an inline style. */
+    opacity: 0;
     pointer-events: none;
 }
 body:not(.is-scrolling) #perfBtn.floating-button:hover, #perfBtn.floating-button:focus-visible {
+    transform: scale(1.05);
     box-shadow: 0 0 25px 5px color-mix(in srgb, var(--golden-tint) 50%, transparent), var(--button-shadow);
 }
 .floating-button svg{
@@ -740,7 +755,7 @@ body:not(.is-scrolling) #perfBtn.floating-button:hover, #perfBtn.floating-button
     padding: 20px; /* Adjust padding for mobile */
   }
   .search-bar.active {
-    width: 180px;
+    width: 220px; /* FIX: Extended the search bar width for mobile. */
     padding: 0 15px;
     margin-right: 0.5rem;
   }
@@ -1202,9 +1217,8 @@ body.info-panel-open .info-button {
 /* FIX: Make the selector more specific to only target the main grid cards, not cards inside a modal. */
 body.info-panel-open .grid > .glass-container:hover,
 body.info-panel-open .grid > .series-stack:hover,
-body.info-panel-open .top-right-fixed-wrapper .search-button:hover,
-body.info-panel-open .floating-buttons-container .floating-button:hover {
-  transform: none;
+/* FIX: Corrected the selector to restore button hover effects. This now only disables 3D tilt on grid cards. */
+body.info-panel-open .top-right-fixed-wrapper .search-button:hover {
   box-shadow: var(--glass-shadow); /* Resets to the default shadow */
   cursor: default;
   pointer-events: none; /* Strongest way to prevent interaction */
