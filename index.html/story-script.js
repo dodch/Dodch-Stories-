@@ -310,14 +310,13 @@ function closePopup() {
         // FIX: On touch devices, briefly block re-opening the popup to prevent ghost clicks.
         const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
         if (isTouchDevice) {
-            blockPopupTrigger = true;
-            setTimeout(() => { blockPopupTrigger = false; }, 300); // Unblock after a short delay.
+      blockPopupTrigger = true;
+      setTimeout(() => { blockPopupTrigger = false; }, 300); // Unblock after a short delay.
         }
-
         if (!popupInner.classList.contains('active')) {
-            popup.style.display = 'none';
+      popup.style.display = 'none';
         }
-    }, 400);
+  }, 400);
 }
 
 function savePosition() {
@@ -427,17 +426,16 @@ function handleDarkModeChange(mediaQuery) {
 }
 
 function addTapAnimation(element) {
+  // TOUCH OPTIMIZATION: Unified tap animation logic for consistency across all pages.
   element.addEventListener('pointerdown', () => {
     element.classList.add('squash');
   });
   element.addEventListener('pointerup', () => {
     element.classList.remove('squash');
-    // Ensure jello animation can be re-triggered
     element.classList.remove('jello');
     void element.offsetWidth; // force reflow
     element.classList.add('jello');
   });
-  // Also remove squash if the pointer leaves the button while pressed
   element.addEventListener('pointerleave', () => {
     element.classList.remove('squash');
   });
@@ -491,8 +489,8 @@ function initializeShineEffect() {
     }
 
     let pointer = { x: -9999, y: -9999 };
-    const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-    let isTouching = false; // Track if a touch is currently active
+    // TOUCH OPTIMIZATION: Determine if it's a touch device once and reuse the result.
+    const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);    let isTouching = false; // Track if a touch is currently active
     let isAnimating = false;
 
     function ensureAnimating() {

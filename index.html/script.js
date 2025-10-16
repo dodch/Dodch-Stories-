@@ -230,7 +230,6 @@ function saveState() {
   const searchBar = document.getElementById('searchInput');
   localStorage.setItem('showingFavorites', showingFavorites);
   localStorage.setItem('searchValue', searchBar.value);
-  const favoriteTitles = [];
 }
 
 function initializeHeartColor() {
@@ -486,6 +485,13 @@ async function fetchAndBuildGrid() {
           s.vyOffset += parallaxImpulse;
 
           // 3. Subtle scale reaction to scroll, also moderated by speedFactor.
+          // TOUCH OPTIMIZATION: Add a "follow-through" or inertia effect for touch scrolling.
+          // When a touch scroll ends, the delta will be 0, but isTouching will be false.
+          // We can use this to apply a final velocity impulse that then dampens out.
+          if (isTouchDevice && !isTouching && Math.abs(s.vy) < 0.1) { // Check if touch just ended
+              s.vyOffset += delta * -0.05; // Apply a smaller, lingering impulse
+          }
+
           const scrollImpulse = delta * 0.002 * speedFactor * (1 - dist); // TUNED: Further reduced base intensity for a more subtle scale effect.
 
           // 4. Perspective skew based on vertical position. TUNED: Reduced base intensity.
@@ -775,7 +781,7 @@ async function fetchAndBuildGrid() {
 
     // Add jello effect on click to each grid panel
     panels.forEach(panel => {
-      // We use 'pointerdown' as it feels more responsive than 'click'
+      // TOUCH OPTIMIZATION: Use 'pointerdown' with `{ passive: true }` for maximum responsiveness on tap.
       panel.addEventListener('pointerdown', () => applyJelloToGrid(panel), { passive: true });
     });
 

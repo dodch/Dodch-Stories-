@@ -284,12 +284,12 @@ body.dark-mode {
 /* REFACTOR: Create an even more specific selector to win the specificity war against the .svg-filter-supported rule. */
 /* FIX: Remove .glass-button-base from this rule. Buttons have their own specific solid colors for level 1. */
 body.perf-level-1 #popup > div, body.perf-level-1 #content,
-body.perf-level-1.svg-filter-supported #popup > div,
-body.perf-level-1.svg-filter-supported #content {
+body.perf-level-1.svg-filter-supported #popup > div {
     background: none;
     -webkit-backdrop-filter: none !important;
     backdrop-filter: none !important;
-    box-shadow: var(--glass-shadow-light); /* NEW: Restore glass border for buttons */
+    /* FIX: Use the correct light/dark shadow variable */
+    box-shadow: var(--glass-shadow-light);
     background-color: transparent !important; /* FIX: Force remove the default transparent color */
 }
 body.perf-level-1 #content, body.perf-level-1 #popup > div {
@@ -304,9 +304,11 @@ body.perf-level-1 button.back-home-button-custom {
 }
 
 body.dark-mode.perf-level-1 .glass-button-base,
-body.dark-mode.perf-level-1 #popup > div,
-body.dark-mode.perf-level-1 #content {
-    box-shadow: var(--glass-shadow-dark); /* NEW: Restore glass border for buttons */
+body.dark-mode.perf-level-1 #popup > div {
+    background: none;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    box-shadow: var(--glass-shadow-dark);
     background-color: transparent !important;
 }
 body.dark-mode.perf-level-1 #content, body.dark-mode.perf-level-1 #popup > div {
@@ -334,8 +336,8 @@ body.dark-mode.perf-level-1 button.back-home-button-custom {
     position: relative;
     z-index: 0;
     width: 100%;
-    /* FIX: Add padding to the main wrapper to push all content below the fixed header buttons. */
-    padding-top: 8rem;
+    /* REFACTOR: Use a larger, more reliable padding value to prevent content from hiding under the fixed header. */
+    padding-top: 9rem;
     min-height: 100vh;
 }
 
