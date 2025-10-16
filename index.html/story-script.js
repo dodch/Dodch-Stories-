@@ -15,25 +15,38 @@ let performanceLevel = 3; // Default to highest
 
 // --- NEW: Unified Performance System (mirrors main script) ---
 async function benchmarkPerformance() {
+    // FIX: Use the more accurate FPS-based benchmark from the main script.
+    // This measures the device's ability to maintain a smooth frame rate, which is a better
+    // indicator of real-world rendering performance for the effects on this page.
     return new Promise(resolve => {
-        // This is a lightweight test that doesn't need a visible element.
+        const testElement = document.createElement('div');
+        testElement.style.cssText = 'position:absolute;top:0;left:0;width:100px;height:100px;opacity:0;pointer-events:none;';
+        document.body.appendChild(testElement);
+
+        let frameCount = 0;
+        const duration = 1000; // Run the test for 1 second.
+
+        function animate(time) {
+            // Animate the element to create a rendering load.
+            const progress = (time % duration) / duration;
+            testElement.style.transform = `rotate(${progress * 360}deg) scale(${1 + Math.sin(progress * Math.PI) * 0.1})`;
+            frameCount++;
+        }
+
         const startTime = performance.now();
-        let iterations = 50;
-        function runIteration(i) {
-            if (i < iterations) {
-                // Perform some CPU-bound tasks
-                let a = 0;
-                for (let j = 0; j < 1000000; j++) {
-                    a += Math.sqrt(j);
-                }
-                requestAnimationFrame(() => runIteration(i + 1));
+        function runTest(now) {
+            if (now - startTime < duration) {
+                animate(now);
+                requestAnimationFrame(runTest);
             } else {
-                const endTime = performance.now();
-                const duration = endTime - startTime;
-                resolve(duration);
+                // Calculate average FPS.
+                const fps = frameCount / (duration / 1000);
+                document.body.removeChild(testElement);
+                resolve(fps);
             }
         }
-        runIteration(0);
+
+        requestAnimationFrame(runTest);
     });
 }
 
@@ -49,12 +62,12 @@ async function determinePerformanceLevel() {
     }
 
     // --- Step 2: Run the benchmark for an objective performance score ---
-    const benchmarkDuration = await benchmarkPerformance();
-    console.log(`Benchmark Duration: ${benchmarkDuration}ms`);
+    const averageFps = await benchmarkPerformance();
+    console.log(`Benchmark Result: ~${Math.round(averageFps)} FPS`);
 
     let level;
-    if (benchmarkDuration > 750) { level = 1; } // Weak
-    else if (benchmarkDuration <= 350) { level = 3; } // Good
+    if (averageFps < 45) { level = 1; } // Weak
+    else if (averageFps >= 58) { level = 3; } // Good
     else { level = 2; } // Moderate
 
     // --- Step 3: Final sanity checks and overrides ---

@@ -1311,6 +1311,10 @@ body.info-panel-open #seriesModal .glass-content {
   padding-left: 0;
   gap: 1.5rem;
 }
+/* FIX: Add extra padding to the bottom of the tutorial content to create scroll space. */
+#tutorialPanel .info-content {
+  padding-bottom: 10vh; /* 10% of the viewport height */
+}
 #tutorialPanel .info-content li > div {
   line-height: 1.5;
 }
