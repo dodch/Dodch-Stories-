@@ -91,7 +91,7 @@ let blockPopupTrigger = false;
 const lightBackgroundDiv = document.querySelector('.fixed-background.light-background');
 const darkBackgroundDiv = document.querySelector('.fixed-background.dark-background');
 const contentDiv = document.getElementById('content');
-const textElement = document.getElementById('text');
+const textContainer = document.getElementById('text-container');
 const titleElement = document.getElementById('title');
 const backHomeButton = document.getElementById('back-home-button');
 const languageButtons = document.querySelectorAll('#ar-button, #fr-button, #en-button');
@@ -137,13 +137,13 @@ function changeLanguage(lang, fromLoad = false) {
         if (lang === 'ar') {
             contentDiv.dir = 'rtl';
             document.getElementById('popup-text').dir = 'rtl'; // FIX: Set popup text direction
-            textElement.style.textAlign = 'right';
+            textContainer.style.textAlign = 'right';
         } else {
             contentDiv.dir = 'ltr';
             document.getElementById('popup-text').dir = 'ltr'; // FIX: Revert popup text direction
-            textElement.style.textAlign = 'left';
+            textContainer.style.textAlign = 'left';
         }
-        textElement.innerHTML = '';
+        textContainer.innerHTML = '';
         if (rawText) {
             const lines = rawText.split('\n');
             let isFirstWordOfStory = true; // Flag to handle the very first word for the drop cap
@@ -246,13 +246,13 @@ function changeLanguage(lang, fromLoad = false) {
                         pElement.textContent = trimmedLine;
                     }
                 }
-                textElement.appendChild(pElement);
+                textContainer.appendChild(pElement);
             });
         } else {
              const noTextElement = document.createElement('p');
              noTextElement.classList.add('text-center', 'text-xl', 'text-gray-500');
              noTextElement.textContent = `No text available for ${lang.toUpperCase()}. Please add content to the raw text div.`;
-             textElement.appendChild(noTextElement);
+             textContainer.appendChild(noTextElement);
              console.warn(`No raw text found for language: ${lang}`);
         }
         setupStoryObserver();
@@ -446,7 +446,7 @@ function setupStoryObserver() {
         storyObserver.disconnect();
     }
 
-    const animatedItems = textElement.querySelectorAll('.story-anim-item');
+    const animatedItems = textContainer.querySelectorAll('.story-anim-item');
 
     storyObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
