@@ -1,5 +1,54 @@
+/***************************************************************************************************
+ *                                   ** DO NOT COPY - ALL RIGHTS RESERVED **
+ *
+ * This code is the exclusive property of Dodch Stories and its owner. Unauthorized copying,
+ * reproduction, modification, distribution, or any form of use of this code, in whole or in part,
+ * is strictly prohibited.
+ *
+ * The intellectual property rights, including copyright, for this software are protected by
+ * international laws and treaties. Any infringement of these rights will be pursued to the
+ * fullest extent of the law, which may include civil and criminal charges.
+ *
+ * Copyright (c) 2024 Dodch Stories. All rights reserved.
+ ***************************************************************************************************/
 // Disable right-click menu
 document.addEventListener('contextmenu', event => event.preventDefault());
+
+// --- NEW: Anti-Inspection and DevTools Detection ---
+
+/**
+ * This function attempts to detect if the browser's developer tools are open.
+ * It works by using a `debugger` statement, which only pauses execution when
+ * the developer tools are active. By measuring the time it takes to get past
+ * this statement, we can infer if the tools are open and then reload the page.
+ */
+function detectAndReloadOnDevTools() {
+    const threshold = 160; // Time in milliseconds to assume DevTools is open.
+
+    function check() {
+        const startTime = performance.now();
+        // This line will only cause a pause if DevTools is open.
+        debugger;
+        const endTime = performance.now();
+
+        if (endTime - startTime > threshold) {
+            // DevTools is open, reload the page immediately.
+            window.location.reload();
+        }
+    }
+
+    // Run the check on an interval to constantly monitor for DevTools.
+    setInterval(check, 1000);
+}
+
+// Block common keyboard shortcuts for opening DevTools.
+document.addEventListener('keydown', function(e) {
+    // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+    if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || (e.ctrlKey && e.keyCode === 85)) {
+        e.preventDefault();
+        window.location.reload();
+    }
+});
 
 // Global variables to store data and grid elements
 let panels = [];
@@ -1089,14 +1138,15 @@ async function initializePage(manualLevelOverride = null) {
         performanceLevel = manualLevelOverride;
         console.log(`Applying manually selected Performance Level: ${performanceLevel}`);
     } else {
-        // On a normal page load, clear any previous manual setting to force a fresh benchmark.
-        sessionStorage.removeItem('manualPerformanceLevel');
+        // FIX: On a normal page load, clear any manual setting from other pages to force a fresh benchmark.
+        // This prevents the back-forward cache on iOS from incorrectly applying a level set on a story page.
+        sessionStorage.removeItem('manualPerformanceLevel'); 
         const sessionLevel = sessionStorage.getItem('manualPerformanceLevel');
         if (sessionLevel) {
             performanceLevel = parseInt(sessionLevel, 10);
             console.log(`Using manually set Performance Level from session: ${performanceLevel}`);
         } else {
-        performanceLevel = await determinePerformanceLevel();
+            performanceLevel = await determinePerformanceLevel();
         }
     }
     applyPerformanceStyles(performanceLevel);

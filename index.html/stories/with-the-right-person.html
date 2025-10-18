@@ -1,4 +1,19 @@
 <!DOCTYPE html>
+<!--
+/***************************************************************************************************
+ *                                   ** DO NOT COPY - ALL RIGHTS RESERVED **
+ *
+ * This code is the exclusive property of Dodch Stories and its owner. Unauthorized copying,
+ * reproduction, modification, distribution, or any form of use of this code, in whole or in part,
+ * is strictly prohibited.
+ *
+ * The intellectual property rights, including copyright, for this software are protected by
+ * international laws and treaties. Any infringement of these rights will be pursued to the
+ * fullest extent of the law, which may include civil and criminal charges.
+ *
+ * Copyright (c) 2024 Dodch Stories. All rights reserved.
+ ***************************************************************************************************/
+-->
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
@@ -36,8 +51,36 @@
         :root {
             --main-bg-url-light: url('https://i.ibb.co/Zzm7fGQ7/IMG-2465.jpg');
             --main-bg-url-dark: url("https://i.ibb.co/F4BLKf9t/IMG-2305.jpg");
-no        }
+        }
     </style>
+    <!-- NEW: Immediate Anti-Inspection Script.
+         Placing this script in the <head> ensures it runs before the page content is rendered,
+         making it impossible to open DevTools without an immediate page reload. -->
+    <script>
+        // Disable right-click context menu globally.
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        (function() {
+            const check = () => {
+                const startTime = performance.now();
+                debugger;
+                const endTime = performance.now();
+                if (endTime - startTime > 160) {
+                    window.location.reload();
+                }
+            };
+            // Run the check immediately and on a fast interval.
+            check();
+            setInterval(check, 250);
+
+            // Block common keyboard shortcuts for DevTools.
+            window.addEventListener('keydown', e => {
+                if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
+                    window.location.reload();
+                }
+            });
+        })();
+    </script>
 </head>
 <body class="loading">
     <div id="loading-screen">
