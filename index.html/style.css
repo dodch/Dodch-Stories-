@@ -191,10 +191,6 @@ h1{margin:0 0 20px;}
   cursor:pointer;
   text-decoration: none;
   color: var(--glass-text);
-  position: relative;
-  /* PERFORMANCE TRICK: Tell the browser this is a self-contained component */
-  contain: layout style paint;
-  
   /* --- REFACTOR: Layered Backdrop-Filter --- */
   /* Layer 1: The Universal WebKit Blur (FOR iOS/SAFARI)
      This is a WebKit-only rule that provides the simple blur. iOS will apply this
