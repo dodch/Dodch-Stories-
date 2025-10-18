@@ -150,6 +150,11 @@ body::before {
   background-size: cover;
   background-repeat: no-repeat;
   z-index: -1;
+  /*
+    FIX: The Definitive iOS Backdrop-Filter Fix.
+    By applying `transform: translateZ(0)`, we force this pseudo-element (the background) onto its own compositing layer. This isolates it from the grid items, preventing the common iOS bug where `backdrop-filter` fails during animations or transforms, resulting in a stable and reliable blur effect on all devices.
+  */
+  transform: translateZ(0);
   transition: background-image 1s ease-in-out, background-color 1s ease-in-out;
 }
 /* Applies the dark background for the manual button toggle */
