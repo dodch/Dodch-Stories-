@@ -39,16 +39,16 @@
     --unselected-lang-text-light: #f0f0f0;
 }
 
-/* REFACTOR: Apply SVG filter using a more stable pseudo-element method. */
-body.svg-filter-supported.perf-level-2 #popup > div::before { /* REFACTOR: Target level 2 for high performance */
+/* REFACTOR: Apply SVG filter using a more stable pseudo-element method for the popup. */
+body.svg-filter-supported.perf-level-2 #popup > div::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  border-radius: 2rem; /* Match the parent's border-radius */
-  filter: url(#filter-popup);
+  border-radius: inherit; /* Match the parent's border-radius */
+  filter: url(#filter-popup) !important;
   /* This is a trick: we filter the background of the parent element */
   background: inherit;
   z-index: -1; /* Place it behind the content but in front of the main background */
@@ -80,8 +80,8 @@ body.dark-mode {
 .glass-button-base {
     background-color: var(--glass-bg-light);
     box-shadow: var(--button-shadow-light);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.5s ease, background-color 0.5s ease;
 }
 
@@ -181,15 +181,15 @@ body.dark-mode #back-home-button:hover, body.dark-mode #back-home-button:focus-v
 
 /* Custom styles for pop-up buttons to override glass background */
 #popup button.glass-button-base.bg-green-500 {
-    background-color: rgba(34, 197, 94, 0.8) !important;
-    backdrop-filter: blur(4px) !important;
-    -webkit-backdrop-filter: blur(4px) !important;
+    background-color: rgba(34, 197, 94, 0.8);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
 #popup button.glass-button-base.bg-red-500 {
-    background-color: rgba(239, 68, 68, 0.8) !important;
-    backdrop-filter: blur(4px) !important;
-    -webkit-backdrop-filter: blur(4px) !important;
+    background-color: rgba(239, 68, 68, 0.8);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
 /* Dark mode specific styles for the pop-up buttons */
@@ -457,9 +457,9 @@ button.tapped {
     margin-bottom: 1rem;
     transition: opacity 0.5s ease-in-out;
     opacity: 1;
-    background-color: var(--content-bg-light);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
+    background-color: var(--content-bg-light) !important;
+    backdrop-filter: blur(2px) !important;
+    -webkit-backdrop-filter: blur(2px) !important;
 }
 
 body.dark-mode #content {

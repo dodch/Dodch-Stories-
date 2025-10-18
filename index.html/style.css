@@ -190,10 +190,9 @@ h1{margin:0 0 20px;}
   /* PERFORMANCE TRICK: Tell the browser this is a self-contained component */
   contain: layout style paint;
 
-  /* --- Backdrop Filter Fallback --- */
-  /* Apply the simple blur universally. This will work on iOS Safari. */
-  -webkit-backdrop-filter: blur(var(--blur-radius));
-  backdrop-filter: blur(var(--blur-radius));
+  /* REFACTOR: Apply the simple blur universally as a fallback. This will work on iOS Safari. */
+  -webkit-backdrop-filter: blur(var(--blur-radius)) !important;
+  backdrop-filter: blur(var(--blur-radius)) !important;
 }
 
 /* FIX: Explicitly disable pointer events on cards during scroll to prevent unwanted CSS :hover effects. */
@@ -203,8 +202,8 @@ body.is-scrolling .glass-container {
 
 /* If JS detects SVG filter support, enhance the blur. This will NOT run on iOS. */
 body.svg-filter-supported .glass-container {
-  -webkit-backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
-  backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
+  -webkit-backdrop-filter: blur(var(--blur-radius)) url(#filter-hq) !important;
+  backdrop-filter: blur(var(--blur-radius)) url(#filter-hq) !important;
 }
 
 /* NEW: A simpler, performance-optimized blur for stacked cards */
