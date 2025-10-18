@@ -201,16 +201,12 @@ h1{margin:0 0 20px;}
 }
 
 /* RECONSTRUCTION: The Definitive SVG Enhancement Layer.
-   This uses a @supports query with the '-webkit-backdrop-filter' property.
-   - Chrome/Edge support this and will apply the enhanced filter.
-   - iOS/Safari/WebKit DO NOT support @supports with prefixed properties, so they will COMPLETELY IGNORE this entire block.
-   - Firefox will evaluate this as false and correctly fall back to the simple blur.
-   This is the most robust way to isolate iOS from the unsupported 'url()' value. */
-@supports (-webkit-backdrop-filter: url(#filter-hq)) {
-    .glass-container {
-        -webkit-backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
-        backdrop-filter: blur(var(--blur-radius)) url(#filter-hq); /* Standard property for browsers that support it */
-    }
+   This rule is now only applied if the body has BOTH svg-filter-supported
+   AND perf-level-2. This prevents iOS from ever trying to parse this rule on page load,
+   solving the race condition that made grids transparent. The JS check is now reliable. */
+body.svg-filter-supported.perf-level-2 .glass-container {
+  -webkit-backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
+  backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
 }
 
 /* --- NEW: 3-Tier Performance Level Adjustments --- */

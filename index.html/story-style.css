@@ -47,8 +47,8 @@ body.svg-filter-supported.perf-level-2 #popup > div::before {
   left: 0;
   right: 0;
   bottom: 0;
-  border-radius: inherit;
-  filter: url(#filter-popup);
+  border-radius: inherit; /* Match the parent's border-radius */
+  filter: url(#filter-popup); /* The SVG filter itself */
   /* This is a trick: we filter the background of the parent element */
   background: inherit;
   z-index: -1; /* Place it behind the content but in front of the main background */
@@ -80,8 +80,8 @@ body.dark-mode {
 .glass-button-base {
     background-color: var(--glass-bg-light);
     box-shadow: var(--button-shadow-light);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px); /* A simple, universal blur for all buttons */
+    -webkit-backdrop-filter: blur(4px); /* The WebKit version for Safari/iOS */
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.5s ease, background-color 0.5s ease;
 }
 
@@ -457,9 +457,9 @@ button.tapped {
     margin-bottom: 1rem;
     transition: opacity 0.5s ease-in-out;
     opacity: 1;
-    background-color: var(--content-bg-light);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
+    background-color: var(--content-bg-light); /* A subtle dark overlay for readability */
+    backdrop-filter: blur(2px); /* A very light blur for the main content area */
+    -webkit-backdrop-filter: blur(2px); /* The WebKit version */
 }
 
 body.dark-mode #content {

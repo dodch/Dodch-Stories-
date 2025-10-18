@@ -104,6 +104,20 @@ function addTapAnimation(element) {
   });
 }
 
+/**
+ * Checks if the browser truly supports SVG filters in backdrop-filter.
+ * This uses feature detection (`CSS.supports`) to ask the browser if it can handle the effect.
+ * Browsers with buggy implementations (like older versions of Safari on iOS) will correctly return 'false',
+ * preventing the enhanced filter from being applied and allowing a graceful fallback to the simple blur.
+ * If supported, it adds a class to the body to enable enhanced filters via CSS.
+ */
+function detectSVGFilterSupport() {
+  // For all other browsers, perform the feature check.
+  if (CSS.supports('backdrop-filter', 'url("#filter-hq")')) {
+    document.body.classList.add('svg-filter-supported');
+  }
+}
+
 // Helper function to highlight matching text
 function highlightText(text, query) {
   if (!query) return text;
@@ -1115,6 +1129,12 @@ async function initializePage(manualLevelOverride = null) {
         }
     }
     applyPerformanceStyles(performanceLevel);
+
+    // RECONSTRUCTION: Only run the SVG check if performance is high.
+    // This is the second part of the race condition fix.
+    if (performanceLevel === 2) {
+        detectSVGFilterSupport();
+    }
 
     const loadingScreen = document.getElementById('loadingScreen');
     animateButtonsOnLoad();
