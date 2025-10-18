@@ -143,10 +143,10 @@ function updateBookmarkIconState() {
     }
 }
 
-function changeLanguage(lang, fromLoad = false) {
-    if (contentDiv.classList.contains('content-fading') && !fromLoad) {
-         return;
-    }
+function changeLanguage(lang, fromLoad = false, isThemeChange = false) {
+    // REFACTOR: Allow theme changes to bypass the fade animation check.
+    if (contentDiv.classList.contains('content-fading') && !fromLoad && !isThemeChange) return;
+
     if (currentLanguage === lang && !fromLoad) {
          return;
     }
@@ -166,13 +166,8 @@ function changeLanguage(lang, fromLoad = false) {
          localStorage.setItem('preferredLanguage', lang);
     }
     const content = contentMap[lang];
-    contentDiv.classList.add('content-fading');
-    
-    // REFACTOR: Revert to a simple and reliable two-step animation process.
-    // This fixes the bug where the blur effect was not fading in smoothly.
-    setTimeout(() => {
-        // Step 1: After the fade-out is complete, update all the content.
-        titleElement.textContent = content.title;
+
+    const updateContent = () => {
         if (lang === 'ar') {
             contentDiv.dir = 'rtl';
             titleElement.style.textAlign = 'right';
@@ -186,6 +181,7 @@ function changeLanguage(lang, fromLoad = false) {
             document.getElementById('popup-text').dir = 'ltr';
             textContainer.style.textAlign = 'left';
         }
+        titleElement.textContent = content.title;
         textContainer.innerHTML = '';
         const rawTextElement = document.getElementById(content.rawTextId);
         const rawText = rawTextElement ? rawTextElement.textContent.trim() : '';
@@ -312,10 +308,25 @@ function changeLanguage(lang, fromLoad = false) {
                   scrollToSavedWord(false, false);
               }, 100);
         }
+    };
 
-        // Step 2: Now that the content is updated, remove the fading class to trigger the fade-in.
+    // REFACTOR: On initial page load, build the content immediately without a fade animation.
+    // For subsequent language changes, use the fade-out/fade-in animation.
+    if (fromLoad) {
+        updateContent();
+    } else {
+        contentDiv.classList.add('content-fading');
+        setTimeout(() => {
+            updateContent();
+            // After content is updated, remove the fading class to trigger the fade-in.
+            contentDiv.classList.remove('content-fading');
+        }, 500); // This timeout must match the CSS transition duration.
+    }
+
+    // If this is just a theme change, we don't want to fade, just re-apply styles.
+    if (isThemeChange) {
         contentDiv.classList.remove('content-fading');
-    }, 500); // This timeout must match the CSS transition duration for the fade-out.
+    }
 }
 
 // FIX: Handler for when the user first touches/clicks the text container.
@@ -477,20 +488,20 @@ function highlightWord() {
 function handleDarkModeChange(mediaQuery) {
     const wasDarkMode = body.classList.contains('dark-mode');
     const isNowDarkMode = mediaQuery.matches;
-
+    
     if (wasDarkMode === isNowDarkMode) return; // No change needed
 
     if (isNowDarkMode) {
-        body.classList.add('dark-mode');
+        document.documentElement.classList.add('dark-mode');
         lightBackgroundDiv.style.opacity = 0;
         darkBackgroundDiv.style.opacity = 1;
     } else {
-        body.classList.remove('dark-mode');
+        document.documentElement.classList.remove('dark-mode');
         lightBackgroundDiv.style.opacity = 1;
         darkBackgroundDiv.style.opacity = 0;
     }
     // Re-apply language to update styles correctly after the theme has changed.
-    changeLanguage(currentLanguage, true); // Use 'true' to prevent fade-out/fade-in
+    changeLanguage(currentLanguage, true, true); // Use 'true' for fromLoad and isThemeChange to prevent fade animation.
     highlightWord();
 }
 

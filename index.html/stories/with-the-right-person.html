@@ -57,6 +57,14 @@
          Placing this script in the <head> ensures it runs before the page content is rendered,
          making it impossible to open DevTools without an immediate page reload. -->
     <script>
+        // FIX: Add a pre-rendering script to prevent "flash of incorrect theme" (FOIT).
+        // This runs before the body is rendered, checks for the 'dark' preference,
+        // and applies a class to the <html> element immediately.
+        (function() {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark-mode');
+            }
+        })();
         // Disable right-click context menu globally.
         document.addEventListener('contextmenu', event => event.preventDefault());
 

@@ -56,7 +56,8 @@
     --unselected-lang-text-light: #f0f0f0;
 }
 
-body.dark-mode {
+/* REFACTOR: Apply dark mode styles based on a class on the <html> element. */
+html.dark-mode {
     --glass-bg-dark: rgba(0, 0, 0, 0.25);
     --glass-text-dark: #f0f0f0;
     /* REFACTOR: Update story page glass to match the advanced, multi-layered edge from the main page for consistency. */
@@ -81,6 +82,11 @@ body.dark-mode {
     --content-bg-dark: rgba(0, 0, 0, 0.4);
     --selected-lang-button-text: var(--save-button-text-dark);
     --unselected-lang-text-dark: #C084FC;
+}
+
+/* For backwards compatibility with the JS that adds the class to the body */
+body.dark-mode {
+    --dark-mode-properties: ; /* This is just a placeholder, the main logic is on html.dark-mode */
 }
 
 .glass-button-base {
@@ -109,7 +115,7 @@ body.dark-mode {
     display: none;
 }
 
-body.dark-mode .glass-button-base {
+html.dark-mode .glass-button-base, body.dark-mode .glass-button-base {
     background-color: var(--glass-bg-dark);
     box-shadow: var(--button-shadow-dark);
 }
@@ -120,7 +126,7 @@ body.dark-mode .glass-button-base {
     color: var(--save-button-text-light);
 }
 
-body.dark-mode .save-button-custom, body.dark-mode .selected-language {
+html.dark-mode .save-button-custom, body.dark-mode .save-button-custom, html.dark-mode .selected-language, body.dark-mode .selected-language {
     background-color: var(--save-button-bg-dark);
     color: var(--save-button-text-dark);
 }
@@ -131,7 +137,7 @@ body.dark-mode .save-button-custom, body.dark-mode .selected-language {
     font-size: 1.25rem;
 }
 
-body.dark-mode .back-home-button-custom {
+html.dark-mode .back-home-button-custom, body.dark-mode .back-home-button-custom {
     background-color: var(--back-button-bg-dark);
     color: var(--back-button-text-dark);
 }
@@ -159,10 +165,10 @@ body.dark-mode .back-home-button-custom {
 
 /* --- Button Hover Glow Effects --- */
 /* Purple/Violet Glow for Save and Language buttons */
-#save-progress-button:hover, #save-progress-button:focus-visible, .selected-language:hover, .selected-language:focus-visible, .unselected-language:hover, .unselected-language:focus-visible {
+button#save-progress-button:hover, button#save-progress-button:focus-visible, button.selected-language:hover, button.selected-language:focus-visible, button.unselected-language:hover, button.unselected-language:focus-visible {
     box-shadow: 0 0 25px 5px color-mix(in srgb, var(--save-button-bg-light) 70%, transparent), var(--button-shadow-light);
 }
-body.dark-mode #save-progress-button:hover, body.dark-mode #save-progress-button:focus-visible, body.dark-mode .selected-language:hover, body.dark-mode .selected-language:focus-visible, body.dark-mode .unselected-language:hover, body.dark-mode .unselected-language:focus-visible {
+body.dark-mode button#save-progress-button:hover, body.dark-mode button#save-progress-button:focus-visible, body.dark-mode button.selected-language:hover, body.dark-mode button.selected-language:focus-visible, body.dark-mode button.unselected-language:hover, body.dark-mode button.unselected-language:focus-visible {
     box-shadow: 0 0 25px 5px color-mix(in srgb, var(--save-button-bg-dark) 70%, transparent), var(--button-shadow-dark);
 }
 /* Red Glow for Back Home button */
@@ -216,8 +222,8 @@ body.dark-mode #back-home-button:hover, body.dark-mode #back-home-button:focus-v
     -webkit-backdrop-filter: blur(4px);
 }
 
-/* Dark mode specific styles for the pop-up buttons */
-body.dark-mode #popup button.bg-green-500 {
+/* REFACTOR: Dark mode specific styles for the pop-up buttons */
+html.dark-mode #popup button.bg-green-500, body.dark-mode #popup button.bg-green-500 {
     background-color: rgba(74, 222, 128, 0.4) !important;
 }
 
@@ -242,7 +248,7 @@ body {
     color: var(--main-text-color-light);
 }
 
-body.dark-mode {
+html.dark-mode, body.dark-mode {
     color: var(--main-text-color-dark);
 }
 
@@ -327,7 +333,7 @@ body.perf-level-1.svg-filter-supported #popup > div {
     background-color: transparent !important; /* FIX: Force remove the default transparent color */
 }
 body.perf-level-1 #content, body.perf-level-1 #popup > div {
-    background: linear-gradient(145deg, #4a5568, #2d3748) !important; /* NEW: Nice solid gradient */
+    background: linear-gradient(145deg, #4a5568, #2d3748) !important;
 }
 /* FIX: Definitive solid backgrounds for story page buttons on level 1 */
 body.perf-level-1 button.selected-language, body.perf-level-1 button.unselected-language, body.perf-level-1 button.save-button-custom {
@@ -337,7 +343,7 @@ body.perf-level-1 button.back-home-button-custom {
     background-color: var(--back-button-solid-light) !important;
 }
 
-body.dark-mode.perf-level-1 .glass-button-base,
+html.dark-mode.perf-level-1 .glass-button-base, body.dark-mode.perf-level-1 .glass-button-base,
 body.dark-mode.perf-level-1 #popup > div {
     background: none;
     -webkit-backdrop-filter: none !important;
@@ -345,13 +351,13 @@ body.dark-mode.perf-level-1 #popup > div {
     box-shadow: var(--glass-shadow-dark);
     background-color: transparent !important;
 }
-body.dark-mode.perf-level-1 #content, body.dark-mode.perf-level-1 #popup > div {
+html.dark-mode.perf-level-1 #content, body.dark-mode.perf-level-1 #content, html.dark-mode.perf-level-1 #popup > div, body.dark-mode.perf-level-1 #popup > div {
     background: linear-gradient(145deg, #2d3748, #1a202c) !important; /* NEW: Darker solid gradient */
 }
-body.dark-mode.perf-level-1 button.selected-language, body.dark-mode.perf-level-1 button.unselected-language, body.dark-mode.perf-level-1 button.save-button-custom {
+html.dark-mode.perf-level-1 button.selected-language, body.dark-mode.perf-level-1 button.selected-language, html.dark-mode.perf-level-1 button.unselected-language, body.dark-mode.perf-level-1 button.unselected-language, html.dark-mode.perf-level-1 button.save-button-custom, body.dark-mode.perf-level-1 button.save-button-custom {
     background-color: var(--save-button-solid-dark) !important;
 }
-body.dark-mode.perf-level-1 button.back-home-button-custom {
+html.dark-mode.perf-level-1 button.back-home-button-custom, body.dark-mode.perf-level-1 button.back-home-button-custom {
     background-color: var(--back-button-solid-dark) !important;
 }
 
@@ -398,11 +404,11 @@ body.loading #page-content-wrapper {
      opacity: 0;
 }
 
-body.dark-mode .fixed-background.light-background {
+html.dark-mode .fixed-background.light-background, body.dark-mode .fixed-background.light-background {
     opacity: 0;
 }
 
- body.dark-mode .fixed-background.dark-background {
+ html.dark-mode .fixed-background.dark-background, body.dark-mode .fixed-background.dark-background {
     opacity: 1;
 }
 
@@ -450,7 +456,7 @@ body.dark-mode .fixed-background.light-background {
 }
 
 
-body.dark-mode .selected-language {
+html.dark-mode .selected-language, body.dark-mode .selected-language {
      background-color: var(--save-button-bg-dark);
 }
 
@@ -487,7 +493,7 @@ button.tapped {
     -webkit-backdrop-filter: blur(2px);
 }
 
-body.dark-mode #content {
+html.dark-mode #content, body.dark-mode #content {
     background-color: var(--content-bg-dark);
 }
 
@@ -510,7 +516,7 @@ body.dark-mode #content {
     top: -2px;
 }
 
-body.dark-mode #text-container span:hover {
+html.dark-mode #text-container span:hover, body.dark-mode #text-container span:hover {
     color: var(--text-on-glass-dark) !important;
     text-shadow: 0 0 10px color-mix(in srgb, var(--text-on-glass-dark) 80%, transparent) !important;
     top: -2px;
@@ -548,10 +554,10 @@ body.dark-mode #text-container span:hover {
     pointer-events: auto;
 }
 
-body.dark-mode #popup button.bg-green-500:hover, body.dark-mode #popup button.bg-green-500:focus-visible {
+html.dark-mode #popup button.bg-green-500:hover, body.dark-mode #popup button.bg-green-500:hover, html.dark-mode #popup button.bg-green-500:focus-visible, body.dark-mode #popup button.bg-green-500:focus-visible {
     box-shadow: 0 0 15px 2px rgba(74, 222, 128, 0.7), var(--button-shadow-dark);
 }
-body.dark-mode #popup button.bg-red-500:hover, body.dark-mode #popup button.bg-red-500:focus-visible {
+html.dark-mode #popup button.bg-red-500:hover, body.dark-mode #popup button.bg-red-500:hover, html.dark-mode #popup button.bg-red-500:focus-visible, body.dark-mode #popup button.bg-red-500:focus-visible {
     box-shadow: 0 0 15px 2px rgba(252, 165, 165, 0.7), var(--button-shadow-dark);
 }
 
@@ -590,7 +596,7 @@ body.dark-mode #popup button.bg-red-500:hover, body.dark-mode #popup button.bg-r
     text-shadow: 0 0 10px color-mix(in srgb, var(--text-on-glass-light) 80%, transparent);
 }
 
-body.dark-mode .drop-cap:hover {
+html.dark-mode .drop-cap:hover, body.dark-mode .drop-cap:hover {
     color: var(--text-on-glass-dark);
     text-shadow: 0 0 12px color-mix(in srgb, var(--text-on-glass-dark) 80%, transparent);
 }
@@ -729,8 +735,8 @@ html {
     transform-origin: bottom center; /* Keep the origin for the settle rotation */
 }
 
-/* --- NEW: Dark Mode Bookmark Style --- */
-body.dark-mode .bookmarked-word::after {
+/* --- REFACTOR: Dark Mode Bookmark Style --- */
+html.dark-mode .bookmarked-word::after, body.dark-mode .bookmarked-word::after {
     /* REFACTOR: Use a vibrant blue gradient for better contrast in dark mode. */
     background: linear-gradient(135deg, #4f46e5, #3b82f6);
     /* REFACTOR: Use a light border for a crisp edge against the dark highlight. */
