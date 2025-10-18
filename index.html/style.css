@@ -196,13 +196,14 @@ h1{margin:0 0 20px;}
   backdrop-filter: blur(var(--blur-radius));
 }
 
-/* Layer 2: The SVG Enhancement (Bonus for supported browsers)
-   REFACTOR: This rule is now only applied if the body has BOTH svg-filter-supported
-   AND perf-level-2. This prevents iOS from ever trying to parse this rule on page load,
-   solving the race condition that made grids transparent. */
-body.svg-filter-supported.perf-level-2 .glass-container {
-  -webkit-backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
-  backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
+/* REFACTOR: Use a @supports query for the SVG enhancement. This is the most robust,
+   CSS-native way to apply the effect. It completely isolates iOS from the unsupported
+   'url()' value, fixing the transparency bug. The JS detection is no longer needed. */
+@supports (backdrop-filter: url('#filter-hq')) {
+  .glass-container {
+    -webkit-backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
+    backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
+  }
 }
 
 /* --- NEW: 3-Tier Performance Level Adjustments --- */
@@ -214,8 +215,7 @@ body.svg-filter-supported.perf-level-2 .glass-container {
 body.perf-level-1 .glass-container,
 body.perf-level-1 .search-bar,
 body.perf-level-1 .modal-panel,
-body.perf-level-1 .info-panel,
-body.perf-level-1.svg-filter-supported .glass-container {
+body.perf-level-1 .info-panel {
     -webkit-backdrop-filter: none;
     backdrop-filter: none !important; /* This !important is crucial to override all other filter rules for performance. */
     box-shadow: var(--glass-shadow); /* FIX: Restore glass border for grids and panels */
@@ -223,7 +223,6 @@ body.perf-level-1.svg-filter-supported .glass-container {
     color: #ffffff;
 }
 body.dark-mode .perf-level-1 .modal-panel,
-body.dark-mode.perf-level-1.svg-filter-supported .glass-container,
 body.dark-mode.perf-level-1 .glass-container,
 body.dark-mode.perf-level-1 .search-bar,
 body.dark-mode.perf-level-1 .modal-panel,
