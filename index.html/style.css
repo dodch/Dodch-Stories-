@@ -200,13 +200,16 @@ h1{margin:0 0 20px;}
   backdrop-filter: blur(var(--blur-radius));
 }
 
-/* Layer 3: The SVG Enhancement (FOR CHROME/EDGE)
-   This @supports query checks for the combined value. Only Chrome/Edge pass this.
-   It overrides the standard 'backdrop-filter' but leaves the '-webkit-backdrop-filter' untouched,
-   ensuring iOS is never exposed to the 'url()' value. */
-@supports (backdrop-filter: blur(var(--blur-radius)) url(#filter-hq)) {
+/* RECONSTRUCTION: The Definitive SVG Enhancement Layer.
+   This uses a @supports query with the '-webkit-backdrop-filter' property.
+   - Chrome/Edge support this and will apply the enhanced filter.
+   - iOS/Safari/WebKit DO NOT support @supports with prefixed properties, so they will COMPLETELY IGNORE this entire block.
+   - Firefox will evaluate this as false and correctly fall back to the simple blur.
+   This is the most robust way to isolate iOS from the unsupported 'url()' value. */
+@supports (-webkit-backdrop-filter: url(#filter-hq)) {
     .glass-container {
-        backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
+        -webkit-backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
+        backdrop-filter: blur(var(--blur-radius)) url(#filter-hq); /* Standard property for browsers that support it */
     }
 }
 
@@ -220,14 +223,13 @@ body.perf-level-1 .glass-container,
 body.perf-level-1 .search-bar,
 body.perf-level-1 .modal-panel,
 body.perf-level-1 .info-panel {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none !important; /* This !important is crucial to override all other filter rules for performance. */
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
     box-shadow: var(--glass-shadow); /* FIX: Restore glass border for grids and panels */
     background: linear-gradient(145deg, #4a5568, #2d3748) !important; /* NEW: Nice solid gradient */
     color: #ffffff;
 }
 body.dark-mode .perf-level-1 .modal-panel,
-body.dark-mode.perf-level-1 .glass-container,
 body.dark-mode.perf-level-1 .search-bar,
 body.dark-mode.perf-level-1 .modal-panel,
 body.dark-mode.perf-level-1 .info-panel {
@@ -235,6 +237,10 @@ body.dark-mode.perf-level-1 .info-panel {
 }
 body.dark-mode .perf-level-1 .info-panel {
     background: linear-gradient(145deg, #2d3748, #1a202c) !important; /* NEW: Darker solid gradient */
+}
+/* RECONSTRUCTION: A separate, high-specificity rule to ensure solid backgrounds on grid cards for level 1. */
+body.perf-level-1 .glass-container {
+    background: linear-gradient(145deg, #4a5568, #2d3748) !important;
 }
 /* FIX: Add a specific rule for favorited cards in level 1 to ensure they turn pink. */
 .perf-level-1 .glass-container.favorited {
