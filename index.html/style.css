@@ -189,22 +189,19 @@ h1{margin:0 0 20px;}
   position: relative;
   /* PERFORMANCE TRICK: Tell the browser this is a self-contained component */
   contain: layout style paint;
-
-  /* REFACTOR: Apply the simple blur universally. This is the fallback for iOS and low-perf devices. */
+  
+  /* --- REFACTOR: Layered Backdrop-Filter --- */
+  /* Layer 1: The Universal Blur (Fallback for iOS & low-perf devices) */
   -webkit-backdrop-filter: blur(var(--blur-radius));
   backdrop-filter: blur(var(--blur-radius));
 }
 
-/* FIX: Explicitly disable pointer events on cards during scroll to prevent unwanted CSS :hover effects. */
-body.is-scrolling .glass-container {
-  pointer-events: none;
-}
-
-/* REFACTOR: If JS detects SVG filter support, enhance the blur. This will NOT run on iOS.
-   The !important ensures this rule overrides the base .glass-container rule. */
+/* Layer 2: The SVG Enhancement (Bonus for supported browsers)
+   This rule is more specific, so it overrides the base blur on browsers
+   that have the .svg-filter-supported class. iOS will ignore this. */
 body.svg-filter-supported .glass-container {
-  -webkit-backdrop-filter: blur(var(--blur-radius)) url(#filter-hq) !important;
-  backdrop-filter: blur(var(--blur-radius)) url(#filter-hq) !important;
+  -webkit-backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
+  backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
 }
 
 /* --- NEW: 3-Tier Performance Level Adjustments --- */
@@ -219,7 +216,7 @@ body.perf-level-1 .modal-panel,
 body.perf-level-1 .info-panel,
 body.perf-level-1.svg-filter-supported .glass-container {
     -webkit-backdrop-filter: none;
-    backdrop-filter: none !important;
+    backdrop-filter: none !important; /* This !important is crucial to override all other filter rules for performance. */
     box-shadow: var(--glass-shadow); /* FIX: Restore glass border for grids and panels */
     background: linear-gradient(145deg, #4a5568, #2d3748) !important; /* NEW: Nice solid gradient */
     color: #ffffff;
