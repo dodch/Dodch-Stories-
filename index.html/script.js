@@ -104,20 +104,6 @@ function addTapAnimation(element) {
   });
 }
 
-/**
- * Checks if the browser truly supports SVG filters in backdrop-filter.
- * This uses feature detection (`CSS.supports`) to ask the browser if it can handle the effect.
- * Browsers with buggy implementations (like older versions of Safari on iOS) will correctly return 'false',
- * preventing the enhanced filter from being applied and allowing a graceful fallback to the simple blur.
- * If supported, it adds a class to the body to enable enhanced filters via CSS.
- */
-function detectSVGFilterSupport() {
-  // For all other browsers, perform the feature check.
-  if (CSS.supports('backdrop-filter', 'url("#filter-hq")')) {
-    document.body.classList.add('svg-filter-supported');
-  }
-}
-
 // Helper function to highlight matching text
 function highlightText(text, query) {
   if (!query) return text;
@@ -272,6 +258,9 @@ async function fetchAndBuildGrid() {
         // Use a special class for series parts to prevent them from being added to the main `panels` array for physics
         if (storyData.isPart) {
             card.classList.add('series-part-card');
+        }
+        if (options.simpleBlur) {
+            card.classList.add('simple-blur');
         }
 
         card.href = (storyData.path || '') + storyData.file;
@@ -874,11 +863,6 @@ async function fetchAndBuildGrid() {
     const closeSocialButton = document.getElementById('closeSocialButton');
     
     addTapAnimation(contactBtn);
-    // FIX: The contact button was missing a reference to the close button.
-    // This ensures the close button is correctly animated when the contact panel is opened.
-    const closeContactBtn = document.getElementById('closeContactButton');
-    addTapAnimation(closeContactBtn);
-
     addTapAnimation(closeContactButton);
     addTapAnimation(openSocialButton);
     addTapAnimation(closeSocialButton);
@@ -1051,6 +1035,19 @@ function setupScrollPerformance() {
 }
 
 /**
+ * Checks if the browser truly supports SVG filters in backdrop-filter.
+ * iOS Safari incorrectly reports 'true' for CSS @supports, so a JS check is more reliable.
+ * We will explicitly block Apple mobile devices from getting this feature to avoid the bug.
+ * If supported, it adds a class to the body to enable enhanced filters via CSS.
+ */
+function detectSVGFilterSupport() {
+  // For all other browsers, perform the feature check.
+  if (CSS.supports('backdrop-filter', 'url("#filter-hq")')) {
+    document.body.classList.add('svg-filter-supported');
+  }
+}
+
+/**
  * Shows a tutorial panel on the user's first visit.
  * Uses localStorage to track if the tutorial has been seen.
  */
@@ -1130,11 +1127,7 @@ async function initializePage(manualLevelOverride = null) {
     }
     applyPerformanceStyles(performanceLevel);
 
-    // RECONSTRUCTION: Only run the SVG check if performance is high.
-    // This is the second part of the race condition fix.
-    if (performanceLevel === 2) {
-        detectSVGFilterSupport();
-    }
+    if (performanceLevel === 2) detectSVGFilterSupport();
 
     const loadingScreen = document.getElementById('loadingScreen');
     animateButtonsOnLoad();
