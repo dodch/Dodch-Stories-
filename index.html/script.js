@@ -245,6 +245,9 @@ function loadSavedState() {
   const savedShowingFavorites = localStorage.getItem('showingFavorites');
   const savedSearchValue = localStorage.getItem('searchValue');
   const savedFavorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+  // FIX: Load the favorite counts from localStorage. This was the missing piece.
+  const savedLocalCounts = localStorage.getItem('localFavoriteCounts');
+  localFavoriteCounts = savedLocalCounts ? JSON.parse(savedLocalCounts) : {};
   showingFavorites = savedShowingFavorites === 'true';
   if (showingFavorites) {
     document.getElementById('filterBtn').classList.add('active');
@@ -602,7 +605,10 @@ async function fetchAndBuildGrid() {
 
       // --- REFACTOR: Smart Animation Loop ---
       // If total velocity is very low and we're allowed to stop, then stop the loop.
-      if (canStopAnimating && totalVelocity < 0.001 && delta === 0 && !isTouching) {
+      // FIX: Add a check for pointer influence. Keep animating for a short while after the pointer leaves
+      // to allow the cards to smoothly settle back to their resting state.
+      const isPointerInfluencing = document.querySelector('.glass-container[style*="--spotlight-opacity: 0;"]') === null;
+      if (canStopAnimating && totalVelocity < 0.001 && delta === 0 && !isTouching && !isPointerInfluencing) {
         isAnimating = false;
       } else {
         // Otherwise, keep the animation going.
@@ -687,15 +693,16 @@ async function fetchAndBuildGrid() {
     searchButton.addEventListener('click', () => {
       const isActive = searchBar.classList.toggle('active');
       searchButton.classList.toggle('active', isActive);
+      body.classList.toggle('search-active', isActive);
       
       if (isActive) {
         searchBar.focus();
-        infoContainerWrapper.classList.add('hidden'); 
+        // infoContainerWrapper.classList.add('hidden'); // This is now handled by CSS
       } else {
         // FIX: Ensure search is fully reset when closed
         searchBar.value = '';
         searchBar.blur();
-        infoContainerWrapper.classList.remove('hidden'); 
+        // infoContainerWrapper.classList.remove('hidden'); // This is now handled by CSS
         filterAndRenderPanels();
       }
       saveState();
@@ -788,6 +795,14 @@ async function fetchAndBuildGrid() {
         // Existing logic
         btn.setAttribute('aria-pressed', btn.classList.contains('active'));
         filterAndRenderPanels();
+
+        // FIX: Restore the logic to save the list of favorited stories to localStorage.
+        const favoritedTitles = panels
+            .filter(p => p.classList.contains('favorited'))
+            .map(p => p.querySelector('.title').dataset.originalTitle);
+        localStorage.setItem('favorites', JSON.stringify(favoritedTitles));
+        // Also save the local counts.
+        localStorage.setItem('localFavoriteCounts', JSON.stringify(localFavoriteCounts));
       });
     });
 

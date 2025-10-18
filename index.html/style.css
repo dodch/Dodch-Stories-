@@ -241,14 +241,13 @@ body.svg-filter-supported.perf-level-2 .glass-container {
 /* FIX: Increase specificity by adding 'body' to ensure these rules override the 'body.svg-filter-supported' rule. */
 /* REFACTOR: Create an even more specific selector to win the specificity war against the .svg-filter-supported rule.
    This ensures that the solid background for level 1 is always applied correctly. */
-body.perf-level-1 .glass-container,
 body.perf-level-1 .search-bar,
 body.perf-level-1 .modal-panel,
 body.perf-level-1 .info-panel {
     -webkit-backdrop-filter: none !important;
     backdrop-filter: none !important;
     box-shadow: var(--glass-shadow); /* FIX: Restore glass border for grids and panels */
-    background: linear-gradient(145deg, #4a5568, #2d3748) !important; /* NEW: Nice solid gradient */
+    background: linear-gradient(145deg, #4a5568, #2d3748) !important; /* Solid gradient for panels */
     color: #ffffff;
 }
 body.dark-mode .perf-level-1 .modal-panel,
@@ -260,22 +259,20 @@ body.dark-mode.perf-level-1 .info-panel {
 body.dark-mode .perf-level-1 .info-panel {
     background: linear-gradient(145deg, #2d3748, #1a202c) !important; /* NEW: Darker solid gradient */
 }
-/* RECONSTRUCTION: A separate, high-specificity rule to ensure solid backgrounds on grid cards for level 1. */
-body.perf-level-1 .glass-container {
-    background: linear-gradient(145deg, #4a5568, #2d3748) !important;
+/* RECONSTRUCTION: Apply the original gray gradient to non-favorited cards in performance level 1. */
+body.perf-level-1 .glass-container:not(.favorited) {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background: linear-gradient(145deg, #4a5568, #2d3748) !important; /* Original gray gradient */
 }
-/* FIX: Add a specific rule for favorited cards in level 1 to ensure they turn pink. */
-.perf-level-1 .glass-container.favorited {
-    background: linear-gradient(145deg, #ef4444, #d946ef, #8b5cf6); /* NEW: Richer, multi-color gradient */
+/* FIX: Consolidate and increase specificity for favorited cards in level 1 to ensure they get their unique gradient. */
+body.perf-level-1 .glass-container.favorited {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background: linear-gradient(145deg, #ef4444, #d946ef, #8b5cf6) !important; /* Richer, multi-color gradient */
 }
-body.dark-mode .perf-level-1 .glass-container.favorited {
-    background: linear-gradient(145deg, #c12a4d, #a855f7, #6d28d9); /* NEW: Darker multi-color gradient */
-}
-/* FIX: Increase specificity for solid button backgrounds on level 1. */
-body.perf-level-1 .glass-button-base, body.perf-level-1 .search-bar {
-    background: none; /* FIX: Remove default transparent background before applying solid color. */
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
+body.dark-mode.perf-level-1 .glass-container.favorited {
+    background: linear-gradient(145deg, #c12a4d, #a855f7, #6d28d9) !important; /* Darker multi-color gradient */
 }
 /* FIX: Increase specificity to ensure solid colors are applied correctly. */
 body.perf-level-1 .search-button, body.perf-level-1 .search-bar {
@@ -367,8 +364,18 @@ body.dark-mode .perf-level-1 #perfBtn.floating-button {
   pointer-events: none;
 }
 
-.glass-container.favorited{
-  background-color:color-mix(in srgb,var(--heart-active) 25%,transparent)
+.glass-container.favorited, body.dark-mode .glass-container.favorited {
+    /* FIX: Apply the gradient as a semi-transparent overlay to preserve the glass effect. */
+    /* The base --glass-bg provides the blur, and this gradient adds the color tint on top. */
+    background: 
+        linear-gradient(145deg, rgba(239, 68, 68, 0.4), rgba(217, 70, 239, 0.4), rgba(139, 92, 246, 0.4)),
+        var(--glass-bg);
+}
+
+body.dark-mode .glass-container.favorited {
+    background: 
+        linear-gradient(145deg, rgba(193, 42, 77, 0.4), rgba(168, 85, 247, 0.4), rgba(109, 40, 217, 0.4)),
+        var(--glass-bg);
 }
 .glass-content {
   text-align: left;
@@ -640,6 +647,15 @@ body:not(.is-scrolling) .favorite-btn:hover, .favorite-btn:focus-visible {
   display:flex;
   gap:1rem;
   z-index:10;
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+body.search-active .floating-buttons-container {
+  opacity: 0;
+  transform: scale(0.9);
+  pointer-events: none;
 }
 .floating-button{
   width:60px;
@@ -653,8 +669,7 @@ body:not(.is-scrolling) .favorite-btn:hover, .favorite-btn:focus-visible {
   background-color: color-mix(in srgb,var(--purple-tint) 40%,transparent);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  transition: background-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
-  transition: all 0.3s ease-in-out;
+  transition: background-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out, transform 0.3s ease-in-out, opacity 0.3s ease-in-out; /* FIX: Consolidate transitions */
   overflow: hidden; /* Contain the shine effect */
   transform-origin: center;
   /* FIX: Set the initial state for the load animation, previously handled by JS. */
@@ -965,9 +980,17 @@ body:not(.is-scrolling) .glass-container:hover .story-creator {
   display: flex;
   align-items: center;
   gap: 1rem;
-  transition: opacity 0.5s ease-in-out, visibility 0.5s; 
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
   transform: none; 
   padding: 0;
+}
+body.search-active .info-container-wrapper {
+  opacity: 0;
+  transform: scale(0.9);
+  pointer-events: none;
 }
 .info-container-wrapper.hidden {
   opacity: 0;
@@ -984,8 +1007,7 @@ body:not(.is-scrolling) .glass-container:hover .story-creator {
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: box-shadow 0.5s ease-in-out, background-color 0.5s ease-in-out;
-  transition: all 0.3s ease-in-out;
+  transition: box-shadow 0.5s ease-in-out, background-color 0.5s ease-in-out, transform 0.3s ease-in-out, opacity 0.3s ease-in-out; /* FIX: Consolidate transitions */
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   overflow: hidden; /* Contain the shine effect */

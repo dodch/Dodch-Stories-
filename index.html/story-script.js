@@ -156,24 +156,22 @@ function changeLanguage(lang, fromLoad = false) {
     }
     const content = contentMap[lang];
     contentDiv.classList.add('content-fading');
-
-    // FIX: Use requestAnimationFrame to schedule the DOM update.
-    // This synchronizes the content replacement with the browser's rendering cycle,
-    // preventing the "flicker" caused by the backdrop-filter being re-evaluated.
-    requestAnimationFrame(() => {
+    
+    // REFACTOR: Revert to a simple and reliable two-step animation process.
+    // This fixes the bug where the blur effect was not fading in smoothly.
     setTimeout(() => {
+        // Step 1: After the fade-out is complete, update all the content.
         titleElement.textContent = content.title;
-        // The backHomeTextSpan element does not exist, so this line is removed.
         if (lang === 'ar') {
             contentDiv.dir = 'rtl';
-            titleElement.style.textAlign = 'right'; // FIX: Align title to the right for Arabic.
-            document.getElementById('popup').querySelector('.flex.items-center').dir = 'rtl'; // FIX: Set popup title container direction
+            titleElement.style.textAlign = 'right';
+            document.getElementById('popup').querySelector('.flex.items-center').dir = 'rtl';
             document.getElementById('popup-text').dir = 'rtl';
             textContainer.style.textAlign = 'right';
         } else {
             contentDiv.dir = 'ltr';
-            titleElement.style.textAlign = 'left'; // FIX: Revert title alignment for LTR languages.
-            document.getElementById('popup').querySelector('.flex.items-center').dir = 'ltr'; // FIX: Revert popup title container direction
+            titleElement.style.textAlign = 'left';
+            document.getElementById('popup').querySelector('.flex.items-center').dir = 'ltr';
             document.getElementById('popup-text').dir = 'ltr';
             textContainer.style.textAlign = 'left';
         }
@@ -182,63 +180,51 @@ function changeLanguage(lang, fromLoad = false) {
         const rawText = rawTextElement ? rawTextElement.textContent.trim() : '';
         if (rawText) {
             const lines = rawText.split('\n');
-            let isFirstWordOfStory = true; // Flag to handle the very first word for the drop cap
+            let isFirstWordOfStory = true;
             lines.forEach((line, lIndex) => {
                 const trimmedLine = line.trim();
                 const pElement = document.createElement('p');
                 pElement.classList.add('mb-4', 'text-lg', 'leading-relaxed');
 
                 if (trimmedLine === '') {
-                    // Use a non-breaking space to ensure the paragraph has height
                     pElement.innerHTML = '&nbsp;';
-                } else { // If the line is not empty
-                    if (trimmedLine !== '⸻') { // And it's not the separator
-                        // FIX: Only add the animation class if performance level is not the lowest.
-                        if (performanceLevel > 1) { // This logic remains correct (only animate on High)
+                } else {
+                    if (trimmedLine !== '⸻') {
+                        if (performanceLevel > 1) {
                             pElement.classList.add('story-anim-item');
                         }
-                        
-                        // REFACTOR: New, definitive drop cap logic.
                         if (isFirstWordOfStory) {
-                            const firstWordMatch = trimmedLine.match(/\S+/); // Find the first sequence of non-space characters
+                            const firstWordMatch = trimmedLine.match(/\S+/);
                             if (firstWordMatch) {
                                 const firstWord = firstWordMatch[0];
                                 const firstLetter = firstWord.charAt(0);
                                 const restOfWord = firstWord.substring(1);
                                 const afterFirstWord = trimmedLine.substring(firstWordMatch.index + firstWord.length);
 
-                                // Create the drop cap span
                                 const dropCapSpan = document.createElement('span');
                                 dropCapSpan.className = 'drop-cap';
                                 dropCapSpan.textContent = firstLetter;
-                                
-                                // FIX: Adjust float for RTL languages like Arabic
                                 if (lang === 'ar') {
                                     dropCapSpan.style.float = 'right';
-                                    dropCapSpan.style.marginLeft = '0.5rem'; // Add some space for RTL
+                                    dropCapSpan.style.marginLeft = '0.5rem';
                                 }
                                 pElement.appendChild(dropCapSpan);
 
-                                // Create a span for the rest of the word if it exists
                                 const firstWordSpan = document.createElement('span');
                                 firstWordSpan.textContent = restOfWord;
-                                // Use a consistent ID structure for the first word.
                                 const uniqueId = `word-l${lIndex}-p0`;
                                 firstWordSpan.id = uniqueId;
                                 firstWordSpan.classList.add('cursor-pointer');
-                                // FIX: Use pointerup and prevent default to avoid double-firing on touch devices.
                                 firstWordSpan.addEventListener('pointerup', (e) => {
                                     e.preventDefault();
-                                    // FIX: Only handle the click if it wasn't part of a drag/scroll gesture.
                                     if (!isDragging) {
                                         handleWordClick(uniqueId, firstWord.trim());
                                     }
                                 });
                                 pElement.appendChild(firstWordSpan);
                                 
-                                // Process the rest of the line
                                 const remainingWords = afterFirstWord.trim().split(/\s+/);
-                                pElement.appendChild(document.createTextNode(' ')); // Add space after first word
+                                pElement.appendChild(document.createTextNode(' '));
                                 remainingWords.forEach((word, wIndex) => {
                                     if (word) {
                                         const wordSpan = document.createElement('span');
@@ -246,7 +232,6 @@ function changeLanguage(lang, fromLoad = false) {
                                         wordSpan.id = uniqueId;
                                         wordSpan.textContent = word;
                                         wordSpan.classList.add('cursor-pointer');
-                                        // FIX: Use pointerup and prevent default.
                                         wordSpan.addEventListener('pointerup', (e) => {
                                             e.preventDefault();
                                             if (!isDragging) {
@@ -257,13 +242,11 @@ function changeLanguage(lang, fromLoad = false) {
                                         pElement.appendChild(document.createTextNode(' '));
                                     }
                                 });
-
-                                isFirstWordOfStory = false; // We've processed the first word, don't do it again.
+                                isFirstWordOfStory = false;
                             } else {
-                                pElement.textContent = trimmedLine; // Fallback for lines without words
+                                pElement.textContent = trimmedLine;
                             }
                         } else {
-                            // For all other lines, split into words and create spans
                             const words = trimmedLine.split(/\s+/);
                             words.forEach((word, wIndex) => {
                                 if (word) {
@@ -272,7 +255,6 @@ function changeLanguage(lang, fromLoad = false) {
                                     wordSpan.id = uniqueId;
                                     wordSpan.textContent = word;
                                     wordSpan.classList.add('cursor-pointer');
-                                    // FIX: Use pointerup and prevent default.
                                     wordSpan.addEventListener('pointerup', (e) => {
                                         e.preventDefault();
                                         if (!isDragging) {
@@ -297,37 +279,32 @@ function changeLanguage(lang, fromLoad = false) {
              textContainer.appendChild(noTextElement);
              console.warn(`No raw text found for language: ${lang}`);
         }
-        // FIX: Add event listeners to the container to detect drag gestures.
         textContainer.removeEventListener('pointerdown', onPointerDown);
         textContainer.addEventListener('pointerdown', onPointerDown);
-
-        // Only add the move listener once to the window.
         if (!window.hasPointerMoveListener) {
             window.addEventListener('pointermove', onPointerMove, { passive: true });
             window.hasPointerMoveListener = true;
         }
-        // FIX: Add a listener to reset the drag state on scroll end.
         if (!window.hasScrollEndListener) {
             window.addEventListener('scrollend', () => { isDragging = false; });
             window.hasScrollEndListener = true;
         }
         setupStoryObserver();
-        // The save progress button now uses an icon, so this line is no longer needed.
         document.querySelector('#popup-title').textContent = content.savePosition;
         document.getElementById('popup').querySelector('.bg-green-500').textContent = content.save;
         document.getElementById('popup').querySelector('.bg-red-500').textContent = content.exit;
-        // REFACTOR: Update the bookmark icon state whenever the language changes.
         updateBookmarkIconState();
         highlightWord();
         const savedProgressForCurrentLang = allSavedProgress[storyKey] ? allSavedProgress[storyKey][currentLanguage] : null;
         if (fromLoad && savedProgressForCurrentLang && savedProgressForCurrentLang.id) {
               setTimeout(() => {
-                  scrollToSavedWord(false, false); // On initial load, scroll instantly
+                  scrollToSavedWord(false, false);
               }, 100);
         }
-            contentDiv.classList.remove('content-fading');
-        }, 500); // The timeout remains to match the CSS transition duration.
-    });
+
+        // Step 2: Now that the content is updated, remove the fading class to trigger the fade-in.
+        contentDiv.classList.remove('content-fading');
+    }, 500); // This timeout must match the CSS transition duration for the fade-out.
 }
 
 // FIX: Handler for when the user first touches/clicks the text container.

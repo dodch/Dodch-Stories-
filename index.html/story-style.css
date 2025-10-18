@@ -51,7 +51,7 @@
     --back-button-bg-dark: rgba(252, 165, 165, 0.25);
     --back-button-text-light: #ffffff;
     --back-button-text-dark: #ffffff;
-    --content-bg-light: rgba(0, 0, 0, 0.2);
+    --content-bg-light: rgba(0, 0, 0, 0.4);
     --selected-lang-button-text: var(--save-button-text-light);
     --unselected-lang-text-light: #f0f0f0;
 }
@@ -78,7 +78,7 @@ body.dark-mode {
     --pop-up-bg-dark: rgba(31, 41, 55, 0.9);
     --pop-up-text-dark: #f0f0f0;
     --text-on-glass-dark: #C084FC;
-    --content-bg-dark: rgba(0, 0, 0, 0.2);
+    --content-bg-dark: rgba(0, 0, 0, 0.4);
     --selected-lang-button-text: var(--save-button-text-dark);
     --unselected-lang-text-dark: #C084FC;
 }
@@ -135,23 +135,17 @@ body.dark-mode .back-home-button-custom {
     background-color: var(--back-button-bg-dark);
     color: var(--back-button-text-dark);
 }
-/* REFACTOR: The Definitive iOS Backdrop-Filter Fix for Story Pages.
-   By applying the backdrop-filter to a pseudo-element instead of the main element,
-   we isolate the blur effect onto its own compositing layer. This is the most reliable
-   method to prevent the blur from disappearing on iOS/Safari during scrolls or animations. */
-.glass-popup::before, #content::before {
+/* REFACTOR: Apply the blur effect only to the popup's pseudo-element. */
+.glass-popup::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
     z-index: -1;
     border-radius: inherit; /* Match the parent's border-radius */
     background-color: inherit; /* Inherit the semi-transparent background */
-    backdrop-filter: blur(2px); /* REFACTOR: Reduced blur from 4px to 2px for a subtler effect. */
-    -webkit-backdrop-filter: blur(2px);
-    /* Promote to its own layer to prevent flickering */
+    backdrop-filter: blur(4px); /* The SVG filter itself */
+    -webkit-backdrop-filter: blur(4px);
     transform: translateZ(0);
-    /* FIX: Add a transition to the pseudo-element to allow the blur to fade in and out smoothly with the parent. */
-    transition: opacity 0.5s ease-in-out;
 }
 
 .glass-popup {
@@ -487,7 +481,10 @@ button.tapped {
     margin-bottom: 1rem;
     transition: opacity 0.5s ease-in-out;
     opacity: 1;
-    background-color: var(--content-bg-light); /* A subtle dark overlay for readability */
+    background-color: var(--content-bg-light);
+    /* REVERT: Restore the original, simple blur implementation that correctly animates with opacity. */
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
 }
 
 body.dark-mode #content {
