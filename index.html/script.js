@@ -716,16 +716,33 @@ async function fetchAndBuildGrid() {
 
     // NEW: Add a fix for mobile keyboard behavior.
     // When the search input is focused, add a class to the body to adjust fixed element positioning.
+    // REFACTOR: Implement a more robust iOS keyboard layout fix.
     searchBar.addEventListener('focus', () => {
-        // FIX: Only apply the keyboard fix on touch devices to prevent unwanted movement on desktop.
         const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
         if (isTouchDevice) {
-            document.body.classList.add('keyboard-active');
+            // 1. Immediately capture the current scroll position.
+            const scrollY = window.scrollY;
+            
+            // 2. Instantly apply the scroll position as an inline style to the fixed elements.
+            // This "locks" them in place *before* the browser can reflow the page due to the keyboard.
+            document.querySelectorAll('.top-left-fixed-wrapper, .top-right-fixed-wrapper, .floating-buttons-container').forEach(el => {
+                el.style.top = `${scrollY}px`;
+            });
+
+            // 3. Use requestAnimationFrame to apply the class change on the next paint cycle.
+            // This ensures the visual transition is smooth and avoids race conditions.
+            requestAnimationFrame(() => {
+                document.body.classList.add('keyboard-active');
+            });
         }
     });
     // When the search input is blurred, remove the class.
     searchBar.addEventListener('blur', () => {
         document.body.classList.remove('keyboard-active');
+        // Clean up the inline styles when the keyboard is dismissed.
+        document.querySelectorAll('.top-left-fixed-wrapper, .top-right-fixed-wrapper, .floating-buttons-container').forEach(el => {
+            el.style.top = '';
+        });
     });
 
     searchBar.addEventListener('input', filterAndRenderPanels);
