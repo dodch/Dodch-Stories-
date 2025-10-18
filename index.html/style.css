@@ -754,6 +754,14 @@ body:not(.is-scrolling) #perfBtn.floating-button:hover, #perfBtn.floating-button
   /* FIX: Promote the entire container to its own layer to fully isolate the animation from the main grid. */
   will-change: transform;
   transform: translateZ(0);
+  /* NEW: Add transition for smooth fade-out when search is active. */
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+/* NEW: Hide the notification text when the search bar is active. */
+body.search-active > .notifications-container {
+  opacity: 0;
+  transform: scale(0.95);
+  pointer-events: none;
 }
 .notifications-container .notification-item{
   color:var(--notification-text);font-size:1.25rem;font-weight:bold;
