@@ -191,19 +191,23 @@ h1{margin:0 0 20px;}
   contain: layout style paint;
   
   /* --- REFACTOR: Layered Backdrop-Filter --- */
-  /* Layer 1: The Universal Blur (Fallback for iOS & low-perf devices) */
+  /* Layer 1: The Universal WebKit Blur (FOR iOS/SAFARI)
+     This is a WebKit-only rule that provides the simple blur. iOS will apply this
+     and ignore the standard 'backdrop-filter' rule below because this one is more specific to its engine. */
   -webkit-backdrop-filter: blur(var(--blur-radius));
+
+  /* Layer 2: The Standard Blur (Fallback for Firefox/other non-SVG browsers) */
   backdrop-filter: blur(var(--blur-radius));
 }
 
-/* REFACTOR: Use a @supports query for the SVG enhancement. This is the most robust,
-   CSS-native way to apply the effect. It completely isolates iOS from the unsupported
-   'url()' value, fixing the transparency bug. The JS detection is no longer needed. */
-@supports (backdrop-filter: url('#filter-hq')) {
-  .glass-container {
-    -webkit-backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
-    backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
-  }
+/* Layer 3: The SVG Enhancement (FOR CHROME/EDGE)
+   This @supports query checks for the combined value. Only Chrome/Edge pass this.
+   It overrides the standard 'backdrop-filter' but leaves the '-webkit-backdrop-filter' untouched,
+   ensuring iOS is never exposed to the 'url()' value. */
+@supports (backdrop-filter: blur(var(--blur-radius)) url(#filter-hq)) {
+    .glass-container {
+        backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
+    }
 }
 
 /* --- NEW: 3-Tier Performance Level Adjustments --- */

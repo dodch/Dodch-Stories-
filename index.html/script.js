@@ -860,6 +860,11 @@ async function fetchAndBuildGrid() {
     const closeSocialButton = document.getElementById('closeSocialButton');
     
     addTapAnimation(contactBtn);
+    // FIX: The contact button was missing a reference to the close button.
+    // This ensures the close button is correctly animated when the contact panel is opened.
+    const closeContactBtn = document.getElementById('closeContactButton');
+    addTapAnimation(closeContactBtn);
+
     addTapAnimation(closeContactButton);
     addTapAnimation(openSocialButton);
     addTapAnimation(closeSocialButton);
