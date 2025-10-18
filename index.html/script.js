@@ -259,9 +259,6 @@ async function fetchAndBuildGrid() {
         if (storyData.isPart) {
             card.classList.add('series-part-card');
         }
-        if (options.simpleBlur) {
-            card.classList.add('simple-blur');
-        }
 
         card.href = (storyData.path || '') + storyData.file;
         // FIX: Only apply 'no-link' to actual stories, not to the series cover card.
