@@ -456,60 +456,39 @@ async function fetchAndBuildGrid() {
       visiblePanels.forEach((card) => {
         const s = state.get(card);
         if (!s || card.classList.contains('physics-disabled')) return; // Skip physics if disabled
- // TUNED: Reduced springiness for a smoother feel.
-        // Ensure s.offsetTop and s.height are valid numbers before calculation
+
         const cardTop = typeof s.offsetTop === 'number' ? s.offsetTop : 0;
         const cardHeight = typeof s.height === 'number' ? s.height : 0;
         const cardCenter = cardTop + cardHeight / 2;
         const distFromCenter = Math.abs(cardCenter - center);
 
-        // Only calculate physics if the card is reasonably close to the viewport center
         if (distFromCenter < vh) {
           const dist = distFromCenter / vh;
-          
-          // --- REFACTOR: Velocity-based animation intensity ---
-          // 1. Create a "speed factor" that increases with scroll speed (delta).
-          // This makes fast scrolls more dramatic and slow scrolls more subtle.
           const scrollSpeed = Math.abs(delta);
-          const speedFactor = clamp(1 + scrollSpeed / 150, 1, 1.5); // TUNED: Further reduced speed factor ramp-up and max value for less intensity.
+          const speedFactor = clamp(1 + scrollSpeed / 150, 1, 1.5);
 
-          // 2. Parallax "follow-through" effect, now moderated by speedFactor.
-          // TUNED: Reduced base intensity for a more subtle effect on slow scrolls.
-          const parallaxImpulse = delta * -0.07 * speedFactor * (1 - dist); // TUNED: Further reduced base intensity for a gentler parallax.
-          s.vyOffset += parallaxImpulse;
+          // REFACTOR: Implement a "Jello" scroll effect instead of the complex physics.
+          // 1. Calculate a "squash" factor based on scroll velocity (delta).
+          // A negative delta (scrolling down) squashes vertically, a positive delta (scrolling up) squashes horizontally.
+          const squashFactor = delta * -0.0015 * speedFactor * (1 - dist);
 
-          // 3. Subtle scale reaction to scroll, also moderated by speedFactor.
-          // TOUCH OPTIMIZATION: Add a "follow-through" or inertia effect for touch scrolling.
-          // When a touch scroll ends, the delta will be 0, but isTouching will be false.
-          // We can use this to apply a final velocity impulse that then dampens out.
-          if (isTouchDevice && !isTouching && Math.abs(s.vy) < 0.1) { // Check if touch just ended
-              s.vyOffset += delta * -0.05; // Apply a smaller, lingering impulse
-          }
-
-          const scrollImpulse = delta * 0.002 * speedFactor * (1 - dist); // TUNED: Further reduced base intensity for a more subtle scale effect.
-
-          // 4. Perspective skew based on vertical position. TUNED: Reduced base intensity.
-          const perspectiveSkew = (cardCenter - center) / vh * -8; // TUNED: Further reduced base intensity for less skew.
-
-          const targetScaleYScroll = 1 - scrollImpulse;
-          const targetScaleXScroll = 1 + scrollImpulse * 0.3;
+          // 2. Define the target scales. The card squashes on one axis and stretches on the other.
+          let targetScaleX = 1 + squashFactor;
+          let targetScaleY = 1 - squashFactor;
 
           let influence = 0;
-          let targetRotX = perspectiveSkew; // Start with the perspective skew
-          let targetRotY = 0;
 
-          // 5. Calculate Hover Effect (only if not scrolling to save performance)
+          // 3. Calculate Hover Effect (only if not scrolling to save performance)
           if (!body.classList.contains('is-scrolling') && ((isTouchDevice && isTouching) || (!isTouchDevice && isPointerNearGrid))) {
-            // FIX: Use the correct pre-calculated properties from the state object (s.offsetLeft and s.width).
             const cardWidth = typeof s.width === 'number' ? s.width : 0;
             const dx = pointer.x - (s.offsetLeft + cardWidth / 2.0);
             const dy = pointer.y - (cardTop - scrollY + cardHeight / 2.0);
             const pointerDist = Math.sqrt(dx * dx + dy * dy);
             influence = Math.max(0, 1 - pointerDist / 275);
 
-            const maxRot = 10; // More responsive rotation on hover
-            targetRotX += (dy / (s.height / 2)) * -maxRot * influence;
-            targetRotY += (dx / (cardWidth / 2)) * maxRot * influence;
+            // On hover, slightly increase the scale.
+            targetScaleX += 0.05 * influence;
+            targetScaleY += 0.05 * influence;
 
             card.style.setProperty('--pointer-x', `${pointer.x - s.offsetLeft}px`);
             card.style.setProperty('--pointer-y', `${pointer.y - (s.offsetTop - scrollY)}px`);
@@ -518,36 +497,27 @@ async function fetchAndBuildGrid() {
             card.style.setProperty('--spotlight-opacity', 0);
           }
           
-          // 6. Apply Physics Simulation
+          // 4. Apply Physics Simulation (Spring animation towards the target)
           const springiness = 0.1;
           const d = s.damping;
 
-          s.vrX += (targetRotX - s.rotX) * springiness;
-          s.vrY += (targetRotY - s.rotY) * springiness;
-
-          const targetScaleX = (targetScaleXScroll + (1 + 0.05 * influence)) / 2;
-          const targetScaleY = (targetScaleYScroll + (1 + 0.05 * influence)) / 2;
           s.vx += (targetScaleX - s.scaleX) * springiness; s.vx *= d; s.scaleX += s.vx;
           s.vy += (targetScaleY - s.scaleY) * springiness; s.vy *= d; s.scaleY += s.vy;
           
-          s.vrX *= d; s.rotX += s.vrX;
-          s.vrY *= d; s.rotY += s.vrY;
-          
-          s.vyOffset += (0 - s.yOffset) * springiness; s.vyOffset *= d; s.yOffset += s.vyOffset;
+          // Reset rotation and parallax offset as they are no longer used.
+          s.rotX = 0; s.rotY = 0; s.yOffset = 0;
 
-          // FIX: Also apply the shine effect logic here for main grid cards.
-          // This was previously in a separate block and could be consolidated.
           if (influence > 0) {
             card.style.setProperty('--pointer-x', `${pointer.x - s.offsetLeft}px`);
             card.style.setProperty('--pointer-y', `${pointer.y - (s.offsetTop - scrollY)}px`);
             card.style.setProperty('--spotlight-opacity', influence);
           }
 
-          totalVelocity += Math.abs(s.vx) + Math.abs(s.vy) + Math.abs(s.vrX) + Math.abs(s.vrY) + Math.abs(s.vyOffset);
+          totalVelocity += Math.abs(s.vx) + Math.abs(s.vy);
 
           const finalScaleX = clamp(s.scaleX, 0.8, 1.05);
           const finalScaleY = clamp(s.scaleY, 0.8, 1.05);
-          card.style.transform = `translate3d(0, ${s.yOffset}px, 0) scaleX(${finalScaleX}) scaleY(${finalScaleY}) rotateX(${s.rotX}deg) rotateY(${s.rotY}deg)`;
+          card.style.transform = `scale(${finalScaleX}, ${finalScaleY})`;
         }
       });
 
