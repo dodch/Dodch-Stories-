@@ -1125,7 +1125,11 @@ async function initializePage(manualLevelOverride = null) {
     }
     applyPerformanceStyles(performanceLevel);
 
-    if (performanceLevel === 2) detectSVGFilterSupport();
+    // REFACTOR: Only run the SVG check if performance is high.
+    // This is the second part of the race condition fix.
+    if (performanceLevel === 2) {
+        detectSVGFilterSupport();
+    }
 
     const loadingScreen = document.getElementById('loadingScreen');
     animateButtonsOnLoad();

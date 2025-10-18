@@ -197,9 +197,10 @@ h1{margin:0 0 20px;}
 }
 
 /* Layer 2: The SVG Enhancement (Bonus for supported browsers)
-   This rule is more specific, so it overrides the base blur on browsers
-   that have the .svg-filter-supported class. iOS will ignore this. */
-body.svg-filter-supported .glass-container {
+   REFACTOR: This rule is now only applied if the body has BOTH svg-filter-supported
+   AND perf-level-2. This prevents iOS from ever trying to parse this rule on page load,
+   solving the race condition that made grids transparent. */
+body.svg-filter-supported.perf-level-2 .glass-container {
   -webkit-backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
   backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
 }
@@ -1180,26 +1181,17 @@ body.info-panel-open {
   overflow: hidden;
 }
 
-/* --- NEW: Disable background blur when a panel is open --- */
-body.info-panel-open .glass-container,
+/* --- REFACTOR: Disable background blur on grid cards ONLY when a panel is open --- */
+/* This rule is now more specific to avoid conflicts and only targets the main grid. */
+body.info-panel-open .grid > .glass-container,
+body.info-panel-open .grid > .series-stack,
 body.info-panel-open .search-bar,
 body.info-panel-open .search-button,
 body.info-panel-open .floating-button,
 body.info-panel-open .info-button {
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
   transition: backdrop-filter 0.3s ease-in-out, -webkit-backdrop-filter 0.3s ease-in-out;
-}
-
-/* --- NEW: Disable hover effects when a panel is open --- */
-/* FIX: Make the selector more specific to only target the main grid cards, not cards inside a modal. */
-body.info-panel-open .grid > .glass-container:hover,
-body.info-panel-open .grid > .series-stack:hover,
-/* FIX: Corrected the selector to restore button hover effects. This now only disables 3D tilt on grid cards. */
-body.info-panel-open .top-right-fixed-wrapper .search-button:hover {
-  box-shadow: var(--glass-shadow); /* Resets to the default shadow */
-  cursor: default;
-  pointer-events: none; /* Strongest way to prevent interaction */
 }
 
 /* FIX: Re-enable the backdrop filter specifically for cards inside an active series modal. */
@@ -1209,6 +1201,18 @@ body.info-panel-open #seriesModal .glass-container {
   pointer-events: auto; /* Ensure cards inside the modal are interactive */
 }
 /* FIX: Re-enable pointer events and hover effects for buttons and content inside the series modal. */
+body.info-panel-open #seriesModal .glass-container:hover {
+  pointer-events: auto;
+}
+
+/* --- NEW: Disable hover effects when a panel is open --- */
+/* This selector specifically targets grid cards and disables their hover effects. */
+body.info-panel-open .grid > .glass-container {
+  pointer-events: none;
+  cursor: default;
+}
+
+/* This re-enables interaction for elements inside the modals. */
 body.info-panel-open #seriesModal .favorite-btn,
 body.info-panel-open #seriesModal .glass-content {
     pointer-events: auto;
