@@ -1041,9 +1041,13 @@ function setupScrollPerformance() {
  * If supported, it adds a class to the body to enable enhanced filters via CSS.
  */
 function detectSVGFilterSupport() {
-  // For all other browsers, perform the feature check.
-  if (CSS.supports('backdrop-filter', 'url("#filter-hq")')) {
-    document.body.classList.add('svg-filter-supported');
+  // FIX: Explicitly block Apple devices from getting the SVG filter to prevent rendering bugs.
+  // The 'vendor' property is a reliable way to detect Safari on both macOS and iOS.
+  const isApple = /Apple/.test(navigator.vendor);
+
+  // Only apply the SVG filter if the browser supports it AND it's not an Apple device.
+  if (!isApple && CSS.supports('backdrop-filter', 'url("#filter-hq")')) {
+      document.body.classList.add('svg-filter-supported');
   }
 }
 

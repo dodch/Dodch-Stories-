@@ -3,14 +3,16 @@
     --glass-bg-light: rgba(255, 255, 255, 0.05);
     --glass-text-light: #ffffff;
     /* REFACTOR: Update story page glass to match the advanced, multi-layered edge from the main page for consistency. */
-    --glass-shadow-light:
-        /* 1. A sharp, bright inner glint from the top for a polished look. */
-        inset 0 1px 1px color-mix(in srgb, #fff 90%, transparent),
-        /* 2. A subtle, secondary highlight with a hint of blue for a "refraction" effect. */
-        inset 0 2px 3px color-mix(in srgb, #9333EA 20%, transparent), /* Using purple as a fallback */
+    /* REFACTOR: Enhanced glass edge with a high-contrast "double edge" highlight for a more defined, glassy feel. */
+    --glass-shadow-light: 
+        /* 1. The primary, sharp inner highlight for the top edge. */
+        inset 0 1.5px 1px color-mix(in srgb, #fff 90%, transparent),
+        /* 2. A secondary, softer inner highlight to create a beveled look. */
+        inset 0 2.5px 3px color-mix(in srgb, #9333EA 20%, transparent), /* Using purple as a fallback */        
         /* 3. A sharp highlight on the bottom edge to complete the glass look. */
         inset 0 -1.5px 1.5px color-mix(in srgb, #fff 70%, transparent),
-        /* 4. A soft inner shadow from the bottom for a smooth, beveled depth. */
+        /* 4. NEW: A subtle, dark highlight on the bottom inner edge to complete the beveled effect. */
+        inset 0 -2.5px 3px color-mix(in srgb, #000 20%, transparent),        /* 5. A soft inner shadow from the bottom for a smooth, beveled depth. */
         inset 0 -4px 5px -3px color-mix(in srgb, #000 30%, transparent),
         /* 5. The main outer drop shadow for separation from the background */
         0px 4px 12px 0px color-mix(in srgb, #000 25%, transparent),
@@ -41,33 +43,20 @@
     --unselected-lang-text-light: #f0f0f0;
 }
 
-/* REFACTOR: Apply SVG filter using a more stable pseudo-element method for the popup. */
-body.svg-filter-supported.perf-level-2 #popup > div::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: inherit; /* Match the parent's border-radius */
-  filter: url(#filter-popup); /* The SVG filter itself */
-  /* This is a trick: we filter the background of the parent element */
-  background: inherit;
-  z-index: -1; /* Place it behind the content but in front of the main background */
-}
-
 body.dark-mode {
     --glass-bg-dark: rgba(0, 0, 0, 0.25);
     --glass-text-dark: #f0f0f0;
     /* REFACTOR: Update story page glass to match the advanced, multi-layered edge from the main page for consistency. */
-    --glass-shadow-dark:
-        /* 1. A sharp, bright inner glint from the top for a polished look. */
-        inset 0 1px 1px color-mix(in srgb, #fff 70%, transparent),
-        /* 2. A subtle, secondary highlight with a hint of blue for a "refraction" effect. */
-        inset 0 2px 4px color-mix(in srgb, #C084FC 25%, transparent), /* Using purple as a fallback */
+    /* REFACTOR: Enhanced glass edge with a high-contrast "double edge" highlight for a more defined, glassy feel (dark mode). */
+    --glass-shadow-dark: 
+        /* 1. The primary, sharp inner highlight for the top edge. */
+        inset 0 1.5px 1px color-mix(in srgb, #fff 70%, transparent),
+        /* 2. A secondary, softer inner highlight to create a beveled look. */
+        inset 0 2.5px 4px color-mix(in srgb, #C084FC 25%, transparent), /* Using purple as a fallback */        
         /* 3. A sharp highlight on the bottom edge to complete the glass look. */
         inset 0 -1.5px 1.5px color-mix(in srgb, #fff 50%, transparent),
-        /* 4. A soft inner shadow from the bottom for a smooth, beveled depth. */
+        /* 4. NEW: A subtle, dark highlight on the bottom inner edge to complete the beveled effect. */
+        inset 0 -2.5px 3px color-mix(in srgb, #000 25%, transparent),        /* 5. A soft inner shadow from the bottom for a smooth, beveled depth. */
         inset 0 -4px 5px -3px color-mix(in srgb, #000 45%, transparent),
         /* 5. The main outer drop shadow for separation */
         0px 5px 15px 0px color-mix(in srgb, #000 40%, transparent),
@@ -133,6 +122,22 @@ body.dark-mode .back-home-button-custom {
     background-color: var(--back-button-bg-dark);
     color: var(--back-button-text-dark);
 }
+/* REFACTOR: The Definitive iOS Backdrop-Filter Fix for Story Pages.
+   By applying the backdrop-filter to a pseudo-element instead of the main element,
+   we isolate the blur effect onto its own compositing layer. This is the most reliable
+   method to prevent the blur from disappearing on iOS/Safari during scrolls or animations. */
+.glass-popup::before, #content::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -1;
+    border-radius: inherit; /* Match the parent's border-radius */
+    background-color: inherit; /* Inherit the semi-transparent background */
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    /* Promote to its own layer to prevent flickering */
+    transform: translateZ(0);
+}
 
 .glass-popup {
      border-radius: 2rem;
@@ -173,6 +178,12 @@ body.dark-mode #back-home-button:hover, body.dark-mode #back-home-button:focus-v
     color: var(--save-button-text-light);
     filter: drop-shadow(0 1px 1px rgba(0,0,0,0.5));
     transition: color 0.3s ease;
+}
+
+/* NEW: Style for the active (saved) state of the bookmark icon. */
+#save-progress-button svg.active {
+    color: #ef4444; /* A vibrant red color */
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.5)) drop-shadow(0 0 5px rgba(239, 68, 68, 0.7));
 }
 
 /* NEW: Style for the SVG icon inside the home button. */
@@ -462,8 +473,6 @@ button.tapped {
     transition: opacity 0.5s ease-in-out;
     opacity: 1;
     background-color: var(--content-bg-light); /* A subtle dark overlay for readability */
-    backdrop-filter: blur(2px); /* A very light blur for the main content area */
-    -webkit-backdrop-filter: blur(2px); /* The WebKit version */
 }
 
 body.dark-mode #content {
@@ -681,4 +690,57 @@ html {
     */
     mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
     -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+}
+
+/* --- NEW: Bookmark for Highlighted Word --- */
+.bookmarked-word {
+    position: relative; /* Needed to position the pseudo-element */
+}
+
+.bookmarked-word::after {
+    content: '';
+    position: absolute;
+    top: -8px; /* Position it above the word */
+    right: -2px; /* Position it to the right */
+    width: 12px; /* REFACTOR: Slightly larger for better visibility */
+    height: 14px;
+    /* REFACTOR: Use a gradient for more depth */
+    background: linear-gradient(135deg, #ff6b6b, #ee4d4d);
+    /* REFACTOR: Change to a dark border for high contrast against the highlight. */
+    border: 1px solid rgba(0, 0, 0, 0.6);
+    /* Create the classic bookmark shape */
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%);
+    /* REFACTOR: Use a layered shadow for maximum contrast and depth. */
+    box-shadow: 0 1px 1px rgba(0,0,0,0.7), 0 3px 6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.4);
+    /* Add a subtle animation */
+    animation: materialize-and-settle 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform-origin: bottom center; /* Keep the origin for the settle rotation */
+}
+
+/* --- NEW: Dark Mode Bookmark Style --- */
+body.dark-mode .bookmarked-word::after {
+    /* REFACTOR: Use a vibrant blue gradient for better contrast in dark mode. */
+    background: linear-gradient(135deg, #4f46e5, #3b82f6);
+    /* REFACTOR: Use a light border for a crisp edge against the dark highlight. */
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    /* REFACTOR: Adjust the shadow to have a subtle blue glow. */
+    box-shadow: 
+        0 1px 1px rgba(0,0,0,0.7), /* Sharp inner shadow for depth */
+        0 3px 8px rgba(0,0,0,0.6),   /* Softer outer shadow */
+        0 0 10px rgba(79, 70, 229, 0.5), /* Blue glow */
+        inset 0 1px 0 rgba(255,255,255,0.4); /* Inner highlight */
+}
+
+/* --- REFACTOR: New keyframe animation for the bookmark --- */
+@keyframes materialize-and-settle {
+    0% {
+        opacity: 0;
+        transform: scale(0.7) translateY(-10px);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.1) translateY(0);
+    }
+    75% { transform: scale(0.95) rotate(-5deg); }
+    100% { transform: scale(1) rotate(0deg); }
 }

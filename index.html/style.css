@@ -17,14 +17,16 @@
   --glass-bg:color-mix(in srgb,var(--tint-color) 10%,transparent);
   --glass-text:#f0f0f0;
   /* REFACTOR: Advanced, multi-layered glass edge for a modern, high-tech look. */
-  --glass-shadow:
-    /* 1. A sharp, bright inner glint from the top for a polished look. */
-    inset 0 1px 1px color-mix(in srgb, #fff 90%, transparent),
-    /* 2. A subtle, secondary highlight with a hint of blue for a "refraction" effect. */
-    inset 0 2px 3px color-mix(in srgb, var(--blue-tint) 20%, transparent),
-    /* 3. NEW: A sharp highlight on the bottom edge to complete the glass look. */
+  /* REFACTOR: Enhanced glass edge with a high-contrast "double edge" highlight for a more defined, glassy feel. */
+  --glass-shadow: 
+    /* 1. The primary, sharp inner highlight for the top edge. */
+    inset 0 1.5px 1px color-mix(in srgb, #fff 90%, transparent),
+    /* 2. A secondary, softer inner highlight to create a beveled look. */
+    inset 0 2.5px 3px color-mix(in srgb, var(--blue-tint) 20%, transparent),    
+    /* 3. A sharp highlight on the bottom edge to complete the glass look. */
     inset 0 -1.5px 1.5px color-mix(in srgb, #fff 70%, transparent),
-    /* 4. A soft inner shadow from the bottom for a smooth, beveled depth. */
+    /* 4. NEW: A subtle, dark highlight on the bottom inner edge to complete the beveled effect. */
+    inset 0 -2.5px 3px color-mix(in srgb, #000 20%, transparent),    /* 5. A soft inner shadow from the bottom for a smooth, beveled depth. */
     inset 0 -4px 5px -3px color-mix(in srgb, #000 30%, transparent),
     /* 4. The main outer drop shadow for separation from the background */
     0px 4px 12px 0px color-mix(in srgb, #000 25%, transparent),
@@ -58,14 +60,16 @@
     --glass-bg:rgba(0,0,0,0.35);
     --glass-text:#f0f0f0;
     /* REFACTOR: Advanced, multi-layered glass edge for a modern, high-tech look (dark mode). */
-    --glass-shadow:
-      /* 1. A sharp, bright inner glint from the top for a polished look. */
-      inset 0 1px 1px color-mix(in srgb, #fff 70%, transparent),
-      /* 2. A subtle, secondary highlight with a hint of blue for a "refraction" effect. */
-      inset 0 2px 4px color-mix(in srgb, var(--blue-tint) 25%, transparent),
-      /* 3. NEW: A sharp highlight on the bottom edge to complete the glass look. */
+    /* REFACTOR: Enhanced glass edge with a high-contrast "double edge" highlight for a more defined, glassy feel (dark mode). */
+    --glass-shadow: 
+      /* 1. The primary, sharp inner highlight for the top edge. */
+      inset 0 1.5px 1px color-mix(in srgb, #fff 70%, transparent),
+      /* 2. A secondary, softer inner highlight to create a beveled look. */
+      inset 0 2.5px 4px color-mix(in srgb, var(--blue-tint) 25%, transparent),      
+      /* 3. A sharp highlight on the bottom edge to complete the glass look. */
       inset 0 -1.5px 1.5px color-mix(in srgb, #fff 50%, transparent),
-      /* 4. A soft inner shadow from the bottom for a smooth, beveled depth. */
+      /* 4. NEW: A subtle, dark highlight on the bottom inner edge to complete the beveled effect. */
+      inset 0 -2.5px 3px color-mix(in srgb, #000 25%, transparent),    /* 5. A soft inner shadow from the bottom for a smooth, beveled depth. */
       inset 0 -4px 5px -3px color-mix(in srgb, #000 45%, transparent),
       /* 4. The main outer drop shadow for separation */
       0px 5px 15px 0px color-mix(in srgb, #000 40%, transparent),
@@ -91,14 +95,16 @@ body.dark-mode {
   --glass-bg:rgba(0,0,0,0.35);
   --glass-text:#f0f0f0;
   /* REFACTOR: Advanced, multi-layered glass edge for a modern, high-tech look (dark mode). */
-  --glass-shadow:
-    /* 1. A sharp, bright inner glint from the top for a polished look. */
-    inset 0 1px 1px color-mix(in srgb, #fff 70%, transparent),
-    /* 2. A subtle, secondary highlight with a hint of blue for a "refraction" effect. */
-    inset 0 2px 4px color-mix(in srgb, var(--blue-tint) 25%, transparent),
-    /* 3. NEW: A sharp highlight on the bottom edge to complete the glass look. */
+  /* REFACTOR: Enhanced glass edge with a high-contrast "double edge" highlight for a more defined, glassy feel (dark mode). */
+  --glass-shadow: 
+    /* 1. The primary, sharp inner highlight for the top edge. */
+    inset 0 1.5px 1px color-mix(in srgb, #fff 70%, transparent),
+    /* 2. A secondary, softer inner highlight to create a beveled look. */
+    inset 0 2.5px 4px color-mix(in srgb, var(--blue-tint) 25%, transparent),      
+    /* 3. A sharp highlight on the bottom edge to complete the glass look. */
     inset 0 -1.5px 1.5px color-mix(in srgb, #fff 50%, transparent),
-    /* 4. A soft inner shadow from the bottom for a smooth, beveled depth. */
+    /* 4. NEW: A subtle, dark highlight on the bottom inner edge to complete the beveled effect. */
+    inset 0 -2.5px 3px color-mix(in srgb, #000 25%, transparent),    /* 5. A soft inner shadow from the bottom for a smooth, beveled depth. */
     inset 0 -4px 5px -3px color-mix(in srgb, #000 45%, transparent),
     /* 4. The main outer drop shadow for separation */
     0px 5px 15px 0px color-mix(in srgb, #000 40%, transparent),

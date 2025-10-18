@@ -355,8 +355,12 @@ Because your souls will always be connected…
         </button>
         <div id="popup" class="fixed inset-0 flex items-center justify-center z-50">
             <div class="glass-button-base glass-popup shadow-lg w-64 fade-in">
-                <h2 id="popup-title" class="text-lg font-bold mb-2">Save Position</h2>
-                <p id="popup-text" class="mb-4 text-sm"></p>
+                <!-- REFACTOR: Add a flex container to align the icon and title text. -->
+                <div class="flex items-center justify-center mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                    <h2 id="popup-title" class="text-lg font-bold">Save Position</h2>
+                </div>
+                <p id="popup-text" class="mb-4 text-sm"></p> <!-- FIX: Add text-center to center the question. -->
                 <div class="flex justify-end space-x-2">
                     <button
                         class="glass-button-base bg-green-500 text-white px-4 py-2 rounded-full focus:outline-none"

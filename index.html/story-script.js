@@ -98,9 +98,24 @@ const saveButton = document.getElementById('save-progress-button');
 const popupDivInner = document.getElementById('popup').querySelector('div');
 
 function clearSavedProgress() {
+    // REFACTOR: Update the icon state when progress is cleared.
     if (allSavedProgress[storyKey]) {
         delete allSavedProgress[storyKey][currentLanguage];
         localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
+        updateBookmarkIconState(); // Update the icon to show no bookmark is saved.
+    }
+}
+
+/**
+ * REFACTOR: New function to check for a saved bookmark and update the icon's color.
+ * This centralizes the logic for making the bookmark icon red when active.
+ */
+function updateBookmarkIconState() {
+    const saveButtonIcon = document.querySelector('#save-progress-button svg');
+    if (!saveButtonIcon) return;
+    const savedProgressForCurrentLang = allSavedProgress[storyKey] ? allSavedProgress[storyKey][currentLanguage] : null;
+    if (savedProgressForCurrentLang && savedProgressForCurrentLang.id) {
+        saveButtonIcon.classList.add('active');
     }
 }
 
@@ -136,14 +151,14 @@ function changeLanguage(lang, fromLoad = false) {
         if (lang === 'ar') {
             contentDiv.dir = 'rtl';
             titleElement.style.textAlign = 'right'; // FIX: Align title to the right for Arabic.
-            document.getElementById('popup-text').dir = 'rtl'; // FIX: Set popup text direction
-            document.getElementById('popup-title').style.textAlign = 'right'; // FIX: Align popup title to the right.
+            document.getElementById('popup').querySelector('.flex.items-center').dir = 'rtl'; // FIX: Set popup title container direction
+            document.getElementById('popup-text').dir = 'rtl';
             textContainer.style.textAlign = 'right';
         } else {
             contentDiv.dir = 'ltr';
             titleElement.style.textAlign = 'left'; // FIX: Revert title alignment for LTR languages.
-            document.getElementById('popup-text').dir = 'ltr'; // FIX: Revert popup text direction
-            document.getElementById('popup-title').style.textAlign = 'left'; // FIX: Revert popup title alignment.
+            document.getElementById('popup').querySelector('.flex.items-center').dir = 'ltr'; // FIX: Revert popup title container direction
+            document.getElementById('popup-text').dir = 'ltr';
             textContainer.style.textAlign = 'left';
         }
         textContainer.innerHTML = '';
@@ -280,9 +295,11 @@ function changeLanguage(lang, fromLoad = false) {
         }
         setupStoryObserver();
         // The save progress button now uses an icon, so this line is no longer needed.
-        document.getElementById('popup-title').textContent = content.savePosition;
+        document.querySelector('#popup-title').textContent = content.savePosition;
         document.getElementById('popup').querySelector('.bg-green-500').textContent = content.save;
         document.getElementById('popup').querySelector('.bg-red-500').textContent = content.exit;
+        // REFACTOR: Update the bookmark icon state whenever the language changes.
+        updateBookmarkIconState();
         highlightWord();
         const savedProgressForCurrentLang = allSavedProgress[storyKey] ? allSavedProgress[storyKey][currentLanguage] : null;
         if (fromLoad && savedProgressForCurrentLang && savedProgressForCurrentLang.id) {
@@ -321,7 +338,9 @@ function handleWordClick(spanId, wordText) {
     tempSavedWordText = wordText;
     // FIX: Use the translated string from contentMap for the popup question.
     const content = contentMap[currentLanguage];
-    document.getElementById('popup-text').textContent = content.bookmarkQuestion.replace('{word}', wordText);
+    const popupText = document.getElementById('popup-text');
+    popupText.textContent = content.bookmarkQuestion.replace('{word}', wordText);
+    popupText.classList.add('text-center'); // FIX: Center the popup question text.
     const popup = document.getElementById('popup');
     popup.style.display = 'flex'; // Show the container immediately
 
@@ -372,6 +391,8 @@ function savePosition() {
         };
         console.log(`${contentMap[currentLanguage].positionSaved} "${tempSavedWordText}" (ID: ${tempSavedWordId}) in language "${currentLanguage}"`);
         localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
+        // REFACTOR: Update the icon state immediately after saving a new bookmark.
+        updateBookmarkIconState();
         highlightWord();
     }
     closePopup();
@@ -411,7 +432,7 @@ function scrollToSavedWord(performChecks = true, smooth = true) {
 
 function highlightWord() {
    if (highlightedWordElement) {
-       highlightedWordElement.classList.remove('bg-yellow-200', 'bg-yellow-600', 'rounded', 'glow-word');
+       highlightedWordElement.classList.remove('bg-yellow-200', 'bg-yellow-600', 'rounded', 'glow-word', 'bookmarked-word');
        // FIX: Reset inline styles on the previously highlighted word so it reverts to the default text color and shadow.
        highlightedWordElement.style.textShadow = '';
        highlightedWordElement.style.webkitTextStroke = '';
@@ -428,7 +449,7 @@ function highlightWord() {
    const targetElement = document.getElementById(savedWordId);
    if (targetElement) {
        highlightedWordElement = targetElement;
-       highlightedWordElement.classList.add('rounded', 'glow-word');
+       highlightedWordElement.classList.add('rounded', 'glow-word', 'bookmarked-word');
        if (document.body.classList.contains('dark-mode')) {
            highlightedWordElement.classList.remove('bg-yellow-200');
            highlightedWordElement.classList.add('bg-yellow-600');
