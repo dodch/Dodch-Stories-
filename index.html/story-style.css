@@ -150,6 +150,8 @@ body.dark-mode .back-home-button-custom {
     -webkit-backdrop-filter: blur(2px);
     /* Promote to its own layer to prevent flickering */
     transform: translateZ(0);
+    /* FIX: Add a transition to the pseudo-element to allow the blur to fade in and out smoothly with the parent. */
+    transition: opacity 0.5s ease-in-out;
 }
 
 .glass-popup {

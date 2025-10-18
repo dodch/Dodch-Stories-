@@ -156,8 +156,11 @@ function changeLanguage(lang, fromLoad = false) {
     }
     const content = contentMap[lang];
     contentDiv.classList.add('content-fading');
-    const rawTextElement = document.getElementById(content.rawTextId);
-    const rawText = rawTextElement ? rawTextElement.textContent.trim() : '';
+
+    // FIX: Use requestAnimationFrame to schedule the DOM update.
+    // This synchronizes the content replacement with the browser's rendering cycle,
+    // preventing the "flicker" caused by the backdrop-filter being re-evaluated.
+    requestAnimationFrame(() => {
     setTimeout(() => {
         titleElement.textContent = content.title;
         // The backHomeTextSpan element does not exist, so this line is removed.
@@ -175,6 +178,8 @@ function changeLanguage(lang, fromLoad = false) {
             textContainer.style.textAlign = 'left';
         }
         textContainer.innerHTML = '';
+        const rawTextElement = document.getElementById(content.rawTextId);
+        const rawText = rawTextElement ? rawTextElement.textContent.trim() : '';
         if (rawText) {
             const lines = rawText.split('\n');
             let isFirstWordOfStory = true; // Flag to handle the very first word for the drop cap
@@ -320,8 +325,9 @@ function changeLanguage(lang, fromLoad = false) {
                   scrollToSavedWord(false, false); // On initial load, scroll instantly
               }, 100);
         }
-        contentDiv.classList.remove('content-fading');
-    }, 500);
+            contentDiv.classList.remove('content-fading');
+        }, 500); // The timeout remains to match the CSS transition duration.
+    });
 }
 
 // FIX: Handler for when the user first touches/clicks the text container.
