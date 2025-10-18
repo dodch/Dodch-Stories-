@@ -53,31 +53,25 @@ async function benchmarkPerformance() {
 async function determinePerformanceLevel() {
     // --- Step 1: Check for system-level user preferences ---
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        console.log("Performance Level 1 (Weak): User prefers reduced motion.");
+        console.log("Performance Level 1 (Low): User prefers reduced motion.");
         return 1;
     }
     if (navigator.connection && navigator.connection.saveData) {
-        console.log("Performance Level 2 (Moderate): Data saver enabled.");
-        return 2;
+        console.log("Performance Level 1 (Low): Data saver enabled.");
+        return 1;
     }
 
     // --- Step 2: Run the benchmark for an objective performance score ---
     const averageFps = await benchmarkPerformance();
     console.log(`Benchmark Result: ~${Math.round(averageFps)} FPS`);
 
+    // --- Step 3: Simplified 2-tier categorization ---
     let level;
-    if (averageFps < 45) { level = 1; } // Weak
-    else if (averageFps >= 58) { level = 3; } // Good
-    else { level = 2; } // Moderate
+    if (averageFps < 50) { level = 1; } // Low
+    else { level = 2; } // High
 
-    // --- Step 3: Final sanity checks and overrides ---
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    if (isIOS && level === 3) {
-        console.log("Capping performance for iOS device to Level 2.");
-        level = 2; // iOS reports SVG support but renders it poorly. Cap at moderate.
-    }
-
-    console.log(`Auto-determined Performance Level: ${level}`);
+    // The iOS check is no longer needed as level 2 is now the max.
+    console.log(`Auto-determined Performance Level: ${level} (1=Low, 2=High)`);
     return level;
 }
 
@@ -85,6 +79,11 @@ async function determinePerformanceLevel() {
 // FIX: Add a flag to prevent immediate re-triggering of the popup on mobile.
 // This will block the "ghost click" that happens after a touch event.
 let blockPopupTrigger = false;
+
+// FIX: Add state variables to differentiate between a tap and a scroll/drag gesture on touch devices.
+let isDragging = false;
+const pointerDownPos = { x: 0, y: 0 };
+const dragThreshold = 10; // The number of pixels the pointer must move to be considered a drag.
 
 // contentMap will be defined in each story's HTML file
 
@@ -136,11 +135,15 @@ function changeLanguage(lang, fromLoad = false) {
         // The backHomeTextSpan element does not exist, so this line is removed.
         if (lang === 'ar') {
             contentDiv.dir = 'rtl';
+            titleElement.style.textAlign = 'right'; // FIX: Align title to the right for Arabic.
             document.getElementById('popup-text').dir = 'rtl'; // FIX: Set popup text direction
+            document.getElementById('popup-title').style.textAlign = 'right'; // FIX: Align popup title to the right.
             textContainer.style.textAlign = 'right';
         } else {
             contentDiv.dir = 'ltr';
+            titleElement.style.textAlign = 'left'; // FIX: Revert title alignment for LTR languages.
             document.getElementById('popup-text').dir = 'ltr'; // FIX: Revert popup text direction
+            document.getElementById('popup-title').style.textAlign = 'left'; // FIX: Revert popup title alignment.
             textContainer.style.textAlign = 'left';
         }
         textContainer.innerHTML = '';
@@ -155,11 +158,10 @@ function changeLanguage(lang, fromLoad = false) {
                 if (trimmedLine === '') {
                     // Use a non-breaking space to ensure the paragraph has height
                     pElement.innerHTML = '&nbsp;';
-                } else {
-                    // Check if the line is just the separator
-                    if (trimmedLine !== '⸻') {
+                } else { // If the line is not empty
+                    if (trimmedLine !== '⸻') { // And it's not the separator
                         // FIX: Only add the animation class if performance level is not the lowest.
-                        if (performanceLevel > 1) {
+                        if (performanceLevel > 1) { // This logic remains correct (only animate on High)
                             pElement.classList.add('story-anim-item');
                         }
                         
@@ -193,8 +195,11 @@ function changeLanguage(lang, fromLoad = false) {
                                 firstWordSpan.classList.add('cursor-pointer');
                                 // FIX: Use pointerup and prevent default to avoid double-firing on touch devices.
                                 firstWordSpan.addEventListener('pointerup', (e) => {
-                                    e.preventDefault(); // Prevents the browser from firing a 'click' event after the 'pointerup'.
-                                    handleWordClick(uniqueId, firstWord.trim());
+                                    e.preventDefault();
+                                    // FIX: Only handle the click if it wasn't part of a drag/scroll gesture.
+                                    if (!isDragging) {
+                                        handleWordClick(uniqueId, firstWord.trim());
+                                    }
                                 });
                                 pElement.appendChild(firstWordSpan);
                                 
@@ -211,7 +216,9 @@ function changeLanguage(lang, fromLoad = false) {
                                         // FIX: Use pointerup and prevent default.
                                         wordSpan.addEventListener('pointerup', (e) => {
                                             e.preventDefault();
-                                            handleWordClick(uniqueId, wordSpan.textContent.trim());
+                                            if (!isDragging) {
+                                                handleWordClick(uniqueId, wordSpan.textContent.trim());
+                                            }
                                         });
                                         pElement.appendChild(wordSpan);
                                         pElement.appendChild(document.createTextNode(' '));
@@ -235,7 +242,9 @@ function changeLanguage(lang, fromLoad = false) {
                                     // FIX: Use pointerup and prevent default.
                                     wordSpan.addEventListener('pointerup', (e) => {
                                         e.preventDefault();
-                                        handleWordClick(uniqueId, wordSpan.textContent.trim());
+                                        if (!isDragging) {
+                                            handleWordClick(uniqueId, wordSpan.textContent.trim());
+                                        }
                                     });
                                     pElement.appendChild(wordSpan);
                                     pElement.appendChild(document.createTextNode(' '));
@@ -255,8 +264,22 @@ function changeLanguage(lang, fromLoad = false) {
              textContainer.appendChild(noTextElement);
              console.warn(`No raw text found for language: ${lang}`);
         }
+        // FIX: Add event listeners to the container to detect drag gestures.
+        textContainer.removeEventListener('pointerdown', onPointerDown);
+        textContainer.addEventListener('pointerdown', onPointerDown);
+
+        // Only add the move listener once to the window.
+        if (!window.hasPointerMoveListener) {
+            window.addEventListener('pointermove', onPointerMove, { passive: true });
+            window.hasPointerMoveListener = true;
+        }
+        // FIX: Add a listener to reset the drag state on scroll end.
+        if (!window.hasScrollEndListener) {
+            window.addEventListener('scrollend', () => { isDragging = false; });
+            window.hasScrollEndListener = true;
+        }
         setupStoryObserver();
-        document.getElementById('save-progress-button').textContent = content.saveProgress;
+        // The save progress button now uses an icon, so this line is no longer needed.
         document.getElementById('popup-title').textContent = content.savePosition;
         document.getElementById('popup').querySelector('.bg-green-500').textContent = content.save;
         document.getElementById('popup').querySelector('.bg-red-500').textContent = content.exit;
@@ -271,6 +294,22 @@ function changeLanguage(lang, fromLoad = false) {
     }, 500);
 }
 
+// FIX: Handler for when the user first touches/clicks the text container.
+function onPointerDown(e) {
+    isDragging = false;
+    pointerDownPos.x = e.clientX;
+    pointerDownPos.y = e.clientY;
+}
+
+// FIX: Handler for when the user moves their finger/pointer.
+function onPointerMove(e) {
+    if (isDragging) return; // No need to check if we already know it's a drag.
+    const dx = Math.abs(e.clientX - pointerDownPos.x);
+    const dy = Math.abs(e.clientY - pointerDownPos.y);
+    if (dx > dragThreshold || dy > dragThreshold) {
+        isDragging = true;
+    }
+}
 function handleWordClick(spanId, wordText) {
     // FIX: If the popup was just closed by a touch event, don't reopen it immediately.
     // This is the core fix for the "double popup" and "auto-save" bug on mobile.
@@ -280,7 +319,9 @@ function handleWordClick(spanId, wordText) {
 
     tempSavedWordId = spanId;
     tempSavedWordText = wordText;
-    document.getElementById('popup-text').textContent = `${contentMap[currentLanguage].savePosition}: "${wordText}"${contentMap[currentLanguage].questionMark}`;
+    // FIX: Use the translated string from contentMap for the popup question.
+    const content = contentMap[currentLanguage];
+    document.getElementById('popup-text').textContent = content.bookmarkQuestion.replace('{word}', wordText);
     const popup = document.getElementById('popup');
     popup.style.display = 'flex'; // Show the container immediately
 
@@ -483,8 +524,8 @@ function setupStoryObserver() {
  */
 function initializeShineEffect() {
     const shineElements = document.querySelectorAll('.glass-button-base'); // All buttons have this class
-    // NEW: Disable shine effect on lower performance levels
-    if (performanceLevel < 3) {
+    // Disable shine effect on the Low performance level
+    if (performanceLevel < 2) {
         return;
     }
 
@@ -534,26 +575,29 @@ function initializeShineEffect() {
         let wasTouching = isTouching; // Remember the touch state from the start of the frame.
 
         shineElements.forEach(elem => {
-            let influence = 0;
-            if ((isTouchDevice && isTouching) || !isTouchDevice) {
-                const rect = elem.getBoundingClientRect();
-                // Skip elements that are not visible
-                if (rect.width === 0 && rect.height === 0) {
-                    elem.style.setProperty('--spotlight-opacity', 0);
-                    return;
-                }
+            const rect = elem.getBoundingClientRect();
+            // Skip elements that are not visible
+            if (rect.width === 0 && rect.height === 0) {
+                elem.style.setProperty('--spotlight-opacity', 0);
+                return;
+            }
 
-                const dx = pointer.x - (rect.left + rect.width / 2);
-                const dy = pointer.y - (rect.top + rect.height / 2);
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                influence = Math.max(0, 1 - dist / 150);
-                if (influence > 0) isPointerNearAnElement = true;
+            const dx = pointer.x - (rect.left + rect.width / 2);
+            const dy = pointer.y - (rect.top + rect.height / 2);
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const influence = Math.max(0, 1 - dist / 150);
 
+            // FIX: Always update the CSS variables, but only set opacity if there's influence.
+            // This ensures the fade-out animation works correctly.
+            if (influence > 0) {
+                isPointerNearAnElement = true;
                 elem.style.setProperty('--pointer-x', `${pointer.x - rect.left}px`);
                 elem.style.setProperty('--pointer-y', `${pointer.y - rect.top}px`);
+                elem.style.setProperty('--spotlight-opacity', influence);
+            } else {
+                // When there's no influence, explicitly set opacity to 0 to trigger the fade-out.
+                elem.style.setProperty('--spotlight-opacity', 0);
             }
-            // This is the key fix: always update the opacity, setting it to 0 if there's no influence.
-            elem.style.setProperty('--spotlight-opacity', influence);
         });
 
         const justReleasedTouch = wasTouching && !isTouching;

@@ -54,41 +54,35 @@ async function benchmarkPerformance() {
 async function determinePerformanceLevel() {
     // --- Step 1: Check for system-level user preferences ---
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        console.log("Performance Level 1 (Weak): User prefers reduced motion.");
+        console.log("Performance Level 1 (Low): User prefers reduced motion.");
         return 1;
     }
     if (navigator.connection && navigator.connection.saveData) {
-        console.log("Performance Level 2 (Moderate): Data saver enabled.");
-        return 2;
+        console.log("Performance Level 1 (Low): Data saver enabled.");
+        return 1;
     }
 
     // --- Step 2: Run the benchmark for an objective performance score ---
     const averageFps = await benchmarkPerformance();
     console.log(`Benchmark Result: ~${Math.round(averageFps)} FPS`);
 
+    // --- Step 3: Simplified 2-tier categorization ---
     let level;
-    if (averageFps < 45) {
-        level = 1; // Weak (struggles to maintain a decent frame rate)
-    } else if (averageFps >= 58) {
-        level = 3; // Good (consistently smooth)
+    if (averageFps < 50) {
+        level = 1; // Low (struggles to maintain a smooth frame rate)
     } else {
-        level = 2; // Moderate
+        level = 2; // High (smooth)
     }
+    
+    // The iOS check is no longer needed as level 2 is now the max.
 
-    // --- Step 3: Final sanity checks and overrides ---
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    if (isIOS && level === 3) {
-        console.log("Capping performance for iOS device to Level 2.");
-        level = 2; // iOS reports SVG support but renders it poorly. Cap at moderate.
-    }
-
-    console.log(`Auto-determined Performance Level: ${level}`);
+    console.log(`Auto-determined Performance Level: ${level} (1=Low, 2=High)`);
     return level;
 }
 
 function applyPerformanceStyles(level) {
     // Remove any existing performance level classes before adding the new one.
-    for (let i = 1; i <= 3; i++) {
+    for (let i = 1; i <= 2; i++) { // REFACTOR: Loop only through the 2 existing levels.
         document.body.classList.remove(`perf-level-${i}`);
     }
     document.body.classList.add(`perf-level-${level}`);
@@ -359,7 +353,7 @@ async function fetchAndBuildGrid() {
     const state = new Map();
     panels.forEach(card => {
       // NEW: Disable physics for performance levels 1 and 2
-      if (performanceLevel < 3) {
+      if (performanceLevel < 2) { // Now only disable for level 1
           card.classList.add('physics-disabled');
       }
 
@@ -1009,9 +1003,8 @@ function animateButtonsOnLoad() {
     if (perfBtn) {
         addTapAnimation(perfBtn);
         perfBtn.addEventListener('click', () => {
-            // FIX: Correctly cycle through performance levels 1 (Low), 2 (Mid), 3 (High).
-            // The current level is read from the global `performanceLevel` variable.
-            let nextLevel = (performanceLevel % 3) + 1;
+            // REFACTOR: Simplify to toggle between level 1 and 2.
+            let nextLevel = performanceLevel === 1 ? 2 : 1;
             console.log(`Manually setting Performance Level to: ${nextLevel}`);
 
             // Store the manual override in sessionStorage so it persists on the story pages.
@@ -1043,8 +1036,9 @@ function setupScrollPerformance() {
 
 /**
  * Checks if the browser truly supports SVG filters in backdrop-filter.
- * iOS Safari incorrectly reports 'true' for CSS @supports, so a JS check is more reliable.
- * We will explicitly block Apple mobile devices from getting this feature to avoid the bug.
+ * This uses feature detection (`CSS.supports`) to ask the browser if it can handle the effect.
+ * Browsers with buggy implementations (like older versions of Safari on iOS) will correctly return 'false',
+ * preventing the enhanced filter from being applied and allowing a graceful fallback to the simple blur.
  * If supported, it adds a class to the body to enable enhanced filters via CSS.
  */
 function detectSVGFilterSupport() {
@@ -1134,7 +1128,7 @@ async function initializePage(manualLevelOverride = null) {
     }
     applyPerformanceStyles(performanceLevel);
 
-    if (performanceLevel === 3) detectSVGFilterSupport();
+    if (performanceLevel === 2) detectSVGFilterSupport();
 
     const loadingScreen = document.getElementById('loadingScreen');
     animateButtonsOnLoad();

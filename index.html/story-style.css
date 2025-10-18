@@ -2,16 +2,15 @@
 :root {
     --glass-bg-light: rgba(255, 255, 255, 0.05);
     --glass-text-light: #ffffff;
-    /* REFACTOR: Enhanced shadow for more depth and contrast, matching the main page. */
+    /* REFACTOR: New, more complex and realistic glass edge effect, matching the main page. */
     --glass-shadow-light:
-        /* Inner highlights for a sharp, glassy edge */
-        inset 0 0 0 1.5px color-mix(in srgb, #fff 15%, transparent),
-        inset 1px 2px 1px -1px color-mix(in srgb, #fff 80%, transparent),
-        inset -1px -1px 1px -1px color-mix(in srgb, #fff 70%, transparent),
-        /* Inner shadows for depth */
-        inset 0px 2px 4px -2px color-mix(in srgb, #000 30%, transparent),
-        inset 2px -4px 2px -3px color-mix(in srgb, #000 20%, transparent),
-        /* Outer drop shadow for separation from the background */
+        /* 1. A very thin, hard outer border to define the edge */
+        inset 0 0 0 1.5px color-mix(in srgb, #fff 20%, transparent),
+        /* 2. A soft inner highlight from the top to give a rounded feel */
+        inset 0 2px 3px -1px color-mix(in srgb, #fff 70%, transparent),
+        /* 3. A subtle inner shadow from the bottom for depth */
+        inset 0 -5px 10px -4px color-mix(in srgb, #000 20%, transparent),
+        /* 4. The main outer drop shadow for separation */
         0px 4px 12px 0px color-mix(in srgb, #000 25%, transparent),
         0px 15px 35px 0px color-mix(in srgb, #000 20%, transparent);
     --button-shadow-light: var(--glass-shadow-light);
@@ -41,8 +40,7 @@
 }
 
 /* REFACTOR: Apply SVG filter using a more stable pseudo-element method. */
-/* NEW: Only apply SVG filter on high-performance devices */
-body.svg-filter-supported.perf-level-3 #popup > div::before {
+body.svg-filter-supported.perf-level-2 #popup > div::before { /* REFACTOR: Target level 2 for high performance */
   content: '';
   position: absolute;
   top: 0;
@@ -59,16 +57,15 @@ body.svg-filter-supported.perf-level-3 #popup > div::before {
 body.dark-mode {
     --glass-bg-dark: rgba(0, 0, 0, 0.25);
     --glass-text-dark: #f0f0f0;
-    /* REFACTOR: Enhanced shadow for more depth and contrast in dark mode, matching the main page. */
+    /* REFACTOR: New, more complex and realistic glass edge effect for dark mode, matching the main page. */
     --glass-shadow-dark:
-        /* Inner highlights for a sharp, glassy edge */
-        inset 0 0 0 1.5px color-mix(in srgb, #fff 12%, transparent),
-        inset 1px 2px 1px -1px color-mix(in srgb, #fff 70%, transparent),
-        inset -1px -1px 1px -1px color-mix(in srgb, #fff 60%, transparent),
-        /* Inner shadows for depth */
-        inset 0px 2px 4px -2px color-mix(in srgb, #000 40%, transparent),
-        inset 2px -4px 2px -3px color-mix(in srgb, #000 30%, transparent),
-        /* Outer drop shadow for separation from the background */
+        /* 1. A very thin, hard outer border to define the edge */
+        inset 0 0 0 1.5px color-mix(in srgb, #fff 15%, transparent),
+        /* 2. A soft inner highlight from the top to give a rounded feel */
+        inset 0 2px 3px -1px color-mix(in srgb, #fff 60%, transparent),
+        /* 3. A subtle inner shadow from the bottom for depth */
+        inset 0 -5px 10px -4px color-mix(in srgb, #000 35%, transparent),
+        /* 4. The main outer drop shadow for separation */
         0px 5px 15px 0px color-mix(in srgb, #000 40%, transparent),
         0px 20px 40px 0px color-mix(in srgb, #000 35%, transparent);
     --button-shadow-dark: var(--glass-shadow-dark);
@@ -102,8 +99,7 @@ body.dark-mode {
 }
 
 /* NEW: Disable expensive pseudo-elements on lower performance tiers */
-.perf-level-1 .glass-button-base::before,
-.perf-level-2 .glass-button-base::before {
+.perf-level-1 .glass-button-base::before {
     display: none;
 }
 
@@ -166,6 +162,20 @@ body.dark-mode #back-home-button:hover, body.dark-mode #back-home-button:focus-v
 
 #popup button.bg-red-500:hover, #popup button.bg-red-500:focus-visible {
     box-shadow: 0 0 15px 2px rgba(239, 68, 68, 0.7), var(--button-shadow-light);
+}
+
+/* NEW: Style for the SVG icon inside the bookmark button. */
+#save-progress-button svg {
+    color: var(--save-button-text-light);
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.5));
+    transition: color 0.3s ease;
+}
+
+/* NEW: Style for the SVG icon inside the home button. */
+#back-home-button svg {
+    color: var(--back-button-text-light);
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.5));
+    transition: color 0.3s ease;
 }
 
 
@@ -319,11 +329,6 @@ body.dark-mode.perf-level-1 button.selected-language, body.dark-mode.perf-level-
 }
 body.dark-mode.perf-level-1 button.back-home-button-custom {
     background-color: var(--back-button-solid-dark) !important;
-}
-
-/* Level 2 (Moderate): Basic blur, no SVG filter. */
-.perf-level-2 #popup > div::before {
-    display: none; /* Disable the SVG filter pseudo-element */
 }
 
 /* NEW: Hide vignette on lowest performance level for story pages */

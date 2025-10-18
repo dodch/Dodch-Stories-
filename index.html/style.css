@@ -16,16 +16,15 @@
   --golden-tint:gold;
   --glass-bg:color-mix(in srgb,var(--tint-color) 10%,transparent);
   --glass-text:#f0f0f0;
-  /* REFACTOR: Enhanced shadow for more depth and contrast. */
+  /* REFACTOR: New, more sculpted and visually pleasing glass edge for grid cards. */
   --glass-shadow:
-    /* Inner highlights for a sharp, glassy edge */
-    inset 0 0 0 1.5px color-mix(in srgb, #fff 15%, transparent),
-    inset 1px 2px 1px -1px color-mix(in srgb, #fff 80%, transparent),
-    inset -1px -1px 1px -1px color-mix(in srgb, #fff 70%, transparent),
-    /* Inner shadows for depth */
-    inset 0px 2px 4px -2px color-mix(in srgb, #000 30%, transparent),
-    inset 2px -4px 2px -3px color-mix(in srgb, #000 20%, transparent),
-    /* Outer drop shadow for separation from the background */
+    /* 1. A sharp, bright outer highlight to define the edge */
+    inset 0 0 0 1.5px color-mix(in srgb, #fff 35%, transparent),
+    /* 2. A soft, secondary inner highlight to create a rounded, "sculpted" feel */
+    inset 0 3px 4px -2px color-mix(in srgb, #fff 60%, transparent),
+    /* 3. A defined inner shadow from the bottom for depth and contrast */
+    inset 0 -4px 5px -3px color-mix(in srgb, #000 30%, transparent),
+    /* 4. The main outer drop shadow for separation from the background */
     0px 4px 12px 0px color-mix(in srgb, #000 25%, transparent),
     0px 15px 35px 0px color-mix(in srgb, #000 20%, transparent);
   /* NEW: A simpler shadow for the stacked cards, without the inset borders. */
@@ -56,16 +55,15 @@
     --golden-tint:gold;
     --glass-bg:rgba(0,0,0,0.35);
     --glass-text:#f0f0f0;
-    /* REFACTOR: Enhanced shadow for more depth and contrast in dark mode. */
+    /* REFACTOR: New, more sculpted and visually pleasing glass edge for dark mode. */
     --glass-shadow:
-      /* Inner highlights for a sharp, glassy edge */
-      inset 0 0 0 1.5px color-mix(in srgb, #fff 12%, transparent),
-      inset 1px 2px 1px -1px color-mix(in srgb, #fff 70%, transparent),
-      inset -1px -1px 1px -1px color-mix(in srgb, #fff 60%, transparent),
-      /* Inner shadows for depth */
-      inset 0px 2px 4px -2px color-mix(in srgb, #000 40%, transparent),
-      inset 2px -4px 2px -3px color-mix(in srgb, #000 30%, transparent),
-      /* Outer drop shadow for separation from the background */
+      /* 1. A sharp, bright outer highlight to define the edge */
+      inset 0 0 0 1.5px color-mix(in srgb, #fff 25%, transparent),
+      /* 2. A soft, secondary inner highlight to create a rounded, "sculpted" feel */
+      inset 0 3px 4px -2px color-mix(in srgb, #fff 50%, transparent),
+      /* 3. A defined inner shadow from the bottom for depth and contrast */
+      inset 0 -4px 5px -3px color-mix(in srgb, #000 45%, transparent),
+      /* 4. The main outer drop shadow for separation */
       0px 5px 15px 0px color-mix(in srgb, #000 40%, transparent),
       0px 20px 40px 0px color-mix(in srgb, #000 35%, transparent);
     --stack-shadow:
@@ -88,16 +86,15 @@ body.dark-mode {
   --golden-tint:gold;
   --glass-bg:rgba(0,0,0,0.35);
   --glass-text:#f0f0f0;
-  /* REFACTOR: Enhanced shadow for more depth and contrast in dark mode. */
+  /* REFACTOR: New, more sculpted and visually pleasing glass edge for dark mode. */
   --glass-shadow:
-    /* Inner highlights for a sharp, glassy edge */
-    inset 0 0 0 1.5px color-mix(in srgb, #fff 12%, transparent),
-    inset 1px 2px 1px -1px color-mix(in srgb, #fff 70%, transparent),
-    inset -1px -1px 1px -1px color-mix(in srgb, #fff 60%, transparent),
-    /* Inner shadows for depth */
-    inset 0px 2px 4px -2px color-mix(in srgb, #000 40%, transparent),
-    inset 2px -4px 2px -3px color-mix(in srgb, #000 30%, transparent),
-    /* Outer drop shadow for separation from the background */
+    /* 1. A sharp, bright outer highlight to define the edge */
+    inset 0 0 0 1.5px color-mix(in srgb, #fff 25%, transparent),
+    /* 2. A soft, secondary inner highlight to create a rounded, "sculpted" feel */
+    inset 0 3px 4px -2px color-mix(in srgb, #fff 50%, transparent),
+    /* 3. A defined inner shadow from the bottom for depth and contrast */
+    inset 0 -4px 5px -3px color-mix(in srgb, #000 45%, transparent),
+    /* 4. The main outer drop shadow for separation */
     0px 5px 15px 0px color-mix(in srgb, #000 40%, transparent),
     0px 20px 40px 0px color-mix(in srgb, #000 35%, transparent);
   --stack-shadow:
@@ -291,17 +288,6 @@ body.dark-mode .perf-level-1 #perfBtn.floating-button {
     background-color: #b38600; /* Dark solid gold */
 }
 
-/* Level 2 (Moderate): Basic blur, no SVG filter or pseudo-element effects. */
-/* FIX: Increase specificity by adding 'body' to ensure this rule overrides the 'body.svg-filter-supported' rule. */
-body.perf-level-2 .glass-container,
-body.perf-level-2 .glass-button-base,
-body.perf-level-2 .search-bar,
-body.perf-level-2 .modal-panel,
-body.perf-level-2 .info-panel {
-    -webkit-backdrop-filter: blur(var(--blur-radius)) !important; /* Basic blur */
-    backdrop-filter: blur(var(--blur-radius)) !important;
-}
-
 /* --- REFACTOR: Advanced proximity shine effect for cards and buttons --- */
 .glass-container::before {
   position: absolute;
@@ -336,10 +322,7 @@ body.perf-level-2 .info-panel {
 }
 
 /* Disable expensive pseudo-elements on lower performance tiers */
-.perf-level-1 .glass-container::before, .perf-level-1 .shine-effect,
-.perf-level-2 .glass-container::before, .perf-level-2 .shine-effect,
-.perf-level-1 .glass-container:not(.series-stack)::after,
-.perf-level-2 .glass-container:not(.series-stack)::after {
+.perf-level-1 .glass-container::before, .perf-level-1 .shine-effect, .perf-level-1 .glass-container:not(.series-stack)::after {
     display: none;
 }
 /* NEW: Add a second pseudo-element to create a soft, convex highlight for a "puffy" 3D look. */

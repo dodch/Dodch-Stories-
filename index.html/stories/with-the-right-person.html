@@ -77,7 +77,10 @@ no        }
                English
            </button>
         </div>
-        <button id="back-home-button" class="w-10 h-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base back-home-button-custom inline-flex items-center justify-center shine-button">⌂</button>
+        <!-- REFACTOR: Changed the home button to use a cleaner SVG icon. -->
+        <button id="back-home-button" class="w-10 h-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base back-home-button-custom inline-flex items-center justify-center shine-button" aria-label="Back to Home">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+        </button>
     </div>
     <div id="page-content-wrapper">
         <div id="raw-ar-text" class="language-content" style="display: none;">
@@ -340,11 +343,15 @@ Because your souls will always be connected…
                 <!-- Pre-rendered English content for SEO -->
             </div>
         </div>
+        <!-- REFACTOR: Changed the save button to a circular icon button. -->
         <button
-            id="save-progress-button"            class="fixed bottom-4 left-4 px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base save-button-custom"
+            id="save-progress-button"
+            class="fixed bottom-4 left-4 w-14 h-14 rounded-full flex items-center justify-center transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base save-button-custom"
             style="z-index: 60;"
+            aria-label="Scroll to saved progress"
         >
-            Saved Progress
+            <!-- Bookmark Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>
         </button>
         <div id="popup" class="fixed inset-0 flex items-center justify-center z-50">
             <div class="glass-button-base glass-popup shadow-lg w-64 fade-in">
@@ -372,10 +379,11 @@ Because your souls will always be connected…
             ar: {
                 title: 'مع الشخص الصح',
                 rawTextId: 'raw-ar-text',
-                saveProgress: 'التقدم المحفوظ',
-                savePosition: 'حفظ التقدم عند الكلمة',
+                saveProgress: 'التقدم المحفوظ', // No longer used
+                savePosition: 'إضافة علامة مرجعية',
                 save: 'حفظ',
                 exit: 'خروج',
+                bookmarkQuestion: 'هل تريد إضافة علامة مرجعية عند كلمة: "{word}"؟',
                 questionMark: '؟', // FIX: Use Arabic question mark
                 atWord: '', // No longer needed
                 positionSaved: 'تم حفظ الموقع',
@@ -386,10 +394,11 @@ Because your souls will always be connected…
             fr: {
                 title: 'Avec la vraie personne',
                 rawTextId: 'raw-fr-text',
-                saveProgress: 'Progression enregistrée',
-                savePosition: 'Enregistrer la position au mot',
+                saveProgress: 'Progression enregistrée', // No longer used
+                savePosition: 'Ajouter un marque-page',
                 save: 'Enregistrer',
                 exit: 'Sortir',
+                bookmarkQuestion: 'Mettre en favori cette position au mot : "{word}" ?',
                 questionMark: '?',
                 atWord: '', // No longer needed
                 positionSaved: 'Position enregistrée',
@@ -400,10 +409,11 @@ Because your souls will always be connected…
             en: {
                 title: 'With the right person',
                 rawTextId: 'raw-en-text',
-                saveProgress: 'Saved Progress',
-                savePosition: 'Save position at the word',
+                saveProgress: 'Saved Progress', // No longer used
+                savePosition: 'Bookmark',
                 save: 'Save',
                 exit: 'Exit',
+                bookmarkQuestion: 'Bookmark this position at the word: "{word}"?',
                 questionMark: '?',
                 atWord: '', // No longer needed
                 positionSaved: 'Position saved at',
