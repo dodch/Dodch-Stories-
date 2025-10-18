@@ -344,39 +344,11 @@ body.dark-mode .perf-level-1 #perfBtn.floating-button {
 .perf-level-1 .glass-container::before, .perf-level-1 .shine-effect, .perf-level-1 .glass-container:not(.series-stack)::after {
     display: none;
 }
-/* NEW: Add a second pseudo-element to create a soft, convex highlight for a "puffy" 3D look. */
-/* FIX: Exclude .series-stack to prevent this from overriding the stacking pseudo-element. */
-.glass-container:not(.series-stack)::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: inherit;
-  background: radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.15) 0%, transparent 80%);
-  opacity: 0.8;
-  pointer-events: none;
-  transition: opacity 0.5s ease-out;
-}
 
 .glass-container.force-hover-off:hover {
   pointer-events: none;
 }
 
-.glass-container.favorited, body.dark-mode .glass-container.favorited {
-    /* FIX: Apply the gradient as a semi-transparent overlay to preserve the glass effect. */
-    /* The base --glass-bg provides the blur, and this gradient adds the color tint on top. */
-    background: 
-        linear-gradient(145deg, rgba(239, 68, 68, 0.4), rgba(217, 70, 239, 0.4), rgba(139, 92, 246, 0.4)),
-        var(--glass-bg);
-}
-
-body.dark-mode .glass-container.favorited {
-    background: 
-        linear-gradient(145deg, rgba(193, 42, 77, 0.4), rgba(168, 85, 247, 0.4), rgba(109, 40, 217, 0.4)),
-        var(--glass-bg);
-}
 .glass-content {
   text-align: left;
   padding: 3rem 2rem 3rem 2rem;
@@ -386,6 +358,31 @@ body.dark-mode .glass-container.favorited {
     pseudo-elements without disrupting the layout of sibling elements like the favorite button.
   */
   z-index: 1;
+}
+.glass-container.favorited, body.dark-mode .glass-container.favorited {
+    /* FIX: Apply the gradient as a semi-transparent overlay to preserve the glass effect. */
+    /* The base --glass-bg provides the blur, and this gradient adds the color tint on top. */
+    background: var(--glass-bg); /* Keep the base background for the blur effect */
+}
+
+/* REFACTOR: Use a pseudo-element for a smooth, animatable favorite color overlay. */
+.glass-container::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: inherit;
+    background: linear-gradient(145deg, rgba(239, 68, 68, 0.4), rgba(217, 70, 239, 0.4), rgba(139, 92, 246, 0.4));
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    pointer-events: none;
+    z-index: 0; /* Sit behind the content but on top of the base background */
+}
+body.dark-mode .glass-container::after {
+    background: linear-gradient(145deg, rgba(193, 42, 77, 0.4), rgba(168, 85, 247, 0.4), rgba(109, 40, 217, 0.4));
+}
+
+.glass-container.favorited::after {
+    opacity: 1; /* Fade in the gradient overlay when favorited */
 }
 .title {
   /* FIX: Use a dominant serif font and a stronger, layered shadow for maximum clarity. */

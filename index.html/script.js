@@ -61,43 +61,48 @@ let performanceLevel = 3; // Default to highest
 
 // --- NEW: Simplified 3-Tier Performance System ---
 async function benchmarkPerformance() {
-    // FIX: Use a more accurate FPS-based benchmark instead of a simple duration test.
-    // This measures the device's ability to maintain a smooth frame rate, which is a better
-    // indicator of real-world rendering performance.
-    return new Promise(resolve => {
-        const testElement = document.createElement('div');
-        testElement.style.cssText = 'position:absolute;top:0;left:0;width:100px;height:100px;opacity:0;';
-        document.body.appendChild(testElement);
+    // REFACTOR: Run the benchmark multiple times and average the result for more stability.
+    // This prevents one-off stutters from unfairly lowering the performance level.
+    const runs = 3;
+    let totalFps = 0;
 
-        let frameCount = 0;
-        const duration = 1000; // Run the test for 1 second.
-        let lastFrameTime = performance.now();
+    for (let i = 0; i < runs; i++) {
+        const fps = await new Promise(resolve => {
+            const testElement = document.createElement('div');
+            testElement.style.cssText = 'position:absolute;top:0;left:0;width:1px;height:1px;opacity:0;pointer-events:none;';
+            document.body.appendChild(testElement);
 
-        function animate(time) {
-            // Animate the element to create a rendering load.
-            const progress = (time % duration) / duration;
-            testElement.style.transform = `rotate(${progress * 360}deg) scale(${1 + Math.sin(progress * Math.PI) * 0.1})`;
+            let frameCount = 0;
+            const duration = 500; // Shorter duration, but run multiple times.
 
-            frameCount++;
-            lastFrameTime = time;
-        }
-
-        const startTime = performance.now();
-        function runTest() {
-            const now = performance.now();
-            if (now - startTime < duration) {
-                animate(now);
-                requestAnimationFrame(runTest);
-            } else {
-                // Calculate average FPS.
-                const fps = frameCount / (duration / 1000);
-                document.body.removeChild(testElement);
-                resolve(fps);
+            function animate(time) {
+                const progress = (time % duration) / duration;
+                testElement.style.transform = `translate(${progress * 10}px, ${progress * 10}px)`;
+                frameCount++;
             }
+
+            const startTime = performance.now();
+            function runTest(now) {
+                if (now - startTime < duration) {
+                    animate(now);
+                    requestAnimationFrame(runTest);
+                } else {
+                    const averageFps = frameCount / (duration / 1000);
+                    document.body.removeChild(testElement);
+                    resolve(averageFps);
+                }
+            }
+            requestAnimationFrame(runTest);
+        });
+        totalFps += fps;
+        // Brief pause between runs to let the system settle.
+        if (i < runs - 1) {
+            await new Promise(res => setTimeout(res, 100));
         }
-        
-        requestAnimationFrame(runTest);
-    });
+    }
+
+    const averageFps = totalFps / runs;
+    return averageFps;
 }
 
 async function determinePerformanceLevel() {
@@ -115,15 +120,13 @@ async function determinePerformanceLevel() {
     const averageFps = await benchmarkPerformance();
     console.log(`Benchmark Result: ~${Math.round(averageFps)} FPS`);
 
-    // --- Step 3: Simplified 2-tier categorization ---
+    // --- REFACTOR: Revert to a simpler 2-tier system (Low/High) for clarity. ---
     let level;
-    if (averageFps < 50) {
-        level = 1; // Low (struggles to maintain a smooth frame rate)
+    if (averageFps < 48) { // A single threshold for Low vs. High.
+        level = 1; // Low (struggles to maintain a high frame rate)
     } else {
-        level = 2; // High (smooth)
+        level = 2; // High (generally smooth)
     }
-    
-    // The iOS check is no longer needed as level 2 is now the max.
 
     console.log(`Auto-determined Performance Level: ${level} (1=Low, 2=High)`);
     return level;
@@ -131,7 +134,7 @@ async function determinePerformanceLevel() {
 
 function applyPerformanceStyles(level) {
     // Remove any existing performance level classes before adding the new one.
-    for (let i = 1; i <= 2; i++) { // REFACTOR: Loop only through the 2 existing levels.
+    for (let i = 1; i <= 3; i++) { // REFACTOR: Loop through all 3 possible levels.
         document.body.classList.remove(`perf-level-${i}`);
     }
     document.body.classList.add(`perf-level-${level}`);

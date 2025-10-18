@@ -28,39 +28,48 @@ let performanceLevel = 3; // Default to highest
 
 // --- NEW: Unified Performance System (mirrors main script) ---
 async function benchmarkPerformance() {
-    // REFACTOR: This is the unified FPS-based benchmark from the main script.
-    // It measures the device's ability to maintain a smooth frame rate, which is the most
-    // accurate indicator of real-world rendering performance for the visual effects on this site.
-    return new Promise(resolve => {
-        const testElement = document.createElement('div');
-        testElement.style.cssText = 'position:absolute;top:0;left:0;width:100px;height:100px;opacity:0;pointer-events:none;';
-        document.body.appendChild(testElement);
+    // REFACTOR: Run the benchmark multiple times and average the result for more stability.
+    // This prevents one-off stutters from unfairly lowering the performance level.
+    const runs = 3;
+    let totalFps = 0;
 
-        let frameCount = 0;
-        const duration = 1000; // Run the test for 1 second.
+    for (let i = 0; i < runs; i++) {
+        const fps = await new Promise(resolve => {
+            const testElement = document.createElement('div');
+            testElement.style.cssText = 'position:absolute;top:0;left:0;width:1px;height:1px;opacity:0;pointer-events:none;';
+            document.body.appendChild(testElement);
 
-        function animate() {
-            // Animate the element to create a rendering load.
-            const progress = (performance.now() % duration) / duration;
-            testElement.style.transform = `rotate(${progress * 360}deg) scale(${1 + Math.sin(progress * Math.PI) * 0.1})`;
-            frameCount++;
-        }
+            let frameCount = 0;
+            const duration = 500; // Shorter duration, but run multiple times.
 
-        const startTime = performance.now();
-        function runTest(now) {
-            if (now - startTime < duration) {
-                animate();
-                requestAnimationFrame(runTest);
-            } else {
-                // Calculate average FPS.
-                const fps = frameCount / (duration / 1000);
-                document.body.removeChild(testElement);
-                resolve(fps);
+            function animate(time) {
+                const progress = (time % duration) / duration;
+                testElement.style.transform = `translate(${progress * 10}px, ${progress * 10}px)`;
+                frameCount++;
             }
-        }
 
-        requestAnimationFrame(runTest);
-    });
+            const startTime = performance.now();
+            function runTest(now) {
+                if (now - startTime < duration) {
+                    animate(now);
+                    requestAnimationFrame(runTest);
+                } else {
+                    const averageFps = frameCount / (duration / 1000);
+                    document.body.removeChild(testElement);
+                    resolve(averageFps);
+                }
+            }
+            requestAnimationFrame(runTest);
+        });
+        totalFps += fps;
+        // Brief pause between runs to let the system settle.
+        if (i < runs - 1) {
+            await new Promise(res => setTimeout(res, 100));
+        }
+    }
+
+    const averageFps = totalFps / runs;
+    return averageFps;
 }
 
 async function determinePerformanceLevel() {
@@ -78,12 +87,14 @@ async function determinePerformanceLevel() {
     const averageFps = await benchmarkPerformance();
     console.log(`Benchmark Result: ~${Math.round(averageFps)} FPS`);
 
-    // --- Step 3: Simplified 2-tier categorization ---
+    // --- REFACTOR: Revert to a simpler 2-tier system (Low/High) for clarity. ---
     let level;
-    if (averageFps < 50) { level = 1; } // Low
-    else { level = 2; } // High
+    if (averageFps < 48) { // A single threshold for Low vs. High.
+        level = 1; // Low (struggles to maintain a high frame rate)
+    } else {
+        level = 2; // High (generally smooth)
+    }
 
-    // The iOS check is no longer needed as level 2 is now the max.
     console.log(`Auto-determined Performance Level: ${level} (1=Low, 2=High)`);
     return level;
 }
