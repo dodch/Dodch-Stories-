@@ -146,8 +146,8 @@ body.dark-mode .back-home-button-custom {
     z-index: -1;
     border-radius: inherit; /* Match the parent's border-radius */
     background-color: inherit; /* Inherit the semi-transparent background */
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(2px); /* REFACTOR: Reduced blur from 4px to 2px for a subtler effect. */
+    -webkit-backdrop-filter: blur(2px);
     /* Promote to its own layer to prevent flickering */
     transform: translateZ(0);
 }
