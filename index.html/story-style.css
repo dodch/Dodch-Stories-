@@ -2,15 +2,17 @@
 :root {
     --glass-bg-light: rgba(255, 255, 255, 0.05);
     --glass-text-light: #ffffff;
-    /* REFACTOR: New, more complex and realistic glass edge effect, matching the main page. */
+    /* REFACTOR: Update story page glass to match the advanced, multi-layered edge from the main page for consistency. */
     --glass-shadow-light:
-        /* 1. A very thin, hard outer border to define the edge */
-        inset 0 0 0 1.5px color-mix(in srgb, #fff 20%, transparent),
-        /* 2. A soft inner highlight from the top to give a rounded feel */
-        inset 0 2px 3px -1px color-mix(in srgb, #fff 70%, transparent),
-        /* 3. A subtle inner shadow from the bottom for depth */
-        inset 0 -5px 10px -4px color-mix(in srgb, #000 20%, transparent),
-        /* 4. The main outer drop shadow for separation */
+        /* 1. A sharp, bright inner glint from the top for a polished look. */
+        inset 0 1px 1px color-mix(in srgb, #fff 90%, transparent),
+        /* 2. A subtle, secondary highlight with a hint of blue for a "refraction" effect. */
+        inset 0 2px 3px color-mix(in srgb, #9333EA 20%, transparent), /* Using purple as a fallback */
+        /* 3. A sharp highlight on the bottom edge to complete the glass look. */
+        inset 0 -1.5px 1.5px color-mix(in srgb, #fff 70%, transparent),
+        /* 4. A soft inner shadow from the bottom for a smooth, beveled depth. */
+        inset 0 -4px 5px -3px color-mix(in srgb, #000 30%, transparent),
+        /* 5. The main outer drop shadow for separation from the background */
         0px 4px 12px 0px color-mix(in srgb, #000 25%, transparent),
         0px 15px 35px 0px color-mix(in srgb, #000 20%, transparent);
     --button-shadow-light: var(--glass-shadow-light);
@@ -57,15 +59,17 @@ body.svg-filter-supported.perf-level-2 #popup > div::before {
 body.dark-mode {
     --glass-bg-dark: rgba(0, 0, 0, 0.25);
     --glass-text-dark: #f0f0f0;
-    /* REFACTOR: New, more complex and realistic glass edge effect for dark mode, matching the main page. */
+    /* REFACTOR: Update story page glass to match the advanced, multi-layered edge from the main page for consistency. */
     --glass-shadow-dark:
-        /* 1. A very thin, hard outer border to define the edge */
-        inset 0 0 0 1.5px color-mix(in srgb, #fff 15%, transparent),
-        /* 2. A soft inner highlight from the top to give a rounded feel */
-        inset 0 2px 3px -1px color-mix(in srgb, #fff 60%, transparent),
-        /* 3. A subtle inner shadow from the bottom for depth */
-        inset 0 -5px 10px -4px color-mix(in srgb, #000 35%, transparent),
-        /* 4. The main outer drop shadow for separation */
+        /* 1. A sharp, bright inner glint from the top for a polished look. */
+        inset 0 1px 1px color-mix(in srgb, #fff 70%, transparent),
+        /* 2. A subtle, secondary highlight with a hint of blue for a "refraction" effect. */
+        inset 0 2px 4px color-mix(in srgb, #C084FC 25%, transparent), /* Using purple as a fallback */
+        /* 3. A sharp highlight on the bottom edge to complete the glass look. */
+        inset 0 -1.5px 1.5px color-mix(in srgb, #fff 50%, transparent),
+        /* 4. A soft inner shadow from the bottom for a smooth, beveled depth. */
+        inset 0 -4px 5px -3px color-mix(in srgb, #000 45%, transparent),
+        /* 5. The main outer drop shadow for separation */
         0px 5px 15px 0px color-mix(in srgb, #000 40%, transparent),
         0px 20px 40px 0px color-mix(in srgb, #000 35%, transparent);
     --button-shadow-dark: var(--glass-shadow-dark);

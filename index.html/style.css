@@ -16,13 +16,15 @@
   --golden-tint:gold;
   --glass-bg:color-mix(in srgb,var(--tint-color) 10%,transparent);
   --glass-text:#f0f0f0;
-  /* REFACTOR: New, more sculpted and visually pleasing glass edge for grid cards. */
+  /* REFACTOR: Advanced, multi-layered glass edge for a modern, high-tech look. */
   --glass-shadow:
-    /* 1. A sharp, bright outer highlight to define the edge */
-    inset 0 0 0 1.5px color-mix(in srgb, #fff 35%, transparent),
-    /* 2. A soft, secondary inner highlight to create a rounded, "sculpted" feel */
-    inset 0 3px 4px -2px color-mix(in srgb, #fff 60%, transparent),
-    /* 3. A defined inner shadow from the bottom for depth and contrast */
+    /* 1. A sharp, bright inner glint from the top for a polished look. */
+    inset 0 1px 1px color-mix(in srgb, #fff 90%, transparent),
+    /* 2. A subtle, secondary highlight with a hint of blue for a "refraction" effect. */
+    inset 0 2px 3px color-mix(in srgb, var(--blue-tint) 20%, transparent),
+    /* 3. NEW: A sharp highlight on the bottom edge to complete the glass look. */
+    inset 0 -1.5px 1.5px color-mix(in srgb, #fff 70%, transparent),
+    /* 4. A soft inner shadow from the bottom for a smooth, beveled depth. */
     inset 0 -4px 5px -3px color-mix(in srgb, #000 30%, transparent),
     /* 4. The main outer drop shadow for separation from the background */
     0px 4px 12px 0px color-mix(in srgb, #000 25%, transparent),
@@ -55,13 +57,15 @@
     --golden-tint:gold;
     --glass-bg:rgba(0,0,0,0.35);
     --glass-text:#f0f0f0;
-    /* REFACTOR: New, more sculpted and visually pleasing glass edge for dark mode. */
+    /* REFACTOR: Advanced, multi-layered glass edge for a modern, high-tech look (dark mode). */
     --glass-shadow:
-      /* 1. A sharp, bright outer highlight to define the edge */
-      inset 0 0 0 1.5px color-mix(in srgb, #fff 25%, transparent),
-      /* 2. A soft, secondary inner highlight to create a rounded, "sculpted" feel */
-      inset 0 3px 4px -2px color-mix(in srgb, #fff 50%, transparent),
-      /* 3. A defined inner shadow from the bottom for depth and contrast */
+      /* 1. A sharp, bright inner glint from the top for a polished look. */
+      inset 0 1px 1px color-mix(in srgb, #fff 70%, transparent),
+      /* 2. A subtle, secondary highlight with a hint of blue for a "refraction" effect. */
+      inset 0 2px 4px color-mix(in srgb, var(--blue-tint) 25%, transparent),
+      /* 3. NEW: A sharp highlight on the bottom edge to complete the glass look. */
+      inset 0 -1.5px 1.5px color-mix(in srgb, #fff 50%, transparent),
+      /* 4. A soft inner shadow from the bottom for a smooth, beveled depth. */
       inset 0 -4px 5px -3px color-mix(in srgb, #000 45%, transparent),
       /* 4. The main outer drop shadow for separation */
       0px 5px 15px 0px color-mix(in srgb, #000 40%, transparent),
@@ -86,13 +90,15 @@ body.dark-mode {
   --golden-tint:gold;
   --glass-bg:rgba(0,0,0,0.35);
   --glass-text:#f0f0f0;
-  /* REFACTOR: New, more sculpted and visually pleasing glass edge for dark mode. */
+  /* REFACTOR: Advanced, multi-layered glass edge for a modern, high-tech look (dark mode). */
   --glass-shadow:
-    /* 1. A sharp, bright outer highlight to define the edge */
-    inset 0 0 0 1.5px color-mix(in srgb, #fff 25%, transparent),
-    /* 2. A soft, secondary inner highlight to create a rounded, "sculpted" feel */
-    inset 0 3px 4px -2px color-mix(in srgb, #fff 50%, transparent),
-    /* 3. A defined inner shadow from the bottom for depth and contrast */
+    /* 1. A sharp, bright inner glint from the top for a polished look. */
+    inset 0 1px 1px color-mix(in srgb, #fff 70%, transparent),
+    /* 2. A subtle, secondary highlight with a hint of blue for a "refraction" effect. */
+    inset 0 2px 4px color-mix(in srgb, var(--blue-tint) 25%, transparent),
+    /* 3. NEW: A sharp highlight on the bottom edge to complete the glass look. */
+    inset 0 -1.5px 1.5px color-mix(in srgb, #fff 50%, transparent),
+    /* 4. A soft inner shadow from the bottom for a smooth, beveled depth. */
     inset 0 -4px 5px -3px color-mix(in srgb, #000 45%, transparent),
     /* 4. The main outer drop shadow for separation */
     0px 5px 15px 0px color-mix(in srgb, #000 40%, transparent),
