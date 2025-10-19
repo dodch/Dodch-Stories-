@@ -54,6 +54,7 @@ document.addEventListener('keydown', function(e) {
 let panels = [];
 let allStories = [];
 let showingFavorites = false;
+let anonymousUserId = null; // NEW: To store the user's unique ID for favorites
 const body = document.body;
 let backgroundSets = []; // To store background image data
 let performanceLevel = 3; // Default to highest
@@ -244,9 +245,10 @@ function filterAndRenderPanels() {
 }
 
 function loadSavedState() {
+  // This function now only loads UI state like search and filter view.
+  // The "favorited" status of each card is now handled by the real-time Firebase listener.
   const savedShowingFavorites = localStorage.getItem('showingFavorites');
   const savedSearchValue = localStorage.getItem('searchValue');
-  const savedFavorites = JSON.parse(localStorage.getItem('favorites') || '[]');
   showingFavorites = savedShowingFavorites === 'true';
   if (showingFavorites) {
     document.getElementById('filterBtn').classList.add('active');
@@ -255,18 +257,10 @@ function loadSavedState() {
   if (savedSearchValue) {
     searchBar.value = savedSearchValue;
   }
-  if (savedFavorites.length > 0) {
-    panels.forEach((panel) => {
-      const title = panel.querySelector('.title').dataset.originalTitle;
-      if (savedFavorites.includes(title)) {
-        panel.querySelector('.favorite-btn').classList.add('active');
-        panel.classList.add('favorited');
-      }
-    });
-  }
 }
 
 function saveState() {
+  // This function now only saves UI state.
   const searchBar = document.getElementById('searchInput');
   localStorage.setItem('showingFavorites', showingFavorites);
   localStorage.setItem('searchValue', searchBar.value);
@@ -382,12 +376,22 @@ async function fetchAndBuildGrid() {
       if (countSpan && window.firebase) {
           // Create a unique, URL-safe key for the story in Firebase
           const storyKey = title.replace(/[^a-zA-Z0-9]/g, '_');
-          const storyRef = window.firebase.ref(window.firebase.db, 'stories/' + storyKey + '/favorites');
+          const storyRef = window.firebase.ref(window.firebase.db, 'stories/' + storyKey);
 
           // Listen for real-time updates to the favorite count
           window.firebase.onValue(storyRef, (snapshot) => {
-              const count = snapshot.val() || 0;
+              const storyData = snapshot.val();
+              const count = storyData?.favoritesCount || 0;
+              const favoritedBy = storyData?.favoritedBy || {};
+              
+              // Update the displayed count
               countSpan.textContent = count;
+
+              // Check if the current user has favorited this story
+              const isFavorited = favoritedBy[anonymousUserId] === true;
+              const favoriteBtn = addedCard.querySelector('.favorite-btn');
+              favoriteBtn.classList.toggle('active', isFavorited);
+              addedCard.classList.toggle('favorited', isFavorited);
           });
       }
     });
@@ -771,37 +775,41 @@ async function fetchAndBuildGrid() {
       btn.addEventListener('click', (event) => {
         event.stopPropagation();
         event.preventDefault(); 
-        const panel = btn.closest('.glass-container');
-        btn.classList.toggle('active');
-        panel.classList.toggle('favorited');
+        if (!anonymousUserId) {
+            console.error("Anonymous User ID not set. Cannot favorite.");
+            return;
+        }
 
-        // --- NEW: Update Firebase favorite count ---
+        const panel = btn.closest('.glass-container');
         const title = panel.querySelector('.title').dataset.originalTitle;
         const countSpan = panel.querySelector('.favorite-count');
+        const isCurrentlyFavorited = btn.classList.contains('active');
+
         if (window.firebase) {
             const storyKey = title.replace(/[^a-zA-Z0-9]/g, '_');
-            const storyRef = window.firebase.ref(window.firebase.db, 'stories/' + storyKey + '/favorites');
-            const increment = btn.classList.contains('active') ? 1 : -1;
+            const storyRef = window.firebase.ref(window.firebase.db, 'stories/' + storyKey);
 
-            // Use a transaction to safely increment/decrement the count
+            // Use a transaction to safely update the count and the user list
             window.firebase.runTransaction(storyRef, (currentCount) => {
-                return Math.max(0, (currentCount || 0) + increment);
+                if (!currentData) {
+                    currentData = { favoritesCount: 0, favoritedBy: {} };
+                }
+                currentData.favoritedBy = currentData.favoritedBy || {};
+                
+                if (isCurrentlyFavorited) { // User is un-favoriting
+                    currentData.favoritesCount = (currentData.favoritesCount || 1) - 1;
+                    currentData.favoritedBy[anonymousUserId] = null; // Remove the user
+                } else { // User is favoriting
+                    currentData.favoritesCount = (currentData.favoritesCount || 0) + 1;
+                    currentData.favoritedBy[anonymousUserId] = true; // Add the user
+                }
+                return currentData;
             });
 
             countSpan.classList.remove('count-animated');
             void countSpan.offsetWidth; // Force reflow to restart animation
             countSpan.classList.add('count-animated');
         }
-
-        // Existing logic
-        btn.setAttribute('aria-pressed', btn.classList.contains('active'));
-        filterAndRenderPanels();
-
-        // FIX: Restore the logic to save the list of favorited stories to localStorage.
-        const favoritedTitles = panels
-            .filter(p => p.classList.contains('favorited'))
-            .map(p => p.querySelector('.title').dataset.originalTitle);
-        localStorage.setItem('favorites', JSON.stringify(favoritedTitles));
       });
     });
 
@@ -1162,6 +1170,15 @@ let isInitialized = false; // FIX: Add a flag to prevent double initialization.
 async function initializePage(manualLevelOverride = null) {
     if (isInitialized) return; // Prevent this from running more than once.
     isInitialized = true;
+
+    // --- NEW: Anonymous User ID for Favorites ---
+    anonymousUserId = localStorage.getItem('anonymousUserId');
+    if (!anonymousUserId) {
+        // Generate a simple unique ID if one doesn't exist
+        anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('anonymousUserId', anonymousUserId);
+    }
+    console.log("Anonymous User ID for favorites:", anonymousUserId);
 
     // FIX: If a manual level is passed from the button click, use it directly.
     // Otherwise, check sessionStorage (for reloads) or run the benchmark.

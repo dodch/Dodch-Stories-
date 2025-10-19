@@ -123,10 +123,6 @@ const saveButton = document.getElementById('save-progress-button');
 const popupDivInner = document.getElementById('popup').querySelector('div');
 
 function clearSavedProgress() {
-    // REFACTOR: Update the icon state when progress is cleared.
-    if (allSavedProgress[storyKey]) {
-        delete allSavedProgress[storyKey][currentLanguage];
-        localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
     // NEW: Remove the bookmark from Firebase
     if (window.firebase && anonymousUserId) {
         const bookmarkRef = window.firebase.ref(window.firebase.db, `bookmarks/${anonymousUserId}/${storyKey}/${currentLanguage}`);
@@ -412,17 +408,10 @@ function closePopup() {
 
 function savePosition() {
     if (tempSavedWordId) {
-        // FIX: Ensure the story key object exists before assigning to it.
-        if (!allSavedProgress[storyKey]) {
-            allSavedProgress[storyKey] = {};
-        }
-        allSavedProgress[storyKey][currentLanguage] = {
         const bookmarkData = {
             id: tempSavedWordId,
             text: tempSavedWordText
         };
-        console.log(`${contentMap[currentLanguage].positionSaved} "${tempSavedWordText}" (ID: ${tempSavedWordId}) in language "${currentLanguage}"`);
-        localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
         // NEW: Save the bookmark to Firebase
         if (window.firebase && anonymousUserId) {
             const bookmarkRef = window.firebase.ref(window.firebase.db, `bookmarks/${anonymousUserId}/${storyKey}/${currentLanguage}`);
@@ -699,13 +688,6 @@ window.addEventListener('load', () => {
 document.addEventListener('DOMContentLoaded', () => {
     // FIX: Use a self-invoking async function to correctly handle 'await' for performance checks.
     (async () => {
-        const savedProgressJson = localStorage.getItem('allSavedProgress');
-        try {
-            allSavedProgress = JSON.parse(savedProgressJson) || {};
-        } catch (e) {
-            console.error("Failed to parse saved progress from localStorage:", e);
-            allSavedProgress = {};
-            localStorage.removeItem('allSavedProgress');
         // --- NEW: Anonymous User ID and Firebase Data Loading ---
         anonymousUserId = localStorage.getItem('anonymousUserId');
         if (!anonymousUserId) {
@@ -772,13 +754,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Set initial direction, this is the only call needed.
         document.documentElement.setAttribute('dir', 'ltr');
-
-        const preferredLanguage = localStorage.getItem('preferredLanguage');
-        let initialLangToLoad = 'en';
-        if (preferredLanguage && contentMap[preferredLanguage]) {
-           initialLangToLoad = preferredLanguage;
-        }
-        changeLanguage(initialLangToLoad, true);
 
         // NEW: Initialize the shine effect for all buttons on the story page.
         initializeShineEffect();
