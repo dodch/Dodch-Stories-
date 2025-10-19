@@ -62,9 +62,6 @@
   </script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <!-- FIX: Explicitly load the reCAPTCHA script in the head to prevent race conditions. -->
-  <!-- The 'render' parameter with your site key pre-initializes reCAPTCHA. -->
-  <script src="https://www.google.com/recaptcha/api.js?render=6Ldk7O8rAAAAAJTbOcPp7JmZfuhGCUNZ3Jdxqc0t" async defer></script>
 
   <link rel="stylesheet" href="style.css">
 </head>
@@ -297,59 +294,6 @@
         <!-- Series parts will be injected here by JavaScript -->
     </div>
 </div>
-<!-- NEW: Firebase SDKs -->
-<!-- We are using the modular SDKs for better performance and smaller bundle sizes. -->
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-  import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
-  import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app-check.js";
-
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyAnv8gRPRdofO7PzkFNKQJkFe3cTo3vD9I",
-    authDomain: "dodch-stories.firebaseapp.com",
-    // NOTE: The databaseURL is constructed from your projectId.
-    databaseURL: "https://dodch-stories-default-rtdb.firebaseio.com",
-    projectId: "dodch-stories",
-    storageBucket: "dodch-stories.appspot.com",
-    messagingSenderId: "610829964451",
-    appId: "1:610829964451:web:48139f38aba90dc65c5b16",
-    measurementId: "G-PDPLWGTPGB"
-  };
-
-  // Initialize Firebase and export the functions for script.js
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-
-<<<<<<< HEAD
-  // --- NEW: Initialize App Check ---
-  // Pass your reCAPTCHA v3 site key here.
-  const appCheck = initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider('YOUR_RECAPTCHA_V3_SITE_KEY'), // Replace with your key
-    isTokenAutoRefreshEnabled: true // Recommended for long-lived sessions
-=======
-  // NEW: Initialize Firebase App Check with reCAPTCHA v3
-  // This is crucial for allowing database writes if App Check is enabled in your Firebase project.
-  // IMPORTANT: Replace the placeholder below with your actual reCAPTCHA v3 Site Key.
-  // FIX: Pass a custom provider instance that uses the pre-loaded grecaptcha object.
-  // This eliminates the race condition where Firebase might try to use reCAPTCHA before it's ready.
-  const appCheck = initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider({ siteKey: '6Ldk7O8rAAAAAJTbOcPp7JmZfuhGCUNZ3Jdxqc0t', grecaptcha: window.grecaptcha }),
-    isTokenAutoRefreshEnabled: true // Automatically refresh the token as needed.
->>>>>>> 7ded5b66de1956054c44f59c6ce0a62b5c85313d
-  });
-
-  window.firebase = { db, ref, onValue, runTransaction };
-</script>
-<!-- NEW: Add FingerprintJS library for more robust anonymous user identification. -->
-<script>
-  // This is the V4 UMD bundle of FingerprintJS
-  (function(l,a,y,p,i,n,g){if(!l[i]){l.GlobalSnowplowNamespace=l.GlobalSnowplowNamespace||[];
-  l.GlobalSnowplowNamespace.push(i);l[i]=function(){(l[i].q=l[i].q||[]).push(arguments)
-  };l[i].q=l[i].q||[];n=a.createElement(y);g=a.getElementsByTagName(y)[0];n.async=1;
-  n.src=p;g.parentNode.insertBefore(n,g)}}(window,document,"script","https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@4/dist/fp.min.js","fp"));
-</script>
 <script src="script.js"></script>
 </body>
 </html>

@@ -123,15 +123,10 @@ const saveButton = document.getElementById('save-progress-button');
 const popupDivInner = document.getElementById('popup').querySelector('div');
 
 function clearSavedProgress() {
-    // NEW: Remove the bookmark from Firebase
-    if (window.firebase && anonymousUserId) {
-        const bookmarkRef = window.firebase.ref(window.firebase.db, `bookmarks/${anonymousUserId}/${storyKey}/${currentLanguage}`);
-        window.firebase.remove(bookmarkRef);
-        // The onValue listener will automatically clear the local state and icon
-    } else { // Fallback to localStorage if Firebase isn't ready
-        if (allSavedProgress[storyKey]) delete allSavedProgress[storyKey][currentLanguage];
-        updateBookmarkIconState(); // Update the icon to show no bookmark is saved.
-    }
+    // Remove the bookmark from localStorage
+    if (allSavedProgress[storyKey]) delete allSavedProgress[storyKey][currentLanguage];
+    localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
+    updateBookmarkIconState(); // Update the icon to show no bookmark is saved.
 }
 
 /**
@@ -412,12 +407,12 @@ function savePosition() {
             id: tempSavedWordId,
             text: tempSavedWordText
         };
-        // NEW: Save the bookmark to Firebase
-        if (window.firebase && anonymousUserId) {
-            const bookmarkRef = window.firebase.ref(window.firebase.db, `bookmarks/${anonymousUserId}/${storyKey}/${currentLanguage}`);
-            window.firebase.set(bookmarkRef, bookmarkData);
-            // The onValue listener will handle UI updates automatically when Firebase syncs.
-        }
+        // Save the bookmark to localStorage
+        if (!allSavedProgress[storyKey]) allSavedProgress[storyKey] = {};
+        allSavedProgress[storyKey][currentLanguage] = bookmarkData;
+        localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
+        updateBookmarkIconState();
+        highlightWord();
     }
     closePopup();
 }
@@ -701,83 +696,22 @@ window.addEventListener('load', () => {
 document.addEventListener('DOMContentLoaded', () => {
     // FIX: Use a self-invoking async function to correctly handle 'await' for performance checks.
     (async () => {
-        // FIX: Wait for a valid App Check token before initializing the page.
-        // This is the definitive fix for the "unverified requests" issue. It ensures
-        // that no database operations can be attempted until the app is verified.
-        if (window.firebase && window.firebase.appCheck) {
-            await window.firebase.getToken(window.firebase.appCheck);
-            console.log("Firebase App Check token acquired on story page. Proceeding.");
-        }
-
-        // --- REFACTOR: Use FingerprintJS for a more robust anonymous user ID ---
-        try {
-            // FingerprintJS should already be loaded from the main page's cache
-            const fp = await window.fp.load();
-            const result = await fp.get({ extendedResult: true });
-
-            // Create a more robust ID by hashing component data.
-            const components = result.components;
-            const componentsString = Object.keys(components).map(key => {
-                const value = components[key].value;
-                return typeof value === 'object' ? JSON.stringify(value) : value;
-            }).join('|');
-            anonymousUserId = result.visitorId + '-' + await hashString(componentsString);
-
-        } catch (error) {
-            console.error("FingerprintJS failed on story page, falling back to localStorage:", error);
-            // Fallback to the old method if FingerprintJS fails
-            anonymousUserId = localStorage.getItem('anonymousUserId');
-            if (!anonymousUserId) {
-                anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('anonymousUserId', anonymousUserId);
-            }
+        // Revert to simple localStorage-based anonymous user ID
+        anonymousUserId = localStorage.getItem('anonymousUserId');
+        if (!anonymousUserId) {
+            anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('anonymousUserId', anonymousUserId);
         }
         console.log("Anonymous User ID:", anonymousUserId);
-        // This function will be called by Firebase when data is loaded or changed
-<<<<<<< HEAD
-=======
-        
-        // FIX: Move initial content setup outside the Firebase listener.
-        // This ensures the story text loads immediately, regardless of Firebase connection speed.
-        const preferredLanguage = localStorage.getItem('preferredLanguage');
-        let initialLangToLoad = 'en';
-        if (preferredLanguage && contentMap[preferredLanguage]) {
-           initialLangToLoad = preferredLanguage;
-        }
-        changeLanguage(initialLangToLoad, true);
-        const setupInitialContent = () => {
-            const preferredLanguage = localStorage.getItem('preferredLanguage');
-            let initialLangToLoad = 'en';
-            if (preferredLanguage && contentMap[preferredLanguage]) {
-               initialLangToLoad = preferredLanguage;
-            }
-            changeLanguage(initialLangToLoad, true);
-        };
->>>>>>> 7ded5b66de1956054c44f59c6ce0a62b5c85313d
 
-        if (window.firebase) {
-            // FIX: Revert to listening for ALL user bookmarks. The previous, more specific path
-            // caused an issue where loading one story's bookmarks would overwrite all others.
-            const userBookmarksRef = window.firebase.ref(window.firebase.db, `bookmarks/${anonymousUserId}`);
-            
-            // Listen for real-time updates to this user's entire bookmark collection.
-            window.firebase.onValue(userBookmarksRef, (snapshot) => {
-                const data = snapshot.val();
-                allSavedProgress = data || {}; // Correctly update the global object with ALL bookmarks.
-                console.log("Firebase bookmarks loaded/updated for all stories:", allSavedProgress);
-                updateBookmarkIconState();
-                highlightWord();
-            });
-        } else {
-            console.warn("Firebase not available. Falling back to localStorage for bookmarks.");
-            const savedProgressJson = localStorage.getItem('allSavedProgress');
-            try {
-                allSavedProgress = JSON.parse(savedProgressJson) || {};
-            } catch (e) {
-                console.error("Failed to parse saved progress from localStorage:", e);
-                allSavedProgress = {};
-                localStorage.removeItem('allSavedProgress');
-            }
+        // Load all bookmarks from localStorage
+        const savedProgressJson = localStorage.getItem('allSavedProgress');
+        try {
+            allSavedProgress = JSON.parse(savedProgressJson) || {};
+        } catch (e) {
+            console.error("Failed to parse saved progress from localStorage:", e);
+            allSavedProgress = {};
+            localStorage.removeItem('allSavedProgress');
         }
 
         // --- NEW: Run performance check first ---
@@ -796,42 +730,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
         handleDarkModeChange(darkModeMediaQuery);
         darkModeMediaQuery.addListener(handleDarkModeChange);
-
-<<<<<<< HEAD
-=======
-        // Set initial direction, this is the only call needed.
-        document.documentElement.setAttribute('dir', 'ltr');
-
-        // NEW: Initialize the shine effect for all buttons on the story page.
-        initializeShineEffect();
-
-        // Apply new tap animations to all buttons
-       document.querySelectorAll('button').forEach(button => {
-           addTapAnimation(button);
-           // Add specific actions for each button
-           if (['ar-button', 'fr-button', 'en-button'].includes(button.id)) { // Language buttons
-               const lang = button.id.split('-')[0];
-               if (contentMap[lang]) {
-                   button.addEventListener('click', () => changeLanguage(lang));
-               }
-           } else if (button.id === 'save-progress-button') {
-               button.addEventListener('click', () => scrollToSavedWord());
-           } else if (button.id === 'back-home-button') {
-               button.addEventListener('click', () => window.location.href = 'https://www.dodchstories.com');
-           } else if (button.closest('#popup')) { // Popup buttons
-               // FIX: Use 'pointerup' instead of 'click' for popup buttons to prevent "ghost clicks" on mobile.
-               // This ensures the interaction is consistent with the word selection.
-               if (button.textContent.trim().toLowerCase() === 'save' || button.textContent.trim() === 'حفظ' || button.textContent.trim() === 'enregistrer') {
-                   button.addEventListener('pointerup', (e) => {
-                       e.preventDefault();
-                       savePosition();
-                   });
-               } else {
-                   button.addEventListener('pointerup', closePopup);
-               }
-           }
-       });
->>>>>>> 7ded5b66de1956054c44f59c6ce0a62b5c85313d
     })();
 });
 

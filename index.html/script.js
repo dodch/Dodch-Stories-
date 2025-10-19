@@ -320,7 +320,7 @@ async function fetchAndBuildGrid() {
               <span class="favorite-count">0</span>
               <div class="favorite-btn glass-button-base">
                 <svg viewBox="0 0 24 24">
-                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                 </svg>
               </div>
             </div>
@@ -368,41 +368,17 @@ async function fetchAndBuildGrid() {
           grid.appendChild(singleStoryCard);
       }
 
-      // --- NEW: Firebase Realtime Database Integration ---
+      // --- Local Favorite State ---
       const title = story.title;
       const addedCard = grid.lastElementChild;
       const countSpan = addedCard.querySelector('.favorite-count');
-
-      if (countSpan && window.firebase) {
-          // Create a unique, URL-safe key for the story in Firebase
-          const storyKey = title.replace(/[^a-zA-Z0-9]/g, '_');
-          const storyRef = window.firebase.ref(window.firebase.db, 'stories/' + storyKey);
-
-          // Listen for real-time updates to the favorite count
-          window.firebase.onValue(storyRef, (snapshot) => {
-              const storyData = snapshot.val();
-              const count = storyData?.favoritesCount || 0;
-              const favoritedBy = storyData?.favoritedBy || {};
-              
-              // Update the displayed count
-              countSpan.textContent = count;
-
-              // Check if the current user has favorited this story
-              const isFavorited = favoritedBy[anonymousUserId] === true;
-              const favoriteBtn = addedCard.querySelector('.favorite-btn');
-              favoriteBtn.classList.toggle('active', isFavorited);
-<<<<<<< HEAD
-=======
-              // FIX: Use requestAnimationFrame to defer the visibility check.
-              // This prevents a race condition where the DOM query runs before the 'favorited'
-              // class has been fully applied, ensuring the "No favorites" message appears correctly.
-              requestAnimationFrame(() => {
-                  updateNoFavoritesMessageState();
-              });
->>>>>>> 7ded5b66de1956054c44f59c6ce0a62b5c85313d
-              addedCard.classList.toggle('favorited', isFavorited);
-          });
+      // Remove favorite count display as it's no longer tracked globally
+      if (countSpan) {
+        countSpan.style.display = 'none';
       }
+      const storyKey = title.replace(/[^a-zA-Z0-9]/g, '_');
+      addedCard.dataset.storyKey = storyKey;
+
     });
     // Correctly select panels for physics, excluding those inside a series stack
     panels = [...document.querySelectorAll('.grid > .glass-container, .grid > .series-stack')];
@@ -791,71 +767,32 @@ async function fetchAndBuildGrid() {
 
         const panel = btn.closest('.glass-container');
         const title = panel.querySelector('.title').dataset.originalTitle;
-        const countSpan = panel.querySelector('.favorite-count');
-<<<<<<< HEAD
+        const storyKey = panel.dataset.storyKey;
         const isCurrentlyFavorited = btn.classList.contains('active');
 
-=======
-        
->>>>>>> 7ded5b66de1956054c44f59c6ce0a62b5c85313d
-        if (window.firebase) {
-            const storyKey = title.replace(/[^a-zA-Z0-9]/g, '_');
-            const storyRef = window.firebase.ref(window.firebase.db, 'stories/' + storyKey);
+        // Revert to localStorage for favorites
+        let favorites = JSON.parse(localStorage.getItem('userFavorites')) || {};
 
-<<<<<<< HEAD
-            // Use a transaction to safely update the count and the user list
-            window.firebase.runTransaction(storyRef, (currentData) => {
-                if (!currentData) {
-                    currentData = { favoritesCount: 0, favoritedBy: {} };
-                }
-                currentData.favoritedBy = currentData.favoritedBy || {};
-                
-                if (isCurrentlyFavorited) { // User is un-favoriting
-                    currentData.favoritesCount = (currentData.favoritesCount || 1) - 1;
-                    currentData.favoritedBy[anonymousUserId] = null; // Remove the user
-                } else { // User is favoriting
-                    currentData.favoritesCount = (currentData.favoritesCount || 0) + 1;
-                    currentData.favoritedBy[anonymousUserId] = true; // Add the user
-                }
-                return currentData;
-            });
-
-            countSpan.classList.remove('count-animated');
-            void countSpan.offsetWidth; // Force reflow to restart animation
-            countSpan.classList.add('count-animated');
-=======
-            // FIX: The new security rules rely on 'auth.uid'. We will simulate this for anonymous
-            // users by passing the anonymousUserId in the transaction options.
-            const transactionOptions = { applied: true };
-
-            // Use a transaction to safely update the count and the user list
-            window.firebase.runTransaction(storyRef, (currentData) => {
-                // FIX: Ensure 'currentData' is always a valid object, even if it's null initially.
-                // This simplifies the logic and guarantees consistency for the transaction.
-                const data = currentData || { favoritesCount: 0, favoritedBy: {} };
-                // Ensure favoritedBy is always an object.
-                data.favoritedBy = data.favoritedBy || {};
-
-                // Check the *actual* data from Firebase to determine the current state.
-                const isCurrentlyFavorited = data.favoritedBy[anonymousUserId] === true;
-                
-                if (isCurrentlyFavorited) { // User is un-favoriting
-                    data.favoritesCount = Math.max(0, (data.favoritesCount || 0) - 1);
-                    // FIX: Revert to using `null` to completely delete the user's key from the 'favoritedBy' object.
-                    // This is the correct way to handle un-favoriting and prevents logic errors on subsequent likes.
-                    // This requires a corresponding change in the Firebase security rules.
-                    data.favoritedBy[anonymousUserId] = null;
-                } else { // User is favoriting
-                    data.favoritesCount = (data.favoritesCount || 0) + 1;
-                    data.favoritedBy[anonymousUserId] = true; // Add the user
-                }
-                return data;
-            }, transactionOptions);
-
+        if (isCurrentlyFavorited) {
+          // Un-favorite
+          delete favorites[storyKey];
+          btn.classList.remove('active');
+          panel.classList.remove('favorited');
         } else {
-            console.error("Firebase not available. Cannot update favorite status.");
->>>>>>> 7ded5b66de1956054c44f59c6ce0a62b5c85313d
+          // Favorite
+          favorites[storyKey] = true;
+          btn.classList.add('active');
+          panel.classList.add('favorited');
         }
+
+        localStorage.setItem('userFavorites', JSON.stringify(favorites));
+
+        // If showing favorites, re-filter to hide the unfavorited card
+        if (showingFavorites) {
+          filterAndRenderPanels();
+        }
+
+        updateNoFavoritesMessageState();
       });
     });
 
@@ -1230,50 +1167,16 @@ async function hashString(str) {
 
 let isInitialized = false; // FIX: Add a flag to prevent double initialization.
 async function initializePage(manualLevelOverride = null) {
-    // FIX: Wait for a valid App Check token before initializing the page.
-    // This is the definitive fix for the "unverified requests" issue. It ensures
-    // that no database operations can be attempted until the app is verified.
-    if (window.firebase && window.firebase.appCheck) {
-        await window.firebase.getToken(window.firebase.appCheck);
-        console.log("Firebase App Check token acquired. Proceeding with initialization.");
-    }
-
     if (isInitialized) return; // Prevent this from running more than once.
     isInitialized = true;
     
-    // --- REFACTOR: Use FingerprintJS for a more robust anonymous user ID ---
-    // This ID is more likely to be consistent across regular and incognito sessions.
-    try {
-<<<<<<< HEAD
-        const fp = await window.fp.load();
-        const result = await fp.get();
-        anonymousUserId = result.visitorId;
-        console.log("FingerprintJS Visitor ID:", anonymousUserId);
-=======
-        // REFACTOR: Use extendedResult to get more components for a more stable ID.
-        const fp = await window.fp.load();
-        const result = await fp.get({ extendedResult: true });
-
-        // Create a more robust ID by hashing component data.
-        // This makes it harder to get a new ID just by clearing cookies.
-        const components = result.components;
-        const componentsString = Object.keys(components).map(key => {
-            const value = components[key].value;
-            return typeof value === 'object' ? JSON.stringify(value) : value;
-        }).join('|');
-        anonymousUserId = result.visitorId + '-' + await hashString(componentsString);
-        console.log("Robust Anonymous User ID:", anonymousUserId);
->>>>>>> 7ded5b66de1956054c44f59c6ce0a62b5c85313d
-    } catch (error) {
-        console.error("FingerprintJS failed, falling back to localStorage:", error);
-        // Fallback to the old method if FingerprintJS fails
-        anonymousUserId = localStorage.getItem('anonymousUserId');
-        if (!anonymousUserId) {
-            anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('anonymousUserId', anonymousUserId);
-        }
-        console.log("Fallback Anonymous User ID:", anonymousUserId);
+    // Revert to simple localStorage-based anonymous user ID
+    anonymousUserId = localStorage.getItem('anonymousUserId');
+    if (!anonymousUserId) {
+        anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('anonymousUserId', anonymousUserId);
     }
+    console.log("Anonymous User ID:", anonymousUserId);
 
     // FIX: If a manual level is passed from the button click, use it directly.
     // Otherwise, check sessionStorage (for reloads) or run the benchmark.
