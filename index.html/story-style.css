@@ -208,6 +208,19 @@ body.dark-mode #back-home-button:hover, body.dark-mode #back-home-button:focus-v
     transition: color 0.3s ease;
 }
 
+/* NEW: Visitor count container */
+#visitor-count-container {
+    /* REFACTOR: Increased margin-top to move the icon lower. */
+    margin-top: 5rem; /* Position it below the language buttons */
+    background-color: rgba(0, 0, 0, 0.2);
+    pointer-events: none; /* Make it non-interactive */
+}
+
+html.dark-mode #visitor-count-container {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+
 
 /* Custom styles for pop-up buttons to override glass background */
 #popup button.glass-button-base.bg-green-500 {

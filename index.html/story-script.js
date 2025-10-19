@@ -24,6 +24,7 @@ let tempSavedWordId = '';
 let tempSavedWordText = '';
 let highlightedWordElement = null;
 let isDarkMode = false;
+let contentMap = {}; // Will be populated by the initialization function
 let storyObserver; // For paragraph animations
 let performanceLevel = 3; // Default to highest
 
@@ -144,7 +145,7 @@ function updateBookmarkIconState() {
     }
 }
 
-function changeLanguage(lang, fromLoad = false, isThemeChange = false) {
+function changeLanguage(lang, fromLoad = false, isThemeChange = false, storyContentMap) {
     // REFACTOR: Allow theme changes to bypass the fade animation check.
     if (contentDiv.classList.contains('content-fading') && !fromLoad && !isThemeChange) return;
 
@@ -166,7 +167,7 @@ function changeLanguage(lang, fromLoad = false, isThemeChange = false) {
     if (!fromLoad) {
          localStorage.setItem('preferredLanguage', lang);
     }
-    const content = contentMap[lang];
+    const content = storyContentMap[lang];
 
     const updateContent = () => {
         if (lang === 'ar') {
@@ -298,7 +299,7 @@ function changeLanguage(lang, fromLoad = false, isThemeChange = false) {
             window.hasScrollEndListener = true;
         }
         setupStoryObserver();
-        document.querySelector('#popup-title').textContent = content.savePosition;
+        document.querySelector('#popup-title').textContent = storyContentMap[currentLanguage].savePosition;
         document.getElementById('popup').querySelector('.bg-green-500').textContent = content.save;
         document.getElementById('popup').querySelector('.bg-red-500').textContent = content.exit;
         updateBookmarkIconState();
@@ -315,7 +316,7 @@ function changeLanguage(lang, fromLoad = false, isThemeChange = false) {
     // For subsequent language changes, use the fade-out/fade-in animation.
     if (fromLoad) {
         updateContent();
-        // FIX: On initial load, explicitly remove the 'content-fading' class
+        // FIX: On initial load, explicitly remove the 'content-fading' class.
         // to ensure the content becomes visible. This was the root cause of the bug.
         contentDiv.classList.remove('content-fading');
     } else {
@@ -359,7 +360,7 @@ function handleWordClick(spanId, wordText) {
     tempSavedWordId = spanId;
     tempSavedWordText = wordText;
     // FIX: Use the translated string from contentMap for the popup question.
-    const content = contentMap[currentLanguage];
+    const content = contentMap[currentLanguage]; // Use the module-level contentMap
     const popupText = document.getElementById('popup-text');
     popupText.textContent = content.bookmarkQuestion.replace('{word}', wordText);
     popupText.classList.add('text-center'); // FIX: Center the popup question text.
@@ -423,7 +424,7 @@ function scrollToSavedWord(performChecks = true, smooth = true) {
     const savedProgressForCurrentLang = allSavedProgress?.[storyKey]?.[currentLanguage];
     if (!savedProgressForCurrentLang || !savedProgressForCurrentLang.id) {
         if (performChecks) { // Only alert if the user clicked the button
-            alert(contentMap[currentLanguage].noWordSaved);
+            alert(contentMap[currentLanguage].noWordSaved); // Use module-level contentMap
         }
         return;
     }
@@ -436,9 +437,9 @@ function scrollToSavedWord(performChecks = true, smooth = true) {
             targetElement.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'center' });
          });
     } else {
-        console.warn(`${contentMap[currentLanguage].wordNotFound} (ID: ${savedWordId}, Text: "${savedWordText}")`);
+        console.warn(`${contentMap[currentLanguage].wordNotFound} (ID: ${savedWordId}, Text: "${savedWordText}")`); // Use module-level contentMap
         if (performChecks) {
-            alert(`${contentMap[currentLanguage].wordNotFound} ("${savedWordText}")`);
+            alert(`${contentMap[currentLanguage].wordNotFound} ("${savedWordText}")`); // Use module-level contentMap
             const confirmClear = confirm(`Clear saved progress for ${currentLanguage.toUpperCase()}?`);
             if (confirmClear) {
                 clearSavedProgress();
@@ -727,9 +728,12 @@ document.addEventListener('DOMContentLoaded', () => {
 /**
  * FIX: This new function is called directly from the story HTML file after contentMap is defined.
  * This resolves the race condition where the script would try to access contentMap before it existed.
+ * FIX: Export the function so it can be imported by the module script in the HTML.
+ * @param {object} storyContentMap The story-specific configuration object.
  */
-function initializeStoryContent() {
+export async function initializeStoryContent(storyContentMap) {
     // FIX: Load bookmarks from localStorage here, before any other content is initialized.
+    contentMap = storyContentMap; // Store the map at the module level for other functions to use.
     // This ensures the `allSavedProgress` object is ready for functions like `updateBookmarkIconState`.
     const savedProgressJson = localStorage.getItem('allSavedProgress');
     try {
@@ -741,14 +745,39 @@ function initializeStoryContent() {
     }
     console.log("Loaded bookmarks from localStorage:", allSavedProgress);
 
+    // FIX: Move performance check and user initialization here to run AFTER the page has loaded,
+    // but BEFORE the heavy content processing begins. This gives a more accurate benchmark.
+    anonymousUserId = localStorage.getItem('anonymousUserId');
+    if (!anonymousUserId) {
+        anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('anonymousUserId', anonymousUserId);
+    }
+    console.log("Anonymous User ID:", anonymousUserId);
+
+    const manualLevel = sessionStorage.getItem('manualPerformanceLevel');
+    if (manualLevel) {
+        performanceLevel = parseInt(manualLevel, 10);
+        console.log(`Using manually set Performance Level from main page: ${performanceLevel}`);
+    } else {
+        // Awaiting the benchmark here ensures it completes before content rendering starts.
+        performanceLevel = await determinePerformanceLevel();
+    }
+    console.log(`Story Page Performance Level: ${performanceLevel}`);
+    document.body.classList.add(`perf-level-${performanceLevel}`);
+
+    // Initialize dark mode listener
+    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    handleDarkModeChange(darkModeMediaQuery);
+    darkModeMediaQuery.addListener(handleDarkModeChange);
+
 
     const preferredLanguage = localStorage.getItem('preferredLanguage');
     let initialLangToLoad = 'en';
-    if (preferredLanguage && typeof contentMap !== 'undefined' && contentMap[preferredLanguage]) {
+    if (preferredLanguage && typeof storyContentMap !== 'undefined' && storyContentMap[preferredLanguage]) {
         initialLangToLoad = preferredLanguage;
     }
     // The 'true' flag indicates this is the initial load, preventing fade animations.
-    changeLanguage(initialLangToLoad, true);
+    changeLanguage(initialLangToLoad, true, false, storyContentMap);
 
     // FIX: Move all button initialization logic here to ensure it runs after the content is ready.
     // This resolves the race condition that caused buttons to be unresponsive.
@@ -765,8 +794,8 @@ function initializeStoryContent() {
         // Add specific actions for each button
         if (['ar-button', 'fr-button', 'en-button'].includes(button.id)) { // Language buttons
             const lang = button.id.split('-')[0];
-            if (contentMap[lang]) {
-                button.addEventListener('click', () => changeLanguage(lang));
+            if (storyContentMap[lang]) {
+                button.addEventListener('click', () => changeLanguage(lang, false, false, storyContentMap));
             }
         } else if (button.id === 'save-progress-button') {
             button.addEventListener('click', () => scrollToSavedWord());
