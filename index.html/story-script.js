@@ -704,16 +704,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         console.log("Anonymous User ID:", anonymousUserId);
 
-        // Load all bookmarks from localStorage
-        const savedProgressJson = localStorage.getItem('allSavedProgress');
-        try {
-            allSavedProgress = JSON.parse(savedProgressJson) || {};
-        } catch (e) {
-            console.error("Failed to parse saved progress from localStorage:", e);
-            allSavedProgress = {};
-            localStorage.removeItem('allSavedProgress');
-        }
-
         // --- NEW: Run performance check first ---
         // FIX: Check for a manually set performance level from the main page.
         // REFACTOR: Read from sessionStorage to maintain consistency across the session.
@@ -738,6 +728,19 @@ document.addEventListener('DOMContentLoaded', () => {
  * This resolves the race condition where the script would try to access contentMap before it existed.
  */
 function initializeStoryContent() {
+    // FIX: Load bookmarks from localStorage here, before any other content is initialized.
+    // This ensures the `allSavedProgress` object is ready for functions like `updateBookmarkIconState`.
+    const savedProgressJson = localStorage.getItem('allSavedProgress');
+    try {
+        allSavedProgress = JSON.parse(savedProgressJson) || {};
+    } catch (e) {
+        console.error("Failed to parse saved progress from localStorage:", e);
+        allSavedProgress = {};
+        localStorage.removeItem('allSavedProgress');
+    }
+    console.log("Loaded bookmarks from localStorage:", allSavedProgress);
+
+
     const preferredLanguage = localStorage.getItem('preferredLanguage');
     let initialLangToLoad = 'en';
     if (preferredLanguage && typeof contentMap !== 'undefined' && contentMap[preferredLanguage]) {

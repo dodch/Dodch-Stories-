@@ -371,11 +371,6 @@ async function fetchAndBuildGrid() {
       // --- Local Favorite State ---
       const title = story.title;
       const addedCard = grid.lastElementChild;
-      const countSpan = addedCard.querySelector('.favorite-count');
-      // Remove favorite count display as it's no longer tracked globally
-      if (countSpan) {
-        countSpan.style.display = 'none';
-      }
       const storyKey = title.replace(/[^a-zA-Z0-9]/g, '_');
       addedCard.dataset.storyKey = storyKey;
 
@@ -767,32 +762,29 @@ async function fetchAndBuildGrid() {
 
         const panel = btn.closest('.glass-container');
         const title = panel.querySelector('.title').dataset.originalTitle;
+        const countSpan = panel.querySelector('.favorite-count');
         const storyKey = panel.dataset.storyKey;
         const isCurrentlyFavorited = btn.classList.contains('active');
 
-        // Revert to localStorage for favorites
-        let favorites = JSON.parse(localStorage.getItem('userFavorites')) || {};
-
+        // Toggle visual state without saving to localStorage on the main page
         if (isCurrentlyFavorited) {
           // Un-favorite
-          delete favorites[storyKey];
           btn.classList.remove('active');
           panel.classList.remove('favorited');
+          countSpan.textContent = '0';
         } else {
           // Favorite
-          favorites[storyKey] = true;
           btn.classList.add('active');
           panel.classList.add('favorited');
-        }
-
-        localStorage.setItem('userFavorites', JSON.stringify(favorites));
-
-        // If showing favorites, re-filter to hide the unfavorited card
-        if (showingFavorites) {
-          filterAndRenderPanels();
+          countSpan.textContent = '1';
         }
 
         updateNoFavoritesMessageState();
+
+        // Animate the count change
+        countSpan.classList.remove('count-animated');
+        void countSpan.offsetWidth; // Force reflow to restart animation
+        countSpan.classList.add('count-animated');
       });
     });
 
