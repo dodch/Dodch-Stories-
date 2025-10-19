@@ -734,6 +734,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         console.log("Anonymous User ID:", anonymousUserId);
         // This function will be called by Firebase when data is loaded or changed
+<<<<<<< HEAD
+=======
+        
+        // FIX: Move initial content setup outside the Firebase listener.
+        // This ensures the story text loads immediately, regardless of Firebase connection speed.
+        const preferredLanguage = localStorage.getItem('preferredLanguage');
+        let initialLangToLoad = 'en';
+        if (preferredLanguage && contentMap[preferredLanguage]) {
+           initialLangToLoad = preferredLanguage;
+        }
+        changeLanguage(initialLangToLoad, true);
+        const setupInitialContent = () => {
+            const preferredLanguage = localStorage.getItem('preferredLanguage');
+            let initialLangToLoad = 'en';
+            if (preferredLanguage && contentMap[preferredLanguage]) {
+               initialLangToLoad = preferredLanguage;
+            }
+            changeLanguage(initialLangToLoad, true);
+        };
+>>>>>>> 7ded5b66de1956054c44f59c6ce0a62b5c85313d
 
         if (window.firebase) {
             // FIX: Revert to listening for ALL user bookmarks. The previous, more specific path
@@ -777,6 +797,41 @@ document.addEventListener('DOMContentLoaded', () => {
         handleDarkModeChange(darkModeMediaQuery);
         darkModeMediaQuery.addListener(handleDarkModeChange);
 
+<<<<<<< HEAD
+=======
+        // Set initial direction, this is the only call needed.
+        document.documentElement.setAttribute('dir', 'ltr');
+
+        // NEW: Initialize the shine effect for all buttons on the story page.
+        initializeShineEffect();
+
+        // Apply new tap animations to all buttons
+       document.querySelectorAll('button').forEach(button => {
+           addTapAnimation(button);
+           // Add specific actions for each button
+           if (['ar-button', 'fr-button', 'en-button'].includes(button.id)) { // Language buttons
+               const lang = button.id.split('-')[0];
+               if (contentMap[lang]) {
+                   button.addEventListener('click', () => changeLanguage(lang));
+               }
+           } else if (button.id === 'save-progress-button') {
+               button.addEventListener('click', () => scrollToSavedWord());
+           } else if (button.id === 'back-home-button') {
+               button.addEventListener('click', () => window.location.href = 'https://www.dodchstories.com');
+           } else if (button.closest('#popup')) { // Popup buttons
+               // FIX: Use 'pointerup' instead of 'click' for popup buttons to prevent "ghost clicks" on mobile.
+               // This ensures the interaction is consistent with the word selection.
+               if (button.textContent.trim().toLowerCase() === 'save' || button.textContent.trim() === 'حفظ' || button.textContent.trim() === 'enregistrer') {
+                   button.addEventListener('pointerup', (e) => {
+                       e.preventDefault();
+                       savePosition();
+                   });
+               } else {
+                   button.addEventListener('pointerup', closePopup);
+               }
+           }
+       });
+>>>>>>> 7ded5b66de1956054c44f59c6ce0a62b5c85313d
     })();
 });
 
