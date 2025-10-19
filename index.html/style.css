@@ -810,6 +810,20 @@ body.search-active > .notifications-container {
   z-index: 7;
   transition: color 0.5s ease-in-out;
 }
+.site-footer p {
+  margin-bottom: 0.5rem; /* Add some space between footer lines */
+}
+/* NEW: Style for the reCAPTCHA branding text in the footer */
+.recaptcha-branding {
+  font-size: 0.75rem;
+  opacity: 0.6;
+  max-width: 400px;
+  margin: 0.5rem auto 0; /* Center the text block */
+  line-height: 1.4;
+}
+.recaptcha-branding a {
+  color: var(--blue-tint); /* Use the existing blue tint for links */
+}
 .made-by-who {
   font-family: 'Quattrocento Sans', sans-serif;
   font-size: 1.2rem;
@@ -1569,10 +1583,7 @@ body:not(.is-scrolling) .series-stack:hover .favorite-container {
 }
 
 /* --- NEW: reCAPTCHA Badge Fix --- */
-/* This ensures the reCAPTCHA badge appears on top of the bottom vignette. */
+/* Hide the reCAPTCHA badge. Per Google's policy, the required branding and links have been added to the site footer. */
 .grecaptcha-badge {
-    z-index: 11 !important; /* Higher than floating buttons (10) and vignettes (6) */
-    /* Add a small margin for better visibility and to avoid screen edges. */
-    margin-bottom: 1rem;
-    margin-right: 1rem;
+    visibility: hidden !important;
 }
