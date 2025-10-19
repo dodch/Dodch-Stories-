@@ -360,31 +360,30 @@ body.dark-mode .perf-level-1 #perfBtn.floating-button {
   z-index: 1;
 }
 .glass-container.favorited, body.dark-mode .glass-container.favorited {
-    /* FIX: Apply the gradient as a semi-transparent overlay to preserve the glass effect. */
-    /* The base --glass-bg provides the blur, and this gradient adds the color tint on top. */
-    background: var(--glass-bg); /* Keep the base background for the blur effect */
+    background: var(--glass-bg);
 }
 
-/* REFACTOR: Use a new pseudo-element for the favorite overlay to avoid conflicts with series-stack. */
-.glass-container > .glass-content::before {
-    content: '';
+/* NEW: Use a dedicated div for the favorite overlay to avoid all pseudo-element conflicts. */
+.favorite-overlay {
     position: absolute;
-    /* Stretch to cover the entire parent card */
-    top: -20px; left: -20px; right: -20px; bottom: -20px;
-    border-radius: 3rem; /* Match the parent card's border-radius */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: inherit; /* Match the parent card's border-radius */
     background: linear-gradient(145deg, rgba(239, 68, 68, 0.4), rgba(217, 70, 239, 0.4), rgba(139, 92, 246, 0.4));
     opacity: 0;
     transition: opacity 0.5s ease-in-out;
     pointer-events: none;
-    /* Sit behind the content but on top of the base background */
-    z-index: -1;
+    /* Sit just behind the content but on top of the background and shine effects. */
+    z-index: 0;
 }
 
-body.dark-mode .glass-container > .glass-content::before {
+body.dark-mode .favorite-overlay {
     background: linear-gradient(145deg, rgba(193, 42, 77, 0.4), rgba(168, 85, 247, 0.4), rgba(109, 40, 217, 0.4));
 }
 
-.glass-container.favorited > .glass-content::before {
+.glass-container.favorited .favorite-overlay {
     opacity: 1; /* Fade in the gradient overlay when favorited */
 }
 .title {

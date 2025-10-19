@@ -37,7 +37,7 @@
     /* --main-bg-url-dark will be defined in each story's inline style */
     --main-text-color-light: #f0f0f0;
     --main-text-color-dark: #f0f0f0;
-    --text-on-glass-light: #9333EA;
+    --text-on-glass-light: #9333ea;
     --save-button-bg-light: rgba(147, 51, 234, 0.6);
     --save-button-bg-dark: rgba(192, 132, 252, 0.25);
     --save-button-text-light: #ffffff;
@@ -77,7 +77,7 @@ html.dark-mode {
         0px 20px 40px 0px color-mix(in srgb, #000 35%, transparent);
     --button-shadow-dark: var(--glass-shadow-dark);
     --pop-up-bg-dark: rgba(31, 41, 55, 0.9);
-    --pop-up-text-dark: #f0f0f0;
+    --pop-up-text-dark: #f0f0f0; /* REVERT: Revert to original color */
     --text-on-glass-dark: #C084FC;
     --content-bg-dark: rgba(0, 0, 0, 0.4);
     --selected-lang-button-text: var(--save-button-text-dark);
@@ -237,11 +237,7 @@ body.dark-mode #popup button.bg-red-500 {
     box-sizing: border-box;
 }
 
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Roboto', sans-serif;
-    min-height: 100vh;
+body, html {
     position: relative;
     z-index: 1;
     transition: color 0.5s ease;
@@ -250,6 +246,14 @@ body {
 
 html.dark-mode, body.dark-mode {
     color: var(--main-text-color-dark);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    min-height: 100vh;
+    color: var(--main-text-color-light); /* FIX: Set the default text color for light mode */
 }
 
 /* --- LOADING SCREEN OVERLAY (fixed on top) --- */
@@ -323,16 +327,8 @@ html.dark-mode, body.dark-mode {
 /* FIX: Increase specificity by adding 'body' to ensure these rules override the 'body.svg-filter-supported' rule. */
 /* REFACTOR: Create an even more specific selector to win the specificity war against the .svg-filter-supported rule. */
 /* FIX: Remove .glass-button-base from this rule. Buttons have their own specific solid colors for level 1. */
-body.perf-level-1 #popup > div, body.perf-level-1 #content,
+body.perf-level-1 #popup > div,
 body.perf-level-1.svg-filter-supported #popup > div {
-    background: none;
-    -webkit-backdrop-filter: none !important;
-    backdrop-filter: none !important;
-    /* FIX: Use the correct light/dark shadow variable */
-    box-shadow: var(--glass-shadow-light);
-    background-color: transparent !important; /* FIX: Force remove the default transparent color */
-}
-body.perf-level-1 #content, body.perf-level-1 #popup > div {
     background: linear-gradient(145deg, #4a5568, #2d3748) !important;
 }
 /* FIX: Definitive solid backgrounds for story page buttons on level 1 */
@@ -344,14 +340,8 @@ body.perf-level-1 button.back-home-button-custom {
 }
 
 html.dark-mode.perf-level-1 .glass-button-base, body.dark-mode.perf-level-1 .glass-button-base,
+html.dark-mode.perf-level-1 #popup > div,
 body.dark-mode.perf-level-1 #popup > div {
-    background: none;
-    -webkit-backdrop-filter: none !important;
-    backdrop-filter: none !important;
-    box-shadow: var(--glass-shadow-dark);
-    background-color: transparent !important;
-}
-html.dark-mode.perf-level-1 #content, body.dark-mode.perf-level-1 #content, html.dark-mode.perf-level-1 #popup > div, body.dark-mode.perf-level-1 #popup > div {
     background: linear-gradient(145deg, #2d3748, #1a202c) !important; /* NEW: Darker solid gradient */
 }
 html.dark-mode.perf-level-1 button.selected-language, body.dark-mode.perf-level-1 button.selected-language, html.dark-mode.perf-level-1 button.unselected-language, body.dark-mode.perf-level-1 button.unselected-language, html.dark-mode.perf-level-1 button.save-button-custom, body.dark-mode.perf-level-1 button.save-button-custom {
@@ -379,6 +369,12 @@ html.dark-mode.perf-level-1 button.back-home-button-custom, body.dark-mode.perf-
 body.loading #page-content-wrapper {
     filter: blur(15px);
     pointer-events: none;
+}
+
+/* FIX: Isolate the blur effect to the background only during load.
+   This prevents the main #content div from being blurred into invisibility. */
+body.loading .fixed-background {
+    filter: blur(15px);
 }
 
 .fixed-background {
@@ -495,6 +491,12 @@ button.tapped {
 
 html.dark-mode #content, body.dark-mode #content {
     background-color: var(--content-bg-dark);
+}
+
+/* FIX: Add a highly specific rule to ensure the light mode background is always applied correctly on initial load.
+   This prevents the content from inheriting a transparent background from other, less specific rules. */
+html:not(.dark-mode) #content {
+    background-color: var(--content-bg-light);
 }
 
 #content.content-fading {

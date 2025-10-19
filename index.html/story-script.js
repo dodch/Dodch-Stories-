@@ -314,6 +314,9 @@ function changeLanguage(lang, fromLoad = false, isThemeChange = false) {
     // For subsequent language changes, use the fade-out/fade-in animation.
     if (fromLoad) {
         updateContent();
+        // FIX: On initial load, explicitly remove the 'content-fading' class
+        // to ensure the content becomes visible. This was the root cause of the bug.
+        contentDiv.classList.remove('content-fading');
     } else {
         contentDiv.classList.add('content-fading');
         setTimeout(() => {
@@ -486,11 +489,13 @@ function highlightWord() {
 }
 
 function handleDarkModeChange(mediaQuery) {
-    const wasDarkMode = body.classList.contains('dark-mode');
+    const wasDarkMode = document.documentElement.classList.contains('dark-mode');
     const isNowDarkMode = mediaQuery.matches;
     
     if (wasDarkMode === isNowDarkMode) return; // No change needed
 
+    // FIX: Consistently add/remove the class from the <html> element only.
+    // The body class was causing conflicts with CSS specificity.
     if (isNowDarkMode) {
         document.documentElement.classList.add('dark-mode');
         lightBackgroundDiv.style.opacity = 0;
@@ -501,8 +506,9 @@ function handleDarkModeChange(mediaQuery) {
         darkBackgroundDiv.style.opacity = 0;
     }
     // Re-apply language to update styles correctly after the theme has changed.
-    changeLanguage(currentLanguage, true, true); // Use 'true' for fromLoad and isThemeChange to prevent fade animation.
-    highlightWord();
+    // FIX: Only re-render content on theme changes that happen *after* the initial page load.
+    if (document.body.classList.contains('loading')) return; // Prevent re-render on initial load. This is the key fix.
+    highlightWord(); // On theme change, only re-highlight the word. The CSS variables handle all color changes automatically.
 }
 
 function addTapAnimation(element) {

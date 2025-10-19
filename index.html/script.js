@@ -326,6 +326,7 @@ async function fetchAndBuildGrid() {
         }
 
         card.innerHTML = `
+            <div class="favorite-overlay"></div>
             <div class="glass-content">
               <h3 class="title" data-original-title="${storyData.title}">${storyData.title}</h3>
               <p class="description" data-original-description="${storyData.description}">${storyData.description}</p>
