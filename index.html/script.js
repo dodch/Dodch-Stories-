@@ -1166,6 +1166,22 @@ function changeBackground() {
   document.head.appendChild(styleElement);
 }
 
+/**
+ * NEW: A simple and fast hashing function to create a unique signature from the
+ * FingerprintJS components. This helps create a more stable user ID.
+ * @param {string} str The string to hash.
+ * @returns {Promise<string>} A promise that resolves to the hex-encoded hash.
+ */
+async function hashString(str) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(str);
+    const hashBuffer = await crypto.subtle.digest('SHA-1', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+}
+
+
 let isInitialized = false; // FIX: Add a flag to prevent double initialization.
 async function initializePage(manualLevelOverride = null) {
     if (isInitialized) return; // Prevent this from running more than once.
@@ -1174,10 +1190,19 @@ async function initializePage(manualLevelOverride = null) {
     // --- REFACTOR: Use FingerprintJS for a more robust anonymous user ID ---
     // This ID is more likely to be consistent across regular and incognito sessions.
     try {
+        // REFACTOR: Use extendedResult to get more components for a more stable ID.
         const fp = await window.fp.load();
-        const result = await fp.get();
-        anonymousUserId = result.visitorId;
-        console.log("FingerprintJS Visitor ID:", anonymousUserId);
+        const result = await fp.get({ extendedResult: true });
+
+        // Create a more robust ID by hashing component data.
+        // This makes it harder to get a new ID just by clearing cookies.
+        const components = result.components;
+        const componentsString = Object.keys(components).map(key => {
+            const value = components[key].value;
+            return typeof value === 'object' ? JSON.stringify(value) : value;
+        }).join('|');
+        anonymousUserId = result.visitorId + '-' + await hashString(componentsString);
+        console.log("Robust Anonymous User ID:", anonymousUserId);
     } catch (error) {
         console.error("FingerprintJS failed, falling back to localStorage:", error);
         // Fallback to the old method if FingerprintJS fails
