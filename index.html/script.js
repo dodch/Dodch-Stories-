@@ -54,7 +54,6 @@ document.addEventListener('keydown', function(e) {
 let panels = [];
 let allStories = [];
 let showingFavorites = false;
-let localFavoriteCounts = {}; // NEW: Global object to store local favorite counts
 const body = document.body;
 let backgroundSets = []; // To store background image data
 let performanceLevel = 3; // Default to highest
@@ -248,9 +247,6 @@ function loadSavedState() {
   const savedShowingFavorites = localStorage.getItem('showingFavorites');
   const savedSearchValue = localStorage.getItem('searchValue');
   const savedFavorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-  // FIX: Load the favorite counts from localStorage. This was the missing piece.
-  const savedLocalCounts = localStorage.getItem('localFavoriteCounts');
-  localFavoriteCounts = savedLocalCounts ? JSON.parse(savedLocalCounts) : {};
   showingFavorites = savedShowingFavorites === 'true';
   if (showingFavorites) {
     document.getElementById('filterBtn').classList.add('active');
@@ -265,11 +261,6 @@ function loadSavedState() {
       if (savedFavorites.includes(title)) {
         panel.querySelector('.favorite-btn').classList.add('active');
         panel.classList.add('favorited');
-      }
-      // NEW: Update displayed count from local storage
-      const countSpan = panel.querySelector('.favorite-count');
-      if (countSpan && localFavoriteCounts[title] !== undefined) {
-        countSpan.textContent = localFavoriteCounts[title];
       }
     });
   }
@@ -300,9 +291,6 @@ async function fetchAndBuildGrid() {
     const storiesData = await response.json();
     allStories = storiesData; 
     const grid = document.getElementById('grid');
-    // NEW: Load local favorite counts from localStorage
-    const savedLocalCounts = localStorage.getItem('localFavoriteCounts');
-    localFavoriteCounts = savedLocalCounts ? JSON.parse(savedLocalCounts) : {};
 
     grid.innerHTML = '';
 
@@ -385,16 +373,22 @@ async function fetchAndBuildGrid() {
           const singleStoryCard = createStoryCard(story);
           grid.appendChild(singleStoryCard);
       }
-      
-      // NEW: Initialize displayed count for each card
+
+      // --- NEW: Firebase Realtime Database Integration ---
       const title = story.title;
-      // Find the card or stack we just added to update its count
       const addedCard = grid.lastElementChild;
-      if (addedCard) {
-          // For series, the favorite count is on the first child (the info card)
-          const cardForCount = addedCard.classList.contains('series-stack') ? addedCard : addedCard;
-          const countSpan = cardForCount.querySelector('.favorite-count');
-          if (countSpan && localFavoriteCounts[title] !== undefined) countSpan.textContent = localFavoriteCounts[title];
+      const countSpan = addedCard.querySelector('.favorite-count');
+
+      if (countSpan && window.firebase) {
+          // Create a unique, URL-safe key for the story in Firebase
+          const storyKey = title.replace(/[^a-zA-Z0-9]/g, '_');
+          const storyRef = window.firebase.ref(window.firebase.db, 'stories/' + storyKey + '/favorites');
+
+          // Listen for real-time updates to the favorite count
+          window.firebase.onValue(storyRef, (snapshot) => {
+              const count = snapshot.val() || 0;
+              countSpan.textContent = count;
+          });
       }
     });
     // Correctly select panels for physics, excluding those inside a series stack
@@ -781,16 +775,19 @@ async function fetchAndBuildGrid() {
         btn.classList.toggle('active');
         panel.classList.toggle('favorited');
 
-        // NEW: Update local favorite count
+        // --- NEW: Update Firebase favorite count ---
         const title = panel.querySelector('.title').dataset.originalTitle;
         const countSpan = panel.querySelector('.favorite-count');
-        if (btn.classList.contains('active')) {
-          localFavoriteCounts[title] = (localFavoriteCounts[title] || 0) + 1;
-        } else {
-          localFavoriteCounts[title] = Math.max(0, (localFavoriteCounts[title] || 0) - 1); // Ensure count doesn't go below 0
-        }
-        if (countSpan) {
-            countSpan.textContent = localFavoriteCounts[title];
+        if (window.firebase) {
+            const storyKey = title.replace(/[^a-zA-Z0-9]/g, '_');
+            const storyRef = window.firebase.ref(window.firebase.db, 'stories/' + storyKey + '/favorites');
+            const increment = btn.classList.contains('active') ? 1 : -1;
+
+            // Use a transaction to safely increment/decrement the count
+            window.firebase.runTransaction(storyRef, (currentCount) => {
+                return Math.max(0, (currentCount || 0) + increment);
+            });
+
             countSpan.classList.remove('count-animated');
             void countSpan.offsetWidth; // Force reflow to restart animation
             countSpan.classList.add('count-animated');
@@ -805,8 +802,6 @@ async function fetchAndBuildGrid() {
             .filter(p => p.classList.contains('favorited'))
             .map(p => p.querySelector('.title').dataset.originalTitle);
         localStorage.setItem('favorites', JSON.stringify(favoritedTitles));
-        // Also save the local counts.
-        localStorage.setItem('localFavoriteCounts', JSON.stringify(localFavoriteCounts));
       });
     });
 

@@ -18,6 +18,7 @@ const body = document.body;
 // This prevents progress from one story from conflicting with another.
 const storyKey = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
 let currentLanguage = 'en';
+let anonymousUserId = null; // NEW: To store the user's unique ID
 let allSavedProgress = {};
 let tempSavedWordId = '';
 let tempSavedWordText = '';
@@ -126,6 +127,13 @@ function clearSavedProgress() {
     if (allSavedProgress[storyKey]) {
         delete allSavedProgress[storyKey][currentLanguage];
         localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
+    // NEW: Remove the bookmark from Firebase
+    if (window.firebase && anonymousUserId) {
+        const bookmarkRef = window.firebase.ref(window.firebase.db, `bookmarks/${anonymousUserId}/${storyKey}/${currentLanguage}`);
+        window.firebase.remove(bookmarkRef);
+        // The onValue listener will automatically clear the local state and icon
+    } else { // Fallback to localStorage if Firebase isn't ready
+        if (allSavedProgress[storyKey]) delete allSavedProgress[storyKey][currentLanguage];
         updateBookmarkIconState(); // Update the icon to show no bookmark is saved.
     }
 }
@@ -140,6 +148,8 @@ function updateBookmarkIconState() {
     const savedProgressForCurrentLang = allSavedProgress[storyKey] ? allSavedProgress[storyKey][currentLanguage] : null;
     if (savedProgressForCurrentLang && savedProgressForCurrentLang.id) {
         saveButtonIcon.classList.add('active');
+    } else {
+        saveButtonIcon.classList.remove('active');
     }
 }
 
@@ -407,11 +417,17 @@ function savePosition() {
             allSavedProgress[storyKey] = {};
         }
         allSavedProgress[storyKey][currentLanguage] = {
+        const bookmarkData = {
             id: tempSavedWordId,
             text: tempSavedWordText
         };
         console.log(`${contentMap[currentLanguage].positionSaved} "${tempSavedWordText}" (ID: ${tempSavedWordId}) in language "${currentLanguage}"`);
         localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
+        // NEW: Save the bookmark to Firebase
+        if (window.firebase && anonymousUserId) {
+            const bookmarkRef = window.firebase.ref(window.firebase.db, `bookmarks/${anonymousUserId}/${storyKey}/${currentLanguage}`);
+            window.firebase.set(bookmarkRef, bookmarkData);
+        }
         // REFACTOR: Update the icon state immediately after saving a new bookmark.
         updateBookmarkIconState();
         highlightWord();
@@ -690,6 +706,51 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Failed to parse saved progress from localStorage:", e);
             allSavedProgress = {};
             localStorage.removeItem('allSavedProgress');
+        // --- NEW: Anonymous User ID and Firebase Data Loading ---
+        anonymousUserId = localStorage.getItem('anonymousUserId');
+        if (!anonymousUserId) {
+            // Generate a simple unique ID if one doesn't exist
+            anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('anonymousUserId', anonymousUserId);
+        }
+        console.log("Anonymous User ID:", anonymousUserId);
+
+        // This function will be called by Firebase when data is loaded or changed
+        const setupInitialContent = () => {
+            const preferredLanguage = localStorage.getItem('preferredLanguage');
+            let initialLangToLoad = 'en';
+            if (preferredLanguage && contentMap[preferredLanguage]) {
+               initialLangToLoad = preferredLanguage;
+            }
+            changeLanguage(initialLangToLoad, true);
+        };
+
+        if (window.firebase) {
+            const userBookmarksRef = window.firebase.ref(window.firebase.db, 'bookmarks/' + anonymousUserId);
+            // Listen for real-time updates to this user's bookmarks
+            window.firebase.onValue(userBookmarksRef, (snapshot) => {
+                const data = snapshot.val();
+                allSavedProgress = data || {};
+                console.log("Firebase bookmarks loaded/updated:", allSavedProgress);
+                // If content is already on the page, just update highlights. Otherwise, load content.
+                if (textContainer.innerHTML !== '') {
+                    updateBookmarkIconState();
+                    highlightWord();
+                } else {
+                    setupInitialContent();
+                }
+            });
+        } else {
+            console.warn("Firebase not available. Falling back to localStorage for bookmarks.");
+            const savedProgressJson = localStorage.getItem('allSavedProgress');
+            try {
+                allSavedProgress = JSON.parse(savedProgressJson) || {};
+            } catch (e) {
+                console.error("Failed to parse saved progress from localStorage:", e);
+                allSavedProgress = {};
+                localStorage.removeItem('allSavedProgress');
+            }
+            setupInitialContent();
         }
 
         // --- NEW: Run performance check first ---
