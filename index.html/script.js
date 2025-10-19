@@ -374,6 +374,26 @@ async function fetchAndBuildGrid() {
       const storyKey = title.replace(/[^a-zA-Z0-9]/g, '_');
       addedCard.dataset.storyKey = storyKey;
 
+      // --- NEW: Firebase Realtime Database Integration for Favorites ---
+      const countSpan = addedCard.querySelector('.favorite-count');
+      if (countSpan && window.firebase) {
+          const storyRef = window.firebase.ref(window.firebase.db, 'stories/' + storyKey);
+
+          // Listen for real-time updates to the favorite count
+          window.firebase.onValue(storyRef, (snapshot) => {
+              const storyData = snapshot.val();
+              const count = storyData?.favoritesCount || 0;
+              const favoritedBy = storyData?.favoritedBy || {};
+              
+              countSpan.textContent = count;
+
+              const isFavorited = favoritedBy[anonymousUserId] === true;
+              const favoriteBtn = addedCard.querySelector('.favorite-btn');
+              favoriteBtn.classList.toggle('active', isFavorited);
+              addedCard.classList.toggle('favorited', isFavorited);
+          });
+      }
+
     });
     // Correctly select panels for physics, excluding those inside a series stack
     panels = [...document.querySelectorAll('.grid > .glass-container, .grid > .series-stack')];
@@ -764,19 +784,32 @@ async function fetchAndBuildGrid() {
         const title = panel.querySelector('.title').dataset.originalTitle;
         const countSpan = panel.querySelector('.favorite-count');
         const storyKey = panel.dataset.storyKey;
-        const isCurrentlyFavorited = btn.classList.contains('active');
 
-        // Toggle visual state without saving to localStorage on the main page
-        if (isCurrentlyFavorited) {
-          // Un-favorite
-          btn.classList.remove('active');
-          panel.classList.remove('favorited');
-          countSpan.textContent = '0';
+        // --- NEW: Firebase Transaction for Likes ---
+        if (window.firebase) {
+            const storyRef = window.firebase.ref(window.firebase.db, 'stories/' + storyKey);
+
+            // Use a transaction to safely update the count and user list
+            window.firebase.runTransaction(storyRef, (currentData) => {
+                // Initialize data if the story node doesn't exist yet
+                if (!currentData) {
+                    currentData = { favoritesCount: 0, favoritedBy: {} };
+                }
+                currentData.favoritedBy = currentData.favoritedBy || {};
+
+                const isFavorited = currentData.favoritedBy[anonymousUserId] === true;
+
+                if (isFavorited) { // User is un-favoriting
+                    currentData.favoritesCount = (currentData.favoritesCount || 1) - 1;
+                    currentData.favoritedBy[anonymousUserId] = null; // Use null to delete the key in Firebase
+                } else { // User is favoriting
+                    currentData.favoritesCount = (currentData.favoritesCount || 0) + 1;
+                    currentData.favoritedBy[anonymousUserId] = true;
+                }
+                return currentData;
+            });
         } else {
-          // Favorite
-          btn.classList.add('active');
-          panel.classList.add('favorited');
-          countSpan.textContent = '1';
+            console.error("Firebase not available. Cannot update favorite status.");
         }
 
         updateNoFavoritesMessageState();

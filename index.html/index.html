@@ -294,6 +294,34 @@
         <!-- Series parts will be injected here by JavaScript -->
     </div>
 </div>
+<!-- Firebase Analytics Integration -->
+<script type="module">
+  // Import the functions you need from the SDKs
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-analytics.js";
+  // NEW: Import Realtime Database functions
+  import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyBIlDy8iaEpCHVc6kPij_zh2zHJYQqiShk",
+    authDomain: "dodchstories-435bb.firebaseapp.com",
+    projectId: "dodchstories-435bb",
+    storageBucket: "dodchstories-435bb.appspot.com",
+    messagingSenderId: "52323489131",
+    appId: "1:52323489131:web:1ac8292a3953032715682e",
+    measurementId: "G-7MCXBETRYQ"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  getAnalytics(app); // Initialize Analytics
+
+  // NEW: Initialize Realtime Database and expose functions to script.js
+  const db = getDatabase(app);
+  window.firebase = { db, ref, onValue, runTransaction };
+
+</script>
 <script src="script.js"></script>
 </body>
 </html>
