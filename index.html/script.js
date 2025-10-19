@@ -54,7 +54,7 @@ document.addEventListener('keydown', function(e) {
 let panels = [];
 let allStories = [];
 let showingFavorites = false;
-let localFavoriteCounts = {}; // NEW: Global object to store local favorite counts
+let anonymousUserId = null; // NEW: To store the user's unique ID for favorites
 const body = document.body;
 let backgroundSets = []; // To store background image data
 let performanceLevel = 3; // Default to highest
@@ -245,12 +245,10 @@ function filterAndRenderPanels() {
 }
 
 function loadSavedState() {
+  // This function now only loads UI state like search and filter view.
+  // The "favorited" status of each card is now handled by the real-time Firebase listener.
   const savedShowingFavorites = localStorage.getItem('showingFavorites');
   const savedSearchValue = localStorage.getItem('searchValue');
-  const savedFavorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-  // FIX: Load the favorite counts from localStorage. This was the missing piece.
-  const savedLocalCounts = localStorage.getItem('localFavoriteCounts');
-  localFavoriteCounts = savedLocalCounts ? JSON.parse(savedLocalCounts) : {};
   showingFavorites = savedShowingFavorites === 'true';
   if (showingFavorites) {
     document.getElementById('filterBtn').classList.add('active');
@@ -259,23 +257,10 @@ function loadSavedState() {
   if (savedSearchValue) {
     searchBar.value = savedSearchValue;
   }
-  if (savedFavorites.length > 0) {
-    panels.forEach((panel) => {
-      const title = panel.querySelector('.title').dataset.originalTitle;
-      if (savedFavorites.includes(title)) {
-        panel.querySelector('.favorite-btn').classList.add('active');
-        panel.classList.add('favorited');
-      }
-      // NEW: Update displayed count from local storage
-      const countSpan = panel.querySelector('.favorite-count');
-      if (countSpan && localFavoriteCounts[title] !== undefined) {
-        countSpan.textContent = localFavoriteCounts[title];
-      }
-    });
-  }
 }
 
 function saveState() {
+  // This function now only saves UI state.
   const searchBar = document.getElementById('searchInput');
   localStorage.setItem('showingFavorites', showingFavorites);
   localStorage.setItem('searchValue', searchBar.value);
@@ -300,9 +285,6 @@ async function fetchAndBuildGrid() {
     const storiesData = await response.json();
     allStories = storiesData; 
     const grid = document.getElementById('grid');
-    // NEW: Load local favorite counts from localStorage
-    const savedLocalCounts = localStorage.getItem('localFavoriteCounts');
-    localFavoriteCounts = savedLocalCounts ? JSON.parse(savedLocalCounts) : {};
 
     grid.innerHTML = '';
 
@@ -385,16 +367,41 @@ async function fetchAndBuildGrid() {
           const singleStoryCard = createStoryCard(story);
           grid.appendChild(singleStoryCard);
       }
-      
-      // NEW: Initialize displayed count for each card
+
+      // --- NEW: Firebase Realtime Database Integration ---
       const title = story.title;
-      // Find the card or stack we just added to update its count
       const addedCard = grid.lastElementChild;
-      if (addedCard) {
-          // For series, the favorite count is on the first child (the info card)
-          const cardForCount = addedCard.classList.contains('series-stack') ? addedCard : addedCard;
-          const countSpan = cardForCount.querySelector('.favorite-count');
-          if (countSpan && localFavoriteCounts[title] !== undefined) countSpan.textContent = localFavoriteCounts[title];
+      const countSpan = addedCard.querySelector('.favorite-count');
+
+      if (countSpan && window.firebase) {
+          // Create a unique, URL-safe key for the story in Firebase
+          const storyKey = title.replace(/[^a-zA-Z0-9]/g, '_');
+          const storyRef = window.firebase.ref(window.firebase.db, 'stories/' + storyKey);
+
+          // Listen for real-time updates to the favorite count
+          window.firebase.onValue(storyRef, (snapshot) => {
+              const storyData = snapshot.val();
+              const count = storyData?.favoritesCount || 0;
+              const favoritedBy = storyData?.favoritedBy || {};
+              
+              // Update the displayed count
+              countSpan.textContent = count;
+
+              // Check if the current user has favorited this story
+              const isFavorited = favoritedBy[anonymousUserId] === true;
+              const favoriteBtn = addedCard.querySelector('.favorite-btn');
+              favoriteBtn.classList.toggle('active', isFavorited);
+<<<<<<< HEAD
+=======
+              // FIX: Use requestAnimationFrame to defer the visibility check.
+              // This prevents a race condition where the DOM query runs before the 'favorited'
+              // class has been fully applied, ensuring the "No favorites" message appears correctly.
+              requestAnimationFrame(() => {
+                  updateNoFavoritesMessageState();
+              });
+>>>>>>> 7ded5b66de1956054c44f59c6ce0a62b5c85313d
+              addedCard.classList.toggle('favorited', isFavorited);
+          });
       }
     });
     // Correctly select panels for physics, excluding those inside a series stack
@@ -777,36 +784,78 @@ async function fetchAndBuildGrid() {
       btn.addEventListener('click', (event) => {
         event.stopPropagation();
         event.preventDefault(); 
-        const panel = btn.closest('.glass-container');
-        btn.classList.toggle('active');
-        panel.classList.toggle('favorited');
+        if (!anonymousUserId) {
+            console.error("Anonymous User ID not set. Cannot favorite.");
+            return;
+        }
 
-        // NEW: Update local favorite count
+        const panel = btn.closest('.glass-container');
         const title = panel.querySelector('.title').dataset.originalTitle;
         const countSpan = panel.querySelector('.favorite-count');
-        if (btn.classList.contains('active')) {
-          localFavoriteCounts[title] = (localFavoriteCounts[title] || 0) + 1;
-        } else {
-          localFavoriteCounts[title] = Math.max(0, (localFavoriteCounts[title] || 0) - 1); // Ensure count doesn't go below 0
-        }
-        if (countSpan) {
-            countSpan.textContent = localFavoriteCounts[title];
+<<<<<<< HEAD
+        const isCurrentlyFavorited = btn.classList.contains('active');
+
+=======
+        
+>>>>>>> 7ded5b66de1956054c44f59c6ce0a62b5c85313d
+        if (window.firebase) {
+            const storyKey = title.replace(/[^a-zA-Z0-9]/g, '_');
+            const storyRef = window.firebase.ref(window.firebase.db, 'stories/' + storyKey);
+
+<<<<<<< HEAD
+            // Use a transaction to safely update the count and the user list
+            window.firebase.runTransaction(storyRef, (currentData) => {
+                if (!currentData) {
+                    currentData = { favoritesCount: 0, favoritedBy: {} };
+                }
+                currentData.favoritedBy = currentData.favoritedBy || {};
+                
+                if (isCurrentlyFavorited) { // User is un-favoriting
+                    currentData.favoritesCount = (currentData.favoritesCount || 1) - 1;
+                    currentData.favoritedBy[anonymousUserId] = null; // Remove the user
+                } else { // User is favoriting
+                    currentData.favoritesCount = (currentData.favoritesCount || 0) + 1;
+                    currentData.favoritedBy[anonymousUserId] = true; // Add the user
+                }
+                return currentData;
+            });
+
             countSpan.classList.remove('count-animated');
             void countSpan.offsetWidth; // Force reflow to restart animation
             countSpan.classList.add('count-animated');
+=======
+            // FIX: The new security rules rely on 'auth.uid'. We will simulate this for anonymous
+            // users by passing the anonymousUserId in the transaction options.
+            const transactionOptions = { applied: true };
+
+            // Use a transaction to safely update the count and the user list
+            window.firebase.runTransaction(storyRef, (currentData) => {
+                // FIX: Ensure 'currentData' is always a valid object, even if it's null initially.
+                // This simplifies the logic and guarantees consistency for the transaction.
+                const data = currentData || { favoritesCount: 0, favoritedBy: {} };
+                // Ensure favoritedBy is always an object.
+                data.favoritedBy = data.favoritedBy || {};
+
+                // Check the *actual* data from Firebase to determine the current state.
+                const isCurrentlyFavorited = data.favoritedBy[anonymousUserId] === true;
+                
+                if (isCurrentlyFavorited) { // User is un-favoriting
+                    data.favoritesCount = Math.max(0, (data.favoritesCount || 0) - 1);
+                    // FIX: Revert to using `null` to completely delete the user's key from the 'favoritedBy' object.
+                    // This is the correct way to handle un-favoriting and prevents logic errors on subsequent likes.
+                    // This requires a corresponding change in the Firebase security rules.
+                    data.favoritedBy[anonymousUserId] = null;
+                } else { // User is favoriting
+                    data.favoritesCount = (data.favoritesCount || 0) + 1;
+                    data.favoritedBy[anonymousUserId] = true; // Add the user
+                }
+                return data;
+            }, transactionOptions);
+
+        } else {
+            console.error("Firebase not available. Cannot update favorite status.");
+>>>>>>> 7ded5b66de1956054c44f59c6ce0a62b5c85313d
         }
-
-        // Existing logic
-        btn.setAttribute('aria-pressed', btn.classList.contains('active'));
-        filterAndRenderPanels();
-
-        // FIX: Restore the logic to save the list of favorited stories to localStorage.
-        const favoritedTitles = panels
-            .filter(p => p.classList.contains('favorited'))
-            .map(p => p.querySelector('.title').dataset.originalTitle);
-        localStorage.setItem('favorites', JSON.stringify(favoritedTitles));
-        // Also save the local counts.
-        localStorage.setItem('localFavoriteCounts', JSON.stringify(localFavoriteCounts));
       });
     });
 
@@ -1163,10 +1212,68 @@ function changeBackground() {
   document.head.appendChild(styleElement);
 }
 
+/**
+ * NEW: A simple and fast hashing function to create a unique signature from the
+ * FingerprintJS components. This helps create a more stable user ID.
+ * @param {string} str The string to hash.
+ * @returns {Promise<string>} A promise that resolves to the hex-encoded hash.
+ */
+async function hashString(str) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(str);
+    const hashBuffer = await crypto.subtle.digest('SHA-1', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+}
+
+
 let isInitialized = false; // FIX: Add a flag to prevent double initialization.
 async function initializePage(manualLevelOverride = null) {
+    // FIX: Wait for a valid App Check token before initializing the page.
+    // This is the definitive fix for the "unverified requests" issue. It ensures
+    // that no database operations can be attempted until the app is verified.
+    if (window.firebase && window.firebase.appCheck) {
+        await window.firebase.getToken(window.firebase.appCheck);
+        console.log("Firebase App Check token acquired. Proceeding with initialization.");
+    }
+
     if (isInitialized) return; // Prevent this from running more than once.
     isInitialized = true;
+    
+    // --- REFACTOR: Use FingerprintJS for a more robust anonymous user ID ---
+    // This ID is more likely to be consistent across regular and incognito sessions.
+    try {
+<<<<<<< HEAD
+        const fp = await window.fp.load();
+        const result = await fp.get();
+        anonymousUserId = result.visitorId;
+        console.log("FingerprintJS Visitor ID:", anonymousUserId);
+=======
+        // REFACTOR: Use extendedResult to get more components for a more stable ID.
+        const fp = await window.fp.load();
+        const result = await fp.get({ extendedResult: true });
+
+        // Create a more robust ID by hashing component data.
+        // This makes it harder to get a new ID just by clearing cookies.
+        const components = result.components;
+        const componentsString = Object.keys(components).map(key => {
+            const value = components[key].value;
+            return typeof value === 'object' ? JSON.stringify(value) : value;
+        }).join('|');
+        anonymousUserId = result.visitorId + '-' + await hashString(componentsString);
+        console.log("Robust Anonymous User ID:", anonymousUserId);
+>>>>>>> 7ded5b66de1956054c44f59c6ce0a62b5c85313d
+    } catch (error) {
+        console.error("FingerprintJS failed, falling back to localStorage:", error);
+        // Fallback to the old method if FingerprintJS fails
+        anonymousUserId = localStorage.getItem('anonymousUserId');
+        if (!anonymousUserId) {
+            anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('anonymousUserId', anonymousUserId);
+        }
+        console.log("Fallback Anonymous User ID:", anonymousUserId);
+    }
 
     // FIX: If a manual level is passed from the button click, use it directly.
     // Otherwise, check sessionStorage (for reloads) or run the benchmark.
