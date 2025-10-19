@@ -300,6 +300,7 @@
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
   import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+  import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app-check.js";
 
   // Your web app's Firebase configuration
   const firebaseConfig = {
@@ -317,6 +318,15 @@
   // Initialize Firebase and export the functions for script.js
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
+
+  // NEW: Initialize Firebase App Check with reCAPTCHA v3
+  // This is crucial for allowing database writes if App Check is enabled in your Firebase project.
+  // IMPORTANT: Replace the placeholder below with your actual reCAPTCHA v3 Site Key.
+  const appCheck = initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider('6Ldk7O8rAAAAAJTbOcPp7JmZfuhGCUNZ3Jdxqc0t'),
+    isTokenAutoRefreshEnabled: true // Automatically refresh the token as needed.
+  });
+
   window.firebase = { db, ref, onValue, runTransaction };
 </script>
 <!-- NEW: Add FingerprintJS library for more robust anonymous user identification. -->
