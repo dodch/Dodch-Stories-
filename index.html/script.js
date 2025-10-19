@@ -1189,6 +1189,14 @@ async function hashString(str) {
 
 let isInitialized = false; // FIX: Add a flag to prevent double initialization.
 async function initializePage(manualLevelOverride = null) {
+    // FIX: Wait for a valid App Check token before initializing the page.
+    // This is the definitive fix for the "unverified requests" issue. It ensures
+    // that no database operations can be attempted until the app is verified.
+    if (window.firebase && window.firebase.appCheck) {
+        await window.firebase.getToken(window.firebase.appCheck);
+        console.log("Firebase App Check token acquired. Proceeding with initialization.");
+    }
+
     if (isInitialized) return; // Prevent this from running more than once.
     isInitialized = true;
     

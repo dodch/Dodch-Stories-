@@ -701,6 +701,14 @@ window.addEventListener('load', () => {
 document.addEventListener('DOMContentLoaded', () => {
     // FIX: Use a self-invoking async function to correctly handle 'await' for performance checks.
     (async () => {
+        // FIX: Wait for a valid App Check token before initializing the page.
+        // This is the definitive fix for the "unverified requests" issue. It ensures
+        // that no database operations can be attempted until the app is verified.
+        if (window.firebase && window.firebase.appCheck) {
+            await window.firebase.getToken(window.firebase.appCheck);
+            console.log("Firebase App Check token acquired on story page. Proceeding.");
+        }
+
         // --- REFACTOR: Use FingerprintJS for a more robust anonymous user ID ---
         try {
             // FingerprintJS should already be loaded from the main page's cache
