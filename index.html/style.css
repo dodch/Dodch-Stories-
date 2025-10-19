@@ -1567,3 +1567,12 @@ body:not(.is-scrolling) .series-stack:hover .favorite-container {
 .perf-level-1 .bottom-vignette-main {
     display: none;
 }
+
+/* --- NEW: reCAPTCHA Badge Fix --- */
+/* This ensures the reCAPTCHA badge appears on top of the bottom vignette. */
+.grecaptcha-badge {
+    z-index: 11 !important; /* Higher than floating buttons (10) and vignettes (6) */
+    /* Add a small margin for better visibility and to avoid screen edges. */
+    margin-bottom: 1rem;
+    margin-right: 1rem;
+}
