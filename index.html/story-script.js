@@ -18,6 +18,7 @@ const body = document.body;
 // This prevents progress from one story from conflicting with another.
 const storyKey = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
 let currentLanguage = 'en';
+let anonymousUserId = null; // NEW: To store the user's unique ID
 let allSavedProgress = {};
 let tempSavedWordId = '';
 let tempSavedWordText = '';
@@ -122,10 +123,13 @@ const saveButton = document.getElementById('save-progress-button');
 const popupDivInner = document.getElementById('popup').querySelector('div');
 
 function clearSavedProgress() {
-    // REFACTOR: Update the icon state when progress is cleared.
-    if (allSavedProgress[storyKey]) {
-        delete allSavedProgress[storyKey][currentLanguage];
-        localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
+    // NEW: Remove the bookmark from Firebase
+    if (window.firebase && anonymousUserId) {
+        const bookmarkRef = window.firebase.ref(window.firebase.db, `bookmarks/${anonymousUserId}/${storyKey}/${currentLanguage}`);
+        window.firebase.remove(bookmarkRef);
+        // The onValue listener will automatically clear the local state and icon
+    } else { // Fallback to localStorage if Firebase isn't ready
+        if (allSavedProgress[storyKey]) delete allSavedProgress[storyKey][currentLanguage];
         updateBookmarkIconState(); // Update the icon to show no bookmark is saved.
     }
 }
@@ -137,9 +141,11 @@ function clearSavedProgress() {
 function updateBookmarkIconState() {
     const saveButtonIcon = document.querySelector('#save-progress-button svg');
     if (!saveButtonIcon) return;
-    const savedProgressForCurrentLang = allSavedProgress[storyKey] ? allSavedProgress[storyKey][currentLanguage] : null;
+    const savedProgressForCurrentLang = allSavedProgress?.[storyKey]?.[currentLanguage];
     if (savedProgressForCurrentLang && savedProgressForCurrentLang.id) {
         saveButtonIcon.classList.add('active');
+    } else {
+        saveButtonIcon.classList.remove('active');
     }
 }
 
@@ -314,6 +320,9 @@ function changeLanguage(lang, fromLoad = false, isThemeChange = false) {
     // For subsequent language changes, use the fade-out/fade-in animation.
     if (fromLoad) {
         updateContent();
+        // FIX: On initial load, explicitly remove the 'content-fading' class
+        // to ensure the content becomes visible. This was the root cause of the bug.
+        contentDiv.classList.remove('content-fading');
     } else {
         contentDiv.classList.add('content-fading');
         setTimeout(() => {
@@ -399,26 +408,23 @@ function closePopup() {
 
 function savePosition() {
     if (tempSavedWordId) {
-        // FIX: Ensure the story key object exists before assigning to it.
-        if (!allSavedProgress[storyKey]) {
-            allSavedProgress[storyKey] = {};
-        }
-        allSavedProgress[storyKey][currentLanguage] = {
+        const bookmarkData = {
             id: tempSavedWordId,
             text: tempSavedWordText
         };
-        console.log(`${contentMap[currentLanguage].positionSaved} "${tempSavedWordText}" (ID: ${tempSavedWordId}) in language "${currentLanguage}"`);
-        localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
-        // REFACTOR: Update the icon state immediately after saving a new bookmark.
-        updateBookmarkIconState();
-        highlightWord();
+        // NEW: Save the bookmark to Firebase
+        if (window.firebase && anonymousUserId) {
+            const bookmarkRef = window.firebase.ref(window.firebase.db, `bookmarks/${anonymousUserId}/${storyKey}/${currentLanguage}`);
+            window.firebase.set(bookmarkRef, bookmarkData);
+            // The onValue listener will handle UI updates automatically when Firebase syncs.
+        }
     }
     closePopup();
 }
 
 
 function scrollToSavedWord(performChecks = true, smooth = true) {
-    const savedProgressForCurrentLang = allSavedProgress[storyKey] ? allSavedProgress[storyKey][currentLanguage] : null;
+    const savedProgressForCurrentLang = allSavedProgress?.[storyKey]?.[currentLanguage];
     if (!savedProgressForCurrentLang || !savedProgressForCurrentLang.id) {
         if (performChecks) { // Only alert if the user clicked the button
             alert(contentMap[currentLanguage].noWordSaved);
@@ -459,7 +465,7 @@ function highlightWord() {
        highlightedWordElement.style.color = '';
        highlightedWordElement = null;
    }
-   const savedProgressForCurrentLang = allSavedProgress[storyKey] ? allSavedProgress[storyKey][currentLanguage] : null;
+   const savedProgressForCurrentLang = allSavedProgress?.[storyKey]?.[currentLanguage];
    if (!savedProgressForCurrentLang || !savedProgressForCurrentLang.id) {
        return;
    }
@@ -486,11 +492,13 @@ function highlightWord() {
 }
 
 function handleDarkModeChange(mediaQuery) {
-    const wasDarkMode = body.classList.contains('dark-mode');
+    const wasDarkMode = document.documentElement.classList.contains('dark-mode');
     const isNowDarkMode = mediaQuery.matches;
     
     if (wasDarkMode === isNowDarkMode) return; // No change needed
 
+    // FIX: Consistently add/remove the class from the <html> element only.
+    // The body class was causing conflicts with CSS specificity.
     if (isNowDarkMode) {
         document.documentElement.classList.add('dark-mode');
         lightBackgroundDiv.style.opacity = 0;
@@ -501,8 +509,9 @@ function handleDarkModeChange(mediaQuery) {
         darkBackgroundDiv.style.opacity = 0;
     }
     // Re-apply language to update styles correctly after the theme has changed.
-    changeLanguage(currentLanguage, true, true); // Use 'true' for fromLoad and isThemeChange to prevent fade animation.
-    highlightWord();
+    // FIX: Only re-render content on theme changes that happen *after* the initial page load.
+    if (document.body.classList.contains('loading')) return; // Prevent re-render on initial load. This is the key fix.
+    highlightWord(); // On theme change, only re-highlight the word. The CSS variables handle all color changes automatically.
 }
 
 function addTapAnimation(element) {
@@ -649,6 +658,21 @@ function initializeShineEffect() {
     ensureAnimating();
 }
 
+/**
+ * NEW: A simple and fast hashing function to create a unique signature from the
+ * FingerprintJS components. This helps create a more stable user ID.
+ * @param {string} str The string to hash.
+ * @returns {Promise<string>} A promise that resolves to the hex-encoded hash.
+ */
+async function hashString(str) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(str);
+    const hashBuffer = await crypto.subtle.digest('SHA-1', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+}
+
 let load = 0;
 let interval = setInterval(updateLoadingText, 30);
 function updateLoadingText() {
@@ -677,13 +701,83 @@ window.addEventListener('load', () => {
 document.addEventListener('DOMContentLoaded', () => {
     // FIX: Use a self-invoking async function to correctly handle 'await' for performance checks.
     (async () => {
-        const savedProgressJson = localStorage.getItem('allSavedProgress');
+        // FIX: Wait for a valid App Check token before initializing the page.
+        // This is the definitive fix for the "unverified requests" issue. It ensures
+        // that no database operations can be attempted until the app is verified.
+        if (window.firebase && window.firebase.appCheck) {
+            await window.firebase.getToken(window.firebase.appCheck);
+            console.log("Firebase App Check token acquired on story page. Proceeding.");
+        }
+
+        // --- REFACTOR: Use FingerprintJS for a more robust anonymous user ID ---
         try {
-            allSavedProgress = JSON.parse(savedProgressJson) || {};
-        } catch (e) {
-            console.error("Failed to parse saved progress from localStorage:", e);
-            allSavedProgress = {};
-            localStorage.removeItem('allSavedProgress');
+            // FingerprintJS should already be loaded from the main page's cache
+            const fp = await window.fp.load();
+            const result = await fp.get({ extendedResult: true });
+
+            // Create a more robust ID by hashing component data.
+            const components = result.components;
+            const componentsString = Object.keys(components).map(key => {
+                const value = components[key].value;
+                return typeof value === 'object' ? JSON.stringify(value) : value;
+            }).join('|');
+            anonymousUserId = result.visitorId + '-' + await hashString(componentsString);
+
+        } catch (error) {
+            console.error("FingerprintJS failed on story page, falling back to localStorage:", error);
+            // Fallback to the old method if FingerprintJS fails
+            anonymousUserId = localStorage.getItem('anonymousUserId');
+            if (!anonymousUserId) {
+                anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('anonymousUserId', anonymousUserId);
+            }
+        }
+        console.log("Anonymous User ID:", anonymousUserId);
+        // This function will be called by Firebase when data is loaded or changed
+<<<<<<< HEAD
+=======
+        
+        // FIX: Move initial content setup outside the Firebase listener.
+        // This ensures the story text loads immediately, regardless of Firebase connection speed.
+        const preferredLanguage = localStorage.getItem('preferredLanguage');
+        let initialLangToLoad = 'en';
+        if (preferredLanguage && contentMap[preferredLanguage]) {
+           initialLangToLoad = preferredLanguage;
+        }
+        changeLanguage(initialLangToLoad, true);
+        const setupInitialContent = () => {
+            const preferredLanguage = localStorage.getItem('preferredLanguage');
+            let initialLangToLoad = 'en';
+            if (preferredLanguage && contentMap[preferredLanguage]) {
+               initialLangToLoad = preferredLanguage;
+            }
+            changeLanguage(initialLangToLoad, true);
+        };
+>>>>>>> 7ded5b66de1956054c44f59c6ce0a62b5c85313d
+
+        if (window.firebase) {
+            // FIX: Revert to listening for ALL user bookmarks. The previous, more specific path
+            // caused an issue where loading one story's bookmarks would overwrite all others.
+            const userBookmarksRef = window.firebase.ref(window.firebase.db, `bookmarks/${anonymousUserId}`);
+            
+            // Listen for real-time updates to this user's entire bookmark collection.
+            window.firebase.onValue(userBookmarksRef, (snapshot) => {
+                const data = snapshot.val();
+                allSavedProgress = data || {}; // Correctly update the global object with ALL bookmarks.
+                console.log("Firebase bookmarks loaded/updated for all stories:", allSavedProgress);
+                updateBookmarkIconState();
+                highlightWord();
+            });
+        } else {
+            console.warn("Firebase not available. Falling back to localStorage for bookmarks.");
+            const savedProgressJson = localStorage.getItem('allSavedProgress');
+            try {
+                allSavedProgress = JSON.parse(savedProgressJson) || {};
+            } catch (e) {
+                console.error("Failed to parse saved progress from localStorage:", e);
+                allSavedProgress = {};
+                localStorage.removeItem('allSavedProgress');
+            }
         }
 
         // --- NEW: Run performance check first ---
@@ -703,15 +797,10 @@ document.addEventListener('DOMContentLoaded', () => {
         handleDarkModeChange(darkModeMediaQuery);
         darkModeMediaQuery.addListener(handleDarkModeChange);
 
+<<<<<<< HEAD
+=======
         // Set initial direction, this is the only call needed.
         document.documentElement.setAttribute('dir', 'ltr');
-
-        const preferredLanguage = localStorage.getItem('preferredLanguage');
-        let initialLangToLoad = 'en';
-        if (preferredLanguage && contentMap[preferredLanguage]) {
-           initialLangToLoad = preferredLanguage;
-        }
-        changeLanguage(initialLangToLoad, true);
 
         // NEW: Initialize the shine effect for all buttons on the story page.
         initializeShineEffect();
@@ -742,5 +831,52 @@ document.addEventListener('DOMContentLoaded', () => {
                }
            }
        });
+>>>>>>> 7ded5b66de1956054c44f59c6ce0a62b5c85313d
     })();
 });
+
+/**
+ * FIX: This new function is called directly from the story HTML file after contentMap is defined.
+ * This resolves the race condition where the script would try to access contentMap before it existed.
+ */
+function initializeStoryContent() {
+    const preferredLanguage = localStorage.getItem('preferredLanguage');
+    let initialLangToLoad = 'en';
+    if (preferredLanguage && typeof contentMap !== 'undefined' && contentMap[preferredLanguage]) {
+        initialLangToLoad = preferredLanguage;
+    }
+    // The 'true' flag indicates this is the initial load, preventing fade animations.
+    changeLanguage(initialLangToLoad, true);
+
+    // FIX: Move all button initialization logic here to ensure it runs after the content is ready.
+    // This resolves the race condition that caused buttons to be unresponsive.
+
+    // Set initial direction.
+    document.documentElement.setAttribute('dir', 'ltr');
+
+    // Initialize the shine effect for all buttons.
+    initializeShineEffect();
+
+    // Apply tap animations and event listeners to all buttons.
+    document.querySelectorAll('button').forEach(button => {
+        addTapAnimation(button);
+        // Add specific actions for each button
+        if (['ar-button', 'fr-button', 'en-button'].includes(button.id)) { // Language buttons
+            const lang = button.id.split('-')[0];
+            if (contentMap[lang]) {
+                button.addEventListener('click', () => changeLanguage(lang));
+            }
+        } else if (button.id === 'save-progress-button') {
+            button.addEventListener('click', () => scrollToSavedWord());
+        } else if (button.id === 'back-home-button') {
+            button.addEventListener('click', () => window.location.href = 'https://www.dodchstories.com');
+        }
+    });
+    // FIX: Add listeners to popup buttons by ID to ensure they work after language changes.
+    const saveBookmarkBtn = document.getElementById('popup-save-button');
+    const exitBookmarkBtn = document.getElementById('popup-exit-button');
+    if (saveBookmarkBtn && exitBookmarkBtn) {
+        saveBookmarkBtn.addEventListener('pointerup', (e) => { e.preventDefault(); savePosition(); });
+        exitBookmarkBtn.addEventListener('pointerup', (e) => { e.preventDefault(); closePopup(); });
+    }
+}
