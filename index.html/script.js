@@ -790,7 +790,7 @@ async function fetchAndBuildGrid() {
             const storyRef = window.firebase.ref(window.firebase.db, 'stories/' + storyKey);
 
             // Use a transaction to safely update the count and the user list
-            window.firebase.runTransaction(storyRef, (currentCount) => {
+            window.firebase.runTransaction(storyRef, (currentData) => {
                 if (!currentData) {
                     currentData = { favoritesCount: 0, favoritedBy: {} };
                 }
