@@ -1170,15 +1170,24 @@ let isInitialized = false; // FIX: Add a flag to prevent double initialization.
 async function initializePage(manualLevelOverride = null) {
     if (isInitialized) return; // Prevent this from running more than once.
     isInitialized = true;
-
-    // --- NEW: Anonymous User ID for Favorites ---
-    anonymousUserId = localStorage.getItem('anonymousUserId');
-    if (!anonymousUserId) {
-        // Generate a simple unique ID if one doesn't exist
-        anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('anonymousUserId', anonymousUserId);
+    
+    // --- REFACTOR: Use FingerprintJS for a more robust anonymous user ID ---
+    // This ID is more likely to be consistent across regular and incognito sessions.
+    try {
+        const fp = await window.fp.load();
+        const result = await fp.get();
+        anonymousUserId = result.visitorId;
+        console.log("FingerprintJS Visitor ID:", anonymousUserId);
+    } catch (error) {
+        console.error("FingerprintJS failed, falling back to localStorage:", error);
+        // Fallback to the old method if FingerprintJS fails
+        anonymousUserId = localStorage.getItem('anonymousUserId');
+        if (!anonymousUserId) {
+            anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('anonymousUserId', anonymousUserId);
+        }
+        console.log("Fallback Anonymous User ID:", anonymousUserId);
     }
-    console.log("Anonymous User ID for favorites:", anonymousUserId);
 
     // FIX: If a manual level is passed from the button click, use it directly.
     // Otherwise, check sessionStorage (for reloads) or run the benchmark.

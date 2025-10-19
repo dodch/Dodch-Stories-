@@ -319,6 +319,14 @@
   const db = getDatabase(app);
   window.firebase = { db, ref, onValue, runTransaction };
 </script>
+<!-- NEW: Add FingerprintJS library for more robust anonymous user identification. -->
+<script>
+  // This is the V4 UMD bundle of FingerprintJS
+  (function(l,a,y,p,i,n,g){if(!l[i]){l.GlobalSnowplowNamespace=l.GlobalSnowplowNamespace||[];
+  l.GlobalSnowplowNamespace.push(i);l[i]=function(){(l[i].q=l[i].q||[]).push(arguments)
+  };l[i].q=l[i].q||[];n=a.createElement(y);g=a.getElementsByTagName(y)[0];n.async=1;
+  n.src=p;g.parentNode.insertBefore(n,g)}}(window,document,"script","https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@4/dist/fp.min.js","fp"));
+</script>
 <script src="script.js"></script>
 </body>
 </html>

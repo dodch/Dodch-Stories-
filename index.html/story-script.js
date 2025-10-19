@@ -688,15 +688,22 @@ window.addEventListener('load', () => {
 document.addEventListener('DOMContentLoaded', () => {
     // FIX: Use a self-invoking async function to correctly handle 'await' for performance checks.
     (async () => {
-        // --- NEW: Anonymous User ID and Firebase Data Loading ---
-        anonymousUserId = localStorage.getItem('anonymousUserId');
-        if (!anonymousUserId) {
-            // Generate a simple unique ID if one doesn't exist
-            anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('anonymousUserId', anonymousUserId);
+        // --- REFACTOR: Use FingerprintJS for a more robust anonymous user ID ---
+        try {
+            // FingerprintJS should already be loaded from the main page's cache
+            const fp = await window.fp.load();
+            const result = await fp.get();
+            anonymousUserId = result.visitorId;
+        } catch (error) {
+            console.error("FingerprintJS failed on story page, falling back to localStorage:", error);
+            // Fallback to the old method if FingerprintJS fails
+            anonymousUserId = localStorage.getItem('anonymousUserId');
+            if (!anonymousUserId) {
+                anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('anonymousUserId', anonymousUserId);
+            }
         }
         console.log("Anonymous User ID:", anonymousUserId);
-
         // This function will be called by Firebase when data is loaded or changed
         const setupInitialContent = () => {
             const preferredLanguage = localStorage.getItem('preferredLanguage');
