@@ -365,23 +365,26 @@ body.dark-mode .perf-level-1 #perfBtn.floating-button {
     background: var(--glass-bg); /* Keep the base background for the blur effect */
 }
 
-/* REFACTOR: Use a pseudo-element for a smooth, animatable favorite color overlay. */
-.glass-container::after {
+/* REFACTOR: Use a new pseudo-element for the favorite overlay to avoid conflicts with series-stack. */
+.glass-container > .glass-content::before {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    border-radius: inherit;
+    /* Stretch to cover the entire parent card */
+    top: -20px; left: -20px; right: -20px; bottom: -20px;
+    border-radius: 3rem; /* Match the parent card's border-radius */
     background: linear-gradient(145deg, rgba(239, 68, 68, 0.4), rgba(217, 70, 239, 0.4), rgba(139, 92, 246, 0.4));
     opacity: 0;
     transition: opacity 0.5s ease-in-out;
     pointer-events: none;
-    z-index: 0; /* Sit behind the content but on top of the base background */
+    /* Sit behind the content but on top of the base background */
+    z-index: -1;
 }
-body.dark-mode .glass-container::after {
+
+body.dark-mode .glass-container > .glass-content::before {
     background: linear-gradient(145deg, rgba(193, 42, 77, 0.4), rgba(168, 85, 247, 0.4), rgba(109, 40, 217, 0.4));
 }
 
-.glass-container.favorited::after {
+.glass-container.favorited > .glass-content::before {
     opacity: 1; /* Fade in the gradient overlay when favorited */
 }
 .title {
@@ -1458,7 +1461,7 @@ body:not(.is-scrolling) .series-stack:hover {
 body:not(.is-scrolling) .series-stack:hover::before {
   opacity: 1;
   transform: translateY(14px) scale(0.96); /* Furthest back card */
-  z-index: -2;
+  z-index: -3;
   /* FIX: Add a distinctive golden tint to the third card in the stack. */
   background: color-mix(in srgb, var(--golden-tint) 20%, var(--glass-bg));
 }
@@ -1466,7 +1469,7 @@ body:not(.is-scrolling) .series-stack:hover::before {
 body:not(.is-scrolling) .series-stack:hover::after {
   opacity: 1;
   transform: translateY(7px) scale(0.98); /* Middle card */
-  z-index: -1;
+  z-index: -2;
 }
 /* FIX: On hover, smoothly move the pill and favorite button down to make space for the stacked cards. */
 body:not(.is-scrolling) .series-stack:hover .new-pill {
