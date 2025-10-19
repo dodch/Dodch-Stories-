@@ -62,6 +62,9 @@
   </script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  
+  <!-- NEW: Add reCAPTCHA v3 script for Firebase App Check -->
+  <script src="https://www.google.com/recaptcha/api.js?render=6Ldj7O8rAAAAAO5rRT1GqGzVN3vXjL54Mlw0mpX6" async defer></script>
 
   <link rel="stylesheet" href="style.css">
 </head>
@@ -300,6 +303,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-analytics.js";
     import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+    import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app-check.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBIlDy8iaEpCHVc6kPij_zh2zHJYQqiShk",
@@ -314,6 +318,12 @@
 
     // Initialize Firebase and make services globally available
     const app = initializeApp(firebaseConfig);
+
+    // NEW: Initialize Firebase App Check with reCAPTCHA v3
+    const appCheck = initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider('6Ldj7O8rAAAAAO5rRT1GqGzVN3vXjL54Mlw0mpX6'),
+      isTokenAutoRefreshEnabled: true
+    });
     const analytics = getAnalytics(app);
     const database = getDatabase(app);
 
