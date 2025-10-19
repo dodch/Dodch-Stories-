@@ -783,7 +783,6 @@ async function fetchAndBuildGrid() {
         const panel = btn.closest('.glass-container');
         const title = panel.querySelector('.title').dataset.originalTitle;
         const countSpan = panel.querySelector('.favorite-count');
-        const isCurrentlyFavorited = btn.classList.contains('active');
 
         if (window.firebase) {
             const storyKey = title.replace(/[^a-zA-Z0-9]/g, '_');
@@ -794,11 +793,17 @@ async function fetchAndBuildGrid() {
                 if (!currentData) {
                     currentData = { favoritesCount: 0, favoritedBy: {} };
                 }
-                currentData.favoritedBy = currentData.favoritedBy || {};
+                // Ensure favoritedBy is always an object, even if it was previously null
+                if (!currentData.favoritedBy) {
+                    currentData.favoritedBy = {};
+                }
+
+                // Check the *actual* data from Firebase to determine the current state.
+                const isCurrentlyFavorited = currentData.favoritedBy[anonymousUserId] === true;
                 
                 if (isCurrentlyFavorited) { // User is un-favoriting
                     currentData.favoritesCount = Math.max(0, (currentData.favoritesCount || 0) - 1);
-                    delete currentData.favoritedBy[anonymousUserId]; // Correctly remove the user
+                    currentData.favoritedBy[anonymousUserId] = null; // Use null to delete the key in Firebase
                 } else { // User is favoriting
                     currentData.favoritesCount = (currentData.favoritesCount || 0) + 1;
                     currentData.favoritedBy[anonymousUserId] = true; // Add the user

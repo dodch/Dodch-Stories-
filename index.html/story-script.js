@@ -141,7 +141,7 @@ function clearSavedProgress() {
 function updateBookmarkIconState() {
     const saveButtonIcon = document.querySelector('#save-progress-button svg');
     if (!saveButtonIcon) return;
-    const savedProgressForCurrentLang = allSavedProgress[storyKey] ? allSavedProgress[storyKey][currentLanguage] : null;
+    const savedProgressForCurrentLang = allSavedProgress?.[storyKey]?.[currentLanguage];
     if (savedProgressForCurrentLang && savedProgressForCurrentLang.id) {
         saveButtonIcon.classList.add('active');
     } else {
@@ -424,7 +424,7 @@ function savePosition() {
 
 
 function scrollToSavedWord(performChecks = true, smooth = true) {
-    const savedProgressForCurrentLang = allSavedProgress[storyKey] ? allSavedProgress[storyKey][currentLanguage] : null;
+    const savedProgressForCurrentLang = allSavedProgress?.[storyKey]?.[currentLanguage];
     if (!savedProgressForCurrentLang || !savedProgressForCurrentLang.id) {
         if (performChecks) { // Only alert if the user clicked the button
             alert(contentMap[currentLanguage].noWordSaved);
@@ -465,7 +465,7 @@ function highlightWord() {
        highlightedWordElement.style.color = '';
        highlightedWordElement = null;
    }
-   const savedProgressForCurrentLang = allSavedProgress[storyKey] ? allSavedProgress[storyKey][currentLanguage] : null;
+   const savedProgressForCurrentLang = allSavedProgress?.[storyKey]?.[currentLanguage];
    if (!savedProgressForCurrentLang || !savedProgressForCurrentLang.id) {
        return;
    }
