@@ -790,28 +790,26 @@ async function fetchAndBuildGrid() {
 
             // Use a transaction to safely update the count and the user list
             window.firebase.runTransaction(storyRef, (currentData) => {
-                if (!currentData) {
-                    currentData = { favoritesCount: 0, favoritedBy: {} };
-                }
-                // Ensure favoritedBy is always an object, even if it was previously null
-                if (!currentData.favoritedBy) {
-                    currentData.favoritedBy = {};
-                }
+                // FIX: Ensure 'currentData' is always a valid object, even if it's null initially.
+                // This simplifies the logic and guarantees consistency for the transaction.
+                const data = currentData || { favoritesCount: 0, favoritedBy: {} };
+                // Ensure favoritedBy is always an object.
+                data.favoritedBy = data.favoritedBy || {};
 
                 // Check the *actual* data from Firebase to determine the current state.
-                const isCurrentlyFavorited = currentData.favoritedBy[anonymousUserId] === true;
+                const isCurrentlyFavorited = data.favoritedBy[anonymousUserId] === true;
                 
                 if (isCurrentlyFavorited) { // User is un-favoriting
-                    currentData.favoritesCount = Math.max(0, (currentData.favoritesCount || 0) - 1);
+                    data.favoritesCount = Math.max(0, (data.favoritesCount || 0) - 1);
                     // FIX: Revert to using `null` to completely delete the user's key from the 'favoritedBy' object.
                     // This is the correct way to handle un-favoriting and prevents logic errors on subsequent likes.
                     // This requires a corresponding change in the Firebase security rules.
-                    currentData.favoritedBy[anonymousUserId] = null;
+                    data.favoritedBy[anonymousUserId] = null;
                 } else { // User is favoriting
-                    currentData.favoritesCount = (currentData.favoritesCount || 0) + 1;
-                    currentData.favoritedBy[anonymousUserId] = true; // Add the user
+                    data.favoritesCount = (data.favoritesCount || 0) + 1;
+                    data.favoritedBy[anonymousUserId] = true; // Add the user
                 }
-                return currentData;
+                return data;
             });
 
         } else {
