@@ -416,10 +416,8 @@ function savePosition() {
         if (window.firebase && anonymousUserId) {
             const bookmarkRef = window.firebase.ref(window.firebase.db, `bookmarks/${anonymousUserId}/${storyKey}/${currentLanguage}`);
             window.firebase.set(bookmarkRef, bookmarkData);
+            // The onValue listener will handle UI updates automatically when Firebase syncs.
         }
-        // REFACTOR: Update the icon state immediately after saving a new bookmark.
-        updateBookmarkIconState();
-        highlightWord();
     }
     closePopup();
 }

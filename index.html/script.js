@@ -797,8 +797,8 @@ async function fetchAndBuildGrid() {
                 currentData.favoritedBy = currentData.favoritedBy || {};
                 
                 if (isCurrentlyFavorited) { // User is un-favoriting
-                    currentData.favoritesCount = (currentData.favoritesCount || 1) - 1;
-                    currentData.favoritedBy[anonymousUserId] = null; // Remove the user
+                    currentData.favoritesCount = Math.max(0, (currentData.favoritesCount || 0) - 1);
+                    delete currentData.favoritedBy[anonymousUserId]; // Correctly remove the user
                 } else { // User is favoriting
                     currentData.favoritesCount = (currentData.favoritesCount || 0) + 1;
                     currentData.favoritedBy[anonymousUserId] = true; // Add the user
