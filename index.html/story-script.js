@@ -413,6 +413,7 @@ function savePosition() {
         localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
         updateBookmarkIconState();
         highlightWord();
+        updateBookmarkIconState(); // FIX: Call again to ensure icon updates after highlight is cleared.
     }
     closePopup();
 }

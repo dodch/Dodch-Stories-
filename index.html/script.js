@@ -376,11 +376,11 @@ async function fetchAndBuildGrid() {
 
       // --- NEW: Firebase Realtime Database Integration for Favorites ---
       const countSpan = addedCard.querySelector('.favorite-count');
-      if (countSpan && window.firebase) {
-          const storyRef = window.firebase.ref(window.firebase.db, 'stories/' + storyKey);
+      if (countSpan && window.firebaseServices) {
+          const storyRef = window.firebaseServices.ref(window.firebaseServices.db, 'stories/' + storyKey);
 
           // Listen for real-time updates to the favorite count
-          window.firebase.onValue(storyRef, (snapshot) => {
+          window.firebaseServices.onValue(storyRef, (snapshot) => {
               const storyData = snapshot.val();
               const count = storyData?.favoritesCount || 0;
               const favoritedBy = storyData?.favoritedBy || {};
@@ -786,11 +786,11 @@ async function fetchAndBuildGrid() {
         const storyKey = panel.dataset.storyKey;
 
         // --- NEW: Firebase Transaction for Likes ---
-        if (window.firebase) {
-            const storyRef = window.firebase.ref(window.firebase.db, 'stories/' + storyKey);
+        if (window.firebaseServices) {
+            const storyRef = window.firebaseServices.ref(window.firebaseServices.db, 'stories/' + storyKey);
 
             // Use a transaction to safely update the count and user list
-            window.firebase.runTransaction(storyRef, (currentData) => {
+            window.firebaseServices.runTransaction(storyRef, (currentData) => {
                 // Initialize data if the story node doesn't exist yet
                 if (!currentData) {
                     currentData = { favoritesCount: 0, favoritedBy: {} };
@@ -1189,12 +1189,7 @@ async function hashString(str) {
     return hashHex;
 }
 
-
-let isInitialized = false; // FIX: Add a flag to prevent double initialization.
-async function initializePage(manualLevelOverride = null) {
-    if (isInitialized) return; // Prevent this from running more than once.
-    isInitialized = true;
-    
+async function initializeUser() {
     // Revert to simple localStorage-based anonymous user ID
     anonymousUserId = localStorage.getItem('anonymousUserId');
     if (!anonymousUserId) {
@@ -1202,6 +1197,12 @@ async function initializePage(manualLevelOverride = null) {
         localStorage.setItem('anonymousUserId', anonymousUserId);
     }
     console.log("Anonymous User ID:", anonymousUserId);
+}
+
+let isInitialized = false; // FIX: Add a flag to prevent double initialization.
+async function initializePage(manualLevelOverride = null) {
+    if (isInitialized) return; // Prevent this from running more than once.
+    isInitialized = true;
 
     // FIX: If a manual level is passed from the button click, use it directly.
     // Otherwise, check sessionStorage (for reloads) or run the benchmark.
@@ -1223,6 +1224,9 @@ async function initializePage(manualLevelOverride = null) {
     applyPerformanceStyles(performanceLevel);
 
     if (performanceLevel === 2) detectSVGFilterSupport();
+
+    // FIX: Initialize the user ID *before* fetching the grid.
+    await initializeUser();
 
     const loadingScreen = document.getElementById('loadingScreen');
     animateButtonsOnLoad();
