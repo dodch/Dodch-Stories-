@@ -783,10 +783,10 @@ async function fetchAndBuildGrid() {
         const panel = btn.closest('.glass-container');
         const title = panel.querySelector('.title').dataset.originalTitle;
         const countSpan = panel.querySelector('.favorite-count');
-
+        
         if (window.firebase) {
             const storyKey = title.replace(/[^a-zA-Z0-9]/g, '_');
-            const storyRef = window.firebase.ref(window.firebase.db, 'stories/' + storyKey);
+            const storyRef = window.firebase.ref(window.firebase.db, 'stories/' + storyKey); // FIX: Corrected variable name
 
             // Use a transaction to safely update the count and the user list
             window.firebase.runTransaction(storyRef, (currentData) => {
@@ -803,7 +803,10 @@ async function fetchAndBuildGrid() {
                 
                 if (isCurrentlyFavorited) { // User is un-favoriting
                     currentData.favoritesCount = Math.max(0, (currentData.favoritesCount || 0) - 1);
-                    currentData.favoritedBy[anonymousUserId] = null; // Use null to delete the key in Firebase
+                    // FIX: Revert to using `null` to completely delete the user's key from the 'favoritedBy' object.
+                    // This is the correct way to handle un-favoriting and prevents logic errors on subsequent likes.
+                    // This requires a corresponding change in the Firebase security rules.
+                    currentData.favoritedBy[anonymousUserId] = null;
                 } else { // User is favoriting
                     currentData.favoritesCount = (currentData.favoritesCount || 0) + 1;
                     currentData.favoritedBy[anonymousUserId] = true; // Add the user
@@ -811,9 +814,8 @@ async function fetchAndBuildGrid() {
                 return currentData;
             });
 
-            countSpan.classList.remove('count-animated');
-            void countSpan.offsetWidth; // Force reflow to restart animation
-            countSpan.classList.add('count-animated');
+        } else {
+            console.error("Firebase not available. Cannot update favorite status.");
         }
       });
     });

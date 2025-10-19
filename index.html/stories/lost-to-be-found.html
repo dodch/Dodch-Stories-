@@ -515,6 +515,27 @@ où je libérerai d'autres douleurs de leur cage.
             </div>
         </div>
     </div>
+    <!-- NEW: Firebase SDKs for story pages -->
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+      import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyAnv8gRPRdofO7PzkFNKQJkFe3cTo3vD9I",
+        authDomain: "dodch-stories.firebaseapp.com",
+        databaseURL: "https://dodch-stories-default-rtdb.firebaseio.com",
+        projectId: "dodch-stories",
+        storageBucket: "dodch-stories.appspot.com",
+        messagingSenderId: "610829964451",
+        appId: "1:610829964451:web:48139f38aba90dc65c5b16"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase(app);
+      window.firebase = { db, ref, onValue, set, remove };
+    </script>
     <script src="../story-script.js"></script>
     <script>
         // Story-specific configuration

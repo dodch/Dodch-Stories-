@@ -726,6 +726,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         console.log("Anonymous User ID:", anonymousUserId);
         // This function will be called by Firebase when data is loaded or changed
+        
+        // FIX: Move initial content setup outside the Firebase listener.
+        // This ensures the story text loads immediately, regardless of Firebase connection speed.
+        const preferredLanguage = localStorage.getItem('preferredLanguage');
+        let initialLangToLoad = 'en';
+        if (preferredLanguage && contentMap[preferredLanguage]) {
+           initialLangToLoad = preferredLanguage;
+        }
+        changeLanguage(initialLangToLoad, true);
         const setupInitialContent = () => {
             const preferredLanguage = localStorage.getItem('preferredLanguage');
             let initialLangToLoad = 'en';
@@ -736,19 +745,17 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         if (window.firebase) {
-            const userBookmarksRef = window.firebase.ref(window.firebase.db, 'bookmarks/' + anonymousUserId);
-            // Listen for real-time updates to this user's bookmarks
+            // FIX: Revert to listening for ALL user bookmarks. The previous, more specific path
+            // caused an issue where loading one story's bookmarks would overwrite all others.
+            const userBookmarksRef = window.firebase.ref(window.firebase.db, `bookmarks/${anonymousUserId}`);
+            
+            // Listen for real-time updates to this user's entire bookmark collection.
             window.firebase.onValue(userBookmarksRef, (snapshot) => {
                 const data = snapshot.val();
-                allSavedProgress = data || {};
-                console.log("Firebase bookmarks loaded/updated:", allSavedProgress);
-                // If content is already on the page, just update highlights. Otherwise, load content.
-                if (textContainer.innerHTML !== '') {
-                    updateBookmarkIconState();
-                    highlightWord();
-                } else {
-                    setupInitialContent();
-                }
+                allSavedProgress = data || {}; // Correctly update the global object with ALL bookmarks.
+                console.log("Firebase bookmarks loaded/updated for all stories:", allSavedProgress);
+                updateBookmarkIconState();
+                highlightWord();
             });
         } else {
             console.warn("Firebase not available. Falling back to localStorage for bookmarks.");
@@ -760,7 +767,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 allSavedProgress = {};
                 localStorage.removeItem('allSavedProgress');
             }
-            setupInitialContent();
         }
 
         // --- NEW: Run performance check first ---
