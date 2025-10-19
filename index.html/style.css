@@ -1434,8 +1434,10 @@ body:not(.is-scrolling) .series-stack:hover {
 }
 
 /* Create the "ghost" cards behind the main one using pseudo-elements on the container */
-.series-stack::before,
-.series-stack::after {
+/* FIX: Increase specificity to ensure these rules only apply to the main grid on the index page. */
+/* This prevents the rule from incorrectly hiding the bookmark icon on story pages. */
+.grid > .series-stack::before,
+.grid > .series-stack::after {
   content: '';
   position: absolute;
   left: 0;
@@ -1457,7 +1459,7 @@ body:not(.is-scrolling) .series-stack:hover {
 }
 
 /* FIX: On hover, make the stacked cards visible and move them into position. */
-body:not(.is-scrolling) .series-stack:hover::before {
+body:not(.is-scrolling) .grid > .series-stack:hover::before {
   opacity: 1;
   transform: translateY(14px) scale(0.96); /* Furthest back card */
   z-index: -3;
@@ -1465,7 +1467,7 @@ body:not(.is-scrolling) .series-stack:hover::before {
   background: color-mix(in srgb, var(--golden-tint) 20%, var(--glass-bg));
 }
 
-body:not(.is-scrolling) .series-stack:hover::after {
+body:not(.is-scrolling) .grid > .series-stack:hover::after {
   opacity: 1;
   transform: translateY(7px) scale(0.98); /* Middle card */
   z-index: -2;

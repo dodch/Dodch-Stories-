@@ -391,12 +391,6 @@ async function fetchAndBuildGrid() {
               const isFavorited = favoritedBy[anonymousUserId] === true;
               const favoriteBtn = addedCard.querySelector('.favorite-btn');
               favoriteBtn.classList.toggle('active', isFavorited);
-              // FIX: Use requestAnimationFrame to defer the visibility check.
-              // This prevents a race condition where the DOM query runs before the 'favorited'
-              // class has been fully applied, ensuring the "No favorites" message appears correctly.
-              requestAnimationFrame(() => {
-                  updateNoFavoritesMessageState();
-              });
               addedCard.classList.toggle('favorited', isFavorited);
           });
       }
@@ -789,41 +783,32 @@ async function fetchAndBuildGrid() {
         const panel = btn.closest('.glass-container');
         const title = panel.querySelector('.title').dataset.originalTitle;
         const countSpan = panel.querySelector('.favorite-count');
-        
+        const isCurrentlyFavorited = btn.classList.contains('active');
+
         if (window.firebase) {
             const storyKey = title.replace(/[^a-zA-Z0-9]/g, '_');
             const storyRef = window.firebase.ref(window.firebase.db, 'stories/' + storyKey);
 
-            // FIX: The new security rules rely on 'auth.uid'. We will simulate this for anonymous
-            // users by passing the anonymousUserId in the transaction options.
-            const transactionOptions = { applied: true };
-
             // Use a transaction to safely update the count and the user list
             window.firebase.runTransaction(storyRef, (currentData) => {
-                // FIX: Ensure 'currentData' is always a valid object, even if it's null initially.
-                // This simplifies the logic and guarantees consistency for the transaction.
-                const data = currentData || { favoritesCount: 0, favoritedBy: {} };
-                // Ensure favoritedBy is always an object.
-                data.favoritedBy = data.favoritedBy || {};
-
-                // Check the *actual* data from Firebase to determine the current state.
-                const isCurrentlyFavorited = data.favoritedBy[anonymousUserId] === true;
+                if (!currentData) {
+                    currentData = { favoritesCount: 0, favoritedBy: {} };
+                }
+                currentData.favoritedBy = currentData.favoritedBy || {};
                 
                 if (isCurrentlyFavorited) { // User is un-favoriting
-                    data.favoritesCount = Math.max(0, (data.favoritesCount || 0) - 1);
-                    // FIX: Revert to using `null` to completely delete the user's key from the 'favoritedBy' object.
-                    // This is the correct way to handle un-favoriting and prevents logic errors on subsequent likes.
-                    // This requires a corresponding change in the Firebase security rules.
-                    data.favoritedBy[anonymousUserId] = null;
+                    currentData.favoritesCount = (currentData.favoritesCount || 1) - 1;
+                    currentData.favoritedBy[anonymousUserId] = null; // Remove the user
                 } else { // User is favoriting
-                    data.favoritesCount = (data.favoritesCount || 0) + 1;
-                    data.favoritedBy[anonymousUserId] = true; // Add the user
+                    currentData.favoritesCount = (currentData.favoritesCount || 0) + 1;
+                    currentData.favoritedBy[anonymousUserId] = true; // Add the user
                 }
-                return data;
-            }, transactionOptions);
+                return currentData;
+            });
 
-        } else {
-            console.error("Firebase not available. Cannot update favorite status.");
+            countSpan.classList.remove('count-animated');
+            void countSpan.offsetWidth; // Force reflow to restart animation
+            countSpan.classList.add('count-animated');
         }
       });
     });
@@ -1181,51 +1166,18 @@ function changeBackground() {
   document.head.appendChild(styleElement);
 }
 
-/**
- * NEW: A simple and fast hashing function to create a unique signature from the
- * FingerprintJS components. This helps create a more stable user ID.
- * @param {string} str The string to hash.
- * @returns {Promise<string>} A promise that resolves to the hex-encoded hash.
- */
-async function hashString(str) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(str);
-    const hashBuffer = await crypto.subtle.digest('SHA-1', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    return hashHex;
-}
-
-
 let isInitialized = false; // FIX: Add a flag to prevent double initialization.
 async function initializePage(manualLevelOverride = null) {
-    // FIX: Wait for a valid App Check token before initializing the page.
-    // This is the definitive fix for the "unverified requests" issue. It ensures
-    // that no database operations can be attempted until the app is verified.
-    if (window.firebase && window.firebase.appCheck) {
-        await window.firebase.getToken(window.firebase.appCheck);
-        console.log("Firebase App Check token acquired. Proceeding with initialization.");
-    }
-
     if (isInitialized) return; // Prevent this from running more than once.
     isInitialized = true;
     
     // --- REFACTOR: Use FingerprintJS for a more robust anonymous user ID ---
     // This ID is more likely to be consistent across regular and incognito sessions.
     try {
-        // REFACTOR: Use extendedResult to get more components for a more stable ID.
         const fp = await window.fp.load();
-        const result = await fp.get({ extendedResult: true });
-
-        // Create a more robust ID by hashing component data.
-        // This makes it harder to get a new ID just by clearing cookies.
-        const components = result.components;
-        const componentsString = Object.keys(components).map(key => {
-            const value = components[key].value;
-            return typeof value === 'object' ? JSON.stringify(value) : value;
-        }).join('|');
-        anonymousUserId = result.visitorId + '-' + await hashString(componentsString);
-        console.log("Robust Anonymous User ID:", anonymousUserId);
+        const result = await fp.get();
+        anonymousUserId = result.visitorId;
+        console.log("FingerprintJS Visitor ID:", anonymousUserId);
     } catch (error) {
         console.error("FingerprintJS failed, falling back to localStorage:", error);
         // Fallback to the old method if FingerprintJS fails

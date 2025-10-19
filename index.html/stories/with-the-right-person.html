@@ -417,11 +417,13 @@ Because your souls will always be connected…
                 <p id="popup-text" class="mb-4 text-sm"></p> <!-- FIX: Add text-center to center the question. -->
                 <div class="flex justify-end space-x-2">
                     <button
+                        id="popup-save-button"
                         class="glass-button-base bg-green-500 text-white px-4 py-2 rounded-full focus:outline-none"
                     >
                         Save
                     </button>
                     <button
+                        id="popup-exit-button"
                         class="glass-button-base bg-red-500 text-white px-4 py-2 rounded-full focus:outline-none"
                     >
                         Exit
@@ -515,6 +517,8 @@ Because your souls will always be connected…
                 noWordSaved: 'No word has been saved for this language yet'
             },
         };
+        // FIX: Call the initialization function now that contentMap is defined.
+        initializeStoryContent();
     </script>
 </body>
 </html>

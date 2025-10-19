@@ -734,23 +734,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         console.log("Anonymous User ID:", anonymousUserId);
         // This function will be called by Firebase when data is loaded or changed
-        
-        // FIX: Move initial content setup outside the Firebase listener.
-        // This ensures the story text loads immediately, regardless of Firebase connection speed.
-        const preferredLanguage = localStorage.getItem('preferredLanguage');
-        let initialLangToLoad = 'en';
-        if (preferredLanguage && contentMap[preferredLanguage]) {
-           initialLangToLoad = preferredLanguage;
-        }
-        changeLanguage(initialLangToLoad, true);
-        const setupInitialContent = () => {
-            const preferredLanguage = localStorage.getItem('preferredLanguage');
-            let initialLangToLoad = 'en';
-            if (preferredLanguage && contentMap[preferredLanguage]) {
-               initialLangToLoad = preferredLanguage;
-            }
-            changeLanguage(initialLangToLoad, true);
-        };
 
         if (window.firebase) {
             // FIX: Revert to listening for ALL user bookmarks. The previous, more specific path
@@ -794,37 +777,51 @@ document.addEventListener('DOMContentLoaded', () => {
         handleDarkModeChange(darkModeMediaQuery);
         darkModeMediaQuery.addListener(handleDarkModeChange);
 
-        // Set initial direction, this is the only call needed.
-        document.documentElement.setAttribute('dir', 'ltr');
-
-        // NEW: Initialize the shine effect for all buttons on the story page.
-        initializeShineEffect();
-
-        // Apply new tap animations to all buttons
-       document.querySelectorAll('button').forEach(button => {
-           addTapAnimation(button);
-           // Add specific actions for each button
-           if (['ar-button', 'fr-button', 'en-button'].includes(button.id)) { // Language buttons
-               const lang = button.id.split('-')[0];
-               if (contentMap[lang]) {
-                   button.addEventListener('click', () => changeLanguage(lang));
-               }
-           } else if (button.id === 'save-progress-button') {
-               button.addEventListener('click', () => scrollToSavedWord());
-           } else if (button.id === 'back-home-button') {
-               button.addEventListener('click', () => window.location.href = 'https://www.dodchstories.com');
-           } else if (button.closest('#popup')) { // Popup buttons
-               // FIX: Use 'pointerup' instead of 'click' for popup buttons to prevent "ghost clicks" on mobile.
-               // This ensures the interaction is consistent with the word selection.
-               if (button.textContent.trim().toLowerCase() === 'save' || button.textContent.trim() === 'حفظ' || button.textContent.trim() === 'enregistrer') {
-                   button.addEventListener('pointerup', (e) => {
-                       e.preventDefault();
-                       savePosition();
-                   });
-               } else {
-                   button.addEventListener('pointerup', closePopup);
-               }
-           }
-       });
     })();
 });
+
+/**
+ * FIX: This new function is called directly from the story HTML file after contentMap is defined.
+ * This resolves the race condition where the script would try to access contentMap before it existed.
+ */
+function initializeStoryContent() {
+    const preferredLanguage = localStorage.getItem('preferredLanguage');
+    let initialLangToLoad = 'en';
+    if (preferredLanguage && typeof contentMap !== 'undefined' && contentMap[preferredLanguage]) {
+        initialLangToLoad = preferredLanguage;
+    }
+    // The 'true' flag indicates this is the initial load, preventing fade animations.
+    changeLanguage(initialLangToLoad, true);
+
+    // FIX: Move all button initialization logic here to ensure it runs after the content is ready.
+    // This resolves the race condition that caused buttons to be unresponsive.
+
+    // Set initial direction.
+    document.documentElement.setAttribute('dir', 'ltr');
+
+    // Initialize the shine effect for all buttons.
+    initializeShineEffect();
+
+    // Apply tap animations and event listeners to all buttons.
+    document.querySelectorAll('button').forEach(button => {
+        addTapAnimation(button);
+        // Add specific actions for each button
+        if (['ar-button', 'fr-button', 'en-button'].includes(button.id)) { // Language buttons
+            const lang = button.id.split('-')[0];
+            if (contentMap[lang]) {
+                button.addEventListener('click', () => changeLanguage(lang));
+            }
+        } else if (button.id === 'save-progress-button') {
+            button.addEventListener('click', () => scrollToSavedWord());
+        } else if (button.id === 'back-home-button') {
+            button.addEventListener('click', () => window.location.href = 'https://www.dodchstories.com');
+        }
+    });
+    // FIX: Add listeners to popup buttons by ID to ensure they work after language changes.
+    const saveBookmarkBtn = document.getElementById('popup-save-button');
+    const exitBookmarkBtn = document.getElementById('popup-exit-button');
+    if (saveBookmarkBtn && exitBookmarkBtn) {
+        saveBookmarkBtn.addEventListener('pointerup', (e) => { e.preventDefault(); savePosition(); });
+        exitBookmarkBtn.addEventListener('pointerup', (e) => { e.preventDefault(); closePopup(); });
+    }
+}
