@@ -89,6 +89,9 @@
             });
         })();
     </script>
+    <!-- FIX: Explicitly load the reCAPTCHA script in the head to prevent race conditions. -->
+    <!-- The 'render' parameter with your site key pre-initializes reCAPTCHA. -->
+    <script src="https://www.google.com/recaptcha/api.js?render=6Ldk7O8rAAAAAJTbOcPp7JmZfuhGCUNZ3Jdxqc0t" async defer></script>
 </head>
 <body class="loading">
     <div id="loading-screen">
@@ -540,8 +543,10 @@ où je libérerai d'autres douleurs de leur cage.
       // NEW: Initialize Firebase App Check with reCAPTCHA v3
       // This is crucial for allowing database writes if App Check is enabled in your Firebase project.
       // IMPORTANT: Replace the placeholder below with your actual reCAPTCHA v3 Site Key.
+      // FIX: Pass a custom provider instance that uses the pre-loaded grecaptcha object.
+      // This eliminates the race condition where Firebase might try to use reCAPTCHA before it's ready.
       const appCheck = initializeAppCheck(app, {
-        provider: new ReCaptchaV3Provider('6Ldk7O8rAAAAAJTbOcPp7JmZfuhGCUNZ3Jdxqc0t'),
+        provider: new ReCaptchaV3Provider({ siteKey: '6Ldk7O8rAAAAAJTbOcPp7JmZfuhGCUNZ3Jdxqc0t', grecaptcha: window.grecaptcha }),
         isTokenAutoRefreshEnabled: true // Automatically refresh the token as needed.
       });
 
