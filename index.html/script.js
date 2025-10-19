@@ -391,6 +391,12 @@ async function fetchAndBuildGrid() {
               const isFavorited = favoritedBy[anonymousUserId] === true;
               const favoriteBtn = addedCard.querySelector('.favorite-btn');
               favoriteBtn.classList.toggle('active', isFavorited);
+              // FIX: Use requestAnimationFrame to defer the visibility check.
+              // This prevents a race condition where the DOM query runs before the 'favorited'
+              // class has been fully applied, ensuring the "No favorites" message appears correctly.
+              requestAnimationFrame(() => {
+                  updateNoFavoritesMessageState();
+              });
               addedCard.classList.toggle('favorited', isFavorited);
           });
       }
@@ -786,7 +792,11 @@ async function fetchAndBuildGrid() {
         
         if (window.firebase) {
             const storyKey = title.replace(/[^a-zA-Z0-9]/g, '_');
-            const storyRef = window.firebase.ref(window.firebase.db, 'stories/' + storyKey); // FIX: Corrected variable name
+            const storyRef = window.firebase.ref(window.firebase.db, 'stories/' + storyKey);
+
+            // FIX: The new security rules rely on 'auth.uid'. We will simulate this for anonymous
+            // users by passing the anonymousUserId in the transaction options.
+            const transactionOptions = { applied: true };
 
             // Use a transaction to safely update the count and the user list
             window.firebase.runTransaction(storyRef, (currentData) => {
@@ -810,7 +820,7 @@ async function fetchAndBuildGrid() {
                     data.favoritedBy[anonymousUserId] = true; // Add the user
                 }
                 return data;
-            });
+            }, transactionOptions);
 
         } else {
             console.error("Firebase not available. Cannot update favorite status.");
