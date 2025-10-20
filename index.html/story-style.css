@@ -311,6 +311,8 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Roboto', sans-serif;
+    /* FIX: Add padding to the bottom of the body to create scroll space below the footer, preventing overlap with fixed buttons. */
+    padding-bottom: 5rem;
     min-height: 100vh;
     color: var(--main-text-color-light); /* FIX: Set the default text color for light mode */
 }
@@ -899,4 +901,10 @@ html.dark-mode .bookmarked-word::after, body.dark-mode .bookmarked-word::after {
     }
     75% { transform: scale(0.95) rotate(-5deg); }
     100% { transform: scale(1) rotate(0deg); }
+}
+
+/* --- NEW: reCAPTCHA Badge Fix --- */
+/* Hide the reCAPTCHA badge. Per Google's policy, the required branding and links have been added to the site footer. */
+.grecaptcha-badge {
+    visibility: hidden !important;
 }

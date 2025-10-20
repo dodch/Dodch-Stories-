@@ -445,11 +445,27 @@ Because your souls will always be connected…
             </div>
         </div>
     </div>
+    <!-- NEW: Add a footer with reCAPTCHA branding to comply with Google's terms of service. -->
+    <footer class="site-footer story-page-footer">
+        <div class="site-footer-content">
+            <p>&copy; 2024 Dodch Stories. All Rights Reserved.</p>
+            <p class="recaptcha-branding">
+                This site is protected by reCAPTCHA and the Google
+                <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a> and
+                <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a> apply.
+            </p>
+        </div>
+    </footer>
+    <!-- NEW: Add reCAPTCHA v3 script for Firebase App Check. This is required on every page using App Check. -->
+    <script src="https://www.google.com/recaptcha/api.js?render=6Ldj7O8rAAAAAO5rRT1GqGzVN3vXjL54Mlw0mpX6" async defer></script>
+
     <!-- FIX: Consolidate all story initialization logic into a single module script to resolve loading race conditions. -->
     <script type="module">
         // --- Firebase Initialization ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";        import { getDatabase, ref, onValue, off, onDisconnect, serverTimestamp, push, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { getDatabase, ref, onValue, off, onDisconnect, serverTimestamp, push, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+        import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app-check.js";
         // --- Story Script ---
         // This imports the main story logic. The functions will be available in this module's scope.
         import { initializeStoryContent, initializeAuth } from '../story-script.js';
@@ -466,6 +482,12 @@ Because your souls will always be connected…
         };
 
         const app = initializeApp(firebaseConfig);
+        // NEW: Initialize Firebase App Check with reCAPTCHA v3 to protect backend resources.
+        const appCheck = initializeAppCheck(app, {
+            provider: new ReCaptchaV3Provider('6Ldj7O8rAAAAAO5rRT1GqGzVN3vXjL54Mlw0mpX6'),
+            isTokenAutoRefreshEnabled: true
+        });
+
         const database = getDatabase(app);
         const auth = getAuth(app);
 
