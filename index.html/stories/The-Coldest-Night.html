@@ -868,6 +868,15 @@ THE END.
         // Make Firebase services globally available for the imported script.
         window.firebaseServices = { db: database, ref, onValue, runTransaction, onDisconnect, serverTimestamp };
 
+        // FIX: Generate or retrieve the anonymous user ID here, BEFORE any other script needs it.
+        // This is the definitive fix to the race condition that was preventing the visitor count from working.
+        let anonymousUserId = localStorage.getItem('anonymousUserId');
+        if (!anonymousUserId) {
+            anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('anonymousUserId', anonymousUserId);
+        }
+        window.anonymousUserId = anonymousUserId;
+
         // Story-specific configuration
         const contentMap = {
             ar: {

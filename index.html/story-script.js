@@ -742,16 +742,6 @@ export async function initializeStoryContent(storyContentMap) {
         allSavedProgress = {};
     }
 
-    // FIX: The story page should ONLY read the user ID created by the main page.
-    // Do NOT generate a new one here, as it causes conflicts.
-    anonymousUserId = localStorage.getItem('anonymousUserId');
-    if (!anonymousUserId) {
-        anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('anonymousUserId', anonymousUserId);
-    }
-    // Make the ID globally available for the visitor count script.
-    window.anonymousUserId = anonymousUserId;
-
     const manualLevel = sessionStorage.getItem('manualPerformanceLevel');
     if (manualLevel) {
         performanceLevel = parseInt(manualLevel, 10);
