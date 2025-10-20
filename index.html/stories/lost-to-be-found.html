@@ -998,16 +998,13 @@ THE END.
             const connectedRef = ref(database, '.info/connected');
             onValue(connectedRef, (snap) => {                if (snap.val() === true) {
                     // We're connected. This user's ID is `userId`.
-                    // Create a reference to a new connection entry under the user's ID.
-                    const userStoryPresenceRef = ref(database, `presence/${storyId}/${userId}`);
-                    const myConnectionRef = push(userStoryPresenceRef);
+                    const myPresenceRef = ref(database, `presence/${storyId}/${userId}`);
 
                     // When the client disconnects, remove their connection entry.
-                    // If this is the last connection, the parent `userId` node will be removed automatically by Firebase.
-                    onDisconnect(myConnectionRef).remove();
+                    onDisconnect(myPresenceRef).remove();
 
                     // Set the value to mark this connection as "online".
-                    set(myConnectionRef, serverTimestamp());
+                    set(myPresenceRef, serverTimestamp());
 
                     // Proactively remove the user on page unload for a more responsive count.
                     // This makes the count decrease immediately when a user leaves.
