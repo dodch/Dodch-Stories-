@@ -523,8 +523,8 @@ Because your souls will always be connected…
             const userId = window.anonymousUserId;
             const storyId = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
 
-            const storyVisitorsRef = ref(database, `story-visitors/${storyId}`);
-            const userStatusRef = ref(database, `story-visitors/${storyId}/${userId}`);
+            const storyVisitorsRef = ref(database, `presence/${storyId}`);
+            const userStatusRef = ref(database, `presence/${storyId}/${userId}`);
 
             // Set user's presence
             await runTransaction(userStatusRef, () => serverTimestamp());
