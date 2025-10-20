@@ -846,6 +846,7 @@ THE END.
     <script type="module">
         // --- Firebase Initialization ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { getDatabase, ref, onValue, onDisconnect, serverTimestamp, push, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
         // --- Story Script ---
         // This imports the main story logic. The functions will be available in this module's scope.
@@ -864,9 +865,10 @@ THE END.
 
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
+        const auth = getAuth(app);
 
         // Make Firebase services globally available for the imported script.
-        const firebaseServices = { db: database, ref, onValue, onDisconnect, serverTimestamp, push, set };
+        const firebaseServices = { db: database, auth, onAuthStateChanged, ref, onValue, onDisconnect, serverTimestamp, push, set };
 
         // Story-specific configuration
         const contentMap = {

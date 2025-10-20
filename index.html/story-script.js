@@ -18,7 +18,7 @@ const body = document.body;
 // This prevents progress from one story from conflicting with another.
 const storyKey = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
 let currentLanguage = 'en';
-let anonymousUserId = null; // NEW: To store the user's unique ID
+let currentUserId = null; // NEW: To store the user's unique ID (anonymous or authenticated)
 let allSavedProgress = {};
 let tempSavedWordId = '';
 let tempSavedWordText = '';
@@ -26,6 +26,7 @@ let highlightedWordElement = null;
 let isDarkMode = false;
 let contentMap = {}; // Will be populated by the initialization function
 let storyObserver; // For paragraph animations
+let firebaseServices = null; // To store Firebase services
 let performanceLevel = 3; // Default to highest
 
 // --- NEW: Unified Performance System (mirrors main script) ---
@@ -124,10 +125,17 @@ const saveButton = document.getElementById('save-progress-button');
 const popupDivInner = document.getElementById('popup').querySelector('div');
 
 function clearSavedProgress() {
-    // Remove the bookmark from localStorage
-    if (allSavedProgress[storyKey]) delete allSavedProgress[storyKey][currentLanguage];
-    localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
-    updateBookmarkIconState(); // Update the icon to show no bookmark is saved.
+    // NEW: Remove the bookmark from Firebase
+    if (currentUserId && firebaseServices) {
+        const { db, ref, set } = firebaseServices;
+        const progressRef = ref(db, `users/${currentUserId}/progress/${storyKey}/${currentLanguage}`);
+        set(progressRef, null); // This deletes the data in Firebase
+    } else {
+        // Fallback to localStorage if something is wrong
+        if (allSavedProgress[storyKey]) delete allSavedProgress[storyKey][currentLanguage];
+        localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
+        updateBookmarkIconState(); // Update the icon to show no bookmark is saved.
+    }
 }
 
 /**
@@ -404,17 +412,21 @@ function closePopup() {
 
 function savePosition() {
     if (tempSavedWordId) {
-        const bookmarkData = {
-            id: tempSavedWordId,
-            text: tempSavedWordText
-        };
-        // Save the bookmark to localStorage
-        if (!allSavedProgress[storyKey]) allSavedProgress[storyKey] = {};
-        allSavedProgress[storyKey][currentLanguage] = bookmarkData;
-        localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
-        updateBookmarkIconState();
-        highlightWord();
-        updateBookmarkIconState(); // FIX: Call again to ensure icon updates after highlight is cleared.
+        // NEW: Save the bookmark to Firebase
+        if (currentUserId && firebaseServices) {
+            const { db, ref, set } = firebaseServices;
+            const bookmarkData = { id: tempSavedWordId, text: tempSavedWordText };
+            const progressRef = ref(db, `users/${currentUserId}/progress/${storyKey}/${currentLanguage}`);
+            set(progressRef, bookmarkData).catch(error => {
+                console.error("Firebase save error:", error);
+                alert("Could not save progress. Please try again.");
+            });
+        } else {
+            // Fallback to localStorage if user ID or Firebase isn't available
+            if (!allSavedProgress[storyKey]) allSavedProgress[storyKey] = {};
+            allSavedProgress[storyKey][currentLanguage] = { id: tempSavedWordId, text: tempSavedWordText };
+            localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
+        }
     }
     closePopup();
 }
@@ -710,24 +722,41 @@ document.addEventListener('DOMContentLoaded', () => {
  * @param {object} firebaseServices The imported Firebase functions (db, ref, etc.).
  */
 export async function initializeStoryContent(storyContentMap, firebaseServices) {    
-    // FIX: Centralize user ID generation here.
-    // This ensures the ID is created and available within this module's scope.
-    anonymousUserId = localStorage.getItem('anonymousUserId');
-    if (!anonymousUserId) {
-        anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('anonymousUserId', anonymousUserId);
-    }
-    console.log("Anonymous User ID:", anonymousUserId);
+    // Store services for other functions to use
+    window.firebaseServices = firebaseServices;
 
     contentMap = storyContentMap; // Store the map at the module level for other functions to use.
-    // This ensures the `allSavedProgress` object is ready for functions like `updateBookmarkIconState`.
-    const savedProgressJson = localStorage.getItem('allSavedProgress');
-    try {
-        allSavedProgress = savedProgressJson ? JSON.parse(savedProgressJson) : {};
-    } catch (e) {
-        console.error("Failed to parse saved progress from localStorage:", e);
-        allSavedProgress = {};
-    }
+
+    // NEW: Set up auth state listener to get user ID and load their progress
+    const { auth, onAuthStateChanged, db, ref, onValue } = firebaseServices;
+    onAuthStateChanged(auth, user => {
+        if (user) {
+            currentUserId = user.uid;
+            console.log("Story page user (Authenticated):", currentUserId);
+        } else {
+            currentUserId = localStorage.getItem('anonymousUserId');
+            if (!currentUserId) {
+                currentUserId = 'anon-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('anonymousUserId', currentUserId);
+            }
+            console.log("Story page user (Anonymous):", currentUserId);
+        }
+
+        // Once we have a user ID, listen for their saved progress in Firebase
+        const userProgressRef = ref(db, `users/${currentUserId}/progress`);
+        onValue(userProgressRef, (snapshot) => {
+            const progressData = snapshot.val() || {};
+            allSavedProgress = progressData;
+            console.log("Loaded progress from Firebase:", allSavedProgress);
+            
+            // Update UI elements that depend on saved progress
+            updateBookmarkIconState();
+            highlightWord();
+        });
+
+        // Return the user ID for the visitor count script
+        return currentUserId;
+    });
 
     const manualLevel = sessionStorage.getItem('manualPerformanceLevel');
     if (manualLevel) {
@@ -787,5 +816,5 @@ export async function initializeStoryContent(storyContentMap, firebaseServices) 
     }
 
     // FIX: Return the generated user ID so the calling script can use it for the visitor count.
-    return anonymousUserId;
+    return currentUserId;
 }
