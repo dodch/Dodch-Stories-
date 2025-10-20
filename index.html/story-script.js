@@ -709,12 +709,21 @@ document.addEventListener('DOMContentLoaded', () => {
  * @param {object} storyContentMap The story-specific configuration object.
  * @param {object} firebaseServices The imported Firebase functions (db, ref, etc.).
  */
-export async function initializeStoryContent(storyContentMap) {
+export async function initializeStoryContent(storyContentMap) {    
+    // FIX: Centralize user ID generation here.
+    // This ensures the ID is created and available within this module's scope.
+    anonymousUserId = localStorage.getItem('anonymousUserId');
+    if (!anonymousUserId) {
+        anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('anonymousUserId', anonymousUserId);
+    }
+    console.log("Anonymous User ID:", anonymousUserId);
+
     contentMap = storyContentMap; // Store the map at the module level for other functions to use.
     // This ensures the `allSavedProgress` object is ready for functions like `updateBookmarkIconState`.
     const savedProgressJson = localStorage.getItem('allSavedProgress');
     try {
-        allSavedProgress = savedProgressJson ? JSON.parse(savedProgressJson) : {}; // FIX: Correctly handle null/empty JSON.
+        allSavedProgress = savedProgressJson ? JSON.parse(savedProgressJson) : {};
     } catch (e) {
         console.error("Failed to parse saved progress from localStorage:", e);
         allSavedProgress = {};
@@ -776,4 +785,7 @@ export async function initializeStoryContent(storyContentMap) {
         saveBookmarkBtn.addEventListener('pointerup', (e) => { e.preventDefault(); savePosition(); });
         exitBookmarkBtn.addEventListener('pointerup', (e) => { e.preventDefault(); closePopup(); });
     }
+
+    // FIX: Return the generated user ID so the calling script can use it for the visitor count.
+    return anonymousUserId;
 }

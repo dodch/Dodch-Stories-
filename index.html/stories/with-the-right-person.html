@@ -465,15 +465,6 @@ Because your souls will always be connected…
         // Make Firebase services globally available for the imported script.
         window.firebaseServices = { db: database, ref, onValue, runTransaction, onDisconnect, serverTimestamp };
 
-        // FIX: Generate or retrieve the anonymous user ID here, BEFORE any other script needs it.
-        // This is the definitive fix to the race condition that was preventing the visitor count from working.
-        let anonymousUserId = localStorage.getItem('anonymousUserId');
-        if (!anonymousUserId) {
-            anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('anonymousUserId', anonymousUserId);
-        }
-        window.anonymousUserId = anonymousUserId;
-
         // Story-specific configuration
         const contentMap = {
             ar: {
@@ -522,11 +513,12 @@ Because your souls will always be connected…
 
         // Pass the contentMap to the initialization function.
         // FIX: Pass the firebaseServices object to the story script so it can perform database operations.
-        initializeStoryContent(contentMap);
+        const anonymousUserId = await initializeStoryContent(contentMap);
         
         // --- NEW: Visitor Count Implementation (From Scratch) ---
         (async () => {
-            const userId = window.anonymousUserId;
+            // FIX: Use the user ID returned from the initialization function.
+            const userId = anonymousUserId;
             if (!userId) {
                 console.error("Visitor count failed: Anonymous User ID is not available.");
                 return;
@@ -534,7 +526,7 @@ Because your souls will always be connected…
 
             const storyId = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
 
-            const storyVisitorsRef = ref(database, `presence/${storyId}`);
+            const storyVis3itorsRef = ref(database, `presence/${storyId}`);
             const userStatusRef = ref(database, `presence/${storyId}/${userId}`);
             const visitorCountElement = document.getElementById('visitor-count');
 
