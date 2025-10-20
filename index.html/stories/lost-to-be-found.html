@@ -606,18 +606,20 @@ où je libérerai d'autres douleurs de leur cage.
         (async () => {
             // Wait for the anonymous user ID to be available from the main script
             while (!window.anonymousUserId) { await new Promise(resolve => setTimeout(resolve, 100)); }
-            const userId = window.anonymousUserId;
+            const userId = window.anonymousUserId; // This is the unique ID for the current user.
             const storyId = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
-            // FIX: Import the 'set' function from Firebase, as it's the correct method for this operation.
-            const { set } = await import("https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js");
 
             const storyVisitorsRef = ref(database, `presence/${storyId}`);
             const userStatusRef = ref(database, `presence/${storyId}/${userId}`);
 
-            // Set user's presence
-            // FIX: Use `set` instead of `runTransaction`. `set` is the correct operation for adding a user's
-            // presence to the list, which was the core of the problem.
-            await set(userStatusRef, serverTimestamp());
+            // FIX: Use a transaction on the parent story node. This is the correct, robust pattern
+            // that mirrors the working 'like' count system. It safely creates the story node
+            // if it doesn't exist and then adds the user.
+            await runTransaction(storyVisitorsRef, (currentData) => {
+                if (!currentData) { currentData = {}; } // Initialize if the story node is new
+                currentData[userId] = serverTimestamp(); // Add or update the user's presence
+                return currentData;
+            });
 
             // Remove user's presence on disconnect
             onDisconnect(userStatusRef).remove();
