@@ -732,9 +732,7 @@ document.addEventListener('DOMContentLoaded', () => {
  * @param {object} storyContentMap The story-specific configuration object.
  */
 export async function initializeStoryContent(storyContentMap) {
-    // FIX: Load bookmarks from localStorage here, before any other content is initialized.
     contentMap = storyContentMap; // Store the map at the module level for other functions to use.
-    // This ensures the `allSavedProgress` object is ready for functions like `updateBookmarkIconState`.
     const savedProgressJson = localStorage.getItem('allSavedProgress');
     try {
         allSavedProgress = savedProgressJson ? JSON.parse(savedProgressJson) : {};
@@ -742,22 +740,6 @@ export async function initializeStoryContent(storyContentMap) {
         console.error("Failed to parse saved progress from localStorage:", e);
         allSavedProgress = {};
     }
-
-    const manualLevel = sessionStorage.getItem('manualPerformanceLevel');
-    if (manualLevel) {
-        performanceLevel = parseInt(manualLevel, 10);
-        console.log(`Using manually set Performance Level from main page: ${performanceLevel}`);
-    } else {
-        // Awaiting the benchmark here ensures it completes before content rendering starts.
-        performanceLevel = await determinePerformanceLevel();
-    }
-    console.log(`Story Page Performance Level: ${performanceLevel}`);
-    document.body.classList.add(`perf-level-${performanceLevel}`);
-
-    // Initialize dark mode listener
-    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    handleDarkModeChange(darkModeMediaQuery);
-    darkModeMediaQuery.addListener(handleDarkModeChange);
 
 
     const preferredLanguage = localStorage.getItem('preferredLanguage');
@@ -784,7 +766,7 @@ export async function initializeStoryContent(storyContentMap) {
         if (['ar-button', 'fr-button', 'en-button'].includes(button.id)) { // Language buttons
             const lang = button.id.split('-')[0];
             if (storyContentMap[lang]) {
-                button.addEventListener('click', () => changeLanguage(lang, false, false, storyContentMap));
+                button.addEventListener('click', () => changeLanguage(lang, false, false, contentMap));
             }
         } else if (button.id === 'save-progress-button') {
             button.addEventListener('click', () => scrollToSavedWord());
@@ -800,3 +782,29 @@ export async function initializeStoryContent(storyContentMap) {
         exitBookmarkBtn.addEventListener('pointerup', (e) => { e.preventDefault(); closePopup(); });
     }
 }
+
+// --- SCRIPT INITIALIZATION ---
+// FIX: This self-invoking async function runs immediately when the script is imported.
+// It sets up the user ID and performance level before the main content initialization,
+// resolving the race condition with the visitor count script.
+(async () => {
+    // 1. Set up Anonymous User ID
+    anonymousUserId = localStorage.getItem('anonymousUserId');
+    if (!anonymousUserId) {
+        anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('anonymousUserId', anonymousUserId);
+    }
+    // Make the ID globally available for the visitor count script.
+    window.anonymousUserId = anonymousUserId;
+    console.log("Anonymous User ID Set:", window.anonymousUserId);
+
+    // 2. Determine and Apply Performance Level
+    const manualLevel = sessionStorage.getItem('manualPerformanceLevel');
+    if (manualLevel) {
+        performanceLevel = parseInt(manualLevel, 10);
+    } else {
+        performanceLevel = await determinePerformanceLevel();
+    }
+    document.body.classList.add(`perf-level-${performanceLevel}`);
+    console.log(`Story Page Performance Level: ${performanceLevel}`);
+})();
