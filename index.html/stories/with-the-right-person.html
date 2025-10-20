@@ -517,24 +517,32 @@ Because your souls will always be connected…
         
         // --- NEW: Visitor Count Implementation (From Scratch) ---
         (async () => {
+            const visitorCountElement = document.getElementById('visitor-count');
             const storyId = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
             const storyVisitorsRef = ref(database, `presence/${storyId}`);
-            const visitorCountElement = document.getElementById('visitor-count');
-
-            // 1. Create a new, unique reference for this specific connection using push().
-            const myConnectionRef = push(storyVisitorsRef);
-
-            // 2. When the client disconnects, remove their entry from the list.
-            onDisconnect(myConnectionRef).remove();
-
-            // 3. Set the value of the unique reference to the server's timestamp.
-            // This marks the user as "online".
-            await set(myConnectionRef, serverTimestamp());
-
-            // 4. Listen for changes to the list of visitors and update the UI count.
+            
+            // Listen for changes and update the UI with the correct visitor count.
             onValue(storyVisitorsRef, (snapshot) => {
-                if (visitorCountElement) {
-                    visitorCountElement.textContent = snapshot.exists() ? snapshot.numChildren() : 0;
+                if (!visitorCountElement) return;
+                const data = snapshot.val();
+                const count = data ? Object.keys(data).length : 0;
+                visitorCountElement.textContent = count;
+            });
+
+            // Use the .info/connected path to manage online status.
+            // This is the official Firebase pattern for robust presence.
+            const connectedRef = ref(database, '.info/connected');
+            onValue(connectedRef, (snap) => {
+                if (snap.val() === true) {
+                    // We're connected (or reconnected).
+                    // 1. Create a new, unique reference for this specific connection.
+                    const myConnectionRef = push(storyVisitorsRef);
+
+                    // 2. When the client disconnects, remove their entry.
+                    onDisconnect(myConnectionRef).remove();
+
+                    // 3. Set the value to mark the user as "online".
+                    set(myConnectionRef, serverTimestamp());
                 }
             });
         })();
