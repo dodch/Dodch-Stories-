@@ -1514,8 +1514,19 @@ body.info-panel-open #seriesModal .glass-content {
   cursor: pointer;
 }
 
+/* NEW: When logged in, hide the glass effect by default */
+.auth-container.logged-in {
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 0; /* Remove padding to only show the picture */
+  margin-left: 1.5rem; /* Adjust margin to compensate for padding removal */
+}
+
 /* NEW: Add hover effect for the auth container */
-body:not(.is-scrolling) .auth-container:hover, .auth-container:focus-visible {
+body:not(.is-scrolling) .auth-container:hover, .auth-container:focus-visible,
+.auth-container.logged-in:hover { /* NEW: Re-apply glass effect on hover when logged in */
   transform: scale(1.05);
   box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 40%, transparent), var(--button-shadow);
 }
@@ -1546,6 +1557,13 @@ body:not(.is-scrolling) .auth-container:hover, .auth-container:focus-visible {
   border: 2px solid rgba(255, 255, 255, 0.5);
 }
 
+.auth-container.logged-in .profile-pic {
+  width: 45px; /* Make the picture slightly larger when it's the only element */
+  height: 45px;
+  border: none; /* Remove the border in the default state */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.4); /* Add a subtle shadow for depth */
+}
+
 .logout-button {
   background: none;
   border: none;
@@ -1555,8 +1573,17 @@ body:not(.is-scrolling) .auth-container:hover, .auth-container:focus-visible {
   padding: 5px 10px;
   font-size: 0.8rem;
   opacity: 0.7;
+  /* NEW: Hide logout button by default */
+  display: none;
 }
 
+/* NEW: Re-apply glass styles on hover for logged-in state */
+.auth-container.logged-in:hover {
+    background: var(--glass-bg);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    padding: 5px;
+}
 
 /* --- Series Stack Styles --- */
 .series-stack {

@@ -839,6 +839,8 @@ export function initializeAuth(firebaseServices) {
         if (user) {
             // User is signed in
             currentUserId = user.uid; // Ensure currentUserId is updated
+            // NEW: Add a class to the container when the user is logged in
+            authContainer.classList.add('logged-in');
             console.log("Story page user changed to (Authenticated):", currentUserId);
             loginButton.innerHTML = `
                 <img src="${user.photoURL}" alt="Profile" class="profile-pic">
@@ -850,6 +852,8 @@ export function initializeAuth(firebaseServices) {
             });
         } else {
             // User is signed out - revert to or create an anonymous ID
+            // NEW: Remove the class when the user is logged out
+            authContainer.classList.remove('logged-in');
             let anonId = localStorage.getItem('anonymousUserId');
             if (!anonId) {
                 anonId = 'anon-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);

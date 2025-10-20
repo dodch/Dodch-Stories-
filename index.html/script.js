@@ -1231,6 +1231,8 @@ async function initializeUser() {
         if (user) {
             // User is signed in
             currentUserId = user.uid;
+            // NEW: Add a class to the container when the user is logged in
+            authContainer.classList.add('logged-in');
             console.log("User signed in:", currentUserId);
             loginButton.innerHTML = `
                 <img src="${user.photoURL}" alt="Profile" class="profile-pic">
@@ -1243,6 +1245,8 @@ async function initializeUser() {
         } else {
             // User is signed out
             currentUserId = localStorage.getItem('anonymousUserId');
+            // NEW: Remove the class when the user is logged out
+            authContainer.classList.remove('logged-in');
             if (!currentUserId) {
                 currentUserId = 'anon-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
                 localStorage.setItem('anonymousUserId', currentUserId);
