@@ -752,12 +752,10 @@ export async function initializeStoryContent(storyContentMap, firebaseServices) 
     const { db, ref, onValue } = firebaseServices;    // FIX: The listener must watch the exact same path that is being written to, including the language.
     const userProgressRef = ref(db, `users/${currentUserId}/progress/${storyKey}/${currentLanguage}`);
     onValue(userProgressRef, (snapshot) => {
-        const progressData = snapshot.val() || {};
-        allSavedProgress = progressData;
-        // FIX: Update the specific progress object for the current language.
-        currentStoryProgress = allSavedProgress[currentLanguage] || {};
-        console.log(`Loaded progress for story '${storyKey}':`, allSavedProgress);
-        console.log(`Current progress for lang '${currentLanguage}':`, currentStoryProgress);
+        // FIX: The snapshot now directly contains the progress for the current language.
+        // This was the root cause of the bug.
+        currentStoryProgress = snapshot.val() || {};
+        console.log(`Updated progress for lang '${currentLanguage}':`, currentStoryProgress);
         updateBookmarkIconState();
         highlightWord();
     });
