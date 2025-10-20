@@ -598,15 +598,15 @@ Because your souls will always be connected…
             const connectedRef = ref(database, '.info/connected');
             onValue(connectedRef, (snap) => {
                 if (snap.val() === true) {
-                    // We're connected (or reconnected).
-                    // 1. Create a new, unique reference for this specific connection.
-                    const myConnectionRef = push(storyVisitorsRef);
+                    // We're connected. This user's ID is `userId`.
+                    // Use the user's unique ID as the key to prevent duplicates.
+                    const myPresenceRef = ref(database, `presence/${storyId}/${userId}`);
 
                     // 2. When the client disconnects, remove their entry.
-                    onDisconnect(myConnectionRef).remove();
+                    onDisconnect(myPresenceRef).remove();
 
                     // 3. Set the value to mark the user as "online".
-                    set(myConnectionRef, serverTimestamp());
+                    set(myPresenceRef, serverTimestamp());
                 }
             });
         })();

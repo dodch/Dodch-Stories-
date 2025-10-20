@@ -997,20 +997,21 @@ THE END.
             // This is the official Firebase pattern for robust presence.
             const connectedRef = ref(database, '.info/connected');
             onValue(connectedRef, (snap) => {                if (snap.val() === true) {
-                    // We're connected. This user's ID is `userId`.
-                    const myPresenceRef = ref(database, `presence/${storyId}/${userId}`);
+                    // We're connected (or reconnected).
+                    // 1. Create a new, unique reference for this specific connection.
+                    const myConnectionRef = push(storyVisitorsRef);
 
-                    // When the client disconnects, remove their connection entry.
-                    onDisconnect(myPresenceRef).remove();
+                    // 2. When the client disconnects, remove their entry.
+                    onDisconnect(myConnectionRef).remove();
 
-                    // Set the value to mark this connection as "online".
-                    set(myPresenceRef, serverTimestamp());
+                    // 3. Set the value to mark the user as "online".
+                    set(myConnectionRef, serverTimestamp());
 
-                    // Proactively remove the user on page unload for a more responsive count.
-                    // This makes the count decrease immediately when a user leaves.
+                    // 4. Proactively remove the user on page unload for a more responsive count.
                     window.addEventListener('beforeunload', () => {
                         if (myConnectionRef) {
-                            set(myConnectionRef, null);
+                            // Use remove() for a clean exit.
+                            remove(myConnectionRef);
                         }
                     });
                 }

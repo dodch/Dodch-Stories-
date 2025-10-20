@@ -998,20 +998,18 @@ THE END.
             const connectedRef = ref(database, '.info/connected');
             onValue(connectedRef, (snap) => {                if (snap.val() === true) {
                     // We're connected. This user's ID is `userId`.
+                    // Use the user's unique ID as the key to prevent duplicates.
                     const myPresenceRef = ref(database, `presence/${storyId}/${userId}`);
 
-                    // When the client disconnects, remove their connection entry.
+                    // 2. When the client disconnects, remove their entry.
                     onDisconnect(myPresenceRef).remove();
 
-                    // Set the value to mark this connection as "online".
+                    // 3. Set the value to mark the user as "online".
                     set(myPresenceRef, serverTimestamp());
 
-                    // Proactively remove the user on page unload for a more responsive count.
-                    // This makes the count decrease immediately when a user leaves.
+                    // 4. Proactively remove the user on page unload for a more responsive count.
                     window.addEventListener('beforeunload', () => {
-                        if (myConnectionRef) {
-                            set(myConnectionRef, null);
-                        }
+                        // No need for a separate remove() here, onDisconnect is sufficient and more reliable.
                     });
                 }
             });
