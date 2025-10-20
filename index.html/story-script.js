@@ -749,8 +749,8 @@ export async function initializeStoryContent(storyContentMap, firebaseServices) 
 
     // Once we have a user ID, listen for their saved progress in Firebase.
     // FIX: Listen to the specific path for the current story to avoid data conflicts.
-    const { db, ref, onValue } = firebaseServices;
-    const userProgressRef = ref(db, `users/${currentUserId}/progress/${storyKey}`);
+    const { db, ref, onValue } = firebaseServices;    // FIX: The listener must watch the exact same path that is being written to, including the language.
+    const userProgressRef = ref(db, `users/${currentUserId}/progress/${storyKey}/${currentLanguage}`);
     onValue(userProgressRef, (snapshot) => {
         const progressData = snapshot.val() || {};
         allSavedProgress = progressData;
