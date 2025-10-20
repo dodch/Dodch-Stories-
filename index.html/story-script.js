@@ -749,12 +749,12 @@ export async function initializeStoryContent(storyContentMap) {
     // but BEFORE the heavy content processing begins. This gives a more accurate benchmark.
     anonymousUserId = localStorage.getItem('anonymousUserId');
     if (!anonymousUserId) {
-        // FIX: Make the anonymousUserId globally available so the visitor count script can access it.
-        // This ensures the visitor count logic can run immediately without waiting for other scripts.
-        window.anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
         anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
         localStorage.setItem('anonymousUserId', anonymousUserId);
     }
+    // FIX: Make the anonymousUserId globally available so the visitor count script can access it.
+    // This must be outside the `if` block to ensure it's set for both new and returning users.
+    window.anonymousUserId = anonymousUserId;
     console.log("Anonymous User ID:", anonymousUserId);
 
     const manualLevel = sessionStorage.getItem('manualPerformanceLevel');
