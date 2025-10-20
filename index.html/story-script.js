@@ -737,24 +737,11 @@ export async function initializeStoryContent(storyContentMap) {
     // This ensures the `allSavedProgress` object is ready for functions like `updateBookmarkIconState`.
     const savedProgressJson = localStorage.getItem('allSavedProgress');
     try {
-        allSavedProgress = JSON.parse(savedProgressJson) || {};
+        allSavedProgress = savedProgressJson ? JSON.parse(savedProgressJson) : {};
     } catch (e) {
         console.error("Failed to parse saved progress from localStorage:", e);
         allSavedProgress = {};
-        localStorage.removeItem('allSavedProgress');
     }
-    console.log("Loaded bookmarks from localStorage:", allSavedProgress);
-
-    // FIX: Move performance check and user initialization here to run AFTER the page has loaded,
-    // but BEFORE the heavy content processing begins. This gives a more accurate benchmark.
-    anonymousUserId = localStorage.getItem('anonymousUserId');
-    if (!anonymousUserId) {
-        anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('anonymousUserId', anonymousUserId);
-    }
-    // FIX: The anonymousUserId must always be exposed on the window object so the
-    // separate visitor count script in the HTML can access it.
-    window.anonymousUserId = anonymousUserId;
 
     const manualLevel = sessionStorage.getItem('manualPerformanceLevel');
     if (manualLevel) {
