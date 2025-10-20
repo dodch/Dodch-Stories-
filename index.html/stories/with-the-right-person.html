@@ -133,6 +133,12 @@
             <button id="back-home-button" class="w-10 h-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base back-home-button-custom inline-flex items-center justify-center shine-button" aria-label="Back to Home">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
             </button>
+            <!-- NEW: Login Button for Story Page -->
+            <div id="auth-container" class="auth-container glass-button-base">
+                <button id="loginButton" class="login-button">
+                    <span class="login-text">Login</span>
+                </button>
+            </div>
         </div>
     </div>
     <!-- NEW: Live Visitor Count (moved to the right) -->
@@ -443,10 +449,11 @@ Because your souls will always be connected…
     <script type="module">
         // --- Firebase Initialization ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { getDatabase, ref, onValue, onDisconnect, serverTimestamp, push, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
         // --- Story Script ---
         // This imports the main story logic. The functions will be available in this module's scope.
-        import { initializeStoryContent } from '../story-script.js';
+        import { initializeStoryContent, initializeAuth } from '../story-script.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyBIlDy8iaEpCHVc6kPij_zh2zHJYQqiShk",
@@ -461,9 +468,17 @@ Because your souls will always be connected…
 
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
+        const auth = getAuth(app);
 
         // Make Firebase services globally available for the imported script.
-        const firebaseServices = { db: database, ref, onValue, onDisconnect, serverTimestamp, push, set };
+        const firebaseServices = { 
+            db: database, 
+            auth: auth, 
+            onAuthStateChanged: onAuthStateChanged, 
+            ref, onValue, onDisconnect, serverTimestamp, push, set,
+            // NEW: Pass all required auth functions
+            GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence
+        };
 
         // Story-specific configuration
         const contentMap = {
@@ -513,7 +528,9 @@ Because your souls will always be connected…
 
         // Pass the contentMap to the initialization function.
         // FIX: Pass the firebaseServices object to the story script so it can perform database operations.
-        const anonymousUserId = await initializeStoryContent(contentMap, firebaseServices);
+        initializeStoryContent(contentMap, firebaseServices);
+        // NEW: Initialize the auth button functionality.
+        initializeAuth(firebaseServices);
         
         // --- NEW: Visitor Count Implementation (From Scratch) ---
         (async () => {

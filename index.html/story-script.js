@@ -20,13 +20,14 @@ const storyKey = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace
 let currentLanguage = 'en';
 let currentUserId = null; // NEW: To store the user's unique ID (anonymous or authenticated)
 let allSavedProgress = {};
+let currentStoryProgress = {}; // FIX: To store progress for the current story and language.
+let firebaseServices = null; // To store Firebase services
 let tempSavedWordId = '';
 let tempSavedWordText = '';
 let highlightedWordElement = null;
 let isDarkMode = false;
 let contentMap = {}; // Will be populated by the initialization function
 let storyObserver; // For paragraph animations
-let firebaseServices = null; // To store Firebase services
 let performanceLevel = 3; // Default to highest
 
 // --- NEW: Unified Performance System (mirrors main script) ---
@@ -125,16 +126,11 @@ const saveButton = document.getElementById('save-progress-button');
 const popupDivInner = document.getElementById('popup').querySelector('div');
 
 function clearSavedProgress() {
-    // NEW: Remove the bookmark from Firebase
+    // FIX: Remove the bookmark from Firebase for the specific story and language.
     if (currentUserId && firebaseServices) {
         const { db, ref, set } = firebaseServices;
         const progressRef = ref(db, `users/${currentUserId}/progress/${storyKey}/${currentLanguage}`);
         set(progressRef, null); // This deletes the data in Firebase
-    } else {
-        // Fallback to localStorage if something is wrong
-        if (allSavedProgress[storyKey]) delete allSavedProgress[storyKey][currentLanguage];
-        localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
-        updateBookmarkIconState(); // Update the icon to show no bookmark is saved.
     }
 }
 
@@ -145,8 +141,8 @@ function clearSavedProgress() {
 function updateBookmarkIconState() {
     const saveButtonIcon = document.querySelector('#save-progress-button svg');
     if (!saveButtonIcon) return;
-    const savedProgressForCurrentLang = allSavedProgress?.[storyKey]?.[currentLanguage];
-    if (savedProgressForCurrentLang && savedProgressForCurrentLang.id) {
+    // FIX: Check the more specific `currentStoryProgress` object.
+    if (currentStoryProgress && currentStoryProgress.id) {
         saveButtonIcon.classList.add('active');
     } else {
         saveButtonIcon.classList.remove('active');
@@ -312,8 +308,8 @@ function changeLanguage(lang, fromLoad = false, isThemeChange = false, storyCont
         document.getElementById('popup').querySelector('.bg-red-500').textContent = content.exit;
         updateBookmarkIconState();
         highlightWord();
-        const savedProgressForCurrentLang = allSavedProgress[storyKey] ? allSavedProgress[storyKey][currentLanguage] : null;
-        if (fromLoad && savedProgressForCurrentLang && savedProgressForCurrentLang.id) {
+        // FIX: Check `currentStoryProgress` for the initial scroll.
+        if (fromLoad && currentStoryProgress && currentStoryProgress.id) {
               setTimeout(() => {
                   scrollToSavedWord(false, false);
               }, 100);
@@ -362,6 +358,14 @@ function handleWordClick(spanId, wordText) {
     // FIX: If the popup was just closed by a touch event, don't reopen it immediately.
     // This is the core fix for the "double popup" and "auto-save" bug on mobile.
     if (blockPopupTrigger) {
+        return;
+    }
+
+    // FIX: Require user to be logged in to use the bookmark feature.
+    // We check if the currentUserId is an anonymous one.
+    if (currentUserId && currentUserId.startsWith('anon-')) {
+        alert("Please log in to save your progress.");
+        // This is a placeholder to suggest logging in. A real implementation might trigger a login modal.
         return;
     }
 
@@ -421,11 +425,6 @@ function savePosition() {
                 console.error("Firebase save error:", error);
                 alert("Could not save progress. Please try again.");
             });
-        } else {
-            // Fallback to localStorage if user ID or Firebase isn't available
-            if (!allSavedProgress[storyKey]) allSavedProgress[storyKey] = {};
-            allSavedProgress[storyKey][currentLanguage] = { id: tempSavedWordId, text: tempSavedWordText };
-            localStorage.setItem('allSavedProgress', JSON.stringify(allSavedProgress));
         }
     }
     closePopup();
@@ -433,15 +432,15 @@ function savePosition() {
 
 
 function scrollToSavedWord(performChecks = true, smooth = true) {
-    const savedProgressForCurrentLang = allSavedProgress?.[storyKey]?.[currentLanguage];
-    if (!savedProgressForCurrentLang || !savedProgressForCurrentLang.id) {
+    // FIX: Use the specific `currentStoryProgress` object.
+    if (!currentStoryProgress || !currentStoryProgress.id) {
         if (performChecks) { // Only alert if the user clicked the button
             alert(contentMap[currentLanguage].noWordSaved); // Use module-level contentMap
         }
         return;
     }
-    const savedWordId = savedProgressForCurrentLang.id;
-    const savedWordText = savedProgressForCurrentLang.text;
+    const savedWordId = currentStoryProgress.id;
+    const savedWordText = currentStoryProgress.text;
     const targetElement = document.getElementById(savedWordId);
     if (targetElement) {
          highlightWord();
@@ -474,11 +473,11 @@ function highlightWord() {
        highlightedWordElement.style.color = '';
        highlightedWordElement = null;
    }
-   const savedProgressForCurrentLang = allSavedProgress?.[storyKey]?.[currentLanguage];
-   if (!savedProgressForCurrentLang || !savedProgressForCurrentLang.id) {
+   // FIX: Use the specific `currentStoryProgress` object.
+   if (!currentStoryProgress || !currentStoryProgress.id) {
        return;
    }
-   const savedWordId = savedProgressForCurrentLang.id;
+   const savedWordId = currentStoryProgress.id;
    const targetElement = document.getElementById(savedWordId);
    if (targetElement) {
        highlightedWordElement = targetElement;
@@ -722,40 +721,45 @@ document.addEventListener('DOMContentLoaded', () => {
  * @param {object} firebaseServices The imported Firebase functions (db, ref, etc.).
  */
 export async function initializeStoryContent(storyContentMap, firebaseServices) {    
-    // Store services for other functions to use
-    window.firebaseServices = firebaseServices;
-
     contentMap = storyContentMap; // Store the map at the module level for other functions to use.
 
-    // NEW: Set up auth state listener to get user ID and load their progress
-    const { auth, onAuthStateChanged, db, ref, onValue } = firebaseServices;
-    onAuthStateChanged(auth, user => {
-        if (user) {
-            currentUserId = user.uid;
-            console.log("Story page user (Authenticated):", currentUserId);
-        } else {
-            currentUserId = localStorage.getItem('anonymousUserId');
-            if (!currentUserId) {
-                currentUserId = 'anon-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('anonymousUserId', currentUserId);
+    // FIX: Wrap the authentication check in a Promise to resolve the race condition.
+    // This guarantees that we have the correct user ID before proceeding.
+    const getUserId = () => new Promise(resolve => {
+        // FIX: Destructure auth and onAuthStateChanged from the passed firebaseServices object.
+        const { auth, onAuthStateChanged } = firebaseServices; 
+        const unsubscribe = onAuthStateChanged(auth, user => {
+            unsubscribe(); // We only need the initial state, so we unsubscribe immediately.
+            if (user) {
+                console.log("Story page user (Authenticated):", user.uid);
+                resolve(user.uid);
+            } else {
+                let anonId = localStorage.getItem('anonymousUserId');
+                if (!anonId) {
+                    anonId = 'anon-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem('anonymousUserId', anonId);
+                }
+                console.log("Story page user (Anonymous):", anonId);
+                resolve(anonId);
             }
-            console.log("Story page user (Anonymous):", currentUserId);
-        }
-
-        // Once we have a user ID, listen for their saved progress in Firebase
-        const userProgressRef = ref(db, `users/${currentUserId}/progress`);
-        onValue(userProgressRef, (snapshot) => {
-            const progressData = snapshot.val() || {};
-            allSavedProgress = progressData;
-            console.log("Loaded progress from Firebase:", allSavedProgress);
-            
-            // Update UI elements that depend on saved progress
-            updateBookmarkIconState();
-            highlightWord();
         });
+    });
 
-        // Return the user ID for the visitor count script
-        return currentUserId;
+    currentUserId = await getUserId();
+
+    // Once we have a user ID, listen for their saved progress in Firebase.
+    // FIX: Listen to the specific path for the current story to avoid data conflicts.
+    const { db, ref, onValue } = firebaseServices;
+    const userProgressRef = ref(db, `users/${currentUserId}/progress/${storyKey}`);
+    onValue(userProgressRef, (snapshot) => {
+        const progressData = snapshot.val() || {};
+        allSavedProgress = progressData;
+        // FIX: Update the specific progress object for the current language.
+        currentStoryProgress = allSavedProgress[currentLanguage] || {};
+        console.log(`Loaded progress for story '${storyKey}':`, allSavedProgress);
+        console.log(`Current progress for lang '${currentLanguage}':`, currentStoryProgress);
+        updateBookmarkIconState();
+        highlightWord();
     });
 
     const manualLevel = sessionStorage.getItem('manualPerformanceLevel');
@@ -815,6 +819,62 @@ export async function initializeStoryContent(storyContentMap, firebaseServices) 
         exitBookmarkBtn.addEventListener('pointerup', (e) => { e.preventDefault(); closePopup(); });
     }
 
-    // FIX: Return the generated user ID so the calling script can use it for the visitor count.
+    // Return the confirmed user ID for other scripts (like visitor count) to use.
     return currentUserId;
+}
+
+/**
+ * NEW: Initializes the authentication button on the story page.
+ * This function mirrors the login/logout logic from the main `script.js`.
+ * @param {object} firebaseServices The imported Firebase functions.
+ */
+export function initializeAuth(firebaseServices) {
+    const { auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, setPersistence, browserSessionPersistence } = firebaseServices;
+    const authContainer = document.getElementById('auth-container');
+    const loginButton = document.getElementById('loginButton');
+
+    if (!authContainer || !loginButton) return;
+
+    onAuthStateChanged(auth, user => {
+        if (user) {
+            // User is signed in
+            currentUserId = user.uid; // Ensure currentUserId is updated
+            console.log("Story page user changed to (Authenticated):", currentUserId);
+            loginButton.innerHTML = `
+                <img src="${user.photoURL}" alt="Profile" class="profile-pic">
+                <button class="logout-button">Logout</button>
+            `;
+            authContainer.querySelector('.logout-button').addEventListener('click', (e) => {
+                e.stopPropagation();
+                signOut(auth);
+            });
+        } else {
+            // User is signed out - revert to or create an anonymous ID
+            let anonId = localStorage.getItem('anonymousUserId');
+            if (!anonId) {
+                anonId = 'anon-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('anonymousUserId', anonId);
+            }
+            currentUserId = anonId;
+            console.log("Story page user changed to (Anonymous):", currentUserId);
+            loginButton.innerHTML = `<span class="login-text">Login</span>`;
+        }
+    });
+
+    authContainer.addEventListener('click', () => {
+        if (!auth.currentUser) {
+            setPersistence(auth, browserSessionPersistence)
+              .then(() => {
+                  const provider = new GoogleAuthProvider();
+                  return signInWithPopup(auth, provider);
+              })
+              .catch((error) => {
+                  console.error("Google Sign-In Error:", error);
+                  const errorMessage = error.code === 'auth/popup-closed-by-user' ? 'Login cancelled.' : `Login failed: ${error.message}`;
+                  alert(errorMessage);
+              });
+        }
+    });
+
+    addTapAnimation(authContainer);
 }
