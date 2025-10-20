@@ -697,17 +697,7 @@ window.addEventListener('load', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
     // FIX: Use a self-invoking async function to correctly handle 'await' for performance checks.
-    (async () => { // FIX: Remove the redundant and conflicting anonymousUserId generation.
-        // --- NEW: Run performance check first ---
-        // FIX: Check for a manually set performance level from the main page.
-        // REFACTOR: Read from sessionStorage to maintain consistency across the session.
-        const manualLevel = sessionStorage.getItem('manualPerformanceLevel');
-        if (manualLevel) { // If a manual level is found...
-            performanceLevel = parseInt(manualLevel, 10);
-            console.log(`Using manually set Performance Level from main page: ${performanceLevel}`);
-        } else {
-            performanceLevel = await determinePerformanceLevel();
-        }
+    (async () => { // FIX: Remove the redundant and conflicting anonymousUserId generation. This was the root cause of the visitor count failure.
         console.log(`Story Page Performance Level: ${performanceLevel}`);
         document.body.classList.add(`perf-level-${performanceLevel}`);
 
