@@ -697,15 +697,7 @@ window.addEventListener('load', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
     // FIX: Use a self-invoking async function to correctly handle 'await' for performance checks.
-    (async () => {
-        // Revert to simple localStorage-based anonymous user ID
-        anonymousUserId = localStorage.getItem('anonymousUserId');
-        if (!anonymousUserId) {
-            anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('anonymousUserId', anonymousUserId);
-        }
-        console.log("Anonymous User ID:", anonymousUserId);
-
+    (async () => { // FIX: Remove the redundant and conflicting anonymousUserId generation.
         // --- NEW: Run performance check first ---
         // FIX: Check for a manually set performance level from the main page.
         // REFACTOR: Read from sessionStorage to maintain consistency across the session.
