@@ -511,6 +511,44 @@ function handleDarkModeChange(mediaQuery) {
     highlightWord(); // On theme change, only re-highlight the word. The CSS variables handle all color changes automatically.
 }
 
+/**
+ * NEW: Initializes the real-time visitor count for the current story.
+ * This function is now self-contained within the story-script module.
+ * @param {object} firebaseServices - The collection of Firebase functions.
+ */
+async function initializeVisitorCount(firebaseServices) {
+    const { db, ref, onValue, runTransaction, onDisconnect, serverTimestamp } = firebaseServices;
+
+    // The anonymousUserId is already set on the window object by the HTML script.
+    const userId = window.anonymousUserId;
+    if (!userId) {
+        console.error("Visitor count: anonymousUserId not found.");
+        return;
+    }
+
+    const storyId = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
+    const storyVisitorsRef = ref(db, `presence/${storyId}`);
+    const userStatusRef = ref(db, `presence/${storyId}/${userId}`);
+
+    // Use a transaction to safely add the user to the presence list.
+    await runTransaction(storyVisitorsRef, (currentData) => {
+        if (!currentData) { currentData = {}; }
+        currentData[userId] = serverTimestamp();
+        return currentData;
+    });
+
+    // Set up the disconnect handler to remove the user when they leave.
+    onDisconnect(userStatusRef).remove();
+
+    // Listen for changes and update the UI.
+    onValue(storyVisitorsRef, (snapshot) => {
+        const visitorCountElement = document.getElementById('visitor-count');
+        if (visitorCountElement) {
+            visitorCountElement.textContent = snapshot.exists() ? snapshot.numChildren() : 0;
+        }
+    });
+}
+
 function addTapAnimation(element) {
   // TOUCH OPTIMIZATION: Unified tap animation logic for consistency across all pages.
   element.addEventListener('pointerdown', () => {
@@ -769,6 +807,9 @@ export async function initializeStoryContent(storyContentMap, firebaseServices) 
     }
     // The 'true' flag indicates this is the initial load, preventing fade animations.
     changeLanguage(initialLangToLoad, true, false, storyContentMap);
+
+    // FIX: Initialize the visitor count from within this module, now that Firebase services are available.
+    initializeVisitorCount(firebaseServices);
 
     // FIX: Move all button initialization logic here to ensure it runs after the content is ready.
     // This resolves the race condition that caused buttons to be unresponsive.

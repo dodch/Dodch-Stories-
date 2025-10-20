@@ -612,37 +612,6 @@ où je libérerai d'autres douleurs de leur cage.
         // FIX: Pass the firebaseServices object to the story script so it can perform database operations.
         initializeStoryContent(contentMap, window.firebaseServices);
 
-        // --- NEW: Live Visitor Count Logic ---
-        (async () => {
-            // Wait for the anonymous user ID to be available from the main script
-            while (!window.anonymousUserId) { await new Promise(resolve => setTimeout(resolve, 100)); }
-            const userId = window.anonymousUserId; // This is the unique ID for the current user.
-            const storyId = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
-
-            const storyVisitorsRef = ref(database, `presence/${storyId}`);
-            const userStatusRef = ref(database, `presence/${storyId}/${userId}`);
-
-            // FIX: Use a transaction on the parent story node. This is the correct, robust pattern
-            // that mirrors the working 'like' count system. It safely creates the story node
-            // if it doesn't exist and then adds the user.
-            await runTransaction(storyVisitorsRef, (currentData) => {
-                if (!currentData) { currentData = {}; } // Initialize if the story node is new
-                currentData[userId] = serverTimestamp(); // Add or update the user's presence
-                return currentData;
-            });
-
-            // Remove user's presence on disconnect
-            onDisconnect(userStatusRef).remove();
-
-            // Listen for changes in visitor count
-            onValue(storyVisitorsRef, (snapshot) => {
-                const visitorCountElement = document.getElementById('visitor-count');
-                if (visitorCountElement) {
-                    const count = snapshot.exists() ? snapshot.numChildren() : 0;
-                    visitorCountElement.textContent = count;
-                }
-            });
-        })();
     </script>
 </body>
 </html>
