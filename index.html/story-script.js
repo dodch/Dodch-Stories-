@@ -19,8 +19,7 @@ const body = document.body;
 const storyKey = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
 let currentLanguage = 'en';
 let currentUserId = null; // NEW: To store the user's unique ID (anonymous or authenticated)
-let allSavedProgress = {};
-let firebaseProgressListener = null; // NEW: To hold the active Firebase listener
+let firebaseProgressListenerOff = null; // To hold the function that detaches the Firebase listener
 let currentStoryProgress = {}; // FIX: To store progress for the current story and language.
 let firebaseServices = null; // To store Firebase services
 let tempSavedWordId = '';
@@ -127,12 +126,17 @@ const saveButton = document.getElementById('save-progress-button');
 const popupDivInner = document.getElementById('popup').querySelector('div');
 
 function clearSavedProgress() {
-    // FIX: Remove the bookmark from Firebase for the specific story and language.
-    if (currentUserId && firebaseServices) {
-        const { db, ref, set } = firebaseServices;
-        const progressRef = ref(db, `users/${currentUserId}/progress/${storyKey}/${currentLanguage}`);
-        set(progressRef, null); // This deletes the data in Firebase
-    }
+    // REFACTOR: Write `null` to the Firebase path to delete the bookmark.
+    if (!currentUserId || !firebaseServices) return;
+
+    const { ref, set } = firebaseServices;
+    const bookmarkRef = ref(firebaseServices.db, `bookmarks/${currentUserId}/${storyKey}/${currentLanguage}`);
+    
+    set(bookmarkRef, null)
+        .then(() => {
+            console.log('Bookmark cleared from Firebase.');
+        })
+        .catch(error => console.error("Error clearing bookmark:", error));
 }
 
 /**
@@ -142,7 +146,7 @@ function clearSavedProgress() {
 function updateBookmarkIconState() {
     const saveButtonIcon = document.querySelector('#save-progress-button svg');
     if (!saveButtonIcon) return;
-    // FIX: Check the more specific `currentStoryProgress` object.
+    // Check the current story progress, which is now populated by Firebase.
     if (currentStoryProgress && currentStoryProgress.id) {
         saveButtonIcon.classList.add('active');
     } else {
@@ -157,29 +161,29 @@ function updateBookmarkIconState() {
  * definitive fix for the bookmarking issue.
  */
 function setupBookmarkListener() {
-    if (!currentUserId || !firebaseServices) return;
-
-    const { db, ref, onValue, off } = firebaseServices;
-
-    // 1. If an old listener exists, turn it off to prevent duplicates.
-    if (firebaseProgressListener) {
-        off(firebaseProgressListener.ref, 'value', firebaseProgressListener.callback);
+    // If a listener is already active, detach it before creating a new one.
+    if (firebaseProgressListenerOff) {
+        firebaseProgressListenerOff();
+        firebaseProgressListenerOff = null;
+    }
+    if (!currentUserId || !firebaseServices) {
+        console.log("Cannot set up bookmark listener: No user ID or Firebase services.");
+        return;
     }
 
-    // 2. Create a reference to the correct path for the current user, story, and language.
-    const userProgressRef = ref(db, `users/${currentUserId}/progress/${storyKey}/${currentLanguage}`);
-    
-    // 3. Define the callback function that updates the UI.
-    const onProgressUpdate = (snapshot) => {
-        currentStoryProgress = snapshot.val() || {};
-        console.log(`Bookmark listener updated for lang '${currentLanguage}':`, currentStoryProgress);
+    const { ref, onValue, off } = firebaseServices;
+    const bookmarkRef = ref(firebaseServices.db, `bookmarks/${currentUserId}/${storyKey}/${currentLanguage}`);
+
+    // Create a new listener for the current user/story/language path.
+    onValue(bookmarkRef, (snapshot) => {
+        const progress = snapshot.val();
+        currentStoryProgress = progress || {}; // If no data, use an empty object.
+        console.log(`Bookmark data for lang '${currentLanguage}' from Firebase:`, currentStoryProgress);
+        // Update the UI with the new data from Firebase.
         updateBookmarkIconState();
         highlightWord();
-    };
-
-    // 4. Attach the new listener and store it so it can be detached later.
-    onValue(userProgressRef, onProgressUpdate);
-    firebaseProgressListener = { ref: userProgressRef, callback: onProgressUpdate };
+    }, (error) => console.error("Bookmark listener error:", error));
+    firebaseProgressListenerOff = () => off(bookmarkRef);
 }
 
 function changeLanguage(lang, fromLoad = false, isThemeChange = false, storyContentMap) {
@@ -398,14 +402,6 @@ function handleWordClick(spanId, wordText) {
         return;
     }
 
-    // FIX: Require user to be logged in to use the bookmark feature.
-    // We check if the currentUserId is an anonymous one.
-    if (currentUserId && currentUserId.startsWith('anon-')) {
-        alert("Please log in to save your progress.");
-        // This is a placeholder to suggest logging in. A real implementation might trigger a login modal.
-        return;
-    }
-
     tempSavedWordId = spanId;
     tempSavedWordText = wordText;
     // FIX: Use the translated string from contentMap for the popup question.
@@ -452,17 +448,17 @@ function closePopup() {
 }
 
 function savePosition() {
-    if (tempSavedWordId) {
-        // NEW: Save the bookmark to Firebase
-        if (currentUserId && firebaseServices) {
-            const { db, ref, set } = firebaseServices;
-            const bookmarkData = { id: tempSavedWordId, text: tempSavedWordText };
-            const progressRef = ref(db, `users/${currentUserId}/progress/${storyKey}/${currentLanguage}`);
-            set(progressRef, bookmarkData).catch(error => {
-                console.error("Firebase save error:", error);
-                alert("Could not save progress. Please try again.");
-            });
-        }
+    // REFACTOR: Save the bookmark to Firebase.
+    if (tempSavedWordId && currentUserId && firebaseServices) {
+        const bookmarkData = { id: tempSavedWordId, text: tempSavedWordText };
+        const { ref, set } = firebaseServices;
+        const bookmarkRef = ref(firebaseServices.db, `bookmarks/${currentUserId}/${storyKey}/${currentLanguage}`);
+
+        set(bookmarkRef, bookmarkData)
+            .then(() => {
+                console.log('Bookmark saved to Firebase!');
+            })
+            .catch(error => console.error("Error saving bookmark:", error));
     }
     closePopup();
 }
@@ -757,46 +753,37 @@ document.addEventListener('DOMContentLoaded', () => {
  * @param {object} storyContentMap The story-specific configuration object.
  * @param {object} firebaseServices The imported Firebase functions (db, ref, etc.).
  */
-export async function initializeStoryContent(storyContentMap, firebaseServices) {    
-    contentMap = storyContentMap; // Store the map at the module level for other functions to use.
-    // FIX: The parameter `fbServices` was not being assigned to the module-level `firebaseServices` variable.
-    // This was the definitive root cause of all Firebase-related features (like bookmarks) failing.
-    // The `self.firebaseServices` assignment was incorrect and has been removed.
-    firebaseServices = fbServices;
+export async function initializeStoryContent(storyContentMap, fbServices) {    
+    contentMap = storyContentMap;
+    firebaseServices = fbServices; // Use the passed-in services
 
-    // FIX: Wrap the authentication check in a Promise to resolve the race condition.
-    // This guarantees that we have the correct user ID before proceeding.
     const getUserId = () => new Promise(resolve => {
-        // FIX: Destructure auth and onAuthStateChanged from the passed firebaseServices object.
-        const { auth, onAuthStateChanged } = firebaseServices; 
+        // FIX: Use signInAnonymously for users who are not logged in.
+        // This provides a real, temporary UID that works with Firebase security rules.
+        const { auth, onAuthStateChanged, signInAnonymously } = firebaseServices; 
         const unsubscribe = onAuthStateChanged(auth, user => {
-            unsubscribe(); // We only need the initial state, so we unsubscribe immediately.
+            unsubscribe();
             if (user) {
-                console.log("Story page user (Authenticated):", user.uid);
+                // User is signed in (either with Google or anonymously).
+                console.log("User is ready (authenticated or anonymous):", user.uid);
                 resolve(user.uid);
             } else {
-                let anonId = localStorage.getItem('anonymousUserId');
-                if (!anonId) {
-                    anonId = 'anon-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-                    localStorage.setItem('anonymousUserId', anonId);
-                }
-                console.log("Story page user (Anonymous):", anonId);
-                resolve(anonId);
+                // No user is signed in, so sign them in anonymously.
+                signInAnonymously(auth).then(userCredential => {
+                    console.log("New anonymous user signed in:", userCredential.user.uid);
+                    resolve(userCredential.user.uid);
+                }).catch(error => console.error("Anonymous sign-in failed:", error));
             }
         });
     });
 
     currentUserId = await getUserId();
 
-    // NEW: Set up the initial bookmark listener. It will be reset on language change.
-    setupBookmarkListener();
-
     const manualLevel = sessionStorage.getItem('manualPerformanceLevel');
     if (manualLevel) {
         performanceLevel = parseInt(manualLevel, 10);
         console.log(`Using manually set Performance Level from main page: ${performanceLevel}`);
     } else {
-        // Awaiting the benchmark here ensures it completes before content rendering starts.
         performanceLevel = await determinePerformanceLevel();
     }
     console.log(`Story Page Performance Level: ${performanceLevel}`);
@@ -807,32 +794,27 @@ export async function initializeStoryContent(storyContentMap, firebaseServices) 
     handleDarkModeChange(darkModeMediaQuery);
     darkModeMediaQuery.addListener(handleDarkModeChange);
 
-
+    // FIX: Set up the bookmark listener AFTER the user ID is confirmed and dark mode is set.
+    // This is the definitive fix for the race condition.
+    setupBookmarkListener();
     const preferredLanguage = localStorage.getItem('preferredLanguage');
     let initialLangToLoad = 'en';
     if (preferredLanguage && typeof storyContentMap !== 'undefined' && storyContentMap[preferredLanguage]) {
         initialLangToLoad = preferredLanguage;
     }
-    // The 'true' flag indicates this is the initial load, preventing fade animations.
     changeLanguage(initialLangToLoad, true, false, storyContentMap);
 
-    // FIX: Move all button initialization logic here to ensure it runs after the content is ready.
-    // This resolves the race condition that caused buttons to be unresponsive.
-
-    // Set initial direction.
     document.documentElement.setAttribute('dir', 'ltr');
 
-    // Initialize the shine effect for all buttons.
     initializeShineEffect();
 
-    // Apply tap animations and event listeners to all buttons.
     document.querySelectorAll('button').forEach(button => {
         addTapAnimation(button);
         // Add specific actions for each button
         if (['ar-button', 'fr-button', 'en-button'].includes(button.id)) { // Language buttons
             const lang = button.id.split('-')[0];
-            if (contentMap[lang]) {
-                button.addEventListener('click', () => changeLanguage(lang, false, false, contentMap));
+            if (storyContentMap[lang]) {
+                button.addEventListener('click', () => changeLanguage(lang, false, false, storyContentMap));
             }
         } else if (button.id === 'save-progress-button') {
             button.addEventListener('click', () => scrollToSavedWord());
@@ -840,15 +822,12 @@ export async function initializeStoryContent(storyContentMap, firebaseServices) 
             button.addEventListener('click', () => window.location.href = 'https://www.dodchstories.com');
         }
     });
-    // FIX: Add listeners to popup buttons by ID to ensure they work after language changes.
     const saveBookmarkBtn = document.getElementById('popup-save-button');
     const exitBookmarkBtn = document.getElementById('popup-exit-button');
     if (saveBookmarkBtn && exitBookmarkBtn) {
         saveBookmarkBtn.addEventListener('pointerup', (e) => { e.preventDefault(); savePosition(); });
         exitBookmarkBtn.addEventListener('pointerup', (e) => { e.preventDefault(); closePopup(); });
     }
-
-    // Return the confirmed user ID for other scripts (like visitor count) to use.
     return currentUserId;
 }
 
@@ -858,7 +837,7 @@ export async function initializeStoryContent(storyContentMap, firebaseServices) 
  * @param {object} firebaseServices The imported Firebase functions.
  */
 export function initializeAuth(firebaseServices) {
-    const { auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, setPersistence, browserSessionPersistence } = firebaseServices;
+    const { auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, setPersistence, browserSessionPersistence, signInAnonymously } = firebaseServices;
     const authContainer = document.getElementById('auth-container');
     const loginButton = document.getElementById('loginButton');
 
@@ -866,39 +845,43 @@ export function initializeAuth(firebaseServices) {
 
     onAuthStateChanged(auth, user => {
         if (user) {
-            // User is signed in
-            currentUserId = user.uid; // Ensure currentUserId is updated
-            // NEW: Add a class to the container when the user is logged in
-            authContainer.classList.add('logged-in');
-            console.log("Story page user changed to (Authenticated):", currentUserId);
-            loginButton.innerHTML = `
-                <img src="${user.photoURL}" alt="Profile" class="profile-pic">
-                <button class="logout-button">Logout</button>
-            `;
-            authContainer.querySelector('.logout-button').addEventListener('click', (e) => {
-                e.stopPropagation();
-                signOut(auth);
-            });
-        } else {
-            // User is signed out - revert to or create an anonymous ID
-            // NEW: Remove the class when the user is logged out
-            authContainer.classList.remove('logged-in');
-            let anonId = localStorage.getItem('anonymousUserId');
-            if (!anonId) {
-                anonId = 'anon-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('anonymousUserId', anonId);
+            // User is signed in (Google or Anonymous)
+            currentUserId = user.uid;
+            
+            if (user.isAnonymous) {
+                // User is anonymous
+                authContainer.classList.remove('logged-in');
+                console.log("Story page user changed to (Anonymous):", currentUserId);
+                loginButton.innerHTML = `<span class="login-text">Login</span>`;
+            } else {
+                // User is signed in with Google
+                authContainer.classList.add('logged-in');
+                console.log("Story page user changed to (Authenticated with Google):", currentUserId);
+                loginButton.innerHTML = `
+                    <img src="${user.photoURL}" alt="Profile" class="profile-pic">
+                    <button class="logout-button">Logout</button>
+                `;
+                authContainer.querySelector('.logout-button').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    signOut(auth);
+                });
             }
-            currentUserId = anonId;
-            console.log("Story page user changed to (Anonymous):", currentUserId);
-            loginButton.innerHTML = `<span class="login-text">Login</span>`;
+        } else {
+            // This block should ideally not be hit now, as getUserId ensures an anonymous session.
+            // But as a fallback, we ensure an anonymous session is created.
+            console.log("No user found, attempting to sign in anonymously as a fallback.");
+            signInAnonymously(auth);
         }
     });
 
     authContainer.addEventListener('click', () => {
-        if (!auth.currentUser) {
+        if (!auth.currentUser || auth.currentUser.isAnonymous) {
             setPersistence(auth, browserSessionPersistence)
               .then(() => {
                   const provider = new GoogleAuthProvider();
+                  // When an anonymous user signs in with a permanent account,
+                  // Firebase automatically links the accounts. Their UID remains the same,
+                  // and their anonymous data (like bookmarks) is preserved.
                   return signInWithPopup(auth, provider);
               })
               .catch((error) => {
