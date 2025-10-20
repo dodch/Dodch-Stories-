@@ -1220,7 +1220,7 @@ async function hashString(str) {
 }
 
 async function initializeUser() {
-    const { auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, setPersistence, browserSessionPersistence } = window.firebaseServices;
+    const { auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, setPersistence, browserLocalPersistence } = window.firebaseServices;
     const loginButton = document.getElementById('loginButton');
     const authContainer = document.getElementById('auth-container');
 
@@ -1262,7 +1262,7 @@ async function initializeUser() {
         if (!auth.currentUser) {
             // FIX: Explicitly set session persistence for cross-platform reliability, especially on Windows.
             // This ensures the auth state is correctly maintained after the popup flow.
-            setPersistence(auth, browserSessionPersistence)
+            setPersistence(auth, browserLocalPersistence)
               .then(() => {
                   const provider = new GoogleAuthProvider();
                   return signInWithPopup(auth, provider);

@@ -836,7 +836,7 @@ export async function initializeStoryContent(storyContentMap, fbServices) {
  * @param {object} firebaseServices The imported Firebase functions.
  */
 export function initializeAuth(firebaseServices) {
-    const { auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, setPersistence, browserSessionPersistence, signInAnonymously } = firebaseServices;
+    const { auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, setPersistence, browserLocalPersistence, signInAnonymously } = firebaseServices;
     const authContainer = document.getElementById('auth-container');
     const loginButton = document.getElementById('loginButton');
 
@@ -875,7 +875,7 @@ export function initializeAuth(firebaseServices) {
 
     authContainer.addEventListener('click', () => {
         if (!auth.currentUser || auth.currentUser.isAnonymous) {
-            setPersistence(auth, browserSessionPersistence)
+            setPersistence(auth, browserLocalPersistence)
               .then(() => {
                   const provider = new GoogleAuthProvider();
                   // When an anonymous user signs in with a permanent account,
