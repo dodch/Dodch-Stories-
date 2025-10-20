@@ -709,7 +709,7 @@ document.addEventListener('DOMContentLoaded', () => {
  * @param {object} storyContentMap The story-specific configuration object.
  * @param {object} firebaseServices The imported Firebase functions (db, ref, etc.).
  */
-export async function initializeStoryContent(storyContentMap) {    
+export async function initializeStoryContent(storyContentMap, firebaseServices) {    
     // FIX: Centralize user ID generation here.
     // This ensures the ID is created and available within this module's scope.
     anonymousUserId = localStorage.getItem('anonymousUserId');
@@ -718,6 +718,10 @@ export async function initializeStoryContent(storyContentMap) {
         localStorage.setItem('anonymousUserId', anonymousUserId);
     }
     console.log("Anonymous User ID:", anonymousUserId);
+
+    // Make firebase services available to this module
+    window.firebaseServices = firebaseServices;
+
 
     contentMap = storyContentMap; // Store the map at the module level for other functions to use.
     // This ensures the `allSavedProgress` object is ready for functions like `updateBookmarkIconState`.

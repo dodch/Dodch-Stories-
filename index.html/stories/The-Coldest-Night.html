@@ -916,37 +916,28 @@ THE END.
         const anonymousUserId = await initializeStoryContent(contentMap);
         
         // --- NEW: Visitor Count Implementation (From Scratch) ---
-        (async () => {
-            // FIX: Use the user ID returned from the initialization function.
-            const userId = anonymousUserId;
-            if (!userId) {
-                console.error("Visitor count failed: Anonymous User ID is not available.");
-                return;
-            }
-
+        (async (db, ref, onValue, onDisconnect, serverTimestamp) => {
             const storyId = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
-
             const storyVisitorsRef = ref(database, `presence/${storyId}`);
-            const userStatusRef = ref(database, `presence/${storyId}/${userId}`);
             const visitorCountElement = document.getElementById('visitor-count');
 
-            // 1. Set user's presence using a transaction.
-            await runTransaction(storyVisitorsRef, (currentData) => {
-                if (!currentData) { currentData = {}; }
-                currentData[userId] = serverTimestamp();
-                return currentData;
-            });
+            // 1. Create a new, unique reference for this specific connection using push().
+            const myConnectionRef = push(storyVisitorsRef);
 
-            // 2. Set up the disconnect handler to remove the user when they leave.
-            onDisconnect(userStatusRef).remove();
+            // 2. When the client disconnects, remove their entry from the list.
+            onDisconnect(myConnectionRef).remove();
 
-            // 3. Listen for changes and update the UI.
+            // 3. Set the value of the unique reference to the server's timestamp.
+            // This marks the user as "online".
+            await set(myConnectionRef, serverTimestamp());
+
+            // 4. Listen for changes to the list of visitors and update the UI count.
             onValue(storyVisitorsRef, (snapshot) => {
                 if (visitorCountElement) {
                     visitorCountElement.textContent = snapshot.exists() ? snapshot.numChildren() : 0;
                 }
             });
-        })();
+        })(database, ref, onValue, onDisconnect, serverTimestamp);
 
     </script>
 </body>
