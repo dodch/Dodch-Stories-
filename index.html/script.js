@@ -1220,8 +1220,7 @@ async function hashString(str) {
 }
 
 async function initializeUser() {
-    // REFACTOR: Use signInAnonymously and browserLocalPersistence for consistency with story pages.
-    const { auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, setPersistence, browserLocalPersistence, signInAnonymously } = window.firebaseServices;
+    const { auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, setPersistence, browserSessionPersistence } = window.firebaseServices;
     const loginButton = document.getElementById('loginButton');
     const authContainer = document.getElementById('auth-container');
 
@@ -1229,40 +1228,41 @@ async function initializeUser() {
         // NEW: Add the glass effect class to the auth container for consistent styling.
         authContainer.classList.add('glass-button-base');
 
-        if (user && !user.isAnonymous) {
-            // User is signed in with a provider like Google.
+        if (user) {
+            // User is signed in
             currentUserId = user.uid;
+            // NEW: Add a class to the container when the user is logged in
             authContainer.classList.add('logged-in');
-            console.log("Main page user signed in (Google):", currentUserId);
+            console.log("User signed in:", currentUserId);
             loginButton.innerHTML = `
                 <img src="${user.photoURL}" alt="Profile" class="profile-pic">
                 <button class="logout-button">Logout</button>
             `;
             authContainer.querySelector('.logout-button').addEventListener('click', (e) => {
                 e.stopPropagation();
-                signOut(auth).then(() => signInAnonymously(auth)); // Sign out and revert to anonymous
+                signOut(auth);
             });
         } else {
-            // User is anonymous or logged out.
-            if (user) { // This means user.isAnonymous is true
-                currentUserId = user.uid;
-                console.log("Main page user is anonymous:", currentUserId);
-            }
+            // User is signed out
+            currentUserId = localStorage.getItem('anonymousUserId');
+            // NEW: Remove the class when the user is logged out
             authContainer.classList.remove('logged-in');
+            if (!currentUserId) {
+                currentUserId = 'anon-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('anonymousUserId', currentUserId);
+            }
+            console.log("User is anonymous:", currentUserId);
             loginButton.innerHTML = `<span class="login-text">Login</span>`;
         }
         // Re-filter/render panels to update their favorited state for the new user
         filterAndRenderPanels();
     });
 
-    // Ensure an anonymous session exists if no user is logged in.
-    if (!auth.currentUser) {
-        await signInAnonymously(auth);
-    }
-
     authContainer.addEventListener('click', () => {
-        if (!auth.currentUser || auth.currentUser.isAnonymous) {
-            setPersistence(auth, browserLocalPersistence)
+        if (!auth.currentUser) {
+            // FIX: Explicitly set session persistence for cross-platform reliability, especially on Windows.
+            // This ensures the auth state is correctly maintained after the popup flow.
+            setPersistence(auth, browserSessionPersistence)
               .then(() => {
                   const provider = new GoogleAuthProvider();
                   return signInWithPopup(auth, provider);
