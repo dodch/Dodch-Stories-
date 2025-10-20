@@ -1220,7 +1220,7 @@ async function hashString(str) {
 }
 
 async function initializeUser() {
-    const { auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } = window.firebaseServices;
+    const { auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, setPersistence, browserSessionPersistence } = window.firebaseServices;
     const loginButton = document.getElementById('loginButton');
     const authContainer = document.getElementById('auth-container');
 
@@ -1253,12 +1253,19 @@ async function initializeUser() {
 
     authContainer.addEventListener('click', () => {
         if (!auth.currentUser) {
-            const provider = new GoogleAuthProvider();
-            signInWithPopup(auth, provider)
-                .catch((error) => {
-                    console.error("Google Sign-In Error:", error);
-                    alert(`Login failed: ${error.message}`);
-                });
+            // FIX: Explicitly set session persistence for cross-platform reliability, especially on Windows.
+            // This ensures the auth state is correctly maintained after the popup flow.
+            setPersistence(auth, browserSessionPersistence)
+              .then(() => {
+                  const provider = new GoogleAuthProvider();
+                  return signInWithPopup(auth, provider);
+              })
+              .catch((error) => {
+                  console.error("Google Sign-In Error:", error);
+                  // Provide more user-friendly error messages
+                  const errorMessage = error.code === 'auth/popup-closed-by-user' ? 'Login cancelled.' : `Login failed: ${error.message}`;
+                  alert(errorMessage);
+              });
         }
     });
 
