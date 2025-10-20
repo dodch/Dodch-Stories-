@@ -759,7 +759,10 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 export async function initializeStoryContent(storyContentMap, firebaseServices) {    
     contentMap = storyContentMap; // Store the map at the module level for other functions to use.
-    self.firebaseServices = firebaseServices; // FIX: Store the firebase services at the module level. This was the root cause of the bookmarking failure.
+    // FIX: The parameter `fbServices` was not being assigned to the module-level `firebaseServices` variable.
+    // This was the definitive root cause of all Firebase-related features (like bookmarks) failing.
+    // The `self.firebaseServices` assignment was incorrect and has been removed.
+    firebaseServices = fbServices;
 
     // FIX: Wrap the authentication check in a Promise to resolve the race condition.
     // This guarantees that we have the correct user ID before proceeding.
@@ -828,8 +831,8 @@ export async function initializeStoryContent(storyContentMap, firebaseServices) 
         // Add specific actions for each button
         if (['ar-button', 'fr-button', 'en-button'].includes(button.id)) { // Language buttons
             const lang = button.id.split('-')[0];
-            if (storyContentMap[lang]) {
-                button.addEventListener('click', () => changeLanguage(lang, false, false, storyContentMap));
+            if (contentMap[lang]) {
+                button.addEventListener('click', () => changeLanguage(lang, false, false, contentMap));
             }
         } else if (button.id === 'save-progress-button') {
             button.addEventListener('click', () => scrollToSavedWord());
