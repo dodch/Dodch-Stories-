@@ -866,7 +866,7 @@ THE END.
     <script type="module">
         // --- Firebase Initialization ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence, signInsAnonymously } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { getDatabase, ref, onValue, off, onDisconnect, serverTimestamp, push, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
         import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app-check.js";
         // --- Story Script ---
@@ -996,25 +996,23 @@ THE END.
             // Use the .info/connected path to manage online status.
             // This is the official Firebase pattern for robust presence.
             const connectedRef = ref(database, '.info/connected');
-            onValue(connectedRef, (snap) => {
-                let myConnectionRef; // To hold the reference for the current connection
-                if (snap.val() === true) {
-                    // We're connected (or reconnected).
-                    // 1. Create a new, unique reference for this specific connection.
-                    const myConnectionRef = push(storyVisitorsRef);
+            onValue(connectedRef, (snap) => {                if (snap.val() === true) {
+                    // We're connected. This user's ID is `userId`.
+                    // Create a reference to a new connection entry under the user's ID.
+                    const userStoryPresenceRef = ref(database, `presence/${storyId}/${userId}`);
+                    const myConnectionRef = push(userStoryPresenceRef);
 
-                    // 2. When the client disconnects, remove their entry.
+                    // When the client disconnects, remove their connection entry.
+                    // If this is the last connection, the parent `userId` node will be removed automatically by Firebase.
                     onDisconnect(myConnectionRef).remove();
 
-                    // 3. Set the value to mark the user as "online".
+                    // Set the value to mark this connection as "online".
                     set(myConnectionRef, serverTimestamp());
 
-                    // 4. NEW: Proactively remove the user on page unload for a more responsive count.
+                    // Proactively remove the user on page unload for a more responsive count.
                     // This makes the count decrease immediately when a user leaves.
-                    // The `onDisconnect` remains as a server-side fallback for crashes or network loss.
                     window.addEventListener('beforeunload', () => {
                         if (myConnectionRef) {
-                            // Explicitly remove the presence marker.
                             set(myConnectionRef, null);
                         }
                     });

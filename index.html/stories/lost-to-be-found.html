@@ -996,36 +996,26 @@ THE END.
             // Use the .info/connected path to manage online status.
             // This is the official Firebase pattern for robust presence.
             const connectedRef = ref(database, '.info/connected');
-            let myConnectionRef; // To hold the reference for the current connection
 
             onValue(connectedRef, (snap) => {
                 if (snap.val() === true) {
-                    // FIX: Use sessionStorage to maintain a single connection reference per browser session.
-                    // This prevents creating duplicate presence entries on page reload.
-                    let connectionId = sessionStorage.getItem('firebasePresenceId');
-                    if (!connectionId) {
-                        // 1. If no ID exists for this session, create a new one.
-                        const newConnection = push(storyVisitorsRef);
-                        connectionId = newConnection.key;
-                        sessionStorage.setItem('firebasePresenceId', connectionId);
-                    }
-                    
-                    // 2. Get the reference to our unique connection node.
-                    myConnectionRef = ref(database, `presence/${storyId}/${connectionId}`);
+                    // We're connected. This user's ID is `userId`.
+                    // Create a reference to a new connection entry under the user's ID.
+                    const userStoryPresenceRef = ref(database, `presence/${storyId}/${userId}`);
+                    const myConnectionRef = push(userStoryPresenceRef);
 
-                    // 3. When the client disconnects, remove their entry.
+                    // When the client disconnects, remove their connection entry.
+                    // If this is the last connection, the parent `userId` node will be removed automatically by Firebase.
                     onDisconnect(myConnectionRef).remove();
 
-                    // 4. Set the value to mark the user as "online".
+                    // Set the value to mark this connection as "online".
                     set(myConnectionRef, serverTimestamp());
 
-                    // 5. NEW: Proactively remove the user on page unload for a more responsive count.
+                    // Proactively remove the user on page unload for a more responsive count.
                     // This makes the count decrease immediately when a user leaves.
-                    // The `onDisconnect` remains as a server-side fallback for crashes or network loss.
                     window.addEventListener('beforeunload', () => {
                         if (myConnectionRef) {
-                            onDisconnect(myConnectionRef).cancel(); // Cancel the server-side disconnect
-                            set(myConnectionRef, null); // Cleanly remove the presence marker
+                            set(myConnectionRef, null);
                         }
                     });
                 }
