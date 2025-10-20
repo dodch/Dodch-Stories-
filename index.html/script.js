@@ -1220,23 +1220,9 @@ async function hashString(str) {
 }
 
 async function initializeUser() {
-    const { auth, onAuthStateChanged, signInWithRedirect, getRedirectResult, GoogleAuthProvider, signOut } = window.firebaseServices;
+    const { auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } = window.firebaseServices;
     const loginButton = document.getElementById('loginButton');
     const authContainer = document.getElementById('auth-container');
-
-    // This function checks if the user is coming back from a Google Sign-In redirect.
-    // It runs when the page loads.
-    getRedirectResult(auth)
-        .then((result) => {
-            if (result) {
-                // User has successfully signed in.
-                // The onAuthStateChanged observer will handle the UI update.
-                console.log("Redirect sign-in successful.");
-            }
-        }).catch((error) => {
-            console.error("Google Sign-In Redirect Error:", error);
-            alert(`Login failed after redirect: ${error.message}`);
-        });
 
     onAuthStateChanged(auth, user => {
         if (user) {
@@ -1268,8 +1254,8 @@ async function initializeUser() {
     authContainer.addEventListener('click', () => {
         if (!auth.currentUser) {
             const provider = new GoogleAuthProvider();
-            // This will navigate the user to Google's sign-in page.
-            signInWithRedirect(auth, provider).catch((error) => {
+            signInWithPopup(auth, provider)
+                .catch((error) => {
                     console.error("Google Sign-In Error:", error);
                     alert(`Login failed: ${error.message}`);
                 });
