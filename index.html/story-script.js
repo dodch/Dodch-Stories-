@@ -20,6 +20,7 @@ const storyKey = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace
 let currentLanguage = 'en';
 let currentUserId = null; // NEW: To store the user's unique ID (anonymous or authenticated)
 let allSavedProgress = {};
+let firebaseProgressListener = null; // NEW: To hold the active Firebase listener
 let currentStoryProgress = {}; // FIX: To store progress for the current story and language.
 let firebaseServices = null; // To store Firebase services
 let tempSavedWordId = '';
@@ -149,6 +150,38 @@ function updateBookmarkIconState() {
     }
 }
 
+/**
+ * NEW: Sets up or resets the Firebase listener for bookmark changes.
+ * This function is now called every time the language changes to ensure
+ * the listener is always watching the correct database path. This is the
+ * definitive fix for the bookmarking issue.
+ */
+function setupBookmarkListener() {
+    if (!currentUserId || !firebaseServices) return;
+
+    const { db, ref, onValue, off } = firebaseServices;
+
+    // 1. If an old listener exists, turn it off to prevent duplicates.
+    if (firebaseProgressListener) {
+        off(firebaseProgressListener.ref, 'value', firebaseProgressListener.callback);
+    }
+
+    // 2. Create a reference to the correct path for the current user, story, and language.
+    const userProgressRef = ref(db, `users/${currentUserId}/progress/${storyKey}/${currentLanguage}`);
+    
+    // 3. Define the callback function that updates the UI.
+    const onProgressUpdate = (snapshot) => {
+        currentStoryProgress = snapshot.val() || {};
+        console.log(`Bookmark listener updated for lang '${currentLanguage}':`, currentStoryProgress);
+        updateBookmarkIconState();
+        highlightWord();
+    };
+
+    // 4. Attach the new listener and store it so it can be detached later.
+    onValue(userProgressRef, onProgressUpdate);
+    firebaseProgressListener = { ref: userProgressRef, callback: onProgressUpdate };
+}
+
 function changeLanguage(lang, fromLoad = false, isThemeChange = false, storyContentMap) {
     // REFACTOR: Allow theme changes to bypass the fade animation check.
     if (contentDiv.classList.contains('content-fading') && !fromLoad && !isThemeChange) return;
@@ -171,6 +204,9 @@ function changeLanguage(lang, fromLoad = false, isThemeChange = false, storyCont
     if (!fromLoad) {
          localStorage.setItem('preferredLanguage', lang);
     }
+    // NEW: Re-initialize the bookmark listener with the new language path.
+    setupBookmarkListener();
+
     const content = storyContentMap[lang];
 
     const updateContent = () => {
@@ -747,18 +783,8 @@ export async function initializeStoryContent(storyContentMap, firebaseServices) 
 
     currentUserId = await getUserId();
 
-    // Once we have a user ID, listen for their saved progress in Firebase.
-    // FIX: Listen to the specific path for the current story to avoid data conflicts.
-    const { db, ref, onValue } = firebaseServices;    // FIX: The listener must watch the exact same path that is being written to, including the language.
-    const userProgressRef = ref(db, `users/${currentUserId}/progress/${storyKey}/${currentLanguage}`);
-    onValue(userProgressRef, (snapshot) => {
-        // FIX: The snapshot now directly contains the progress for the current language.
-        // This was the root cause of the bug.
-        currentStoryProgress = snapshot.val() || {};
-        console.log(`Updated progress for lang '${currentLanguage}':`, currentStoryProgress);
-        updateBookmarkIconState();
-        highlightWord();
-    });
+    // NEW: Set up the initial bookmark listener. It will be reset on language change.
+    setupBookmarkListener();
 
     const manualLevel = sessionStorage.getItem('manualPerformanceLevel');
     if (manualLevel) {
