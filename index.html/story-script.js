@@ -737,11 +737,21 @@ export async function initializeStoryContent(storyContentMap) {
     // This ensures the `allSavedProgress` object is ready for functions like `updateBookmarkIconState`.
     const savedProgressJson = localStorage.getItem('allSavedProgress');
     try {
-        allSavedProgress = savedProgressJson ? JSON.parse(savedProgressJson) : {};
+        allSavedProgress = savedProgressJson ? JSON.parse(savedProgressJson) : {}; // FIX: Correctly handle null/empty JSON.
     } catch (e) {
         console.error("Failed to parse saved progress from localStorage:", e);
         allSavedProgress = {};
     }
+
+    // FIX: Restore the anonymous user ID generation logic. This is the central fix.
+    // This script runs on story pages, and it MUST be responsible for creating the user ID.
+    let anonymousUserId = localStorage.getItem('anonymousUserId');
+    if (!anonymousUserId) {
+        anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('anonymousUserId', anonymousUserId);
+    }
+    // Make the ID globally available for the visitor count script.
+    window.anonymousUserId = anonymousUserId;
 
     const manualLevel = sessionStorage.getItem('manualPerformanceLevel');
     if (manualLevel) {
