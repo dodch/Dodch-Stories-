@@ -82,6 +82,12 @@
         <line x1="12" y1="8" x2="12" y2="8"></line>
       </svg>
     </div>
+    <!-- NEW: Login Button -->
+    <div id="auth-container" class="auth-container glass-button-base">
+      <button id="loginButton" class="login-button">
+        <span class="login-text">Login</span>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -311,7 +317,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-analytics.js";
     import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
-    import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app-check.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";    import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app-check.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBIlDy8iaEpCHVc6kPij_zh2zHJYQqiShk",
@@ -334,13 +340,20 @@
     });
     const analytics = getAnalytics(app);
     const database = getDatabase(app);
+    const auth = getAuth(app);
 
     // Make Firebase functions globally accessible to script.js
     window.firebaseServices = {
         db: database,
+        auth: auth,
         ref: ref,
         onValue: onValue,
-        runTransaction: runTransaction
+        runTransaction: runTransaction,
+        // NEW: Expose auth functions
+        GoogleAuthProvider: GoogleAuthProvider,
+        signInWithPopup: signInWithPopup,
+        onAuthStateChanged: onAuthStateChanged,
+        signOut: signOut
     };
 </script>
 <script src="script.js" type="module"></script>

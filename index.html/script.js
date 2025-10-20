@@ -54,7 +54,7 @@ document.addEventListener('keydown', function(e) {
 let panels = [];
 let allStories = [];
 let showingFavorites = false;
-let anonymousUserId = null; // NEW: To store the user's unique ID for favorites
+let currentUserId = null; // REFACTOR: To store the user's unique ID (anonymous or authenticated)
 const body = document.body;
 let backgroundSets = []; // To store background image data
 let performanceLevel = 3; // Default to highest
@@ -381,13 +381,13 @@ async function fetchAndBuildGrid() {
           const storyRef = window.firebaseServices.ref(window.firebaseServices.db, 'stories/' + storyKey);
 
           // Listen for real-time updates to the favorite count
-          window.firebaseServices.onValue(storyRef, (snapshot) => {
+          const unsubscribe = window.firebaseServices.onValue(storyRef, (snapshot) => {
               const storyData = snapshot.val();
               const count = storyData?.favoritesCount || 0;
               const favoritedBy = storyData?.favoritedBy || {};
               
               const currentCount = parseInt(countSpan.textContent, 10);
-              const isFavorited = favoritedBy[anonymousUserId] === true;
+              const isFavorited = currentUserId ? favoritedBy[currentUserId] === true : false;
 
               // Animate only when the count actually changes.
               if (count !== currentCount) {
@@ -419,6 +419,9 @@ async function fetchAndBuildGrid() {
               favoriteBtn.classList.toggle('active', isFavorited);
               addedCard.classList.toggle('favorited', isFavorited);
           });
+
+          // Store the unsubscribe function to clean up later if needed
+          addedCard.dataset.unsubscribe = unsubscribe;
       }
 
     });
@@ -802,10 +805,15 @@ async function fetchAndBuildGrid() {
       btn.addEventListener('click', (event) => {
         event.stopPropagation();
         event.preventDefault(); 
-        if (!anonymousUserId) {
-            console.error("Anonymous User ID not set. Cannot favorite.");
+        
+        // NEW: Check for authenticated user before allowing a like
+        if (!window.firebaseServices.auth.currentUser) {
+            alert("Please log in to save your favorites!");
+            // Trigger the login flow
+            document.getElementById('loginButton').click();
             return;
         }
+        if (!currentUserId) return; // Should not happen if user is logged in
 
         const panel = btn.closest('.glass-container');
         const title = panel.querySelector('.title').dataset.originalTitle;
@@ -824,14 +832,14 @@ async function fetchAndBuildGrid() {
                 }
                 currentData.favoritedBy = currentData.favoritedBy || {};
 
-                const isFavorited = currentData.favoritedBy[anonymousUserId] === true;
+                const isFavorited = currentData.favoritedBy[currentUserId] === true;
 
                 if (isFavorited) { // User is un-favoriting
                     currentData.favoritesCount = (currentData.favoritesCount || 1) - 1;
-                    currentData.favoritedBy[anonymousUserId] = null; // Use null to delete the key in Firebase
+                    currentData.favoritedBy[currentUserId] = null; // Use null to delete the key in Firebase
                 } else { // User is favoriting
                     currentData.favoritesCount = (currentData.favoritesCount || 0) + 1;
-                    currentData.favoritedBy[anonymousUserId] = true;
+                    currentData.favoritedBy[currentUserId] = true;
                 }
                 return currentData;
             });
@@ -1212,13 +1220,49 @@ async function hashString(str) {
 }
 
 async function initializeUser() {
-    // Revert to simple localStorage-based anonymous user ID
-    anonymousUserId = localStorage.getItem('anonymousUserId');
-    if (!anonymousUserId) {
-        anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('anonymousUserId', anonymousUserId);
-    }
-    console.log("Anonymous User ID:", anonymousUserId);
+    const { auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } = window.firebaseServices;
+    const loginButton = document.getElementById('loginButton');
+    const authContainer = document.getElementById('auth-container');
+
+    onAuthStateChanged(auth, user => {
+        if (user) {
+            // User is signed in
+            currentUserId = user.uid;
+            console.log("User signed in:", currentUserId);
+            loginButton.innerHTML = `
+                <img src="${user.photoURL}" alt="Profile" class="profile-pic">
+                <button class="logout-button">Logout</button>
+            `;
+            authContainer.querySelector('.logout-button').addEventListener('click', (e) => {
+                e.stopPropagation();
+                signOut(auth);
+            });
+        } else {
+            // User is signed out
+            currentUserId = localStorage.getItem('anonymousUserId');
+            if (!currentUserId) {
+                currentUserId = 'anon-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('anonymousUserId', currentUserId);
+            }
+            console.log("User is anonymous:", currentUserId);
+            loginButton.innerHTML = `<span class="login-text">Login</span>`;
+        }
+        // Re-filter/render panels to update their favorited state for the new user
+        filterAndRenderPanels();
+    });
+
+    authContainer.addEventListener('click', () => {
+        if (!auth.currentUser) {
+            const provider = new GoogleAuthProvider();
+            signInWithPopup(auth, provider)
+                .catch((error) => {
+                    console.error("Google Sign-In Error:", error);
+                    alert(`Login failed: ${error.message}`);
+                });
+        }
+    });
+
+    addTapAnimation(authContainer);
 }
 
 let isInitialized = false; // FIX: Add a flag to prevent double initialization.
