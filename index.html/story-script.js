@@ -752,10 +752,9 @@ export async function initializeStoryContent(storyContentMap) {
         anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
         localStorage.setItem('anonymousUserId', anonymousUserId);
     }
-    // FIX: Make the anonymousUserId globally available so the visitor count script can access it.
-    // This must be outside the `if` block to ensure it's set for both new and returning users.
+    // FIX: The anonymousUserId must always be exposed on the window object so the
+    // separate visitor count script in the HTML can access it.
     window.anonymousUserId = anonymousUserId;
-    console.log("Anonymous User ID:", anonymousUserId);
 
     const manualLevel = sessionStorage.getItem('manualPerformanceLevel');
     if (manualLevel) {
