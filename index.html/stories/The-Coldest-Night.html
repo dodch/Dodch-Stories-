@@ -923,29 +923,33 @@ THE END.
         // Pass the contentMap to the initialization function.
         // FIX: Pass the firebaseServices object to the story script so it can perform database operations.
         initializeStoryContent(contentMap);
-
-        // --- RECONSTRUCTED: Live Visitor Count Logic ---
-        // This logic is now placed directly in the main module script, which has the correct scope
-        // to access all the imported Firebase functions (ref, runTransaction, etc.). This is the
-        // definitive fix that mirrors the working "like" system's architecture.
+        
+        // --- NEW: Visitor Count Implementation (From Scratch) ---
         (async () => {
             const userId = window.anonymousUserId;
+            if (!userId) {
+                console.error("Visitor count failed: Anonymous User ID is not available.");
+                return;
+            }
+
             const storyId = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
 
             const storyVisitorsRef = ref(database, `presence/${storyId}`);
             const userStatusRef = ref(database, `presence/${storyId}/${userId}`);
+            const visitorCountElement = document.getElementById('visitor-count');
 
-            // Use a transaction to safely add the user to the presence list.
+            // 1. Set user's presence using a transaction.
             await runTransaction(storyVisitorsRef, (currentData) => {
                 if (!currentData) { currentData = {}; }
                 currentData[userId] = serverTimestamp();
                 return currentData;
             });
 
+            // 2. Set up the disconnect handler to remove the user when they leave.
             onDisconnect(userStatusRef).remove();
 
+            // 3. Listen for changes and update the UI.
             onValue(storyVisitorsRef, (snapshot) => {
-                const visitorCountElement = document.getElementById('visitor-count');
                 if (visitorCountElement) {
                     visitorCountElement.textContent = snapshot.exists() ? snapshot.numChildren() : 0;
                 }

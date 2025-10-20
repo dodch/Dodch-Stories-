@@ -709,10 +709,7 @@ document.addEventListener('DOMContentLoaded', () => {
  * @param {object} storyContentMap The story-specific configuration object.
  * @param {object} firebaseServices The imported Firebase functions (db, ref, etc.).
  */
-export async function initializeStoryContent(storyContentMap, firebaseServices) {
-    // Store Firebase services on the window to be accessible by other functions if needed,
-    // though the primary visitor count logic no longer relies on this.
-    window.firebaseServices = firebaseServices;
+export async function initializeStoryContent(storyContentMap) {
     contentMap = storyContentMap; // Store the map at the module level for other functions to use.
     // This ensures the `allSavedProgress` object is ready for functions like `updateBookmarkIconState`.
     const savedProgressJson = localStorage.getItem('allSavedProgress');
