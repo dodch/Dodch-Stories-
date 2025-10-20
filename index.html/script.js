@@ -1197,8 +1197,6 @@ async function initializeUser() {
         localStorage.setItem('anonymousUserId', anonymousUserId);
     }
     console.log("Anonymous User ID:", anonymousUserId);
-    // FIX: Expose the user ID on the window object so it can be picked up by other scripts (like on the story pages).
-    window.anonymousUserId = anonymousUserId;
 }
 
 let isInitialized = false; // FIX: Add a flag to prevent double initialization.

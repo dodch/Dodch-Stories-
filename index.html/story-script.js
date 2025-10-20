@@ -732,7 +732,6 @@ document.addEventListener('DOMContentLoaded', () => {
  * @param {object} storyContentMap The story-specific configuration object.
  */
 export async function initializeStoryContent(storyContentMap) {
-    // FIX: Load bookmarks from localStorage here, before any other content is initialized.
     contentMap = storyContentMap; // Store the map at the module level for other functions to use.
     // This ensures the `allSavedProgress` object is ready for functions like `updateBookmarkIconState`.
     const savedProgressJson = localStorage.getItem('allSavedProgress');
@@ -743,9 +742,9 @@ export async function initializeStoryContent(storyContentMap) {
         allSavedProgress = {};
     }
 
-    // FIX: Restore the anonymous user ID generation logic. This is the central fix.
-    // This script runs on story pages, and it MUST be responsible for creating the user ID.
-    let anonymousUserId = localStorage.getItem('anonymousUserId');
+    // FIX: The story page should ONLY read the user ID created by the main page.
+    // Do NOT generate a new one here, as it causes conflicts.
+    anonymousUserId = localStorage.getItem('anonymousUserId');
     if (!anonymousUserId) {
         anonymousUserId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
         localStorage.setItem('anonymousUserId', anonymousUserId);
