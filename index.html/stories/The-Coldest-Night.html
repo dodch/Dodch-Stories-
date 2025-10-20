@@ -866,7 +866,7 @@ THE END.
     <script type="module">
         // --- Firebase Initialization ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence, signInsAnonymously } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence, browserLocalPersistence, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { getDatabase, ref, onValue, off, onDisconnect, serverTimestamp, push, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
         import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app-check.js";
         // --- Story Script ---
@@ -900,8 +900,8 @@ THE END.
             auth: auth, 
             onAuthStateChanged: onAuthStateChanged, 
             ref, onValue, off, onDisconnect, serverTimestamp, push, set,
-            // FIX: Pass all required auth functions, including signInAnonymously
-            GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence, signInAnonymously
+            // FIX: Pass all required auth functions, including local persistence and signInAnonymously
+            GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence, browserLocalPersistence, signInAnonymously
         };
 
         // Story-specific configuration
