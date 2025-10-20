@@ -597,15 +597,15 @@ Because your souls will always be connected…
             // This is the official Firebase pattern for robust presence.
             const connectedRef = ref(database, '.info/connected');
             onValue(connectedRef, (snap) => {
-                if (snap.val() === true) {
-                    // We're connected. This user's ID is `userId`.
-                    // Use the user's unique ID as the key to prevent duplicates.
+                if (snap.val() === true) {                    // We're connected. This user's ID is `userId`.
+                    // Use the user's unique ID as the key to prevent duplicates across devices/tabs.
                     const myPresenceRef = ref(database, `presence/${storyId}/${userId}`);
 
-                    // 2. When the client disconnects, remove their entry.
+                    // When the client disconnects, remove their connection entry.
                     onDisconnect(myPresenceRef).remove();
 
-                    // 3. Set the value to mark the user as "online".
+                    // Set the value to mark this user as "online".
+                    // If the user is already online on another device, this just updates the timestamp.
                     set(myPresenceRef, serverTimestamp());
                 }
             });
