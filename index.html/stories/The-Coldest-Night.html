@@ -913,6 +913,34 @@ THE END.
 
         // Pass the contentMap to the initialization function.
         initializeStoryContent(contentMap);
+
+        // --- NEW: Live Visitor Count Logic ---
+        (async () => {
+            // Wait for the anonymous user ID to be available from the main script
+            while (!window.anonymousUserId) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            const userId = window.anonymousUserId;
+            const storyId = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
+
+            const storyVisitorsRef = ref(database, `story-visitors/${storyId}`);
+            const userStatusRef = ref(database, `story-visitors/${storyId}/${userId}`);
+
+            // Set user's presence
+            await runTransaction(userStatusRef, () => serverTimestamp());
+
+            // Remove user's presence on disconnect
+            onDisconnect(userStatusRef).remove();
+
+            // Listen for changes in visitor count
+            onValue(storyVisitorsRef, (snapshot) => {
+                const visitorCountElement = document.getElementById('visitor-count');
+                if (visitorCountElement) {
+                    const count = snapshot.exists() ? snapshot.numChildren() : 0;
+                    visitorCountElement.textContent = count;
+                }
+            });
+        })();
     </script>
 </body>
 </html>
