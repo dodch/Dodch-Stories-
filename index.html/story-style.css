@@ -796,6 +796,52 @@ html {
     transform-origin: bottom center; /* Keep the origin for the settle rotation */
 }
 
+/* --- NEW: Auth Container & Login Button Styles (mirrors main page) --- */
+.auth-container {
+  display: flex;
+  align-items: center;
+  border-radius: 30px;
+  padding: 5px;
+  transition: all 0.4s ease-in-out;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.login-button {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  color: var(--glass-text-light); /* Use story page variable */
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+.login-button .login-text {
+  margin: 0 10px;
+  font-size: 0.9rem;
+}
+
+.login-button .profile-pic {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.logout-button {
+  background: none;
+  border: none;
+  color: var(--glass-text-light); /* Use story page variable */
+  font-weight: bold;
+  cursor: pointer;
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
 /* --- REFACTOR: Dark Mode Bookmark Style --- */
 html.dark-mode .bookmarked-word::after, body.dark-mode .bookmarked-word::after {
     /* REFACTOR: Use a vibrant blue gradient for better contrast in dark mode. */

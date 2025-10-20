@@ -882,7 +882,7 @@ async function fetchAndBuildGrid() {
     addTapAnimation(closeInfoButton);
 
     // NEW: Add shine effect element to all relevant buttons
-    document.querySelectorAll('.search-button, .floating-button, .info-button').forEach(button => {
+    document.querySelectorAll('.search-button, .floating-button, .info-button, .auth-container').forEach(button => {
         button.classList.add('shine-button');
         button.insertAdjacentHTML('beforeend', '<div class="shine-effect"></div>');
     });
@@ -1225,6 +1225,9 @@ async function initializeUser() {
     const authContainer = document.getElementById('auth-container');
 
     onAuthStateChanged(auth, user => {
+        // NEW: Add the glass effect class to the auth container for consistent styling.
+        authContainer.classList.add('glass-button-base');
+
         if (user) {
             // User is signed in
             currentUserId = user.uid;

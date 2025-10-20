@@ -1505,7 +1505,23 @@ body.info-panel-open #seriesModal .glass-content {
   margin-left: 1rem; /* Space between info and login button */
   transition: all 0.4s ease-in-out;
   overflow: hidden;
+  /* FIX: Apply the glass effect and shine to the auth container */
+  background: var(--glass-bg);
+  box-shadow: var(--button-shadow);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  position: relative; /* Needed for the shine effect */
   cursor: pointer;
+}
+
+/* NEW: Add hover effect for the auth container */
+body:not(.is-scrolling) .auth-container:hover, .auth-container:focus-visible {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 40%, transparent), var(--button-shadow);
+}
+
+.auth-container:hover .logout-button {
+  display: block; /* Show on hover */
 }
 
 .login-button {
@@ -1515,16 +1531,13 @@ body.info-panel-open #seriesModal .glass-content {
   border: none;
   color: var(--glass-text);
   font-weight: bold;
-  cursor: pointer;
   padding: 0;
-  transition: all 0.3s ease;
 }
 
 .login-button .login-text {
   margin: 0 10px;
   font-size: 0.9rem;
 }
-
 .login-button .profile-pic {
   width: 35px;
   height: 35px;
@@ -1534,7 +1547,6 @@ body.info-panel-open #seriesModal .glass-content {
 }
 
 .logout-button {
-  display: none; /* Hidden by default */
   background: none;
   border: none;
   color: var(--glass-text);
@@ -1543,10 +1555,6 @@ body.info-panel-open #seriesModal .glass-content {
   padding: 5px 10px;
   font-size: 0.8rem;
   opacity: 0.7;
-}
-
-.auth-container:hover .logout-button {
-  display: block; /* Show on hover */
 }
 
 
