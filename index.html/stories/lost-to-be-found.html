@@ -975,6 +975,7 @@ THE END.
             // This is the official Firebase pattern for robust presence.
             const connectedRef = ref(database, '.info/connected');
             onValue(connectedRef, (snap) => {
+                let myConnectionRef; // To hold the reference for the current connection
                 if (snap.val() === true) {
                     // We're connected (or reconnected).
                     // 1. Create a new, unique reference for this specific connection.
@@ -985,6 +986,16 @@ THE END.
 
                     // 3. Set the value to mark the user as "online".
                     set(myConnectionRef, serverTimestamp());
+
+                    // 4. NEW: Proactively remove the user on page unload for a more responsive count.
+                    // This makes the count decrease immediately when a user leaves.
+                    // The `onDisconnect` remains as a server-side fallback for crashes or network loss.
+                    window.addEventListener('beforeunload', () => {
+                        if (myConnectionRef) {
+                            // Explicitly remove the presence marker.
+                            set(myConnectionRef, null);
+                        }
+                    });
                 }
             });
         })();
