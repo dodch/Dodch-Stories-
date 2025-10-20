@@ -758,6 +758,7 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 export async function initializeStoryContent(storyContentMap, firebaseServices) {    
     contentMap = storyContentMap; // Store the map at the module level for other functions to use.
+    self.firebaseServices = firebaseServices; // FIX: Store the firebase services at the module level. This was the root cause of the bookmarking failure.
 
     // FIX: Wrap the authentication check in a Promise to resolve the race condition.
     // This guarantees that we have the correct user ID before proceeding.

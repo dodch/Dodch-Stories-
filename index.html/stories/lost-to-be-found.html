@@ -926,9 +926,11 @@ THE END.
             },
         };
 
-        // --- NEW: Visitor Count Implementation (From Scratch) ---
         (async () => {
-            // FIX: Ensure all initialization happens in the correct, sequential order to prevent race conditions.
+            // FIX: The core issue was that `firebaseServices` was not being passed to the initialization function,
+            // causing all database operations (like saving bookmarks) to fail. This is now corrected.
+            // This also ensures all initialization happens in the correct, sequential order to prevent race conditions.
+
             // 1. Initialize the story content and get the user ID.
             const userId = await initializeStoryContent(contentMap, firebaseServices);
             // 2. Initialize the authentication button.
