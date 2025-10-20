@@ -567,7 +567,9 @@ Because your souls will always be connected…
             onValue(storyVisitorsRef, (snapshot) => {
                 if (!visitorCountElement) return;
                 const data = snapshot.val();
-                const count = data ? Object.keys(data).length : 0;
+                // FIX: Correctly count unique users (the parent keys), not total connections.
+                // The `snapshot.size` property gives the number of top-level children (i.e., unique users).
+                const count = snapshot.exists() ? snapshot.size : 0;
 
                 // FIX: Animate only when the count actually changes.
                 const currentCount = parseInt(visitorCountElement.textContent, 10);
