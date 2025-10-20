@@ -377,6 +377,7 @@ async function fetchAndBuildGrid() {
       // --- NEW: Firebase Realtime Database Integration for Favorites ---
       const countSpan = addedCard.querySelector('.favorite-count');
       if (countSpan && window.firebaseServices) {
+          const heartIcon = addedCard.querySelector('.favorite-btn svg');
           const storyRef = window.firebaseServices.ref(window.firebaseServices.db, 'stories/' + storyKey);
 
           // Listen for real-time updates to the favorite count
@@ -385,9 +386,35 @@ async function fetchAndBuildGrid() {
               const count = storyData?.favoritesCount || 0;
               const favoritedBy = storyData?.favoritedBy || {};
               
-              countSpan.textContent = count;
-
+              const currentCount = parseInt(countSpan.textContent, 10);
               const isFavorited = favoritedBy[anonymousUserId] === true;
+
+              // Animate only when the count actually changes.
+              if (count !== currentCount) {
+                  countSpan.textContent = count;
+                  
+                  // Animate the count number (pop and glow effect)
+                  const countGlowClass = count > currentCount ? 'count-join-glow' : 'count-leave-glow';
+                  countSpan.classList.remove('count-join-glow', 'count-leave-glow');
+                  requestAnimationFrame(() => {
+                    requestAnimationFrame(() => countSpan.classList.add(countGlowClass));
+                  });
+                  
+                  countSpan.classList.add('count-pop-animation');
+                  
+                  // FIX: Make the event listener specific to the pop animation to prevent it from removing the glow class.
+                  const popListener = (event) => {
+                      if (event.animationName === 'count-pop') {
+                          countSpan.classList.remove('count-pop-animation');
+                      }
+                  };
+                  countSpan.addEventListener('animationend', popListener, { once: true });
+                  // 2. Clean up the glow animation after its duration (1.5s) has passed.
+                  setTimeout(() => {
+                      countSpan.classList.remove('count-join-glow', 'count-leave-glow');
+                  }, 1500);
+              }
+
               const favoriteBtn = addedCard.querySelector('.favorite-btn');
               favoriteBtn.classList.toggle('active', isFavorited);
               addedCard.classList.toggle('favorited', isFavorited);
@@ -813,11 +840,6 @@ async function fetchAndBuildGrid() {
         }
 
         updateNoFavoritesMessageState();
-
-        // Animate the count change
-        countSpan.classList.remove('count-animated');
-        void countSpan.offsetWidth; // Force reflow to restart animation
-        countSpan.classList.add('count-animated');
       });
     });
 

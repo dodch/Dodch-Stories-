@@ -919,14 +919,38 @@ THE END.
         (async () => {
             const visitorCountElement = document.getElementById('visitor-count');
             const storyId = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
-            const storyVisitorsRef = ref(database, `presence/${storyId}`);
+            const storyVisitorsRef = ref(database, `presence/${storyId}`);            
+            // NEW: Get the eye icon to animate it.
+            const visitorIcon = document.querySelector('#visitor-count-container svg');
             
             // Listen for changes and update the UI with the correct visitor count.
             onValue(storyVisitorsRef, (snapshot) => {
                 if (!visitorCountElement) return;
                 const data = snapshot.val();
                 const count = data ? Object.keys(data).length : 0;
-                visitorCountElement.textContent = count;
+
+                // FIX: Animate only when the count actually changes.
+                const currentCount = parseInt(visitorCountElement.textContent, 10);
+                if (count !== currentCount) {
+                    visitorCountElement.textContent = count;
+                    // Trigger animations
+                    if (visitorIcon) {
+                        // Determine which glow to use: green for join, red for leave.
+                        const glowClass = count > currentCount ? 'visitor-join-glow' : 'visitor-leave-glow';
+
+                        // FIX: Use a double requestAnimationFrame for the most reliable animation restart.
+                        // This guarantees a full frame passes between removing and re-adding the class,
+                        // forcing the browser to re-trigger the animation every time.
+                        visitorIcon.classList.remove('visitor-join-glow', 'visitor-leave-glow');
+                        requestAnimationFrame(() => {
+                            requestAnimationFrame(() => {
+                                visitorIcon.classList.add(glowClass);
+                            });
+                        });
+                    }
+                    visitorCountElement.classList.add('count-pop-animation');
+                    visitorCountElement.addEventListener('animationend', () => visitorCountElement.classList.remove('count-pop-animation'), { once: true });
+                }
             });
 
             // Use the .info/connected path to manage online status.
