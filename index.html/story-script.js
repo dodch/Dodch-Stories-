@@ -343,7 +343,8 @@ function changeLanguage(lang, fromLoad = false, isThemeChange = false, storyCont
         document.getElementById('popup').querySelector('.bg-green-500').textContent = content.save;
         document.getElementById('popup').querySelector('.bg-red-500').textContent = content.exit;
         updateBookmarkIconState();
-        highlightWord();
+        // FIX: Re-apply the highlight after the DOM has been rebuilt. This is the core fix.
+        highlightWord(); 
         // FIX: Check `currentStoryProgress` for the initial scroll.
         if (fromLoad && currentStoryProgress && currentStoryProgress.id) {
               setTimeout(() => {

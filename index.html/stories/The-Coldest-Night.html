@@ -852,8 +852,7 @@ THE END.
     <script type="module">
         // --- Firebase Initialization ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-        import { getDatabase, ref, onValue, onDisconnect, serverTimestamp, push, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";        import { getDatabase, ref, onValue, off, onDisconnect, serverTimestamp, push, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
         // --- Story Script ---
         // This imports the main story logic. The functions will be available in this module's scope.
         import { initializeStoryContent, initializeAuth } from '../story-script.js';
@@ -878,7 +877,7 @@ THE END.
             db: database, 
             auth: auth, 
             onAuthStateChanged: onAuthStateChanged, 
-            ref, onValue, onDisconnect, serverTimestamp, push, set,
+            ref, onValue, off, onDisconnect, serverTimestamp, push, set,
             // NEW: Pass all required auth functions
             GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence
         };
