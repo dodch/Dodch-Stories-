@@ -719,10 +719,6 @@ export async function initializeStoryContent(storyContentMap, firebaseServices) 
     }
     console.log("Anonymous User ID:", anonymousUserId);
 
-    // Make firebase services available to this module
-    window.firebaseServices = firebaseServices;
-
-
     contentMap = storyContentMap; // Store the map at the module level for other functions to use.
     // This ensures the `allSavedProgress` object is ready for functions like `updateBookmarkIconState`.
     const savedProgressJson = localStorage.getItem('allSavedProgress');

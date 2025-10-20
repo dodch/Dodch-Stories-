@@ -443,7 +443,7 @@ Because your souls will always be connected…
     <script type="module">
         // --- Firebase Initialization ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getDatabase, ref, onValue, runTransaction, onDisconnect, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+        import { getDatabase, ref, onValue, onDisconnect, serverTimestamp, push, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
         // --- Story Script ---
         // This imports the main story logic. The functions will be available in this module's scope.
         import { initializeStoryContent } from '../story-script.js';
@@ -463,7 +463,7 @@ Because your souls will always be connected…
         const database = getDatabase(app);
 
         // Make Firebase services globally available for the imported script.
-        window.firebaseServices = { db: database, ref, onValue, runTransaction, onDisconnect, serverTimestamp };
+        const firebaseServices = { db: database, ref, onValue, onDisconnect, serverTimestamp, push, set };
 
         // Story-specific configuration
         const contentMap = {
@@ -513,10 +513,10 @@ Because your souls will always be connected…
 
         // Pass the contentMap to the initialization function.
         // FIX: Pass the firebaseServices object to the story script so it can perform database operations.
-        const anonymousUserId = await initializeStoryContent(contentMap);
+        const anonymousUserId = await initializeStoryContent(contentMap, firebaseServices);
         
         // --- NEW: Visitor Count Implementation (From Scratch) ---
-        (async (db, ref, onValue, onDisconnect, serverTimestamp, push, set) => {
+        (async () => {
             const storyId = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
             const storyVisitorsRef = ref(database, `presence/${storyId}`);
             const visitorCountElement = document.getElementById('visitor-count');
@@ -537,7 +537,7 @@ Because your souls will always be connected…
                     visitorCountElement.textContent = snapshot.exists() ? snapshot.numChildren() : 0;
                 }
             });
-        })(database, ref, onValue, onDisconnect, serverTimestamp, window.firebaseServices.push, window.firebaseServices.set);
+        })();
 
     </script>
 </body>
