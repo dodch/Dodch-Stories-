@@ -866,7 +866,7 @@ THE END.
     <script type="module">
         // --- Firebase Initialization ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence, signInsAnonymously } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
         import { getDatabase, ref, onValue, off, onDisconnect, serverTimestamp, push, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
         import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app-check.js";
         // --- Story Script ---
@@ -951,7 +951,7 @@ THE END.
             // FIX: The core issue was that `firebaseServices` was not being passed to the initialization function,
             // causing all database operations (like saving bookmarks) to fail. This is now corrected.
             // This also ensures all initialization happens in the correct, sequential order to prevent race conditions.
-
+            
             // 1. Initialize the story content and get the user ID.
             const userId = await initializeStoryContent(contentMap, firebaseServices);
             // 2. Initialize the authentication button.
@@ -959,10 +959,10 @@ THE END.
 
             const visitorCountElement = document.getElementById('visitor-count');
             const storyId = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
-            const storyVisitorsRef = ref(database, `presence/${storyId}`);
+            const storyVisitorsRef = ref(database, `presence/${storyId}`);            
             // NEW: Get the eye icon to animate it.
             const visitorIcon = document.querySelector('#visitor-count-container svg');
-
+            
             // Listen for changes and update the UI with the correct visitor count.
             onValue(storyVisitorsRef, (snapshot) => {
                 if (!visitorCountElement) return;
@@ -996,16 +996,18 @@ THE END.
             // Use the .info/connected path to manage online status.
             // This is the official Firebase pattern for robust presence.
             const connectedRef = ref(database, '.info/connected');
-
-            onValue(connectedRef, (snap) => {
-                if (snap.val() === true) {
-                    const myPresenceRef = ref(database, `presence/${storyId}/${userId}`);
+            onValue(connectedRef, (snap) => {                if (snap.val() === true) {
+                    // We're connected. This user's ID is `userId`.
+                    // Create a reference to a new connection entry under the user's ID.
+                    const userStoryPresenceRef = ref(database, `presence/${storyId}/${userId}`);
+                    const myConnectionRef = push(userStoryPresenceRef);
 
                     // When the client disconnects, remove their connection entry.
-                    onDisconnect(myPresenceRef).remove();
+                    // If this is the last connection, the parent `userId` node will be removed automatically by Firebase.
+                    onDisconnect(myConnectionRef).remove();
 
                     // Set the value to mark this connection as "online".
-                    set(myPresenceRef, serverTimestamp());
+                    set(myConnectionRef, serverTimestamp());
 
                     // Proactively remove the user on page unload for a more responsive count.
                     // This makes the count decrease immediately when a user leaves.
