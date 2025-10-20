@@ -921,7 +921,8 @@ THE END.
         };
 
         // Pass the contentMap to the initialization function.
-        initializeStoryContent(contentMap);
+        // FIX: Pass the firebaseServices object to the story script so it can perform database operations.
+        initializeStoryContent(contentMap, window.firebaseServices);
 
         // --- NEW: Live Visitor Count Logic ---
         (async () => {

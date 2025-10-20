@@ -730,8 +730,11 @@ document.addEventListener('DOMContentLoaded', () => {
  * This resolves the race condition where the script would try to access contentMap before it existed.
  * FIX: Export the function so it can be imported by the module script in the HTML.
  * @param {object} storyContentMap The story-specific configuration object.
+ * @param {object} firebaseServices The imported Firebase functions (db, ref, etc.).
  */
-export async function initializeStoryContent(storyContentMap) {
+export async function initializeStoryContent(storyContentMap, firebaseServices) {
+    // FIX: Make Firebase services available to this entire script module. This is the core fix.
+    window.firebaseServices = firebaseServices;
     contentMap = storyContentMap; // Store the map at the module level for other functions to use.
     // This ensures the `allSavedProgress` object is ready for functions like `updateBookmarkIconState`.
     const savedProgressJson = localStorage.getItem('allSavedProgress');
