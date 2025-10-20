@@ -926,11 +926,14 @@ THE END.
             },
         };
 
-        // Pass the contentMap to the initialization function.
-        // FIX: Pass the firebaseServices object to the story script so it can perform database operations.        await initializeStoryContent(contentMap, firebaseServices);
-        
         // --- NEW: Visitor Count Implementation (From Scratch) ---
         (async () => {
+            // FIX: Ensure all initialization happens in the correct, sequential order to prevent race conditions.
+            // 1. Initialize the story content and get the user ID.
+            const userId = await initializeStoryContent(contentMap, firebaseServices);
+            // 2. Initialize the authentication button.
+            initializeAuth(firebaseServices);
+
             const visitorCountElement = document.getElementById('visitor-count');
             const storyId = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
             const storyVisitorsRef = ref(database, `presence/${storyId}`);
