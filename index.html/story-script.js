@@ -159,8 +159,9 @@ function updateBookmarkIconState() {
  * This function is now called every time the language changes to ensure
  * the listener is always watching the correct database path. This is the
  * definitive fix for the bookmarking issue.
+ * @param {boolean} isInitialLoad - Flag to indicate if this is the first load of the page.
  */
-function setupBookmarkListener() {
+function setupBookmarkListener(isInitialLoad = false) {
     // If a listener is already active, detach it before creating a new one.
     if (firebaseProgressListenerOff) {
         firebaseProgressListenerOff();
@@ -182,6 +183,13 @@ function setupBookmarkListener() {
         // Update the UI with the new data from Firebase.
         updateBookmarkIconState();
         highlightWord();
+
+        // FIX: If this is the initial page load and a bookmark exists, scroll to it now.
+        // This resolves the race condition by waiting for the data before scrolling.
+        if (isInitialLoad && currentStoryProgress && currentStoryProgress.id) {
+            // Use a short timeout to ensure the DOM is fully ready.
+            setTimeout(() => scrollToSavedWord(false, true), 150);
+        }
     }, (error) => console.error("Bookmark listener error:", error));
     firebaseProgressListenerOff = () => off(bookmarkRef);
 }
@@ -209,7 +217,7 @@ function changeLanguage(lang, fromLoad = false, isThemeChange = false, storyCont
          localStorage.setItem('preferredLanguage', lang);
     }
     // NEW: Re-initialize the bookmark listener with the new language path.
-    setupBookmarkListener();
+    setupBookmarkListener(fromLoad);
 
     const content = storyContentMap[lang];
 
@@ -349,12 +357,6 @@ function changeLanguage(lang, fromLoad = false, isThemeChange = false, storyCont
         updateBookmarkIconState();
         // FIX: Re-apply the highlight after the DOM has been rebuilt. This is the core fix.
         highlightWord(); 
-        // FIX: Check `currentStoryProgress` for the initial scroll.
-        if (fromLoad && currentStoryProgress && currentStoryProgress.id) {
-              setTimeout(() => {
-                  scrollToSavedWord(false, false);
-              }, 100);
-        }
     };
 
     // REFACTOR: On initial page load, build the content immediately without a fade animation.
@@ -794,9 +796,6 @@ export async function initializeStoryContent(storyContentMap, fbServices) {
     handleDarkModeChange(darkModeMediaQuery);
     darkModeMediaQuery.addListener(handleDarkModeChange);
 
-    // FIX: Set up the bookmark listener AFTER the user ID is confirmed and dark mode is set.
-    // This is the definitive fix for the race condition.
-    setupBookmarkListener();
     const preferredLanguage = localStorage.getItem('preferredLanguage');
     let initialLangToLoad = 'en';
     if (preferredLanguage && typeof storyContentMap !== 'undefined' && storyContentMap[preferredLanguage]) {
