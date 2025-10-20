@@ -697,13 +697,8 @@ window.addEventListener('load', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
     // FIX: Use a self-invoking async function to correctly handle 'await' for performance checks.
-    (async () => { // FIX: Remove the redundant and conflicting anonymousUserId generation. This was the root cause of the visitor count failure.
-        console.log(`Story Page Performance Level: ${performanceLevel}`);
-        document.body.classList.add(`perf-level-${performanceLevel}`);
-
-        const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        handleDarkModeChange(darkModeMediaQuery);
-        darkModeMediaQuery.addListener(handleDarkModeChange);
+    (async () => {
+        // This function is intentionally left empty. The conflicting user ID generation has been removed.
     })();
 });
 
@@ -712,8 +707,12 @@ document.addEventListener('DOMContentLoaded', () => {
  * This resolves the race condition where the script would try to access contentMap before it existed.
  * FIX: Export the function so it can be imported by the module script in the HTML.
  * @param {object} storyContentMap The story-specific configuration object.
+ * @param {object} firebaseServices The imported Firebase functions (db, ref, etc.).
  */
-export async function initializeStoryContent(storyContentMap) {
+export async function initializeStoryContent(storyContentMap, firebaseServices) {
+    // Store Firebase services on the window to be accessible by other functions if needed,
+    // though the primary visitor count logic no longer relies on this.
+    window.firebaseServices = firebaseServices;
     contentMap = storyContentMap; // Store the map at the module level for other functions to use.
     // This ensures the `allSavedProgress` object is ready for functions like `updateBookmarkIconState`.
     const savedProgressJson = localStorage.getItem('allSavedProgress');
