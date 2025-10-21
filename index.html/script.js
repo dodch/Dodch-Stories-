@@ -1189,7 +1189,7 @@ function showTutorialOnFirstVisit() {
 // --- NEW: Dynamic Background Changer ---
 function changeBackground() {
   if (backgroundSets.length === 0) return;
-
+  console.log("Changing main page background...");
   const randomIndex = Math.floor(Math.random() * backgroundSets.length);
   const selectedSet = backgroundSets[randomIndex];
 
@@ -1336,12 +1336,13 @@ async function initializePage(manualLevelOverride = null) {
 
 async function loadDataAndInitialize() {
     try {
-        const response = await fetch('backgrounds.json');
+        const response = await fetch('main-backgrounds.json');
         backgroundSets = await response.json();
+        changeBackground(); // Call the function to set a random background
     } catch (error) {
-        console.error("Failed to load backgrounds.json:", error);
+        console.error("Failed to load main-backgrounds.json:", error);
     }
-    initializePage();
+    await initializePage();
 }
 
 document.addEventListener('DOMContentLoaded', loadDataAndInitialize);
