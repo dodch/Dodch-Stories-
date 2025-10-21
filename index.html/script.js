@@ -56,7 +56,7 @@ let allStories = [];
 let showingFavorites = false;
 let currentUserId = null; // REFACTOR: To store the user's unique ID (anonymous or authenticated)
 const body = document.body;
-let backgroundSets = []; // To store background image data
+let backgroundSet = {}; // To store background image data
 let performanceLevel = 3; // Default to highest
 
 // --- NEW: Simplified 3-Tier Performance System ---
@@ -1188,17 +1188,15 @@ function showTutorialOnFirstVisit() {
 
 // --- NEW: Dynamic Background Changer ---
 function changeBackground() {
-  if (backgroundSets.length === 0) return;
+  if (!backgroundSet || !backgroundSet.light || !backgroundSet.dark) return;
   console.log("Changing main page background...");
-  const randomIndex = Math.floor(Math.random() * backgroundSets.length);
-  const selectedSet = backgroundSets[randomIndex];
 
   const styleElement = document.getElementById('dynamic-styles') || document.createElement('style');
   styleElement.id = 'dynamic-styles';
   styleElement.innerHTML = `
     :root {
-      --bg-url: url("${selectedSet.light.url}");
-      --bg-url-dark: url("${selectedSet.dark.url}");
+      --bg-url: url("${backgroundSet.light.url}");
+      --bg-url-dark: url("${backgroundSet.dark.url}");
     }
   `;
   document.head.appendChild(styleElement);
@@ -1336,11 +1334,15 @@ async function initializePage(manualLevelOverride = null) {
 
 async function loadDataAndInitialize() {
     try {
-        const response = await fetch('main-backgrounds.json');
-        backgroundSets = await response.json();
-        changeBackground(); // Call the function to set a random background
+        const response = await fetch('backgrounds.json');
+        const allBackgrounds = await response.json();
+        const mainPageBackgrounds = allBackgrounds.find(item => item.type === 'mainPage');
+        if (mainPageBackgrounds) {
+            backgroundSet = mainPageBackgrounds.backgrounds;
+            changeBackground(); // Call the function to set the background
+        }
     } catch (error) {
-        console.error("Failed to load main-backgrounds.json:", error);
+        console.error("Failed to load backgrounds.json:", error);
     }
     await initializePage();
 }

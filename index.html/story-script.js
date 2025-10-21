@@ -16,7 +16,7 @@ const loadPercentageText = document.querySelector(".loading-percentage");
 const body = document.body;
 // FIX: Create a unique key for each story to namespace saved progress.
 // This prevents progress from one story from conflicting with another.
-const storyKey = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
+const storyKey = document.title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
 let currentLanguage = 'en';
 let currentUserId = null; // NEW: To store the user's unique ID (anonymous or authenticated)
 let firebaseProgressListenerOff = null; // To hold the function that detaches the Firebase listener
@@ -756,6 +756,29 @@ document.addEventListener('DOMContentLoaded', () => {
  * @param {object} firebaseServices The imported Firebase functions (db, ref, etc.).
  */
 export async function initializeStoryContent(storyContentMap, fbServices) {    
+    // NEW: Fetch and apply story-specific background
+    try {
+        const response = await fetch('../backgrounds.json');
+        const allBackgrounds = await response.json();
+        const storyBackgrounds = allBackgrounds.find(item => item.type === 'stories');
+        
+        if (storyBackgrounds && storyBackgrounds.backgrounds[storyKey]) {
+            const bgSet = storyBackgrounds.backgrounds[storyKey];
+            const styleElement = document.createElement('style');
+            styleElement.innerHTML = `
+                :root {
+                    --main-bg-url-light: url('${bgSet.light.url}');
+                    --main-bg-url-dark: url("${bgSet.dark.url}");
+                }
+            `;
+            document.head.appendChild(styleElement);
+        } else {
+            console.warn(`No background found for story key: ${storyKey}`);
+        }
+    } catch (error) {
+        console.error("Failed to load or apply story background:", error);
+    }
+
     contentMap = storyContentMap;
     firebaseServices = fbServices; // Use the passed-in services
 
