@@ -364,15 +364,6 @@ Français est actuellement indisponible, vous pouvez utiliser la fonction de tra
             });
         })();
 
-        // FIX: Handle back-forward cache (bfcache) restores to prevent duplicate visitor counts.
-        // When a page is restored from bfcache (common on mobile), the 'pageshow' event's 'persisted'
-        // property is true. We force a reload to ensure a clean state and a single presence entry.
-        window.addEventListener('pageshow', function(event) {
-            if (event.persisted) {
-                window.location.reload();
-            }
-        });
-
     </script>
 </body>
 </html>

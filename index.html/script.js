@@ -1220,46 +1220,53 @@ async function hashString(str) {
 }
 
 async function initializeUser() {
-    const { auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, setPersistence, browserLocalPersistence } = window.firebaseServices;
+    // REFACTOR: Add signInAnonymously to the destructuring.
+    const { auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, setPersistence, browserLocalPersistence, signInAnonymously } = window.firebaseServices;
     const loginButton = document.getElementById('loginButton');
     const authContainer = document.getElementById('auth-container');
 
     onAuthStateChanged(auth, user => {
         // NEW: Add the glass effect class to the auth container for consistent styling.
         authContainer.classList.add('glass-button-base');
-
+        
         if (user) {
-            // User is signed in
+            // User is signed in (either with Google or anonymously)
             currentUserId = user.uid;
-            // NEW: Add a class to the container when the user is logged in
-            authContainer.classList.add('logged-in');
-            console.log("User signed in:", currentUserId);
-            loginButton.innerHTML = `
-                <img src="${user.photoURL}" alt="Profile" class="profile-pic">
-                <button class="logout-button">Logout</button>
-            `;
-            authContainer.querySelector('.logout-button').addEventListener('click', (e) => {
-                e.stopPropagation();
-                signOut(auth);
-            });
-        } else {
-            // User is signed out
-            currentUserId = localStorage.getItem('anonymousUserId');
-            // NEW: Remove the class when the user is logged out
-            authContainer.classList.remove('logged-in');
-            if (!currentUserId) {
-                currentUserId = 'anon-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('anonymousUserId', currentUserId);
+
+            // FIX: Differentiate between an authenticated user and an anonymous one.
+            if (user.isAnonymous) {
+                // User is anonymous
+                authContainer.classList.remove('logged-in');
+                console.log("User is anonymous:", currentUserId);
+                loginButton.innerHTML = `<span class="login-text">Login</span>`;
+            } else {
+                // User is signed in with Google
+                authContainer.classList.add('logged-in');
+                console.log("User signed in with Google:", currentUserId);
+                loginButton.innerHTML = `
+                    <img src="${user.photoURL}" alt="Profile" class="profile-pic">
+                    <button class="logout-button">Logout</button>
+                `;
+                authContainer.querySelector('.logout-button').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    signOut(auth);
+                });
             }
-            console.log("User is anonymous:", currentUserId);
-            loginButton.innerHTML = `<span class="login-text">Login</span>`;
+        } else {
+            // No user is signed in, so sign them in anonymously.
+            // This ensures every visitor has a stable UID for favorites, even without logging in.
+            authContainer.classList.remove('logged-in');
+            signInAnonymously(auth).catch(error => {
+                console.error("Anonymous sign-in failed on main page:", error);
+            });
         }
         // Re-filter/render panels to update their favorited state for the new user
         filterAndRenderPanels();
     });
 
     authContainer.addEventListener('click', () => {
-        if (!auth.currentUser) {
+        // FIX: Trigger login flow if there is no user OR if the current user is anonymous.
+        if (!auth.currentUser || auth.currentUser.isAnonymous) {
             // FIX: Use local persistence to keep the user signed in across page reloads.
             // This ensures the auth state is correctly maintained after the popup flow.
             setPersistence(auth, browserLocalPersistence)
@@ -1280,6 +1287,10 @@ async function initializeUser() {
 }
 
 let isInitialized = false; // FIX: Add a flag to prevent double initialization.
+
+// FIX: Expose the ensureAnimating function globally so it can be called from the bfcache restore event.
+let ensureAnimating = () => {};
+
 async function initializePage(manualLevelOverride = null) {
     if (isInitialized) return; // Prevent this from running more than once.
     isInitialized = true;
@@ -1358,4 +1369,24 @@ window.addEventListener('pageshow', function(event) {
     updateGridBounds();
     ensureAnimating();
   }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    // FIX: The ensureAnimating function is defined inside fetchAndBuildGrid, which is async.
+    // To make it accessible to the 'pageshow' event listener, we need to wait for the page to be initialized.
+    // We'll use a custom event to signal when initialization is complete.
+    document.addEventListener('pageInitialized', () => {
+        // The 'pageshow' event might fire before the page is fully initialized, especially on fast networks.
+        // This ensures that when a page is restored from bfcache, we can reliably restart the animations.
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                console.log("Page restored from bfcache. Restarting animations.");
+                if (typeof window.ensureAnimating === 'function') {
+                    window.ensureAnimating();
+                }
+            }
+        });
+    });
+
+    loadDataAndInitialize();
 });
