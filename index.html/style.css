@@ -341,14 +341,14 @@ body.dark-mode .perf-level-1 #perfBtn.floating-button {
   border-radius: inherit;
   /* FIX: Use multiple layered gradients for a realistic edge shine effect. */
   background:
-    /* 1. A sharp, bright highlight for the core reflection */
+    /* 1. A sharp, bright highlight for the core reflection (further toned down) */
     radial-gradient(circle at var(--pointer-x) var(--pointer-y),
-      rgba(255, 255, 255, 0.8) 0%, /* Intense center */
-      rgba(255, 255, 255, 0.2) 35%, /* Sharp falloff */
+      rgba(255, 255, 255, 0.4) 0%, /* Even less intense center */
+      rgba(255, 255, 255, 0.1) 35%, /* Much softer falloff */
       transparent 50%
     ),
-    /* 2. A larger, softer underlying glow for a natural feel */
-    radial-gradient(circle at var(--pointer-x) var(--pointer-y), rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+    /* 2. A larger, softer underlying glow for a natural feel (further toned down) */
+    radial-gradient(circle at var(--pointer-x) var(--pointer-y), rgba(255, 255, 255, 0.05) 0%, transparent 70%);
   opacity: var(--spotlight-opacity, 0);
   pointer-events: none; /* Ensure it doesn't block clicks on the card */
   transition: opacity 0.4s ease-out;
@@ -358,7 +358,7 @@ body.dark-mode .perf-level-1 #perfBtn.floating-button {
 /* NEW: Simpler, more focused shine effect specifically for buttons. */
 .shine-effect {
   position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: inherit;
-  background: radial-gradient(120px circle at var(--pointer-x) var(--pointer-y), rgba(255, 255, 255, 0.5), transparent 40%);
+  background: radial-gradient(120px circle at var(--pointer-x) var(--pointer-y), rgba(255, 255, 255, 0.25), transparent 40%);
   opacity: var(--spotlight-opacity, 0);
   pointer-events: none;
   transition: opacity 0.4s ease-out;
@@ -498,7 +498,7 @@ body.dark-mode .favorite-overlay {
   background-color:color-mix(in srgb,var(--blue-tint) 20%,transparent);
   backdrop-filter:blur(4px);
   -webkit-backdrop-filter:blur(4px);
-  box-shadow:var(--glass-shadow);
+  box-shadow:var(--button-edge);
   /* FIX: Add visibility to the transition and set a delay for smooth closing. */
   transition: width 0.5s ease-in-out, padding 0.5s ease-in-out, opacity 0.5s ease-in-out, background-color 0.5s ease-in-out, visibility 0s 0.5s, transform 0.3s ease-out, box-shadow 0.3s ease-out;
   position: absolute;
@@ -510,7 +510,7 @@ body.dark-mode .favorite-overlay {
 /* NEW: Add a subtle lift and glow on hover for the search bar. */
 body:not(.is-scrolling) .search-bar:hover {
     transform: scale(1.02);
-    box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 30%, transparent), var(--glass-shadow);
+    box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 30%, transparent), var(--button-edge);
 }
 
 .search-bar::placeholder{color:var(--search-placeholder);}
@@ -551,7 +551,7 @@ body:not(.is-scrolling) .search-button:hover, .search-button:focus-visible {
   box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 50%, transparent), var(--button-edge);
 }
 .search-button.active {
-  background-color: var(--red-tint) !important; /* FIX: Ensure the red color is applied when active. */
+  background-color: color-mix(in srgb, var(--red-tint) 20%, transparent); /* FIX: Use a semi-transparent red to match the UI. */
 }
 body:not(.is-scrolling) .search-button.active:hover, .search-button.active:focus-visible {
   /* FIX: Add a red glow on hover when the button is active (showing the 'X'). */

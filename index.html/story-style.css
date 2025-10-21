@@ -300,9 +300,8 @@ html.dark-mode #visitor-count-container {
 }
 
 #popup button.glass-button-base.bg-red-500 {
-    background-color: rgba(239, 68, 68, 0.8);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    /* FIX: Use the same semi-transparent red tint as other close/cancel buttons for consistency. */
+    background-color: color-mix(in srgb, #ef4444 20%, transparent);
 }
 
 /* REFACTOR: Dark mode specific styles for the pop-up buttons */
