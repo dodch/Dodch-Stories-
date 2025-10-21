@@ -30,7 +30,18 @@
         /* 5. The main outer drop shadow for separation from the background */
         0px 4px 12px 0px color-mix(in srgb, #000 25%, transparent),
         0px 15px 35px 0px color-mix(in srgb, #000 20%, transparent);
-    --button-shadow-light: var(--glass-shadow-light);
+    /* REFACTOR: Final overhaul for a hyper-realistic, 3D machined glass button edge with defined top/bottom bevels. */
+    --button-shadow-light:
+        /* 1. Top Highlight: A sharper, brighter light-catching edge. */
+        inset 0 1.5px 0 color-mix(in srgb, #fff 85%, transparent),
+        /* 2. Top Bevel Shadow: A crisper dark line below the highlight for a 3D chiseled look. */
+        inset 0 2.5px 3px color-mix(in srgb, #000 25%, transparent),
+        /* 3. Bottom Highlight: A softer, more visible reflected light on the bottom inner edge. */
+        inset 0 -1.5px 0 color-mix(in srgb, #fff 35%, transparent),
+        /* 4. Outer Border: A very fine, dark outer line for a clean silhouette (unchanged). */
+        0 0 0 1px color-mix(in srgb, #000 15%, transparent),
+        /* 5. Outer Drop Shadow: A deeper shadow for more pop. */
+        0px 5px 15px -5px color-mix(in srgb, #000 35%, transparent);
     --pop-up-bg-light: rgba(255, 255, 255, 0.7);
     --pop-up-text-light: #1f2937;
     /* --main-bg-url-light will be defined in each story's inline style */
@@ -75,7 +86,13 @@ html.dark-mode {
         /* 5. The main outer drop shadow for separation */
         0px 5px 15px 0px color-mix(in srgb, #000 40%, transparent),
         0px 20px 40px 0px color-mix(in srgb, #000 35%, transparent);
-    --button-shadow-dark: var(--glass-shadow-dark);
+    /* REFACTOR: Final overhaul for a hyper-realistic, 3D machined glass button edge (dark mode). */
+    --button-shadow-dark:
+        inset 0 1.5px 0 color-mix(in srgb, #fff 70%, transparent),
+        inset 0 2.5px 3px color-mix(in srgb, #000 35%, transparent),
+        inset 0 -1.5px 0 color-mix(in srgb, #fff 30%, transparent),
+        0 0 0 1px color-mix(in srgb, #000 25%, transparent),
+        0px 6px 18px -5px color-mix(in srgb, #000 50%, transparent);
     --pop-up-bg-dark: rgba(31, 41, 55, 0.9);
     --pop-up-text-dark: #f0f0f0; /* REVERT: Revert to original color */
     --text-on-glass-dark: #C084FC;
@@ -152,6 +169,13 @@ html.dark-mode .back-home-button-custom, body.dark-mode .back-home-button-custom
     backdrop-filter: blur(4px); /* The SVG filter itself */
     -webkit-backdrop-filter: blur(4px);
     transform: translateZ(0);
+}
+/* NEW: Override the popup's shadow to use the more complex grid glass effect instead of the button edge. */
+.glass-popup {
+    box-shadow: var(--glass-shadow-light);
+}
+html.dark-mode .glass-popup, body.dark-mode .glass-popup {
+    box-shadow: var(--glass-shadow-dark);
 }
 
 .glass-popup {

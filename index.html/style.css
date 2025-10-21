@@ -22,7 +22,7 @@
   --tint-color:#fff;
   --blue-tint:#00aaff;
   --purple-tint:#a366ff;
-  --red-tint:#ff3366;
+  --red-tint:#ff477e; /* A slightly softer, more pinkish hue */
   --green-tint: #4ade80; /* A nice, vibrant light green */
   --golden-tint:gold;
   --glass-bg:color-mix(in srgb,var(--tint-color) 10%,transparent);
@@ -46,7 +46,18 @@
   --stack-shadow:
     0px 4px 12px 0px color-mix(in srgb, #000 25%, transparent),
     0px 15px 35px 0px color-mix(in srgb, #000 20%, transparent);
-  --button-shadow:var(--glass-shadow);
+  /* REFACTOR: Final overhaul for a hyper-realistic, 3D machined glass button edge with defined top/bottom bevels. */
+  --button-edge:
+    /* 1. Top Highlight: A sharper, brighter light-catching edge. */
+    inset 0 1.5px 0 color-mix(in srgb, #fff 85%, transparent),
+    /* 2. Top Bevel Shadow: A crisper dark line below the highlight for a 3D chiseled look. */
+    inset 0 2.5px 3px color-mix(in srgb, #000 25%, transparent),
+    /* 3. Bottom Highlight: A softer, more visible reflected light on the bottom inner edge. */
+    inset 0 -1.5px 0 color-mix(in srgb, #fff 35%, transparent),
+    /* 4. Outer Border: A very fine, dark outer line for a clean silhouette (unchanged). */
+    0 0 0 1px color-mix(in srgb, #000 15%, transparent),
+    /* 5. Outer Drop Shadow: A deeper shadow for more pop. */
+    0px 5px 15px -5px color-mix(in srgb, #000 35%, transparent);
   transition: all 0.5s ease-in-out;
   --panel-blur-start: 10px;
   
@@ -65,7 +76,7 @@
     --tint-color:#888;
     --blue-tint:#00aaff;
     --purple-tint:#a366ff;
-    --red-tint:#ff3366;
+    --red-tint:#ff477e; /* A slightly softer, more pinkish hue */
     --green-tint: #4ade80;
     --golden-tint:gold;
     --glass-bg:rgba(0,0,0,0.35);
@@ -88,7 +99,14 @@
     --stack-shadow:
       0px 5px 15px 0px color-mix(in srgb, #000 40%, transparent),
       0px 20px 40px 0px color-mix(in srgb, #000 35%, transparent);
-    --button-shadow:var(--glass-shadow);
+  /* REFACTOR: Final overhaul for a hyper-realistic, 3D machined glass button edge (dark mode). */
+  --button-edge:
+    inset 0 1.5px 0 color-mix(in srgb, #fff 70%, transparent),
+    inset 0 2.5px 3px color-mix(in srgb, #000 35%, transparent),
+    inset 0 -1.5px 0 color-mix(in srgb, #fff 30%, transparent),
+    0 0 0 1px color-mix(in srgb, #000 25%, transparent),
+    0px 6px 18px -5px color-mix(in srgb, #000 50%, transparent);
+
   }
 }
 /* This class can be used for a manual toggle button if you add one later */
@@ -100,7 +118,7 @@ body.dark-mode {
   --tint-color:#888;
   --blue-tint:#00aaff;
   --purple-tint:#a366ff;
-  --red-tint:#ff3366;
+  --red-tint:#ff477e; /* A slightly softer, more pinkish hue */
   --green-tint: #4ade80;
   --golden-tint:gold;
   --glass-bg:rgba(0,0,0,0.35);
@@ -123,7 +141,13 @@ body.dark-mode {
   --stack-shadow:
     0px 5px 15px 0px color-mix(in srgb, #000 40%, transparent),
     0px 20px 40px 0px color-mix(in srgb, #000 35%, transparent);
-  --button-shadow:var(--glass-shadow);
+  /* REFACTOR: Final overhaul for a hyper-realistic, 3D machined glass button edge (dark mode). */
+  --button-edge:
+    inset 0 1.5px 0 color-mix(in srgb, #fff 70%, transparent),
+    inset 0 2.5px 3px color-mix(in srgb, #000 35%, transparent),
+    inset 0 -1.5px 0 color-mix(in srgb, #fff 30%, transparent),
+    0 0 0 1px color-mix(in srgb, #000 25%, transparent),
+    0px 6px 18px -5px color-mix(in srgb, #000 50%, transparent);
 }
 html {
   height: 100%;
@@ -486,7 +510,7 @@ body.dark-mode .favorite-overlay {
 /* NEW: Add a subtle lift and glow on hover for the search bar. */
 body:not(.is-scrolling) .search-bar:hover {
     transform: scale(1.02);
-    box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 30%, transparent), var(--button-shadow);
+    box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 30%, transparent), var(--glass-shadow);
 }
 
 .search-bar::placeholder{color:var(--search-placeholder);}
@@ -505,7 +529,8 @@ body:not(.is-scrolling) .search-bar:hover {
   width:60px;
   height:60px;
   border-radius:30px;
-  box-shadow:var(--button-shadow);
+  /* REFACTOR: Use the new, more realistic button edge effect. */
+  box-shadow: var(--button-edge); 
   cursor: pointer;
   background-color:color-mix(in srgb,var(--blue-tint) 20%,transparent);
   display: flex;
@@ -523,14 +548,14 @@ body:not(.is-scrolling) .search-bar:hover {
 }
 body:not(.is-scrolling) .search-button:hover, .search-button:focus-visible {
   transform: scale(1.05);
-  box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 50%, transparent), var(--button-shadow);
+  box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 50%, transparent), var(--button-edge);
 }
 .search-button.active {
   background-color: var(--red-tint) !important; /* FIX: Ensure the red color is applied when active. */
 }
 body:not(.is-scrolling) .search-button.active:hover, .search-button.active:focus-visible {
   /* FIX: Add a red glow on hover when the button is active (showing the 'X'). */
-  box-shadow: 0 0 15px color-mix(in srgb, var(--red-tint) 50%, transparent), var(--button-shadow);
+  box-shadow: 0 0 15px color-mix(in srgb, var(--red-tint) 50%, transparent), var(--button-edge);
 }
 .search-button svg.search-icon {
   transform: rotate(0deg) scale(1);
@@ -647,19 +672,20 @@ body:not(.is-scrolling) .search-button.active:hover, .search-button.active:focus
   height:40px;
   border-radius:50%;
   opacity:1;
+  /* REFACTOR: Use the hyper-realistic button edge effect. */
   transform:scale(1);
   background-color: color-mix(in srgb,var(--red-tint) 20%,transparent);
-  box-shadow: var(--button-shadow);
   display: flex;
   justify-content: center;
   align-items: center;
   /* FIX: Consolidate transitions and ensure a smooth glow for the box-shadow. */
   transition: background-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out, transform 0.3s ease-in-out;
+  box-shadow: var(--button-edge);
 }
 body:not(.is-scrolling) .favorite-btn:hover, .favorite-btn:focus-visible {
   /* REFACTOR: Combine the glow with the base button shadow for a more integrated look. */
   transform: scale(1.05);
-  box-shadow: 0 0 20px 5px color-mix(in srgb, var(--red-tint) 50%, transparent), var(--button-shadow);
+  box-shadow: 0 0 20px 5px color-mix(in srgb, var(--red-tint) 50%, transparent), var(--button-edge);
 }
 .favorite-btn svg{
   position:relative;
@@ -696,7 +722,8 @@ body.search-active .floating-buttons-container {
   width:60px;
   height:60px;
   border-radius:50%;
-  box-shadow:var(--button-shadow);
+  /* REFACTOR: Use the premium, "double-edge" button effect. */
+  box-shadow: var(--button-edge); 
   cursor:pointer;
   display:flex;
   justify-content:center;
@@ -718,7 +745,7 @@ body.search-active .floating-buttons-container {
    Each button now has its own specific hover rule. */
 body:not(.is-scrolling) #filterBtn.floating-button:hover, #filterBtn.floating-button:focus-visible {
     transform: scale(1.05);
-    box-shadow: 0 0 25px 5px color-mix(in srgb, var(--red-tint) 50%, transparent), var(--button-shadow);
+    box-shadow: 0 0 25px 5px color-mix(in srgb, var(--red-tint) 50%, transparent), var(--button-edge);
 }
 /* FIX: Change contact button to use the new green tint. */
 #contactBtn.floating-button {
@@ -726,7 +753,7 @@ body:not(.is-scrolling) #filterBtn.floating-button:hover, #filterBtn.floating-bu
 }
 body:not(.is-scrolling) #contactBtn.floating-button:hover, #contactBtn.floating-button:focus-visible {
     transform: scale(1.05);
-    box-shadow: 0 0 25px 5px color-mix(in srgb, var(--green-tint) 50%, transparent), var(--button-shadow);
+    box-shadow: 0 0 25px 5px color-mix(in srgb, var(--green-tint) 50%, transparent), var(--button-edge);
 }
 /* NEW: Style for the performance button */
 #perfBtn.floating-button {
@@ -737,7 +764,7 @@ body:not(.is-scrolling) #contactBtn.floating-button:hover, #contactBtn.floating-
 }
 body:not(.is-scrolling) #perfBtn.floating-button:hover, #perfBtn.floating-button:focus-visible {
     transform: scale(1.05);
-    box-shadow: 0 0 25px 5px color-mix(in srgb, var(--golden-tint) 50%, transparent), var(--button-shadow);
+    box-shadow: 0 0 25px 5px color-mix(in srgb, var(--golden-tint) 50%, transparent), var(--button-edge);
 }
 .floating-button svg{
   width:30px;
@@ -1083,7 +1110,8 @@ body.search-active .info-container-wrapper {
   width: 45px;
   height: 45px;
   border-radius: 50%;
-  box-shadow: var(--button-shadow);
+  /* REFACTOR: Use the premium, "double-edge" button effect. */
+  box-shadow: var(--button-edge); 
   cursor: pointer;
   background-color: color-mix(in srgb, var(--red-tint) 40%, transparent);
   display: flex;
@@ -1099,7 +1127,7 @@ body.search-active .info-container-wrapper {
 }
 body:not(.is-scrolling) .info-button:hover, .info-button:focus-visible {
   transform: scale(1.05);
-  box-shadow: 0 0 15px color-mix(in srgb, var(--red-tint) 50%, transparent), var(--button-shadow);
+  box-shadow: 0 0 15px color-mix(in srgb, var(--red-tint) 50%, transparent), var(--button-edge);
 }
 .info-button svg {
   width: 20px;
@@ -1245,7 +1273,7 @@ html {
     font-weight: bold;
     text-decoration: none;
     color: var(--glass-text);
-    box-shadow: var(--button-shadow);
+    box-shadow: var(--button-edge); 
     transition: all 0.3s ease-in-out;
     display: flex;
     justify-content: center;
@@ -1257,13 +1285,13 @@ html {
 }
 body:not(.is-scrolling) .panel-button:hover, .panel-button:focus-visible {
     transform: scale(1.02);
-    box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 40%, transparent), var(--button-shadow);
+    box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 40%, transparent), var(--button-edge);
 }
 .panel-button.social {
     background-color: color-mix(in srgb, var(--purple-tint) 20%, transparent);
 }
 body:not(.is-scrolling) .panel-button.social:hover, .panel-button.social:focus-visible {
-    box-shadow: 0 0 15px color-mix(in srgb, var(--purple-tint) 40%, transparent), var(--button-shadow);
+    box-shadow: 0 0 15px color-mix(in srgb, var(--purple-tint) 40%, transparent), var(--button-edge);
 }
 .social-link-button {
     padding: 1rem;
@@ -1271,7 +1299,7 @@ body:not(.is-scrolling) .panel-button.social:hover, .panel-button.social:focus-v
 }
 body:not(.is-scrolling) .social-link-button:hover, .social-link-button:focus-visible {
     transform: scale(1.02);
-    box-shadow: 0 0 15px color-mix(in srgb, var(--golden-tint) 40%, transparent), var(--button-shadow);
+    box-shadow: 0 0 15px color-mix(in srgb, var(--golden-tint) 40%, transparent), var(--button-edge);
 }
 /* Close button styling */
 .close-button {
@@ -1283,8 +1311,7 @@ body:not(.is-scrolling) .social-link-button:hover, .social-link-button:focus-vis
   height: 40px;
   border-radius: 50%;
   cursor: pointer;
-  background-color: color-mix(in srgb, var(--red-tint) 20%, transparent);
-  box-shadow: var(--button-shadow);
+  border: 1px solid transparent; /* Reserve space for the border-like shadow */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1294,7 +1321,11 @@ body:not(.is-scrolling) .social-link-button:hover, .social-link-button:focus-vis
   opacity: 0;
   pointer-events: none;
   transform: scale(0.9);
-  transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+  /* FIX: Add box-shadow to the transition for the hover effect. */
+  transition: opacity 0.4s ease-out, transform 0.4s ease-out, box-shadow 0.3s ease-out;
+  box-shadow: var(--button-edge);
+  /* FIX: Add the red background color to match other close/cancel buttons. */
+  background-color: color-mix(in srgb, var(--red-tint) 20%, transparent);
 }
 .close-button.active {
   /* FIX: Make the button visible when its panel is active. */
@@ -1304,7 +1335,7 @@ body:not(.is-scrolling) .social-link-button:hover, .social-link-button:focus-vis
 }
 .close-button:hover, .close-button:focus-visible {
   transform: scale(1.1);
-  box-shadow: 0 0 15px color-mix(in srgb, var(--red-tint) 50%, transparent), var(--button-shadow);
+  box-shadow: 0 0 15px color-mix(in srgb, var(--red-tint) 50%, transparent), var(--button-edge);
 }
 .close-button svg {
   width: 20px;
@@ -1433,7 +1464,7 @@ body.info-panel-open #seriesModal .glass-content {
 #tutorialStartButton:hover, #tutorialStartButton:focus-visible {
   /* FIX: Add back the scale transform to match other buttons, along with the box-shadow. */
   transform: scale(1.02);
-  box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 40%, transparent), var(--button-shadow);
+  box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 40%, transparent), var(--button-edge);
 }
 #tutorialPanel .info-content li {
   display: flex;
@@ -1505,7 +1536,7 @@ body.info-panel-open #seriesModal .glass-content {
   overflow: hidden;
   /* FIX: Apply the glass effect and shine to the auth container */
   background: var(--glass-bg);
-  box-shadow: var(--button-shadow);
+  box-shadow: var(--button-edge); 
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   position: relative; /* Needed for the shine effect */
@@ -1526,7 +1557,7 @@ body.info-panel-open #seriesModal .glass-content {
 body:not(.is-scrolling) .auth-container:hover, .auth-container:focus-visible,
 .auth-container.logged-in:hover { /* NEW: Re-apply glass effect on hover when logged in */
   transform: scale(1.05);
-  box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 40%, transparent), var(--button-shadow);
+  box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 40%, transparent), var(--button-edge);
 }
 
 .auth-container:hover .logout-button {
