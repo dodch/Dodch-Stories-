@@ -1,23 +1,33 @@
 [
     {
+        "title": "Inside my chest",
+        "description": "A deep dive into the feelings and thoughts hidden within.",
+        "length": "Auto biography",
+        "date": "25/10/2025",
+        "path": "stories/",
+        "file": "inside-my-chest.html",
+        "status": "New",
+        "status_color": "red",
+        "creator": "Adam Dodch"
+    },    {
         "title": "With the right person",
         "description": "How can someone change you",
-        "length": "auto biography",
+        "length": "Auto biography",
         "date": "19/09/2025",
         "path": "stories/",
         "file": "with-the-right-person.html",
-        "status": "New",
-        "status_color": "red",
+        "status": "",
+        "status_color": "",
         "creator": "Adam Dodch"
     },
     {
         "title": "Lost to be found",
         "description": "العربية Français English",
-        "length": "auto biography",
+        "length": "Auto biography",
         "date": "17/05/2025",
         "path": "stories/",
         "file": null,
-        "status": "under update",
+        "status": "unavailable",
         "status_color": "purple",
         "creator": "Adam Dodch"
     },

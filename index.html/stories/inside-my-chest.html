@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<!--
+/***************************************************************************************************
+ *                                   ** DO NOT COPY - ALL RIGHTS RESERVED **
+ *
+ * This code is the exclusive property of Dodch Stories and its owner. Unauthorized copying,
+ * reproduction, modification, distribution, or any form of use of this code, in whole or in part,
+ * is strictly prohibited.
+ *
+ * The intellectual property rights, including copyright, for this software are protected by
+ * international laws and treaties. Any infringement of these rights will be pursued to the
+ * fullest extent of the law, which may include civil and criminal charges.
+ *
+ * Copyright (c) 2024 Dodch Stories. All rights reserved.
+ ***************************************************************************************************/
+-->
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Favicon links -->
+    <link rel="icon" href="../../favicon.ico" sizes="any">
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml" />
+    <link rel="icon" type="image/png" sizes="16x16" href="../../favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="../../favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="../../favicon-96x96.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="../../web-app-manifest-192x192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="../../apple-touch-icon.png" />
+    <link rel="manifest" href="../../site.webmanifest" />
+    <title>Inside my chest</title>
+    <meta name="description" content="A deep dive into the feelings and thoughts hidden within.">
+    <!-- SEO: Add a canonical link to specify the preferred URL for this page. -->
+    <link rel="canonical" href="https://www.dodchstories.com/stories/inside-my-chest.html" />
+    <!-- Hreflang tags for multilingual SEO -->
+    <link rel="alternate" hreflang="en" href="https://www.dodchstories.com/stories/inside-my-chest.html" />
+    <link rel="alternate" hreflang="fr" href="https://www.dodchstories.com/stories/inside-my-chest.html" />
+    <link rel="alternate" hreflang="ar" href="https://www.dodchstories.com/stories/inside-my-chest.html" />
+    <link rel="alternate" hreflang="x-default" href="https://www.dodchstories.com/stories/inside-my-chest.html" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../story-style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Licorice&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <!-- NEW: Immediate Anti-Inspection Script.
+         Placing this script in the <head> ensures it runs before the page content is rendered,
+         making it impossible to open DevTools without an immediate page reload. -->
+    <script>
+        // FIX: Add a pre-rendering script to prevent "flash of incorrect theme" (FOIT).
+        // This runs before the body is rendered, checks for the 'dark' preference,
+        // and applies a class to the <html> element immediately.
+        (function() {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark-mode');
+            }
+        })();
+        // Disable right-click context menu globally.
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        (function() {
+            const check = () => {
+                const startTime = performance.now();
+                debugger;
+                const endTime = performance.now();
+                if (endTime - startTime > 160) {
+                    window.location.reload();
+                }
+            };
+            // Run the check immediately and on a fast interval.
+            check();
+            setInterval(check, 250);
+
+            // Block common keyboard shortcuts for DevTools.
+            window.addEventListener('keydown', e => {
+                if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
+                    window.location.reload();
+                }
+            });
+        })();
+    </script>
+</head>
+<body class="loading">
+    <div id="loading-screen">
+        <div class="loading-indicator">
+            <span>💖</span> <span>💖</span> <span>💖</span> <span>💖</span> <span>💖</span>
+        </div>
+        <div class="loading-percentage">0%</div>
+    </div>
+    <div class="fixed-background light-background"></div>
+    <div class="fixed-background dark-background"></div>
+    <!-- SVG Filter for HQ Glass Effect -->
+    <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" aria-hidden="true">
+        <filter id="filter-popup">
+            <feTurbulence type="fractalNoise" baseFrequency="0.015 0.025" numOctaves="1" result="warp" />
+            <feDisplacementMap xChannelSelector="R" yChannelSelector="G" scale="30" in="SourceGraphic" in2="warp" />
+        </filter>
+    </svg>
+
+    <!-- NEW: Add the top gradient blur vignette -->
+    <div class="top-vignette"></div>
+    <!-- FIX: Move the fixed buttons OUTSIDE the page-content-wrapper to prevent them from scrolling with the page. -->
+    <div class="fixed top-0 left-0 right-0 flex flex-col items-start p-4 space-y-2 z-50">
+        <div class="flex justify-center space-x-4 mb-2">
+            <button
+               id="ar-button"                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base shine-button"
+           >
+               العربية
+           </button>
+           <button
+               id="fr-button"                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base shine-button"
+           >
+               Français
+           </button>
+           <button
+               id="en-button"                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base shine-button"
+           >
+               English
+            </button>
+        </div>
+        <!-- REFACTOR: Changed the home button to use a cleaner SVG icon. -->
+        <div class="flex items-center space-x-2">
+            <button id="back-home-button" class="w-10 h-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base back-home-button-custom inline-flex items-center justify-center shine-button" aria-label="Back to Home">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+            </button>
+            <!-- NEW: Login Button for Story Page -->
+            <div id="auth-container" class="auth-container glass-button-base">
+                <button id="loginButton" class="login-button">
+                    <span class="login-text">Login</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- NEW: Live Visitor Count (moved to the right) -->
+    <div id="visitor-count-container" class="fixed top-0 right-0 p-4 z-50 glass-button-base flex items-center px-3 py-1 rounded-full mr-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        </svg>
+        <span id="visitor-count" class="text-white font-bold text-sm">1</span>
+    </div>
+    <div id="page-content-wrapper">
+        <div id="raw-ar-text" style="display: none;">
+            أٮﻤﲎ أن أٮﻠﻎ ٮﻮﻣا ً اﻟٮﺴﺤﺔ اﻟﱵ أﺳٮﺤﻖ أن أﻛﻮٮﻬﺎ.
+ واڡڡﺎ أﻣﺎم ﻣرآة اﻟﺤﻤّﺎم اﻟﻤﻌﻠﻖ، أﺣﺪّق ڡى اٮﻌﲀﳼ كﺄٮ ّى أٮﺤﺚ ﻋﲏ ٮﺪاﺣﻠﻪ، ﻫﺎﻣﺴﺎ ﻟٮڡﴘ ٮٮﻠﻚ اﻟكﻠﻤﺎت.
+ أﺣٮﺎٮ ً ﺎ أﺣﺎول أن أٮﻄﺮ إﻟﻰ وﺣهى ٮﻌٮون ﻻ ٮﺸٮﻪ ﻋٮﲏّ ، ٮﻌٮون رٮﻤﺎ ٮﺴٮﻄيﻊ أن ٮراٮى ٮﻌﻤﻖ ﻣٮﻞ ﻣﺎ أرى اﻵﺣريﻦ…
+ ﻟﻌﲇ ّ أﻛٮﺸﻒ ﻛٮﻒ ٮٮﻄﺮ اﻟٮﺎس إلى، وﻛٮﻒ ٮڡرأون ﻫﺬا اﻟﻮﺣﻪ اﻟﺬي ﻻ أﰷد أﺳٮﻮﻋٮﻪ ٮٮڡﴘ.
+ أﺣﺪّق ﻃويﻼً ، وﻣﻊ ذﻟﻚ ٮﻄﻞ ﺻورٮى ﻣٮﻬﻤﺔ، ﺿٮﺎٮيﺔ، كﺄٮ ّﻬﺎ اٮﻌﲀس ڡى ﻣﺎءٍ راﻛﺪ.
+ ﺣﺴﺪي، وﺣﻮدي، وﺣﱴ ﺻﻮٮى أﺣٮﺎٮ ً ﺎ… كل ّﻬﺎ ٮٮﺪو لى كﺄﺷٮﺎء أﻋﺮڡﻬﺎ ﻣﻦ ٮﻌٮﺪ.
+ كﺄٮﲏ ﻟﻢ أرَ ٮڡﴘ ڡﻂ، ﻛﻤﺎ ٮراﻫﺎ اﻵﺣرون.
+ أٮﺴﺎءل ﻛٮٮرًا… ﻋٮﺪﻣﺎ ٮٮﻄرون إلى، ﻫﻞ ٮﻼﺣﻄون ٮﻠﻚ اﻟٮڡﺎﺻٮﻞ اﻟﺪڡٮڡﺔ اﻟﱵ أﻋڡﻞ ﻋٮﻬﺎ ٮٮڡﴘ ؟
+ ﻫﻞ ٮرون ﻣﺎ أراه أٮﺎ ڡٮهﻢ، ﺣٮﻦ أٮﺄﻣﻞ وﺣﻮﻫﻬﻢ، وأﺷﻌﺮ ٮﺄﺷٮﺎء ﻣﺤڡٮﺔ داﺣﻠﻬﻢ ﻻ ٮڡﺎل؟
+ ﻫﻞ ٮﺴٮﻄيﻊ أﺣﺪﻫﻢ أن ٮڡﻬﻢ ٮﻠﻚ اﻟٮﻌﺎٮيﺮ اﻟﺼﺎﻣٮﺔ ٮﺪاﺣﲇ و ٮﻤﻼﻣحى ﻛﻤﺎ أٮﺎ أراﻫﺎ ٮﻬﻢ؟
+ ﻋريﺐ ﻫﻮ ﻫﺬا اﻟٮٮﺎڡﺾ… أﺳٮﻄيﻊ أن أﻟﻤﺢ ٮﻮﺿوح ﻣﺎ ٮﺤڡٮﻪ اﻟٮﺎس ﺣﻠﻒ ٮﻄراٮﻬﻢ،
+ وأﺷﻌﺮ ٮﺄﺣزاٮﻬﻢ ﺣﱴ إن ﻟﻢ ٮٮﺤﺪٮوا،
+ ﻟﻜٮﲏ ﺣٮﻦ أٮﻄﺮ إﻟﻰ ٮڡﴘ، ﻻ أرى إﻻ ڡراﻋً ﺎ… ﻃﻼ ًّ ٮﺎﻫٮًﺎ ٮﻼ ﻣﻼﻣﺢ.
+ أﺣٮﺎٮ ً ﺎ أٮﻤﲎ ﻟﻮ أﺳٮﻄيﻊ أن أﺣرج ﻣﻦ ﺣﺴﺪي ﻟٮﻮمٍ واﺣﺪ ڡڡﻂ.
+ أﻋٮﺶ ڡى ﺣﺴﺪٍ آﺣﺮ،
+ أﺣﻠﺲ ڡٮﺎﻟﱵ،
+ أٮﻄﺮ ڡى ﻋٮﲏّ ، ﻛﻤﺎ أٮﻄﺮ ڡى أﻋٮﻦ ﺷﺤﺺ أﺣٮﻪ،
+ وأﺣﺎدث ٮڡﴘ ﻛﻤﺎ ﻟﻮ ﻛٮﺖ ﺻﺪٮڡً ﺎ ﺣڡٮڡٮًﺎ لى.
+ أٮﻤﲎ أن أﻋﺮف ﻛٮﻒ ﻫﻮ ﺷﻌور أن أﻛون أٮﺎ… ﻣﻦ اﻟﺤﺎرج.
+ ﻷٮﲏ ﻣﻬﻤﺎ ﺣﺎوﻟﺖ، ﻻ أﺻﺪق ﻣﺎ ٮڡﺎل لى.
+ ﻻ أﺻﺪق اﻟﻤﺤﺎﻣﻼت،
+ أٮٮﺴﻢ، أﻫﺰ رأﳼ، ﻟﻜٮﲏ ﻻ أﺳٮﻄيﻊ ﺣڡﺎ ٮڡٮﻠﻬﺎ
+ ﻷٮﲏ ٮٮﺴﺎﻃﺔ… ﻟﻢ أرٮى ﺣڡﺎ ٮﻌﺪ.
+ ﺣٮﺎلى واﺳﻊ، ﻣﺸﺎﻋري ٮتﻀﺤﻢ ٮﻮﻣًﺎ ٮﻌﺪ ٮﻮم،
+ ﺣﺴﺎﺳٮّﱵ ٮﺤﺎه ﻣﺎ ﺣﻮلى ٮتﺤﺎوز ﻣﺎ ٮﻤﻜٮﲏ ٮﺤﻤﻠﻪ أﺣٮﺎٮ ً ﺎ، أﺳٮﻄيﻊ اﻟﺸﻌور ٮﺄدق اﻟٮڡﺎﺻٮﻞ واﻟٮﻌٮرات ﻣﻦ ﺣﻮلى.
+ وكﻠﻤﺎ ﻛَ ٮ ِﺮَت، ﺷﻌﺮت أٮﲏ أﺿيﻊ أﻛٮﺮ.
+ اﻟﻌﻤﺮ ڡﺼٮﺮ… وأٮﺎ ٮﺎﻟﲀد أڡﻬﻢ ٮڡﴘ،
+ ڡﻜٮﻒ لى أن أڡﻬﻢ ﻋٮري؟
+ أﻛٮﺮ ﻣﺎ ٮﺆﻟﻤﲏ ﻫﻮ ﻫﺬا اﻟﺸﻌور اﻟﻌﻤٮﻖ ٮﻌﺪم اﻟڡَ ﻬﻢ.
+ ﻻ أﺣﺪ ٮڡﻬﻤﲏ.
+ ٮﻞ ﺣﱴ أٮﺎ ﻻ أڡﻬﻤﲏ.
+ أﳼء اﻟﻄﻦ ٮٮڡﴘ،
+أﳼء اﻟﻄﻦ ٮٮڡﴘ،
+ أﺣﺎﻛﻢ ٮواٮﺎي،
+ أﺣﻠﺪ ڡﻠﱯ،
+ وأﻋﻀﺐ ﻣﻦ روحى.
+ ﻋﺎﻟمى اﻟﺪاﺣﲇ ٮﺰداد اٮﺴﺎﻋًﺎ،
+ ﻟﻜﻦ اﻟﻤﺴﺎڡﺔ ٮيﲏ وٮيﻦ ﻣﻦ ﺣﻮلى ٮتّﺴﻊ هى اﻷﺣرى.
+ وڡى ﻟﺤﻄﺎت ﻛٮٮﺮة، أﺷﻌﺮ أٮﲏ… أﻃڡﻮ ٮﻌٮﺪً ا ﻋﻦ كﻞ ﳾء.
+ ﻟﻜﻦ ﺣٮﻦ ٮﺸﻌﺮ ٮى أﺣﺪﻫﻢ ﺣڡً ﺎ، ﺣٮﻦ ٮٮﻄﺮ ڡى ﻋٮﲏ ويراٮى،
+ أﺷﻌﺮ ٮﺴﻌﺎدة ﻋﺎرﻣﺔ.
+ أٮﻌل ّﻖ ٮﻪ،
+ أٮﻤﺴﻚ ٮﻪ ٮڡﻮة،
+ كﺄٮﻪ اﻟﻀﻮء اﻟﻮﺣٮﺪ ڡى ﻋٮﻤﱵ.
+ ﻟﻜٮّﻬﻢ داﺋﻤﺎ ﻣﺎ ٮﻜﻮٮون ﻫﺸّ ٮﻦ، ﻛﻤﺼٮﺎح ﻣﻦ اﻟﺰﺣﺎج…
+ وﺣٮﻦ أﺿﻤّﻬﻢ ٮﺸﺪة،
+ ٮٮﻜﺴرون.
+ و ٮٮﻄڡﺊ ﻣﻌﻬﻢ اﻟﻀﻮء،
+ ويٮٮﻌٮﺮ اﻟﺰﺣﺎج.
+ ويﺼٮٮﲏ اﻟﺸﻄﻰ.
+ أٮﺰف.
+ وأٮڡﻰ ﻣﻊ اﻟٮﺪوب.
+ ٮﺪوب ﻻ ٮٮﺪﻣﻞ.
+ ٮﺪوب ﻻ ٮ ُ ٮﴗ.
+ ٮﺪوب ٮﺬﻛﺮٮى ٮﻤﺎ ﻣﴣ.
+ ﻟﻜٮﲏ رﻋﻢ ذﻟﻚ… ﻟﻢ أٮﻮڡﻒ ﻋﻦ اﻟﺤﺐ.
+ ﺣﱴ وإن ﻟﻢ ٮﻜﻦ ڡﺪري أن أ ُﺣَﺐ ﻛﻤﺎ أﺣِﺐ،
+ ﻟﻢ أٮﻮڡ ّﻒ ﻋﻦ ٮﺬر اﻟﻤﺤٮﺔ.
+ ﻛٮﺖ أزرع اﻟﻤﺤٮﺔ ﰷﻟﺰﻫور ڡى ٮﺴٮﺎن داﺣﻞ روحى، كﻞّ ٮﻮم.
+ ﻟﻜﻦ ﻣﺆﺣرًا، ﻟﻢ ٮﻌﺪ ٮٮﻤﻮ.
+ ﻟﻢ أﻋﺪ أرى ڡ ُ ﻠوٮًﺎ ﻣٮڡٮّﺤﺔ.
+ وﻫٮﺎ أدرﻛﺖ… رٮﻤﺎ ﻷٮﻬﺎ ﻟﻢ ٮ ُتﺮك ﻟٮٮﻤﻮ.
+ ﻛٮﺖ أڡﻄڡﻬﺎ داﺋﻤًﺎ،
+ وأڡﺪّﻣﻬﺎ، إﻣﺎ ﻟﻤﻦ أﺣٮٮﺖ،
+ أو كﺈٮٮﺎت أٮﲏ أﺳٮﺤﻖ اﻟﺤﺐ،
+ أن ﻣﺸﺎﻋري ﺻﺎدڡﺔ، رﻋﻢ كﻞ ﻣﺎ ٮُڡﺎل.
+ ﻟﻜﻦ أﻋﻠﺐ اﻟﺰﻫور، ﻛﻤﺎ ٮﻌﻠﻢ 
+إﻣﺎ ٮﻤﻮت ٮٮﻄﺊ ڡى إٮﺎءٍ زﺣﺎحى ﻋﲆ رفٍّ ﻣٮﴘ،
+إﻣﺎ ٮﻤﻮت ٮٮﻄﺊ ڡى إٮﺎءٍ زﺣﺎحى ﻋﲆ رفٍّ ﻣٮﴘ،
+ أو ٮ ُﻄوى ٮيﻦ ﺻڡﺤﺎت ﻛٮﺎب ﻻ ٮُڡرأ،
+ ٮﻤﺎﻣًﺎ ﰷﻟكﻠﻤﺎت اﻟﱵ أڡﻮﻟﻬﺎ، واﻟﱵ ﻻ ٮﺴﻤﻌﻬﺎ أﺣﺪ.
+ واٮٮﻬﻰ ٮى اﻷﻣﺮ ڡى ٮﺴٮﺎنٍ ﺣﺎف، ٮڡﻠﺐٍ ڡﺎرغ،
+ وﻋﻄﺮ اﻟﺤﺐ ٮٮﺤّ ﺮ ﻣﻊ اﻟريﺢ،
+ ٮﺤﻀﺮ ﻟﻠﺤﻄﺔ، ٮﻢ ٮﻌٮﺐ.
+ وﻟﻜﻦ…
+ ﻫﻞ ﻫﺬا ﻣﺎ ٮٮٮعى أن ٮﻜون ﻋﻠٮﻪ اﻟﺤﺎل ؟
+ رٮﻤﺎ ﻻ.
+ رٮﻤﺎ ﻋﲇّ أن أٮﺮك زﻫور ڡﻠﱯ ٮٮﻤﻮ ﻣﻦ أﺣﲇ أٮﺎ.
+ أﻋٮﲏ ٮﻬﺎ،
+ أرويهﺎ،
+ أٮﺮﻛﻬﺎ ٮتڡٮّﺢ داﺣﲇ،
+ ﺣﱴ ٮﺄٮى ﻣﻦ ٮراﻫﺎ،
+ ويڡﺪّ رﻫﺎ،
+ وﻻ ٮڡﻄڡﻬﺎ،
+ ٮﻞ ٮﺤﻠﺲ إﻟﻰ ﺣﺎٮﱯ،
+ ويﻌٮﲏ ٮﻬﺎ ﻣعى…
+ ﺣﱴ ٮﺼٮﺮ اﻟڡﻠﺐ ﺣﺪٮڡﺔ، واﻟﺤﺪٮڡﺔ ﺣڡﻼً ﻻ ٮﻬﺎٮﺔ ﻟﻪ.
+ ⸻
+ أﺣٮﺎٮﺎ أﺳٮﻠڡى ﻋﲆ ڡراﳾ وأٮﻄﺮ الى ﺳڡﻒ ﻋﺮڡﱵ، ڡى ٮﻠﻚ اﻟﻠﺤﻀﺔ ٮتﻌﺎﻟﻰ ﻫواﺣٮﺲ اﻟﻤﺎﴈ و أرى ﻟﻤﺤﺎت ﻣﻦ 
+أﺷﺤﺎص ٮﺤﻮﻟوا الى ذﻛريﺎت ﻻ ٮﺴٮﺐ إﻻ اﻟﺤﺴﺮة، ٮﻠﻚ اﻟﻠﻤﺤﺔ اﻟﱵ ٮﺴٮﺐ ٮٮﻀﺎ ﻣڡﺎﺣﺌﺎ ٮﺎﻟڡﻠﺐ، ﻣﺆﻟﻢ ٮﻮﻋﺎ ﻣﺎ… 
+ڡٮتﺴﺎرع اﻟﺪڡﺎت ڡﺄﺣٮﺲ أٮڡﺎﳼ و أﺳﺤﻦ اﻷﻟﻢ ٮﺎﻟﺪاﺣﻞ 
+أﻣﺴﻜﻪ ٮيﻦ ٮﺪاي،
+ أﺷﻌﺮ ٮﺮﻋٮٮﻪ اﻟﻤﻠﺤﺔ ڡى اﻟڡرار 
+ﻟﻜٮﻪ ﻻ ٮﺴٮﻄيﻊ، ﻷٮﻪ ﻣﺴﺤون و ﻟﻢ ٮﺤﺪ ڡﺮﺻﺔ ﻟﻠٮﺤرر.
+ أو رٮﻤﺎ ٮﺴٮﺐ ﻋﺪم ﺳﻤﺎحى ﻟﻪ ٮﺎﻟﺮﺣٮﻞ ﺣﺎرج ڡڡﺺ ﺻﺪري، ﻷٮﻪ… ٮﻮﻋﺎ ﻣﺎ ٮﺆٮﺴﲏ.
+ ﻛﻤﺎ أٮﲏ ﻻ أﺳٮﻄيﻊ أن أﻣﺤﻮه 
+ﻷٮﻪ ﺣرح ﻋﻤٮﻖ، وﺣﱴ ٮﻌﺪ ﺷڡﺎﺋﻪ ٮٮڡﻰ آٮﺎره ﻟﻸٮﺪ.
+ ﻛﻢ أٮﻤﲎ ﻟﻮ أٮﲏ أﺳٮﻄيﻊ أن أﻣﺤﻮ ٮﻠﻚ اﻟٮﺪوب ﻛﻤﺎ أﻣﺤﻮ أﺣﻄﺎﺋى ﻋﲆ اﻷوراق 
+ﻟﻜﻦ إﻣٮﺤﺎن اﻟﺤٮﺎة ﺣﻂ ﻣٮواﺻﻞ ﻻ ٮﻤﺤﻰ.
+ أﺣٮﺎٮﺎ أﺣري ﻣﺤﺎدٮﺔ ﻣﻊ أﺣﺪ اﻵﻻم اﻟﻤﺰﻋﺤﺔ اﻟﱵ ٮﻼزﻣﲏ، أﻻم ڡويﺔ ﻟﺪرﺣﺔ اﻟٮﻄﻖ، ﻟﻜﻦ ٮٮﺪو كﺄٮﻬﺎ ٮريﺪ أن ٮﻀﻢ ﺻﺪري 
+ﺷڡڡﺔ ﻋﲇ، ڡﺄﺷﻌﺮ ٮﺄٮﻬﺎ أﻛٮﺮ إٮﺴﺎٮٮﺔ ﻣﻤﻦ ٮﺴٮﺐ ٮﻬﺎ…
+ڡى ٮﻠﻚ اﻟﻠﺤﻄﺔ أﻋﻮص داﺣﻞ اﻋﻤﺎق ﺻﺪري وأواﺣﻬﻬﺎ :
+ “ﻻ ٮﺤﻒ…
+ ﻟﻦ أؤذٮﻚ.
+ ﻟڡﺪ اﺣٮﺮت ڡﻠﱯ ﻟٮﻜون ﻣﻠﺤﺄ ﻟﻚ،
+ وﻟﻦ أﺣﺬﻟﻚ… ﺣﱴ و إن ﺣﺬﻟﲏ ﻣﻦ ٮﺴٮﺐ ٮﻚ.”
+ ڡٮﺤٮٮﲏ ٮﺼﻮت ﻫﺎدئ ﺣزيﻦ :
+ "ﻟٮﺖ ﻣﻦ ٮﺴٮﺐ ٮى ٮﻌﻠﻢ ﻣﺎ رأٮﺖُ داﺣﻞ ﺻﺪرك، ٮﺄﻋﻤﺎق ذﻟﻚ اﻟﺤڡﻞ وﺣﺪت ڡﺼرا ﰷﻣﻼ  ﻣﻦ ذﻫﺐ ﺣﺎﻟﺺ ﻣﺸٮﺪ ﻟﻪ 
+ﺣﺼٮﺼﺎ، ﻟﻜٮﻪ دون أٮوار، ﻟڡﺪ ﻋﺎب ﻋٮﻪ ﺻﺎﺣٮﻪ ﺣﱴ ﺻﺎر ﻣﻬﺤورا، ڡﺮﻋﻢ ٮڡﺎوة ذﻫٮﻪ، ﺻﺎر ﻣﻮﺣﺸﺎ و ٮﺎردا ﺣﺪا.
+ ﻟﻜٮﻪ ﻟﻢ ٮهﺪم أٮﺪا رﻋﻢ ﻃول اﻟﻌٮﺎب، كﺄن ﻣﻦ ﺷٮﺪه ٮٮٮﻀﺮ ﻋﻮدة ﺻﺎﺣٮﻪ دون ﺣﺪوى."
+ 
+أﺣٮﺖ:
+ " وﻟﻦ ٮُهﺪم…
+ ذﻟﻚ اﻟڡﺼﺮ ﻟﻢ ٮﻜﻦ اﻟﻮﺣٮﺪ، ٮﻞ ﻫٮﺎﻟﻚ ڡرى ﺣﺎﻟٮﺔ ﻣﻦ أﻫﺎﻟٮهﺎ، رﻋﻢ أن ٮﻌﺾ اﻟﻤٮﺎٮى اﻟڡﺪٮﻤﺔ ٮﺪأت ٮﺴڡﻂ وٮتﺤﻠﻞ، إﻻ أن 
+ﻣﻌﻀﻤﻬﺎ ڡﺪ ٮﲏ ٮﺼﻼٮﺔ ويﺼﻌﺐ إٮﻬٮﺎرﻫﺎ."
+ " ﻟﻜﻦ أﻟﻦ ٮﺤﻌﻞ ﻫﺬا اﻟﺰﺣﺎم اﻟڡﺎرغ دﺣول أﺷﺤﺎص ﺣﺪد ﺻﻌٮﺎ؟"
+ "ٮﻼ، ﻟﻜٮﲏ ﻋﺎﺣﺰ ﻋﻦ إٮﺤﺎد ﺣﻞ، أٮﺎ ڡڡﻂ أٮٮﻄﺮ ﻣﻦ ٮﻤﻜٮﻪ ﺣڡﺎ أن ٮرى ﻋٮﺮ ﺻﺪري كﻞ ﻣﺎﻫﻮ ﻣﺤڡى، رٮﻤﺎ ﺣٮٮﻬﺎ أﺣﺪ ﻣﻦ ٮﻌٮﺪ 
+ٮﺮﻣٮﻢ ﻫﺬا اﻟڡﻠﺐ اﻟﻤﻬﺤور ﺣﱴ ٮﺴﻊ كﻞ ﻣﻦ ٮﺴٮﺤﻖ…"
+ ﺻﻤﺖ…
+ ٮﻀﺮت إﻟﻰ اﻷﻟﻢ وٮﻀﺮ إلى آﺣﺮ ﻣﺮة، ٮﻢ ﺣررٮﻪ ﻣﻦ ٮيﻦ ٮﺪي.
+ و ٮ ُﺮﻛﺖ وﺣٮﺪا ﻣﺤﺪدا،
+ ﻣﻦ ﻛٮﺮة وﺣﺪٮى ﺻﺮت:
+ أﺷﻌﺮ و كﺄن اﻟﻬواء ﺻﺎر ٮﻌﺎٮڡﲏ 
+و ﺿﻮء اﻟﺸﻤﺲ  ٮﻠﻄﻒ ٮﻼﻣﺲ ٮﺪي 
+و اﻟرواﺋﺢ اﻟﻄٮٮٮﺔ ٮﻠٮﺤﺊ إﻟﻰ ﺻﺪري 
+ڡٮُﻀﺦ ﻋٮﺮ ڡﻠﱯ إﻟﻰ دمى
+ و ٮﺴري ٮﺤﻮ أﻃراڡى وﰷﻣﻞ ﺣﺴﺪي
+ ڡٮٮﻤﻮ داﺣﻞ ﺻﺪري ﺣڡﻞ ﻻ ٮٮٮهى 
+ٮﻠٮﺤﺊ إﻟٮﻪ كﻞ ﻣﻦ ٮٮٮمى
+ ﺣٮﺔ ﻟكﻞ ﻣﻦ أرى ڡٮﻪ ﻣﺄﻣﲏ.
+        </div>
+        <div id="raw-fr-text" style="display: none;">
+À l’intérieur de ma poitrine
+Les voix battent à travers ma poitrine.
+Je souhaite qu’un jour, je puisse devenir la version de moi-même que je mérite vraiment d’être.
+Debout devant le miroir de ma salle de bain fermée, je fixe mon reflet comme si je cherchais à 
+m’y retrouver, murmurant doucement ces mots à mon propre visage.
+Parfois, j’essaie de regarder mon visage avec des yeux qui ne sont pas les miens — des yeux qui 
+sauraient peut-être me voir aussi profondément que je vois les autres…
+Peut-être alors comprendrais-je comment les gens me perçoivent, comment ils lisent ce visage 
+que moi-même je peine à comprendre.
+Je fixe longtemps, et pourtant mon image reste floue — incertaine — comme un reflet dans une 
+eau immobile.
+Mon corps, mon être, même ma voix parfois… me semblent étrangers, comme des choses que je 
+n’ai jamais vraiment connues que de loin.
+Comme si je ne m’étais jamais vraiment vu — pas de la manière dont les autres me voient.
+Je me demande souvent… quand les gens me regardent,
+remarquent-ils les petits détails que j’ignore en moi-même ?
+Voient-ils en moi ce que je vois en eux, quand j’observe leurs visages et que je perçois les 
+choses qu’ils taisent au fond d’eux ?
+Quelqu’un pourrait-il un jour comprendre les expressions silencieuses gravées sur mes traits — 
+comme moi je comprends les leurs ?
+C’est étrange, cette contradiction…
+Je peux distinguer ce que les autres cachent derrière leurs yeux,
+je peux sentir leur tristesse même lorsqu’ils ne disent rien,
+et pourtant, quand je me regarde, je ne vois que le vide — une ombre pâle, sans forme.
+Parfois, j’aimerais pouvoir quitter mon corps, ne serait-ce qu’un jour.
+Vivre dans une autre forme.
+M’asseoir face à moi-même,
+plonger mon regard dans mes propres yeux comme je le ferais dans ceux de quelqu’un que 
+j’aime,
+et me parler comme à un véritable ami.
+J’aimerais savoir ce que cela fait d’être moi — vu de l’extérieur.
+Car peu importe mes efforts, je ne parviens pas à croire ce que les autres disent de moi.
+Je ne crois pas aux compliments.
+Je souris, je hoche la tête, mais au fond, je ne peux pas les accepter,
+parce que la vérité, c’est que je ne me suis jamais vraiment vu.
+Mon imagination est vaste, mes émotions deviennent plus lourdes de jour en jour,
+ma sensibilité envers le monde dépasse souvent ce que je peux supporter —
+je ressens les moindres frémissements, les détails cachés dans chaque chose.
+Et plus je grandis, plus j’ai l’impression de me perdre.
+La vie est courte… et je comprends à peine qui je suis.
+Alors, comment pourrais-je comprendre qui que ce soit d’autre ?
+Ce qui me fait le plus mal, c’est ce profond sentiment d’être incompris.
+Personne ne me comprend.
+Pas même moi.
+Je me juge mal,
+je doute de mes intentions,
+je punis mon propre cœur,
+je m’irrite contre mon âme.
+Mon monde intérieur ne cesse de s’élargir,
+et pourtant, la distance entre moi et les autres grandit elle aussi.
+Souvent, je me sens dériver, loin — loin de tout.
+Mais quand quelqu’un me voit vraiment,
+quand il plonge dans mes yeux et me reconnaît —
+un flot de bonheur m’envahit.
+Je m’accroche à lui,
+je le serre fort,
+comme s’il était la seule lumière dans mon obscurité.
+Mais ils sont toujours fragiles — tels des lampes de verre.
+Et lorsque je les serre trop fort,
+ils se brisent.
+La lumière s’éteint,
+et le verre éclate.
+Je suis blessé par les éclats.
+Je saigne.
+Et il me reste des cicatrices —
+des cicatrices qui ne guérissent jamais,
+qui ne s’effacent pas,
+qui me rappellent sans cesse ce qui fut.
+Et pourtant, malgré tout… je n’ai jamais cessé d’aimer.
+Même si je n’étais pas destiné à être aimé comme j’aime,
+je n’ai jamais cessé de semer l’amour.
+Je le semais comme des fleurs dans le jardin de mon âme — chaque jour.
+Mais ces derniers temps, elles ne poussent plus.
+Je ne vois plus de cœurs éclore.
+Et c’est alors que j’ai compris… peut-être parce que je ne les laissais pas grandir.
+Je les cueillais sans cesse —
+pour les offrir à ceux que j’aimais,
+ou pour prouver que j’étais digne d’amour,
+que mes sentiments étaient réels, malgré tous les doutes.
+Mais la plupart des fleurs, on le sait,
+meurent lentement dans un vase oublié,
+ou se fanent entre les pages d’un livre que plus personne ne lit —
+tout comme les mots que je dis et que personne n’entend.
+Et je me suis retrouvé dans un jardin desséché,
+avec un cœur vide,
+et le parfum de l’amour emporté par le vent —
+présent un instant, puis disparu.
+Mais…
+est-ce ainsi que cela doit être ?
+Peut-être pas.
+Peut-être devrais-je laisser les fleurs de mon cœur pousser pour moi.
+Les nourrir,
+les arroser,
+les laisser s’épanouir en moi —
+jusqu’au jour où viendra quelqu’un qui les verra,
+qui les chérira,
+qui ne les cueillera pas,
+mais s’assiéra simplement à mes côtés,
+et les entretiendra avec moi…
+Jusqu’à ce que le cœur devienne un jardin,
+et que le jardin devienne un champ infini.
+⸻
+Parfois, je reste allongé sur mon lit, les yeux fixés au plafond.
+Alors, les souvenirs remontent comme des murmures du passé —
+je revois les visages de ceux qui sont devenus des souvenirs qui ne font plus que blesser.
+Un seul de ces visages suffit à faire sursauter mon cœur, douloureusement…
+mon pouls s’accélère, je retiens mon souffle,
+emprisonnant la douleur en moi.
+Je la tiens entre mes mains —
+je sens son envie de s’échapper,
+mais elle ne le peut pas, car elle est captive…
+ou peut-être parce que je ne la laisse pas partir.
+Peut-être parce que, d’une manière étrange, elle me tient compagnie.
+Je ne peux pas l’effacer —
+c’est une blessure profonde, et même guérie, elle laisse une trace éternelle.
+Comme j’aimerais pouvoir effacer ces cicatrices aussi facilement que l’on efface une erreur sur le 
+papier…
+mais l’examen de la vie est une ligne qu’on ne peut jamais effacer.
+Parfois même, je parle à l’une de ces douleurs qui ne m’ont jamais quitté —
+une douleur si vive qu’elle semble vivante,
+et pourtant… elle paraît me plaindre.
+Elle semble plus humaine que ceux qui l’ont causée.
+Alors, je plonge au plus profond de ma poitrine et je lui dis :
+« N’aie pas peur…
+Je ne te ferai pas de mal.
+Tu as choisi mon cœur comme refuge,
+et je ne t’abandonnerai pas — même si ceux qui t’ont causée m’ont abandonné. »
+Elle me répond doucement, avec une tristesse dans la voix :
+« Si seulement ceux qui m’ont causée pouvaient voir ce que j’ai vu dans ta poitrine…
+au plus profond de ce champ se dresse un palais d’or, bâti entièrement d’or pur,
+fait pour toi — mais sans lumière.
+Son maître est absent depuis si longtemps qu’il est devenu froid et déserté.
+Pourtant il demeure, intact, hors du temps —
+comme si celui qui l’a construit attendait encore en vain le retour de son roi. »
+Je répondis :
+« Et il ne sera jamais détruit…
+Ce palais n’est pas seul — il y a aussi des villages vides.
+Certains bâtiments anciens s’effritent,
+mais la plupart ont été bâtis si solidement qu’ils sont presque indestructibles. »
+« Mais cette foule vide n’empêche-t-elle pas les nouveaux d’entrer ? »
+« Si… mais je n’ai pas de solution.
+J’attends simplement quelqu’un qui saura vraiment voir à travers ma poitrine —
+quelqu’un capable de percevoir tout ce qui s’y cache.
+Peut-être alors trouverai-je celui qui saura restaurer ce cœur abandonné,
+et le rendre assez vaste pour accueillir tous ceux qui méritent d’y vivre. »
+Silence.
+J’ai regardé la douleur, et elle m’a regardé une dernière fois.
+Puis je l’ai libérée de mes mains.
+Et j’étais seul à nouveau.
+Tellement seul que j’ai commencé à sentir —
+comme si l’air lui-même m’enlaçait,
+comme si la lumière du soleil effleurait doucement mes mains,
+comme si des parfums bienveillants cherchaient refuge dans ma poitrine,
+coulant de mon cœur dans mon sang,
+se répandant dans mes veines, jusqu’à chaque parcelle de moi —
+jusqu’à ce qu’un champ sans fin commence à fleurir dans ma poitrine,
+un sanctuaire pour toutes les âmes qui y trouvent leur place,
+un paradis pour tous ceux qui voient en moi leur havre de paix
+        </div>
+        <div id="raw-en-text" style="display: none;">
+Inside My Chest
+The voices beating through my chest.
+I wish that someday, I could become the version of myself I truly deserve to be.
+Standing before the mirror in my closed bathroom, I stare into my reflection as if searching for 
+myself within it, whispering those words softly to my own image.
+Sometimes, I try to look at my face through eyes that aren’t mine — eyes that might see me as 
+deeply as I see others…
+Perhaps then I’d understand how people perceive me, how they read this face that I myself 
+barely comprehend.
+I stare for long moments, and still, my image remains vague — blurred — like a reflection in still 
+water.
+My body, my being, even my voice at times… they all feel like things I’ve only ever known from 
+afar.
+As if I’ve never truly seen myself — not the way others do.
+I often wonder… when people look at me,
+do they notice the little details I overlook in myself?
+Do they see in me what I see in them, when I study their faces and sense the unspoken things 
+hidden deep inside them?
+Could anyone ever understand the silent expressions within me — the ones written on my 
+features — as I do theirs?
+It’s strange, this contradiction…
+I can clearly glimpse what others hide behind their eyes,
+I can feel their sadness even when they say nothing,
+and yet when I look at myself, all I see is emptiness — a faint, shapeless shadow.
+Sometimes, I wish I could leave my body for just one day.
+Live in another form.
+Sit across from myself,
+look into my own eyes as I would into the eyes of someone I love,
+and speak to myself as though I were a real friend.
+I wish I could know what it feels like to be me — from the outside.
+Because no matter how hard I try, I can’t believe what others say about me.
+Because no matter how hard I try, I can’t believe what others say about me.
+I don’t believe the compliments.
+I smile, nod, but deep down I can’t truly accept them,
+because the truth is… I’ve never really seen myself.
+My imagination is vast, my emotions grow heavier day by day,
+my sensitivity toward the world around me often exceeds what I can bear —
+I can feel the tiniest shifts and hidden details in everything.
+And the more I grow, the more I feel I’m losing myself.
+Life is short… and I barely understand who I am.
+So how could I possibly understand anyone else?
+What hurts me the most is this deep feeling of not being understood.
+No one understands me.
+Not even I do.
+I misjudge myself,
+question my intentions,
+punish my own heart,
+and grow angry at my soul.
+My inner world keeps expanding,
+yet the distance between me and everyone else widens too.
+And often, I feel as though I’m drifting far — away from everything.
+But when someone truly sees me,
+when they look into my eyes and recognize me —
+a flood of happiness fills me.
+I cling to them,
+I hold on tightly,
+as if they were the only light in my darkness.
+But they’re always fragile — like glass lamps.
+And when I hold them too tightly,
+they shatter.
+The light goes out,
+and the glass scatters.
+I’m cut by the shards.
+I bleed.
+And I’m left with scars —
+scars that never heal,
+that never fade,
+that always remind me of what once was.
+Yet despite all this… I never stopped loving.
+Even if I was never meant to be loved the way I love,
+I never stopped planting love.
+I used to sow it like flowers in the garden of my soul — every day.
+But lately, they no longer grow.
+I no longer see blooming hearts.
+And that’s when I realized… perhaps because I never let them.
+I kept picking them —
+offering them to those I loved,
+or as proof that I was worthy of love,
+that my feelings were real, despite all the doubt.
+But most flowers, as we know,
+either die slowly in a forgotten glass vase,
+or are pressed between the pages of a book no one reads —
+just like the words I speak that no one hears.
+And so, I found myself in a dry garden,
+with an empty heart,
+and the scent of love fading into the wind —
+appearing for a moment, then gone.
+But…
+is that how it must be?
+Perhaps not.
+Perhaps I should let the flowers of my heart grow for me.
+Nurture them,
+water them,
+let them bloom within me —
+until one day, someone comes who sees them,
+who cherishes them,
+who doesn’t pick them,
+but instead sits beside me,
+and tends to them with me…
+Until the heart becomes a garden,
+and the garden becomes an endless field.
+⸻
+Sometimes I lie on my bed, staring at the ceiling.
+In that moment, memories rise like whispers from the past —
+I see glimpses of people who turned into memories that now bring only ache.
+That single glimpse makes my heart jolt, painfully so…
+my pulse quickens, I hold my breath,
+trapping the pain inside me.
+I hold it between my hands —
+I can feel its urge to escape,
+but it cannot, for it’s imprisoned…
+or maybe because I won’t let it go.
+Perhaps because, in some strange way, it keeps me company.
+I can’t erase it —
+it’s a deep wound, and even after healing, the marks remain forever.
+How I wish I could erase those scars as easily as I erase mistakes on paper…
+but life’s exam is a line that can never be erased.
+Sometimes, I even speak with one of the pains that never leaves me —
+a pain so intense it feels alive,
+yet somehow… it seems to pity me.
+It feels more human than those who caused it.
+In that moment, I dive deep into my chest and face it:
+“Don’t be afraid…
+I won’t hurt you.
+You’ve chosen my heart as your refuge,
+and I won’t abandon you — even if those who caused you have abandoned me.”
+It answers softly, with sorrow in its voice:
+“If only those who caused me could see what I’ve seen inside your chest…
+deep within that field lies a golden palace, built entirely of pure gold,
+made just for you — but it’s without light.
+Its owner has been gone so long it has grown desolate and cold.
+Yet it still stands, untouched by time —
+as if whoever built it still waits for its master’s return, in vain.”
+I replied:
+“And it will never be demolished…
+That palace isn’t alone — there are empty villages too.
+Some of the old buildings have begun to crumble,
+yet most were built so solidly they’re nearly impossible to destroy.”
+“But won’t that empty crowd make it harder for new people to enter?”
+“Yes… but I can’t find a solution.
+I’m just waiting for someone who can truly see through my chest —
+someone who can perceive everything hidden within.
+Maybe then, I’ll find the one who can restore this abandoned heart,
+and make it big enough to hold everyone who deserves a place inside.”
+Silence.
+I looked at the pain, and it looked back one last time.
+Then I released it from my hands.
+And I was alone once again.
+So alone that I began to feel —
+as if the air itself was embracing me,
+as if sunlight gently touches my hands,
+as if pleasant scents sought refuge in my chest,
+flowing through my heart into my blood,
+spreading through my veins, to every part of me —
+until an endless field began to bloom inside my chest,
+a sanctuary for every soul that belongs there,
+a paradise for all those who see in me their safe haven.
+        </div>
+        <div id="content" class="rounded-lg mx-auto content-fading">
+            <h1 id="title" class="text-3xl font-bold mb-12"></h1>
+            <div id="text-container" class="text-lg leading-relaxed">
+                <!-- This content is now dynamically generated by story-script.js -->
+            </div>
+        </div>
+        <!-- REFACTOR: Changed the save button to a circular icon button. -->
+        <button
+            id="save-progress-button"
+            class="fixed bottom-4 left-4 w-14 h-14 rounded-full flex items-center justify-center transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base save-button-custom"
+            style="z-index: 60;"
+            aria-label="Scroll to saved progress"
+        >
+            <!-- Bookmark Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>
+        </button>
+        <div id="popup" class="fixed inset-0 flex items-center justify-center z-50">
+            <div class="glass-button-base glass-popup shadow-lg w-64 fade-in">
+                <!-- REFACTOR: Add a flex container to align the icon and title text. -->
+                <div class="flex items-center justify-center mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                    <h2 id="popup-title" class="text-lg font-bold">Save Position</h2>
+                </div>
+                <p id="popup-text" class="mb-4 text-sm"></p>
+                <div class="flex justify-end space-x-2">
+                    <button
+                        id="popup-save-button"
+                        class="glass-button-base bg-green-500 text-white px-4 py-2 rounded-full focus:outline-none"
+                    >
+                        Save
+                    </button>
+                    <button
+                        id="popup-exit-button"
+                        class="glass-button-base bg-red-500 text-white px-4 py-2 rounded-full focus:outline-none"
+                    >
+                        Exit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- NEW: Add a footer with reCAPTCHA branding to comply with Google's terms of service. -->
+    <footer class="site-footer story-page-footer">
+        <div class="site-footer-content">
+            <p>&copy; 2024 Dodch Stories. All Rights Reserved.</p>
+            <p class="recaptcha-branding">
+                This site is protected by reCAPTCHA and the Google
+                <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a> and
+                <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a> apply.
+            </p>
+        </div>
+    </footer>
+    <!-- NEW: Add reCAPTCHA v3 script for Firebase App Check. This is required on every page using App Check. -->
+    <script src="https://www.google.com/recaptcha/api.js?render=6Ldj7O8rAAAAAO5rRT1GqGzVN3vXjL54Mlw0mpX6" async defer></script>
+
+    <!-- FIX: Consolidate all story initialization logic into a single module script to resolve loading race conditions. -->
+    <script type="module">
+        // --- Firebase Initialization ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence, browserLocalPersistence, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { getDatabase, ref, onValue, off, onDisconnect, serverTimestamp, push, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+        import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app-check.js";
+        // --- Story Script ---
+        // This imports the main story logic. The functions will be available in this module's scope.
+        import { initializeStoryContent, initializeAuth } from '../story-script.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIlDy8iaEpCHVc6kPij_zh2zHJYQqiShk",
+            authDomain: "dodchstories-435bb.firebaseapp.com",
+            databaseURL: "https://dodchstories-435bb-default-rtdb.firebaseio.com",
+            projectId: "dodchstories-435bb",
+            storageBucket: "dodchstories-435bb.firebasestorage.app",
+            messagingSenderId: "52323489131",
+            appId: "1:52323489131:web:1ac8292a3953032715682e",
+            measurementId: "G-7MCXBETRYQ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        // NEW: Initialize Firebase App Check with reCAPTCHA v3 to protect backend resources.
+        const appCheck = initializeAppCheck(app, {
+            provider: new ReCaptchaV3Provider('6Ldj7O8rAAAAAO5rRT1GqGzVN3vXjL54Mlw0mpX6'),
+            isTokenAutoRefreshEnabled: true
+        });
+
+        const database = getDatabase(app);
+        const auth = getAuth(app);
+
+        // Make Firebase services globally available for the imported script.
+        const firebaseServices = { 
+            db: database, 
+            auth: auth, 
+            onAuthStateChanged: onAuthStateChanged, 
+            ref, onValue, off, onDisconnect, serverTimestamp, push, set,
+            GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence, browserLocalPersistence, signInAnonymously
+        };
+
+        // Story-specific configuration
+        const contentMap = {
+            ar: {
+                title: 'داخل صدري',
+                rawTextId: 'raw-ar-text',
+                savePosition: 'إضافة علامة مرجعية',
+                save: 'حفظ',
+                exit: 'خروج',
+                bookmarkQuestion: 'هل تريد إضافة علامة مرجعية عند كلمة: "{word}"؟',
+                questionMark: '؟',
+                positionSaved: 'تم حفظ الموقع',
+                forWord: 'لكلمة',
+                wordNotFound: 'الكلمة المحفوظة لم يتم العثور عليها في النص الحالي.',
+                noWordSaved: 'لم يتم حفظ أي كلمة لهذه اللغة بعد'
+            },
+            fr: {
+                title: 'À l’intérieur de ma poitrine',
+                rawTextId: 'raw-fr-text',
+                savePosition: 'Ajouter un marque-page',
+                save: 'Enregistrer',
+                exit: 'Sortir',
+                bookmarkQuestion: 'Mettre en favori cette position au mot : "{word}" ?',
+                questionMark: '?',
+                positionSaved: 'Position enregistrée',
+                forWord: 'pour le mot',
+                wordNotFound: 'Le mot enregistré n\'a pas été trouvé dans le texte actuel.',
+                noWordSaved: 'Aucun mot n\'a été enregistré pour cette langue encore'
+            },
+            en: {
+                title: 'Inside my chest',
+                rawTextId: 'raw-en-text',
+                savePosition: 'Bookmark',
+                save: 'Save',
+                exit: 'Exit',
+                bookmarkQuestion: 'Bookmark this position at the word: "{word}"?',
+                questionMark: '?',
+                positionSaved: 'Position saved at',
+                forWord: 'for the word',
+                wordNotFound: 'Saved word not found in current text.',
+                noWordSaved: 'No word has been saved for this language yet'
+            },
+        };
+
+        (async () => {
+            const userId = await initializeStoryContent(contentMap, firebaseServices);
+            initializeAuth(firebaseServices);
+
+            const visitorCountElement = document.getElementById('visitor-count');
+            const storyId = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
+            const storyVisitorsRef = ref(database, `presence/${storyId}`);            
+            const visitorIcon = document.querySelector('#visitor-count-container svg');
+            
+            onValue(storyVisitorsRef, (snapshot) => {
+                if (!visitorCountElement) return;
+                const data = snapshot.val();
+                const count = data ? Object.keys(data).length : 0;
+
+                const currentCount = parseInt(visitorCountElement.textContent, 10);
+                if (count !== currentCount) {
+                    visitorCountElement.textContent = count;
+                    if (visitorIcon) {
+                        const glowClass = count > currentCount ? 'visitor-join-glow' : 'visitor-leave-glow';
+                        visitorIcon.classList.remove('visitor-join-glow', 'visitor-leave-glow');
+                        requestAnimationFrame(() => {
+                            requestAnimationFrame(() => {
+                                visitorIcon.classList.add(glowClass);
+                            });
+                        });
+                    }
+                    visitorCountElement.classList.add('count-pop-animation');
+                    visitorCountElement.addEventListener('animationend', () => visitorCountElement.classList.remove('count-pop-animation'), { once: true });
+                }
+            });
+
+            const connectedRef = ref(database, '.info/connected');
+            onValue(connectedRef, (snap) => {                if (snap.val() === true) {
+                    const myPresenceRef = ref(database, `presence/${storyId}/${userId}`);
+                    onDisconnect(myPresenceRef).remove();
+                    set(myPresenceRef, serverTimestamp());
+                }
+            });
+        })();
+
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+
+    </script>
+</body>
+</html>
