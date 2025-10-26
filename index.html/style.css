@@ -598,6 +598,17 @@ body:not(.is-scrolling) .search-button.active:hover, .search-button.active:focus
   z-index: 2;
   gap: 0.5rem; /* Space between the count and the button */
 }
+
+/* NEW: Style for the vertical separator line between actions. */
+.action-separator {
+  width: 1px;
+  height: 20px; /* Adjust height to align with the buttons */
+  background-color: color-mix(in srgb, var(--glass-text) 30%, transparent);
+  border-radius: 1px;
+  /* NEW: Add a slight tilt to the separator. */
+  transform: rotate(15deg);
+}
+
 /* FIX: Add transition for smooth position changes on hover. */
 .favorite-container, .new-pill { transition: top 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
 
@@ -611,6 +622,19 @@ body:not(.is-scrolling) .search-button.active:hover, .search-button.active:focus
   color: var(--glass-text);
   text-shadow: 0 1px 3px rgba(0,0,0,0.7);
   transition: color 0.3s ease, transform 0.2s ease-out;
+}
+
+/* NEW: Style for the comment count, mirroring the favorite count. */
+.comment-count {
+  font-family: 'Quattrocento Sans', sans-serif;
+  font-style: italic;
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: var(--glass-text);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+  transition: color 0.3s ease, transform 0.2s ease-out;
+  /* NEW: Add margin to the right of the count to space it from the button. */
+  margin-right: 0.5rem;
 }
 
 /* FIX: Change the animation to a vertical "scroll blur" effect. */
@@ -1376,13 +1400,15 @@ body.info-panel-open .info-button {
   transition: backdrop-filter 0.3s ease-in-out, -webkit-backdrop-filter 0.3s ease-in-out;
 }
 
-/* FIX: Re-enable the backdrop filter specifically for cards inside an active series modal. */
-body.info-panel-open #seriesModal .glass-container {
-  -webkit-backdrop-filter: blur(var(--blur-radius));
-  backdrop-filter: blur(var(--blur-radius));
-  pointer-events: auto; /* Ensure cards inside the modal are interactive */
+/* --- FIX: Override the above rule to ensure the comment input area is always visible --- */
+/* The .info-panel-open rule was incorrectly hiding the .glass-button-base comment input. */
+/* This highly specific rule ensures it remains visible inside the comments modal. */
+body.info-panel-open #commentsModal .comment-input-area.glass-button-base {
+  -webkit-backdrop-filter: blur(4px) !important;
+  backdrop-filter: blur(4px) !important;
+  opacity: 1 !important;
 }
-/* FIX: Re-enable pointer events and hover effects for buttons and content inside the series modal. */
+
 body.info-panel-open #seriesModal .glass-container:hover {
   pointer-events: auto;
 }
@@ -1394,6 +1420,13 @@ body.info-panel-open .grid > .glass-container {
   cursor: default;
 }
 
+/* FIX: Re-enable interaction for elements inside ANY active modal panel. */
+body.info-panel-open .modal-panel.active .glass-container,
+body.info-panel-open .modal-panel.active .favorite-btn,
+body.info-panel-open .modal-panel.active .glass-content {
+    pointer-events: auto;
+    cursor: pointer;
+}
 /* This re-enables interaction for elements inside the modals. */
 body.info-panel-open #seriesModal .favorite-btn,
 body.info-panel-open #seriesModal .glass-content {
@@ -1512,26 +1545,27 @@ body.info-panel-open #seriesModal .glass-content {
   transform: translateY(0);
 }
 
-/* FIX: Create a new 'modal-panel' class to restore the original centered pop-up style for Contact/Social panels. */
+/* --- REFACTOR: Unified Modal Panel Styling --- */
 .modal-panel {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100lvh;
-  padding: 40px;
   box-sizing: border-box;
   background-color: var(--glass-bg);
   backdrop-filter: blur(var(--panel-blur-start));
   -webkit-backdrop-filter: blur(var(--panel-blur-start));
   z-index: 100;
-  display: flex; /* Use flex to center content */
-  justify-content: center;
-  align-items: center;
   transform: scale(0.95);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.5s ease-in-out, transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), backdrop-filter 0.5s ease-in-out;
+  /* Default to a centered layout for simple modals like Contact/Social */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
 }
 .modal-panel.active {
   opacity: 1;
@@ -1540,6 +1574,128 @@ body.info-panel-open #seriesModal .glass-content {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
+/* --- END REFACTOR --- */
+
+/* --- NEW: Comments Modal Specific Styling --- */
+/* Override the default centered flex layout for the comments modal */
+#commentsModal {
+    display: block; /* Change to block to allow for a scrolling layout */
+    overflow-y: auto; /* Make the entire modal scrollable if needed */
+    padding: 0; /* Remove default padding */
+}
+
+.comments-panel-content {
+    width: 100%;
+    max-width: 800px; /* Set a max-width for the content area */
+    margin: 0 auto; /* Center the content block */
+    /* REFACTOR: This is now the main scrollable area */
+    overflow-y: auto;
+    height: 100%;
+    padding: 120px 40px 140px 40px; /* Add padding for fixed title and input */
+}
+
+/* REFACTOR: New container for the truly fixed title */
+.comments-modal-header-fixed {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    width: 100%;
+    max-width: 800px; /* Match content width */
+    padding: 40px 40px 0; /* Match content padding */
+    box-sizing: border-box;
+    pointer-events: none; /* Allow clicks to pass through */
+    z-index: 101; /* Sit on top of the modal backdrop */
+    /* Animation for appearing/disappearing */
+    opacity: 0;
+    transform: translate(-50%, -100%); /* Start off-screen and centered */
+    transition: opacity 0.4s ease-out, transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.comments-modal-header-fixed.active {
+    opacity: 1;
+    transform: translate(-50%, 0); /* Slide into view */
+}
+
+#commentsModalTitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--glass-text);
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    text-align: left; /* Align title to the left */
+    /* Resetting properties as it's now inside a fixed container */
+    position: relative;
+    transform: none;
+    width: auto;
+}
+
+#commentsModalCount {
+    font-size: 1.5rem;
+    opacity: 0.7;
+    font-weight: normal;
+    margin-left: 0.5rem;
+}
+
+.comments-list {
+    flex-grow: 1; /* Allow the list to take up available space */
+    margin-bottom: 1.5rem;
+}
+
+.comment-input-area {
+    /* REFACTOR: Make the input area a true fixed footer, independent of the modal. */
+    position: fixed; /* Position relative to the viewport */
+    bottom: 0;
+    left: 50%;
+    width: 100%;
+    max-width: 800px; /* Match the modal content width */
+    padding: 1rem 40px 2rem 40px; /* Align with modal content padding */
+    box-sizing: border-box;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    z-index: 101; /* Sit on top of the modal backdrop */
+    /* Add a background gradient to mask content scrolling behind it */
+    background: linear-gradient(to top, 
+        color-mix(in srgb, var(--glass-bg) 95%, black) 60%, 
+        transparent 100%
+    );
+    /* Animation for appearing/disappearing */
+    opacity: 0;
+    transform: translate(-50%, 100%); /* Start off-screen and centered */
+    transition: opacity 0.4s ease-out, transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    pointer-events: none;
+}
+.comment-input-area.active {
+    opacity: 1;
+    transform: translate(-50%, 0); /* Slide into view */
+    pointer-events: auto;
+}
+
+/* REFACTOR: Apply the glass effect to the children of the input area, not the container itself. */
+.comment-input-area #commentTextarea {
+    flex-grow: 1;
+    height: 60px;
+    padding: 1rem;
+    border-radius: 1.5rem;
+    resize: none;
+    color: var(--glass-text);
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    box-shadow: var(--button-edge);
+    border: none;
+    transition: all 0.3s ease-out;
+}
+.comment-input-area #commentTextarea:focus {
+    outline: none;
+    box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 40%, transparent), var(--button-edge);
+}
+.comment-input-area #postCommentBtn {
+    flex-shrink: 0; /* Prevent button from shrinking */
+}
+
+/* --- END Comments Modal Styling --- */
+
+
 
 /* --- NEW: Auth Container & Login Button Styles --- */
 .auth-container {

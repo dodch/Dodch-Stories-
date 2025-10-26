@@ -317,11 +317,13 @@ async function fetchAndBuildGrid() {
             <span class="creation-date">${storyData.date}</span>
             <p class="story-creator">made by ${storyData.creator}</p>
             <div class="favorite-container">
+              <span class="comment-count">0</span>
               <div class="comment-btn glass-button-base">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                 </svg>
               </div>
+              <div class="action-separator"></div>
               <span class="favorite-count">0</span>
               <div class="favorite-btn glass-button-base">
                 <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
@@ -379,6 +381,7 @@ async function fetchAndBuildGrid() {
 
       // --- NEW: Firebase Realtime Database Integration for Favorites ---
       const countSpan = addedCard.querySelector('.favorite-count');
+      const commentCountSpan = addedCard.querySelector('.comment-count');
       if (countSpan && window.firebaseServices) {
           const heartIcon = addedCard.querySelector('.favorite-btn svg');
           const storyRef = window.firebaseServices.ref(window.firebaseServices.db, 'stories/' + storyKey);
@@ -425,6 +428,16 @@ async function fetchAndBuildGrid() {
 
           // Store the unsubscribe function to clean up later if needed
           addedCard.dataset.unsubscribe = unsubscribe;
+      }
+      // NEW: Firebase Realtime Database Integration for Comments Count
+      if (commentCountSpan && window.firebaseServices) {
+        const commentsRef = window.firebaseServices.ref(window.firebaseServices.db, 'comments/' + storyKey);
+        window.firebaseServices.onValue(commentsRef, (snapshot) => {
+            const comments = snapshot.val() || {};
+            const commentCount = Object.keys(comments).length;
+            commentCountSpan.textContent = commentCount;
+            // You can add animations here later if desired
+        });
       }
 
       // --- NEW: Comment Button Logic ---
@@ -1091,6 +1104,7 @@ async function fetchAndBuildGrid() {
     const commentsModal = document.getElementById('commentsModal');
     const closeCommentsModalButton = document.getElementById('closeCommentsModalButton');
     const commentsModalTitle = document.getElementById('commentsModalTitle');
+    const commentsModalHeaderFixed = document.getElementById('commentsModalHeaderFixed'); // NEW
     const commentsModalCount = document.getElementById('commentsModalCount'); // NEW: Get count element
     const commentsList = document.getElementById('commentsList');
     const commentInputArea = document.getElementById('commentInputArea');
@@ -1104,8 +1118,29 @@ async function fetchAndBuildGrid() {
 
     function openCommentsModal(storyKey, storyTitle) {
         closeAllPanels();
-        currentStoryKeyForComments = storyKey;
+        currentStoryKeyForComments = storyKey; // Set the current story key
         commentsModalTitle.textContent = `Comments for "${storyTitle}"`;
+
+        // REFACTOR: Move the input area logic outside the onValue listener.
+        // This ensures the input area is always displayed immediately when the modal opens,
+        // and its state is set correctly based on the current user's status.
+        const { auth: currentAuth } = window.firebaseServices;
+        const currentUser = currentAuth.currentUser;
+        commentsModalHeaderFixed.classList.add('active'); // NEW: Show the fixed header
+        commentInputArea.classList.add('active'); // Make the input area visible
+
+        if (!currentUser) {
+            // User is not logged in at all.
+            postCommentBtn.disabled = true;
+            commentTextarea.disabled = true;
+            commentTextarea.placeholder = "Please log in to comment.";
+        } else {
+            // User is logged in (either with Google or anonymously).
+            // The check for `userHasCommented` will happen inside the listener.
+            postCommentBtn.disabled = false;
+            commentTextarea.disabled = false;
+            commentTextarea.placeholder = "Add a comment (50 words max)...";
+        }
 
         const { auth } = window.firebaseServices;
         const user = auth.currentUser;
@@ -1148,11 +1183,11 @@ async function fetchAndBuildGrid() {
                 });
             }
 
-            // Show input area only for logged-in Google users who haven't commented yet
-            if (user && !user.isAnonymous && !userHasCommented) {
-                commentInputArea.style.display = 'flex';
-            } else {
-                commentInputArea.style.display = 'none';
+            // If the user is logged in but has already commented, disable the input.
+            if (user && userHasCommented) {
+                postCommentBtn.disabled = true;
+                commentTextarea.disabled = true;
+                commentTextarea.placeholder = "You have already commented on this story.";
             }
         });
 
@@ -1163,6 +1198,8 @@ async function fetchAndBuildGrid() {
 
     function closeCommentsModal() {
         commentsModal.classList.remove('active');
+        commentsModalHeaderFixed.classList.remove('active'); // NEW: Hide the fixed header
+        commentInputArea.classList.remove('active'); // Hide the input area
         closeCommentsModalButton.classList.remove('active');
         body.classList.remove('info-panel-open');
         if (commentsListenerOff) {
@@ -1184,7 +1221,7 @@ async function fetchAndBuildGrid() {
         const text = commentTextarea.value.trim();
         const wordCount = text.split(/\s+/).filter(Boolean).length;
 
-        if (!user || user.isAnonymous) { alert("You must be logged in with Google to comment."); return; }
+        if (!user) { alert("You must be logged in to comment."); return; }
         if (!text) { alert("Comment cannot be empty."); return; }
         if (wordCount > 50) { alert(`Your comment is ${wordCount} words. Please limit it to 50 words.`); return; }
 
