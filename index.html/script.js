@@ -317,11 +317,14 @@ async function fetchAndBuildGrid() {
             <span class="creation-date">${storyData.date}</span>
             <p class="story-creator">made by ${storyData.creator}</p>
             <div class="favorite-container">
+              <div class="comment-btn glass-button-base">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
               <span class="favorite-count">0</span>
               <div class="favorite-btn glass-button-base">
-                <svg viewBox="0 0 24 24">
-                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                </svg>
+                <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
               </div>
             </div>
         `;
@@ -423,6 +426,14 @@ async function fetchAndBuildGrid() {
           // Store the unsubscribe function to clean up later if needed
           addedCard.dataset.unsubscribe = unsubscribe;
       }
+
+      // --- NEW: Comment Button Logic ---
+      const commentBtn = addedCard.querySelector('.comment-btn');
+      addTapAnimation(commentBtn);
+      commentBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          openCommentsModal(storyKey, story.title);
+      });
 
     });
     // Correctly select panels for physics, excluding those inside a series stack
@@ -959,6 +970,10 @@ async function fetchAndBuildGrid() {
     const closeSocialButton = document.getElementById('closeSocialButton');
     
     addTapAnimation(contactBtn);
+    // NEW: Add tap animation for comment button
+    document.querySelectorAll('.comment-btn').forEach(btn => {
+        addTapAnimation(btn);
+    });
     addTapAnimation(closeContactButton);
     addTapAnimation(openSocialButton);
     addTapAnimation(closeSocialButton);
@@ -982,6 +997,7 @@ async function fetchAndBuildGrid() {
         closeContactButton.classList.remove('active');
         closeSocialButton.classList.remove('active');
         // NEW: Also close the series modal if it's open
+        closeCommentsModal();
         closeSeriesModal();
     }
 
@@ -1068,6 +1084,128 @@ async function fetchAndBuildGrid() {
     seriesModal.addEventListener('click', (event) => {
         if (event.target === seriesModal) {
             closeSeriesModal();
+        }
+    });
+
+    // --- NEW: Comments Modal Logic ---
+    const commentsModal = document.getElementById('commentsModal');
+    const closeCommentsModalButton = document.getElementById('closeCommentsModalButton');
+    const commentsModalTitle = document.getElementById('commentsModalTitle');
+    const commentsModalCount = document.getElementById('commentsModalCount'); // NEW: Get count element
+    const commentsList = document.getElementById('commentsList');
+    const commentInputArea = document.getElementById('commentInputArea');
+    const commentTextarea = document.getElementById('commentTextarea');
+    const postCommentBtn = document.getElementById('postCommentBtn');
+    let currentStoryKeyForComments = null;
+    let commentsListenerOff = null;
+
+    addTapAnimation(closeCommentsModalButton);
+    addTapAnimation(postCommentBtn);
+
+    function openCommentsModal(storyKey, storyTitle) {
+        closeAllPanels();
+        currentStoryKeyForComments = storyKey;
+        commentsModalTitle.textContent = `Comments for "${storyTitle}"`;
+
+        const { auth } = window.firebaseServices;
+        const user = auth.currentUser;
+
+        // Detach any previous listener
+        if (commentsListenerOff) commentsListenerOff();
+
+        const { db, ref, onValue } = window.firebaseServices;
+        const commentsRef = ref(db, `comments/${storyKey}`);
+
+        commentsListenerOff = onValue(commentsRef, (snapshot) => {
+            commentsList.innerHTML = '';
+            const comments = snapshot.val() || {};
+            const commentCount = Object.keys(comments).length;
+            let userHasCommented = false;
+
+            commentsModalCount.textContent = `(${commentCount})`; // NEW: Update count in modal
+
+            if (commentCount === 0) {
+                commentsList.innerHTML = '<p class="no-comments-message" style="text-align: center; opacity: 0.7;">No comments yet. Be the first!</p>';
+            } else {
+                Object.entries(comments).forEach(([commentId, comment]) => {
+                    if (user && comment.uid === user.uid) userHasCommented = true;
+                    const commentEl = document.createElement('div');
+                    commentEl.className = 'comment-item';
+                    const commentDate = new Date(comment.timestamp).toLocaleString();
+
+                    commentEl.innerHTML = `
+                        <img src="${comment.photoURL}" alt="${comment.displayName}" class="comment-author-pic">
+                        <div class="comment-body">
+                            <div class="comment-header">
+                                <span class="comment-author-name">${comment.displayName}</span>
+                                <span class="comment-date">${commentDate}</span>
+                            </div>
+                            <p class="comment-text">${comment.text}</p>
+                            ${(user && comment.uid === user.uid) ? `<button class="delete-comment-btn" data-comment-id="${commentId}">Delete</button>` : ''}
+                        </div>
+                    `;
+                    commentsList.appendChild(commentEl);
+                });
+            }
+
+            // Show input area only for logged-in Google users who haven't commented yet
+            if (user && !user.isAnonymous && !userHasCommented) {
+                commentInputArea.style.display = 'flex';
+            } else {
+                commentInputArea.style.display = 'none';
+            }
+        });
+
+        commentsModal.classList.add('active');
+        closeCommentsModalButton.classList.add('active');
+        body.classList.add('info-panel-open');
+    }
+
+    function closeCommentsModal() {
+        commentsModal.classList.remove('active');
+        closeCommentsModalButton.classList.remove('active');
+        body.classList.remove('info-panel-open');
+        if (commentsListenerOff) {
+            commentsListenerOff();
+            commentsListenerOff = null;
+        }
+        currentStoryKeyForComments = null;
+        commentTextarea.value = '';
+    }
+
+    closeCommentsModalButton.addEventListener('click', closeCommentsModal);
+    commentsModal.addEventListener('click', (e) => {
+        if (e.target === commentsModal) closeCommentsModal();
+    });
+
+    postCommentBtn.addEventListener('click', () => {
+        const { auth, db, ref, push, serverTimestamp } = window.firebaseServices;
+        const user = auth.currentUser;
+        const text = commentTextarea.value.trim();
+        const wordCount = text.split(/\s+/).filter(Boolean).length;
+
+        if (!user || user.isAnonymous) { alert("You must be logged in with Google to comment."); return; }
+        if (!text) { alert("Comment cannot be empty."); return; }
+        if (wordCount > 50) { alert(`Your comment is ${wordCount} words. Please limit it to 50 words.`); return; }
+
+        const commentsRef = ref(db, `comments/${currentStoryKeyForComments}`);
+        push(commentsRef, {
+            uid: user.uid,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            text: text,
+            timestamp: serverTimestamp()
+        }).then(() => { commentTextarea.value = ''; }).catch(err => console.error("Error posting comment:", err));
+    });
+
+    commentsList.addEventListener('click', (e) => {
+        if (e.target.classList.contains('delete-comment-btn')) {
+            const commentId = e.target.dataset.commentId;
+            if (confirm("Are you sure you want to delete this comment?")) {
+                const { db, ref, set } = window.firebaseServices;
+                const commentRef = ref(db, `comments/${currentStoryKeyForComments}/${commentId}`);
+                set(commentRef, null).catch(err => console.error("Error deleting comment:", err));
+            }
         }
     });
   } catch (error) {

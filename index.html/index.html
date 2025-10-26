@@ -333,6 +333,28 @@
         <!-- Series parts will be injected here by JavaScript -->
     </div>
 </div>
+<!-- NEW: Comments Modal -->
+<div class="close-button" id="closeCommentsModalButton">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18"></line>
+    <line x1="6" y1="6" x2="18" y2="18"></line>
+  </svg>
+</div>
+<div class="modal-panel" id="commentsModal">
+    <div class="comments-panel-content">
+        <div class="comments-modal-header">
+            <h2 id="commentsModalTitle">Comments</h2>
+            <span id="commentsModalCount">(0)</span>
+        </div>
+        <div class="comments-list" id="commentsList">
+            <!-- Comments will be injected here by JavaScript -->
+        </div>
+        <div class="comment-input-area" id="commentInputArea" style="display: none;">
+            <textarea id="commentTextarea" placeholder="Add a comment (50 words max)..." maxlength="350"></textarea>
+            <button id="postCommentBtn" class="panel-button">Post Comment</button>
+        </div>
+    </div>
+</div>
 <!-- FIX: Use modern Firebase Modular (ESM) SDK -->
 <script type="module">
     // Your web app's Firebase configuration
