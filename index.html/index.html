@@ -351,20 +351,22 @@
             <!-- Comments will be injected here by JavaScript -->
         </div>
     </div>
-    <!-- FIX: Move header and input area back inside the modal to fix visibility and update issues. -->
-    <div class="comments-modal-header-fixed" id="commentsModalHeaderFixed">
-        <h2 id="commentsModalTitle">Comments <span id="commentsModalCount">(0)</span></h2>
-    </div>
-    <div class="comment-input-area" id="commentInputArea">
-        <textarea id="commentTextarea" class="glass-button-base" placeholder="Add a comment (50 words max)..." maxlength="350"></textarea>
-        <button id="postCommentBtn" class="panel-button glass-button-base" title="Post Comment">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="22" y1="2" x2="11" y2="13"></line>
-                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-            </svg>
-        </button>
-    </div>
-</div>bu
+</div>
+<!-- REFACTOR: Move title completely outside the modal to make it truly fixed. -->
+<div class="comments-modal-header-fixed" id="commentsModalHeaderFixed">
+    <h2 id="commentsModalTitle">Comments <span id="commentsModalCount">(0)</span></h2>
+</div>
+
+<!-- REFACTOR: Move input area completely outside the modal to make it truly fixed. -->
+<div class="comment-input-area" id="commentInputArea">
+    <textarea id="commentTextarea" class="glass-button-base" placeholder="Add a comment (50 words max)..." maxlength="350"></textarea>
+    <button id="postCommentBtn" class="panel-button glass-button-base" title="Post Comment">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+    </button>
+</div>
 <!-- FIX: Use modern Firebase Modular (ESM) SDK -->
 <script type="module">
     // Your web app's Firebase configuration
