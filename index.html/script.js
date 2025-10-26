@@ -1218,13 +1218,21 @@ async function hashString(str) {
 }
 
 async function initializeUser() {
-    const { auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, setPersistence, browserLocalPersistence } = window.firebaseServices;
+    const { auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, setPersistence, browserLocalPersistence, db, ref, push, serverTimestamp } = window.firebaseServices;
     const loginButton = document.getElementById('loginButton');
     const authContainer = document.getElementById('auth-container');
+    const adminPanel = document.getElementById('adminPanel');
+    const closeAdminPanelButton = document.getElementById('closeAdminPanelButton');
 
     onAuthStateChanged(auth, user => {
         // NEW: Add the glass effect class to the auth container for consistent styling.
         authContainer.classList.add('glass-button-base');
+
+        // Hide admin button by default on auth state change
+        const adminBtn = document.getElementById('adminOpenPanelBtn');
+        if (adminBtn) {
+            adminBtn.style.display = 'none';
+        }
 
         if (user) {
             // User is signed in
@@ -1239,6 +1247,22 @@ async function initializeUser() {
             authContainer.querySelector('.logout-button').addEventListener('click', (e) => {
                 e.stopPropagation();
                 signOut(auth);
+            });
+
+            // NEW: Check for admin custom claim
+            user.getIdTokenResult().then((idTokenResult) => {
+                if (idTokenResult.claims.admin) {
+                    console.log("Admin user detected. Showing admin controls.");
+                    if (adminBtn) {
+                        adminBtn.style.display = 'flex';
+                        addTapAnimation(adminBtn);
+                        adminBtn.onclick = () => {
+                            adminPanel.classList.add('active');
+                            closeAdminPanelButton.classList.add('active');
+                            body.classList.add('info-panel-open');
+                        };
+                    }
+                }
             });
         } else {
             // User is signed out
@@ -1275,7 +1299,80 @@ async function initializeUser() {
     });
 
     addTapAnimation(authContainer);
+
+    // NEW: Logic for the Admin Panel
+    if (adminPanel) {
+        const sendBtn = document.getElementById('sendNotificationBtn');
+        const titleInput = document.getElementById('notificationTitle');
+        const bodyInput = document.getElementById('notificationBody');
+
+        addTapAnimation(sendBtn);
+
+        sendBtn.addEventListener('click', async () => {
+            const title = titleInput.value.trim();
+            const bodyText = bodyInput.value.trim();
+
+            if (!title || !bodyText) {
+                alert('Please enter a title and body for the notification.');
+                return;
+            }
+
+            // This is where we write to the database, which triggers the service worker
+            const latestNotificationRef = ref(db, 'notifications/latest');
+            await push(latestNotificationRef, {
+                title: title,
+                body: bodyText,
+                timestamp: serverTimestamp() // Use server timestamp to prevent duplicates
+            });
+    
+            alert('Notification has been sent to the queue!');
+            closeAdminPanelButton.click(); // Close the panel
+        });
+
+        closeAdminPanelButton.addEventListener('click', () => {
+            adminPanel.classList.remove('active');
+            closeAdminPanelButton.classList.remove('active');
+            body.classList.remove('info-panel-open');
+        });
+    }
 }
+
+/**
+ * NEW: Requests notification permission and saves the FCM token.
+ * This function is called after the user is initialized.
+ */
+async function initializeMessaging() {
+    const { messaging, getToken, onMessage, db, ref, set } = window.firebaseServices;
+    
+    try {
+        // The VAPID key is a security measure for web push notifications.
+        // You get this from your Firebase project settings.
+        const vapidKey = "BET7hEivc6W1NzGKhD1cv3laQ8cu5IKK1I0dwG0zPjYbPw3wJzvfMwlEHIfzkH4RGsz02qUuS6fMu_ZquJqByps";
+        const currentToken = await getToken(messaging, { vapidKey: vapidKey });
+
+        if (currentToken) {
+            console.log('FCM Token:', currentToken);
+            // Save the token to the database, so we can send notifications to this user.
+            // We'll store it under a 'fcmTokens' node.
+            const tokenRef = ref(db, `fcmTokens/${currentToken}`);
+            await set(tokenRef, true); // Store the token as a key for easy lookup
+        } else {
+            // Show permission request UI.
+            console.log('No registration token available. Requesting permission...');
+            // This will typically trigger the browser's permission prompt.
+        }
+    } catch (err) {
+        console.error('An error occurred while retrieving token. ', err);
+    }
+
+    // Handle token refresh
+    onMessage(messaging, (payload) => {
+        console.log('Message received. ', payload);
+        // You can handle foreground messages here if you want.
+        // For example, show a custom in-app notification.
+    });
+}
+
 
 let isInitialized = false; // FIX: Add a flag to prevent double initialization.
 async function initializePage(manualLevelOverride = null) {
@@ -1305,6 +1402,9 @@ async function initializePage(manualLevelOverride = null) {
 
     // FIX: Initialize the user ID *before* fetching the grid.
     await initializeUser();
+
+    // NEW: After the user is initialized, ask for notification permissions.
+    await initializeMessaging();
 
     const loadingScreen = document.getElementById('loadingScreen');
     animateButtonsOnLoad();
