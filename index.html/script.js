@@ -1103,69 +1103,56 @@ async function fetchAndBuildGrid() {
     // --- NEW: Comments Modal Logic ---
     const commentsModal = document.getElementById('commentsModal');
     const closeCommentsModalButton = document.getElementById('closeCommentsModalButton');
-    const commentsModalTitle = document.getElementById('commentsModalTitle');
-    const commentsModalHeaderFixed = document.getElementById('commentsModalHeaderFixed'); // NEW
-    const commentsModalCount = document.getElementById('commentsModalCount'); // NEW: Get count element
+    const commentsModalTitle = document.getElementById('commentsModalTitle'); // This is the correct H2 element for the title.
+    const commentsModalHeaderFixed = document.getElementById('commentsModalHeaderFixed');
     const commentsList = document.getElementById('commentsList');
     const commentInputArea = document.getElementById('commentInputArea');
     const commentTextarea = document.getElementById('commentTextarea');
     const postCommentBtn = document.getElementById('postCommentBtn');
     let currentStoryKeyForComments = null;
     let commentsListenerOff = null;
+    const topVignette = document.querySelector('.top-vignette-modal');
+    const bottomVignette = document.querySelector('.bottom-vignette-modal');
 
     addTapAnimation(closeCommentsModalButton);
     addTapAnimation(postCommentBtn);
 
-    function openCommentsModal(storyKey, storyTitle) {
-        closeAllPanels();
-        currentStoryKeyForComments = storyKey; // Set the current story key
-        commentsModalTitle.textContent = `Comments for "${storyTitle}"`;
+    /**
+     * NEW: Centralized function to listen for comments.
+     * This function sets up the real-time listener for a given story. It's called
+     * when the modal opens and when the auth state changes, ensuring the view
+     * is always correct for the current user.
+     */
+    function listenForComments() {
+        if (!currentStoryKeyForComments) return; // Don't run if no story is selected
 
-        // REFACTOR: Move the input area logic outside the onValue listener.
-        // This ensures the input area is always displayed immediately when the modal opens,
-        // and its state is set correctly based on the current user's status.
-        const { auth: currentAuth } = window.firebaseServices;
-        const currentUser = currentAuth.currentUser;
-        commentsModalHeaderFixed.classList.add('active'); // NEW: Show the fixed header
-        commentInputArea.classList.add('active'); // Make the input area visible
-
-        if (!currentUser) {
-            // User is not logged in at all.
-            postCommentBtn.disabled = true;
-            commentTextarea.disabled = true;
-            commentTextarea.placeholder = "Please log in to comment.";
-        } else {
-            // User is logged in (either with Google or anonymously).
-            // The check for `userHasCommented` will happen inside the listener.
-            postCommentBtn.disabled = false;
-            commentTextarea.disabled = false;
-            commentTextarea.placeholder = "Add a comment (50 words max)...";
-        }
-
-        const { auth } = window.firebaseServices;
-        const user = auth.currentUser;
-
-        // Detach any previous listener
+        // Detach any previous listener to prevent duplicates
         if (commentsListenerOff) commentsListenerOff();
 
-        const { db, ref, onValue } = window.firebaseServices;
-        const commentsRef = ref(db, `comments/${storyKey}`);
+        const { db, ref, onValue, auth } = window.firebaseServices;
+        const user = auth.currentUser;
+        const commentsRef = ref(db, `comments/${currentStoryKeyForComments}`);
 
+        // Set up the real-time listener
         commentsListenerOff = onValue(commentsRef, (snapshot) => {
             commentsList.innerHTML = '';
             const comments = snapshot.val() || {};
             const commentCount = Object.keys(comments).length;
             let userHasCommented = false;
 
-            commentsModalCount.textContent = `(${commentCount})`; // NEW: Update count in modal
+            document.getElementById('commentsModalCount').textContent = `(${commentCount})`;
 
             if (commentCount === 0) {
                 commentsList.innerHTML = '<p class="no-comments-message" style="text-align: center; opacity: 0.7;">No comments yet. Be the first!</p>';
             } else {
-                Object.entries(comments).forEach(([commentId, comment]) => {
+                const sortedComments = Object.entries(comments).sort(([, a], [, b]) => b.timestamp - a.timestamp);
+                sortedComments.forEach(([commentId, comment]) => {
                     if (user && comment.uid === user.uid) userHasCommented = true;
+                    
                     const commentEl = document.createElement('div');
                     commentEl.className = 'comment-item';
+                    // Add a data attribute to the element for easier selection later
+                    commentEl.dataset.commentId = commentId;
                     const commentDate = new Date(comment.timestamp).toLocaleString();
 
                     commentEl.innerHTML = `
@@ -1183,14 +1170,44 @@ async function fetchAndBuildGrid() {
                 });
             }
 
-            // If the user is logged in but has already commented, disable the input.
-            if (user && userHasCommented) {
-                postCommentBtn.disabled = true;
-                commentTextarea.disabled = true;
-                commentTextarea.placeholder = "You have already commented on this story.";
+            // Update input state based on whether the current user has commented
+            if (user) {
+                const hasCommented = userHasCommented;
+                postCommentBtn.disabled = hasCommented;
+                commentTextarea.disabled = hasCommented;
+                commentTextarea.placeholder = hasCommented 
+                    ? "You have already commented on this story." 
+                    : "Add a comment (50 words max)...";
             }
         });
+    }
 
+    function openCommentsModal(storyKey, storyTitle) {
+        closeAllPanels();
+        currentStoryKeyForComments = storyKey; // Set the current story key
+        const { auth: currentAuth } = window.firebaseServices;
+        const currentUser = currentAuth.currentUser;
+        commentsModalHeaderFixed.classList.add('active'); // NEW: Show the fixed header
+        commentInputArea.classList.add('active'); // Make the input area visible
+
+        if (!currentUser) {
+            // User is not logged in at all.
+            postCommentBtn.disabled = true;
+            commentTextarea.disabled = true;
+            commentTextarea.placeholder = "Please log in to comment.";
+        } else {
+            // User is logged in (either with Google or anonymously).
+            // The check for `userHasCommented` will happen inside the listener.
+            postCommentBtn.disabled = false;
+            commentTextarea.disabled = false;
+            commentTextarea.placeholder = "Add a comment (50 words max)...";
+        }
+        // FIX: Add the active class to show the vignettes
+        topVignette.classList.add('active');
+        bottomVignette.classList.add('active');
+        commentsModalTitle.innerHTML = `Comments for "${storyTitle}" <span id="commentsModalCount">(0)</span>`;
+        
+        listenForComments(); // Call the new centralized listener function
         commentsModal.classList.add('active');
         closeCommentsModalButton.classList.add('active');
         body.classList.add('info-panel-open');
@@ -1202,6 +1219,9 @@ async function fetchAndBuildGrid() {
         commentInputArea.classList.remove('active'); // Hide the input area
         closeCommentsModalButton.classList.remove('active');
         body.classList.remove('info-panel-open');
+        // FIX: Remove the active class to hide the vignettes
+        topVignette.classList.remove('active');
+        bottomVignette.classList.remove('active');
         if (commentsListenerOff) {
             commentsListenerOff();
             commentsListenerOff = null;
@@ -1222,7 +1242,7 @@ async function fetchAndBuildGrid() {
         const wordCount = text.split(/\s+/).filter(Boolean).length;
 
         if (!user) { alert("You must be logged in to comment."); return; }
-        if (!text) { alert("Comment cannot be empty."); return; }
+        if (!text) { return; } // Don't post empty comments
         if (wordCount > 50) { alert(`Your comment is ${wordCount} words. Please limit it to 50 words.`); return; }
 
         const commentsRef = ref(db, `comments/${currentStoryKeyForComments}`);
@@ -1232,16 +1252,28 @@ async function fetchAndBuildGrid() {
             photoURL: user.photoURL,
             text: text,
             timestamp: serverTimestamp()
-        }).then(() => { commentTextarea.value = ''; }).catch(err => console.error("Error posting comment:", err));
+        }).then(() => {
+            commentTextarea.value = '';
+            // Manually trigger input event to resize textarea
+            commentTextarea.dispatchEvent(new Event('input'));
+        }).catch(err => console.error("Error posting comment:", err));
     });
 
     commentsList.addEventListener('click', (e) => {
         if (e.target.classList.contains('delete-comment-btn')) {
             const commentId = e.target.dataset.commentId;
             if (confirm("Are you sure you want to delete this comment?")) {
+                const commentElement = document.querySelector(`.comment-item[data-comment-id="${commentId}"]`);
                 const { db, ref, set } = window.firebaseServices;
                 const commentRef = ref(db, `comments/${currentStoryKeyForComments}/${commentId}`);
-                set(commentRef, null).catch(err => console.error("Error deleting comment:", err));
+                if (commentElement) {
+                    // FIX: Add the animation class first, then wait for it to finish
+                    // before deleting the data. This ensures the animation is smooth.
+                    commentElement.classList.add('fading-out');
+                    setTimeout(() => {
+                        set(commentRef, null).catch(err => console.error("Error deleting comment:", err)); // The onValue listener will handle the removal
+                    }, 400); // This duration MUST match the animation duration in the CSS.
+                }
             }
         }
     });
@@ -1450,6 +1482,11 @@ async function initializeUser() {
             }
             console.log("User is anonymous:", currentUserId);
             loginButton.innerHTML = `<span class="login-text">Login</span>`;
+        }
+        // NEW: If the comments modal is open, refresh the listener with the new user state.
+        if (commentsModal.classList.contains('active')) {
+            console.log("Auth state changed while comments modal is open. Refreshing listener.");
+            listenForComments();
         }
         // Re-filter/render panels to update their favorited state for the new user
         filterAndRenderPanels();

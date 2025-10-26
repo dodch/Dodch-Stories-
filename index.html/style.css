@@ -633,8 +633,6 @@ body:not(.is-scrolling) .search-button.active:hover, .search-button.active:focus
   color: var(--glass-text);
   text-shadow: 0 1px 3px rgba(0,0,0,0.7);
   transition: color 0.3s ease, transform 0.2s ease-out;
-  /* NEW: Add margin to the right of the count to space it from the button. */
-  margin-right: 0.5rem;
 }
 
 /* FIX: Change the animation to a vertical "scroll blur" effect. */
@@ -1061,6 +1059,11 @@ body:not(.is-scrolling) .glass-container:hover .story-creator {
 .comment-btn svg {
   width: 20px; height: 20px; fill: none; stroke: var(--glass-text); stroke-width: 2;
 }
+/* NEW: Add hover and focus glow effect for the comment button */
+body:not(.is-scrolling) .comment-btn:hover, .comment-btn:focus-visible {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px 5px color-mix(in srgb, var(--blue-tint) 50%, transparent), var(--button-edge);
+}
 /* REFACTOR: Create the glow effect using a pseudo-element with blur and opacity. */
 .new-pill::after {
     content: '';
@@ -1318,6 +1321,7 @@ html {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-shrink: 0; /* FIX: Prevent the button from being squashed by the textarea. */
     background-color: color-mix(in srgb, var(--blue-tint) 20%, transparent);
     cursor: pointer;
     /* FIX: Remove default browser border from <button> elements to match <a> tags. */
@@ -1332,6 +1336,34 @@ body:not(.is-scrolling) .panel-button:hover, .panel-button:focus-visible {
 }
 body:not(.is-scrolling) .panel-button.social:hover, .panel-button.social:focus-visible {
     box-shadow: 0 0 15px color-mix(in srgb, var(--purple-tint) 40%, transparent), var(--button-edge);
+}
+
+/* REFACTOR: A smaller, circular icon button for compact UIs like the comment input. */
+.panel-button-small {
+    width: 44px; /* Fixed width */
+    height: 44px; /* Fixed height */
+    padding: 0; /* Remove padding */
+    border-radius: 50%; /* Make it a circle */
+    flex-shrink: 0; /* FIX: Prevent the button from shrinking when the textarea grows. */
+    color: var(--glass-text);
+    box-shadow: var(--button-edge);
+    transition: all 0.3s ease-in-out;
+    display: flex;
+    position: relative; /* NEW: Add relative positioning for pseudo-elements. */
+    justify-content: center;
+    align-items: center;
+    border: none;
+    cursor: pointer;
+    background-color: color-mix(in srgb, var(--blue-tint) 20%, transparent);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    overflow: hidden; /* NEW: Ensure shine effect is contained. */
+}
+
+/* NEW: Add a hover/focus glow effect to the small icon button. */
+body:not(.is-scrolling) .panel-button-small:hover, .panel-button-small:focus-visible {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 50%, transparent), var(--button-edge);
 }
 .social-link-button {
     padding: 1rem;
@@ -1355,14 +1387,13 @@ body:not(.is-scrolling) .social-link-button:hover, .social-link-button:focus-vis
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: all 0.3s ease-in-out;
-  z-index: 101;
+  transition: opacity 0.4s ease-out, transform 0.4s ease-out, box-shadow 0.3s ease-out;
+  z-index: 103; /* FIX: Increase z-index to ensure it's on top of vignettes and headers. */
   /* FIX: Hide the button by default; JS will show it when its panel is active. */
   opacity: 0;
   pointer-events: none;
   transform: scale(0.9);
   /* FIX: Add box-shadow to the transition for the hover effect. */
-  transition: opacity 0.4s ease-out, transform 0.4s ease-out, box-shadow 0.3s ease-out;
   box-shadow: var(--button-edge);
   /* FIX: Add the red background color to match other close/cancel buttons. */
   background-color: color-mix(in srgb, var(--red-tint) 20%, transparent);
@@ -1580,7 +1611,8 @@ body.info-panel-open #seriesModal .glass-content {
 /* Override the default centered flex layout for the comments modal */
 #commentsModal {
     display: block; /* Change to block to allow for a scrolling layout */
-    overflow-y: auto; /* Make the entire modal scrollable if needed */
+    /* FIX: The definitive fix. Hide horizontal overflow on the modal itself. */
+    overflow-x: hidden;
     padding: 0; /* Remove default padding */
 }
 
@@ -1590,8 +1622,11 @@ body.info-panel-open #seriesModal .glass-content {
     margin: 0 auto; /* Center the content block */
     /* REFACTOR: This is now the main scrollable area */
     overflow-y: auto;
+    /* FIX: The definitive fix to prevent any horizontal scrolling within the comments modal. */
+    scroll-behavior: smooth; /* NEW: Enable smooth scrolling for this container */
+    overflow-x: hidden;
     height: 100%;
-    padding: 120px 40px 140px 40px; /* Add padding for fixed title and input */
+    padding: 170px 40px 140px 40px; /* Add even more padding for fixed title and input */
 }
 
 /* REFACTOR: New container for the truly fixed title */
@@ -1637,6 +1672,9 @@ body.info-panel-open #seriesModal .glass-content {
 
 .comments-list {
     flex-grow: 1; /* Allow the list to take up available space */
+    /* REFACTOR: Add flex properties to enable bubble alignment. */
+    display: flex;
+    flex-direction: column;
     margin-bottom: 1.5rem;
 }
 
@@ -1644,22 +1682,18 @@ body.info-panel-open #seriesModal .glass-content {
     /* REFACTOR: Make the input area a true fixed footer, independent of the modal. */
     position: fixed; /* Position relative to the viewport */
     bottom: 0;
+    bottom: 1rem; /* REFACTOR: Raise the input area slightly from the bottom */
     left: 50%;
     width: 100%;
     max-width: 800px; /* Match the modal content width */
-    padding: 1rem 40px 2rem 40px; /* Align with modal content padding */
+    padding: 0.5rem 25px 0.75rem 25px; /* TWEAK: Increased side padding to move send button further from the edge on mobile */
     box-sizing: border-box;
     display: flex;
     gap: 1rem;
     align-items: center;
     z-index: 101; /* Sit on top of the modal backdrop */
-    /* Add a background gradient to mask content scrolling behind it */
-    background: linear-gradient(to top, 
-        color-mix(in srgb, var(--glass-bg) 95%, black) 60%, 
-        transparent 100%
-    );
     /* Animation for appearing/disappearing */
-    opacity: 0;
+    opacity: 0; /* REFACTOR: Align items to the bottom for better visual balance with the textarea. */ align-items: flex-end;
     transform: translate(-50%, 100%); /* Start off-screen and centered */
     transition: opacity 0.4s ease-out, transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     pointer-events: none;
@@ -1667,15 +1701,40 @@ body.info-panel-open #seriesModal .glass-content {
 .comment-input-area.active {
     opacity: 1;
     transform: translate(-50%, 0); /* Slide into view */
-    pointer-events: auto;
+    pointer-events: auto; /* REFACTOR: Increased width for a more spacious input area */ max-width: 1100px;
+}
+
+/* --- NEW: CSS-Only Textarea Auto-Resize --- */
+/* This wrapper uses a grid layout to stack the textarea and a hidden pseudo-element on top of each other. */
+.textarea-wrapper {
+    display: grid;
+    flex-grow: 1;
+}
+
+/* The textarea and its pseudo-element twin share the same grid cell. */
+.textarea-wrapper::after,
+.comment-input-area #commentTextarea {
+    grid-area: 1 / 1 / 2 / 2;
+}
+
+/* The ::after pseudo-element is a hidden copy of the textarea's content.
+   It's what actually drives the height of the wrapper. */
+.textarea-wrapper::after {
+    content: attr(data-replicated-value) " "; /* Use the data attribute from JS */
+    white-space: pre-wrap; /* Allow wrapping */
+    visibility: hidden; /* Keep it from being seen */
+    padding: inherit; /* Inherit padding from the textarea for accurate sizing */
 }
 
 /* REFACTOR: Apply the glass effect to the children of the input area, not the container itself. */
 .comment-input-area #commentTextarea {
-    flex-grow: 1;
-    height: 60px;
-    padding: 1rem;
-    border-radius: 1.5rem;
+    /* REFACTOR: Remove min-height and set height to 100% to fill the wrapper. */
+    height: 100%;
+    max-height: 150px; /* NEW: Set a maximum height to prevent excessive growth */
+    padding: 0.75rem 1rem; /* REFACTOR: Adjusted padding */
+    border-radius: 1.25rem; /* REFACTOR: Adjusted radius */
+    /* REFACTOR: Set rows to 1 for a single-line starting height. */
+    rows: 1;
     resize: none;
     color: var(--glass-text);
     background-color: var(--glass-bg);
@@ -1683,7 +1742,9 @@ body.info-panel-open #seriesModal .glass-content {
     -webkit-backdrop-filter: blur(4px);
     box-shadow: var(--button-edge);
     border: none;
+    overflow: hidden; /* NEW: Ensure the shine effect is contained within the textarea's rounded corners. */
     transition: all 0.3s ease-out;
+    flex-grow: 1; /* Allow the textarea to grow and fill the available space */
 }
 .comment-input-area #commentTextarea:focus {
     outline: none;
@@ -1693,8 +1754,204 @@ body.info-panel-open #seriesModal .glass-content {
     flex-shrink: 0; /* Prevent button from shrinking */
 }
 
+/* NEW: On mobile, reduce the padding of the input area even more. */
+@media (max-width: 600px) {
+    .comment-input-area {
+        padding: 0.75rem 15px 1rem 15px;
+    }
+}
+
 /* --- END Comments Modal Styling --- */
 
+/* --- NEW: Vignettes for Modals (Comments, Series, etc.) --- */
+.top-vignette-modal {
+    position: fixed;
+    /* REFACTOR: Hide by default. They will be shown when the modal is active. */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease-out;
+    top: 0; /* Align to the top of the viewport */
+    left: 0; /* Align to the left edge */
+    width: calc(100vw - 12px); /* FIX: Span viewport width minus the scrollbar width to prevent overlap. */
+    height: 170px; /* Match the padding of the comments content */
+    /* FIX: Add backdrop-filter to create the blur effect, matching the home page. */
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 101; /* Sit on top of the modal content but behind the header/close button */
+    background: linear-gradient(to bottom, 
+        color-mix(in srgb, var(--glass-bg) 95%, black) 40%, 
+        transparent 100%
+    );
+    mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+}
+
+.bottom-vignette-modal {
+    position: fixed;
+    /* REFACTOR: Hide by default. */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease-out;
+    bottom: 0; /* Align to the bottom of the viewport */
+    left: 0; /* Align to the left edge */
+    width: calc(100vw - 12px); /* FIX: Span viewport width minus the scrollbar width to prevent overlap. */
+    height: 140px; /* Match the padding of the comments content */
+    /* FIX: Add backdrop-filter to the bottom vignette as well. */
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 101; /* Sit on top of the modal content but behind the input area */
+    background: linear-gradient(to top, 
+        color-mix(in srgb, var(--glass-bg) 95%, black) 40%, 
+        transparent 100%
+    );
+    /* FIX: Add a mask to make the blur effect fade out smoothly, matching the top vignette. */
+    mask-image: linear-gradient(to top, black 70%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to top, black 70%, transparent 100%);
+}
+
+/* REFACTOR: Show the vignettes when they have the 'active' class. */
+.top-vignette-modal.active,
+.bottom-vignette-modal.active {
+    opacity: 1;
+}
+/* ==========================================================================
+   Comments Modal - New Bubble Style
+   ========================================================================== */
+
+/* REFACTOR: Replaced the bounce animation with a more playful "jello" wobble effect. */
+@keyframes comment-jello-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.1, 0.9) rotate(1deg);
+  }
+  70% {
+    transform: scale(0.95, 1.05) rotate(-1deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1, 1) rotate(0);
+  }
+}
+
+/* NEW: Add a fade-out animation for deleted comments */
+@keyframes comment-fade-out {
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+.comment-item.fading-out {
+  animation: comment-fade-out 0.4s ease-out forwards;
+}
+
+/* Main container for each comment */
+.comment-item {
+  display: flex;
+  align-items: flex-start; /* Align items to the top */
+  gap: 12px;
+  padding: 12px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  /* REFACTOR: Apply the new jello-in animation. It will be triggered by the staggered delay in JS. */
+  opacity: 0; /* Start hidden */
+  animation: comment-jello-in 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.comment-item {
+  display: flex;
+  align-items: flex-start; /* Align items to the top */
+  flex-shrink: 0; /* NEW: Prevent items from shrinking, which helps with smooth layout shifts */
+  gap: 12px;
+  padding: 12px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  /* The animation delay is set in script.js */
+}
+.comment-item:first-child { animation-delay: 0s !important; } /* NEW: Ensure the newest comment animates immediately */
+
+
+.comment-item:last-child {
+  border-bottom: none;
+}
+
+/* Small, circular profile picture */
+.comment-author-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0; /* Prevent image from shrinking */
+}
+
+/* Container for the comment text and header */
+.comment-body {
+  /* REFACTOR: Increased background opacity and added a subtle drop shadow for better contrast and depth. */
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 16px;
+  padding: 10px 16px;
+  position: relative;
+  max-width: 85%; /* Prevent bubbles from getting too wide on large screens */
+  /* FIX: Ensure the bubble itself can shrink within its flex container, forcing long content to wrap. */
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, 0.2); /* REFACTOR: Slightly brighter border for a crisper edge. */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3); /* NEW: Add a stronger shadow to lift the bubble more. */
+}
+
+/* Comment header with author name and date */
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  gap: 1rem; /* Add a minimum gap between the name and date */
+}
+
+.comment-author-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+.comment-date {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* The comment text itself */
+.comment-text {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.9);
+  /* REFACTOR: Use modern properties to force long words/strings to wrap and prevent horizontal overflow. */
+  overflow-wrap: break-word;
+  word-break: break-word;
+  margin: 0;
+}
+
+/* Delete button styling */
+.delete-comment-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  color: var(--glass-text);
+  font-size: 22px;
+  line-height: 1;
+  padding: 2px 6px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  border-radius: 50%;
+}
+
+.delete-comment-btn:hover {
+  color: var(--red-tint);
+  background: rgba(255, 255, 255, 0.1);
+}
 
 
 /* --- NEW: Auth Container & Login Button Styles --- */
