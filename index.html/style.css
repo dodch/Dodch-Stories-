@@ -1652,18 +1652,35 @@ body.info-panel-open #seriesModal .glass-content {
 
 #commentsModalTitle {
     font-family: 'Playfair Display', serif;
-    font-size: 2.5rem;
-    font-weight: 900;
     color: var(--glass-text);
     text-shadow: 0 2px 10px rgba(0,0,0,0.2);
     text-align: left; /* Align title to the left */
     /* Resetting properties as it's now inside a fixed container */
     position: relative;
     transform: none;
-    width: auto;
+    width: 100%; /* Take full width to allow left alignment of children */
+    /* REFACTOR: Use flexbox to stack the main title and subtitle */
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem; /* Add a small gap between the title and subtitle */
 }
 
-#commentsModalCount {
+/* NEW: Style for the main "Comments" heading */
+.main-comment-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+}
+
+/* NEW: Style for the story title subtitle */
+.story-title-for-comments {
+    font-size: 1rem;
+    font-weight: normal;
+    color: var(--golden-tint);
+    opacity: 0.9;
+}
+
+/* REFACTOR: Target the count span more specifically */
+#commentsModalTitle .main-comment-title #commentsModalCount {
     font-size: 1.5rem;
     opacity: 0.7;
     font-weight: normal;

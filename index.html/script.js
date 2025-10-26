@@ -1155,14 +1155,17 @@ async function fetchAndBuildGrid() {
                     commentEl.dataset.commentId = commentId;
                     const commentDate = new Date(comment.timestamp).toLocaleString();
 
+                    // REFACTOR: Move the delete button outside the main comment body for better layout control.
                     commentEl.innerHTML = `
                         <img src="${comment.photoURL}" alt="${comment.displayName}" class="comment-author-pic">
-                        <div class="comment-body">
-                            <div class="comment-header">
-                                <span class="comment-author-name">${comment.displayName}</span>
-                                <span class="comment-date">${commentDate}</span>
+                        <div class="comment-content-wrapper">
+                            <div class="comment-body">
+                                <div class="comment-header">
+                                    <span class="comment-author-name">${comment.displayName}</span>
+                                    <span class="comment-date">${commentDate}</span>
+                                </div>
+                                <p class="comment-text">${comment.text}</p>
                             </div>
-                            <p class="comment-text">${comment.text}</p>
                             ${(user && comment.uid === user.uid) ? `<button class="delete-comment-btn" data-comment-id="${commentId}">Delete</button>` : ''}
                         </div>
                     `;
@@ -1205,7 +1208,10 @@ async function fetchAndBuildGrid() {
         // FIX: Add the active class to show the vignettes
         topVignette.classList.add('active');
         bottomVignette.classList.add('active');
-        commentsModalTitle.innerHTML = `Comments for "${storyTitle}" <span id="commentsModalCount">(0)</span>`;
+        // REFACTOR: Update the title structure to have a main title and a subtitle for the story name.
+        commentsModalTitle.innerHTML = `
+            <div class="main-comment-title">Comments <span id="commentsModalCount">(0)</span></div>
+            <div class="story-title-for-comments">${storyTitle}</div>`;
         
         listenForComments(); // Call the new centralized listener function
         commentsModal.classList.add('active');
