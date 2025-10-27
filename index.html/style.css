@@ -1956,8 +1956,8 @@ body.info-panel-open #seriesModal .glass-content {
 
 /* REFACTOR: Align the header to the right for the user's comment, but keep the natural order of name and date. */
 .comment-item.is-user .comment-header {
-  justify-content: flex-end;
-  flex-direction: row-reverse; /* NEW: Reverse the order to show Name then Date from right-to-left */
+  justify-content: flex-end; /* Align items to the right */
+  flex-direction: row; /* Keep the natural DOM order (Name, then Date) */
 }
 
 
