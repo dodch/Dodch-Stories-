@@ -23,24 +23,26 @@
         /* 2. A secondary, softer inner highlight to create a beveled look. */
         inset 0 2.5px 3px color-mix(in srgb, #9333EA 20%, transparent), /* Using purple as a fallback */        
         /* 3. A sharp highlight on the bottom edge to complete the glass look. */
-        inset 0 -1.5px 1.5px color-mix(in srgb, #fff 70%, transparent),
-        /* 4. NEW: A subtle, dark highlight on the bottom inner edge to complete the beveled effect. */
-        inset 0 -2.5px 3px color-mix(in srgb, #000 20%, transparent),        /* 5. A soft inner shadow from the bottom for a smooth, beveled depth. */
-        inset 0 -4px 5px -3px color-mix(in srgb, #000 30%, transparent),
-        /* 5. The main outer drop shadow for separation from the background */
-        0px 4px 12px 0px color-mix(in srgb, #000 25%, transparent),
-        0px 15px 35px 0px color-mix(in srgb, #000 20%, transparent);
+        inset 0 -1.5px 1.5px color-mix(in srgb, #fff 70%, transparent), /* 4. Dark Inner Edges (all sides for curved look) */
+        inset 0 2.5px 3px color-mix(in srgb, #000 15%, transparent), /* Top */
+        inset 0 -2.5px 3px color-mix(in srgb, #000 15%, transparent), /* Bottom */
+        inset 2.5px 0 3px color-mix(in srgb, #000 15%, transparent), /* Left */
+        inset -2.5px 0 3px color-mix(in srgb, #000 15%, transparent), /* Right */
+        /* 5. Soft Inner Shadows (all sides for smooth depth) */
+        inset 0 4px 5px -3px color-mix(in srgb, #000 20%, transparent), /* Top */
+        inset 0 -4px 5px -3px color-mix(in srgb, #000 20%, transparent), /* Bottom */
+        inset 4px 0 5px -3px color-mix(in srgb, #000 20%, transparent), /* Left */
+        inset -4px 0 5px -3px color-mix(in srgb, #000 20%, transparent), /* Right */
+        /* Outer Drop Shadows (now centered) */ 0px 0px 20px 0px color-mix(in srgb, #000 25%, transparent),
+        0px 0px 40px 0px color-mix(in srgb, #000 20%, transparent);
     /* REFACTOR: Final overhaul for a hyper-realistic, 3D machined glass button edge with defined top/bottom bevels. */
     --button-shadow-light:
-        /* 1. Top Highlight: A sharper, brighter light-catching edge. */
-        inset 0 1.5px 0 color-mix(in srgb, #fff 85%, transparent),
-        /* 2. Top Bevel Shadow: A crisper dark line below the highlight for a 3D chiseled look. */
-        inset 0 2.5px 3px color-mix(in srgb, #000 25%, transparent),
-        /* 3. Bottom Highlight: A softer, more visible reflected light on the bottom inner edge. */
-        inset 0 -1.5px 0 color-mix(in srgb, #fff 35%, transparent),
-        /* 4. Outer Border: A very fine, dark outer line for a clean silhouette (unchanged). */
+        /* 1. Top Highlight: A sharper, brighter light-catching edge. (Increased opacity) */
+        inset 0 1.5px 0 color-mix(in srgb, #fff 95%, transparent),
+        /* 2. Bottom Highlight: A softer, more visible reflected light on the bottom inner edge. (Increased opacity) */
+        inset 0 -1.5px 0 color-mix(in srgb, #fff 45%, transparent),
+        /* 3. Outer Border & Drop Shadow */
         0 0 0 1px color-mix(in srgb, #000 15%, transparent),
-        /* 5. Outer Drop Shadow: A deeper shadow for more pop. */
         0px 5px 15px -5px color-mix(in srgb, #000 35%, transparent);
     --pop-up-bg-light: rgba(255, 255, 255, 0.7);
     --pop-up-text-light: #1f2937;
@@ -79,18 +81,22 @@ html.dark-mode {
         /* 2. A secondary, softer inner highlight to create a beveled look. */
         inset 0 2.5px 4px color-mix(in srgb, #C084FC 25%, transparent), /* Using purple as a fallback */        
         /* 3. A sharp highlight on the bottom edge to complete the glass look. */
-        inset 0 -1.5px 1.5px color-mix(in srgb, #fff 50%, transparent),
-        /* 4. NEW: A subtle, dark highlight on the bottom inner edge to complete the beveled effect. */
-        inset 0 -2.5px 3px color-mix(in srgb, #000 25%, transparent),        /* 5. A soft inner shadow from the bottom for a smooth, beveled depth. */
-        inset 0 -4px 5px -3px color-mix(in srgb, #000 45%, transparent),
-        /* 5. The main outer drop shadow for separation */
-        0px 5px 15px 0px color-mix(in srgb, #000 40%, transparent),
-        0px 20px 40px 0px color-mix(in srgb, #000 35%, transparent);
+        inset 0 -1.5px 1.5px color-mix(in srgb, #fff 50%, transparent), /* 4. Dark Inner Edges (all sides for curved look) */
+        inset 0 2.5px 3px color-mix(in srgb, #000 20%, transparent), /* Top */
+        inset 0 -2.5px 3px color-mix(in srgb, #000 20%, transparent), /* Bottom */
+        inset 2.5px 0 3px color-mix(in srgb, #000 20%, transparent), /* Left */
+        inset -2.5px 0 3px color-mix(in srgb, #000 20%, transparent), /* Right */
+        /* 5. Soft Inner Shadows (all sides for smooth depth) */
+        inset 0 4px 5px -3px color-mix(in srgb, #000 35%, transparent), /* Top */
+        inset 0 -4px 5px -3px color-mix(in srgb, #000 35%, transparent), /* Bottom */
+        inset 4px 0 5px -3px color-mix(in srgb, #000 35%, transparent), /* Left */
+        inset -4px 0 5px -3px color-mix(in srgb, #000 35%, transparent), /* Right */
+        /* Outer Drop Shadows (now centered) */ 0px 0px 20px 0px color-mix(in srgb, #000 40%, transparent),
+        0px 0px 45px 0px color-mix(in srgb, #000 35%, transparent);
     /* REFACTOR: Final overhaul for a hyper-realistic, 3D machined glass button edge (dark mode). */
     --button-shadow-dark:
-        inset 0 1.5px 0 color-mix(in srgb, #fff 70%, transparent),
-        inset 0 2.5px 3px color-mix(in srgb, #000 35%, transparent),
-        inset 0 -1.5px 0 color-mix(in srgb, #fff 30%, transparent),
+        inset 0 1.5px 0 color-mix(in srgb, #fff 80%, transparent),
+        inset 0 -1.5px 0 color-mix(in srgb, #fff 40%, transparent),
         0 0 0 1px color-mix(in srgb, #000 25%, transparent),
         0px 6px 18px -5px color-mix(in srgb, #000 50%, transparent);
     --pop-up-bg-dark: rgba(31, 41, 55, 0.9);
@@ -107,9 +113,17 @@ body.dark-mode {
 }
 
 .glass-button-base {
-    background-color: var(--glass-bg-light);
-    box-shadow: var(--button-shadow-light);
+    /* FIX: Make the button brighter by increasing the color mix percentage.
+       This gives the button a more solid, vibrant appearance. */
+    background-color: color-mix(in srgb, var(--button-color, #888) 20%, transparent);
     backdrop-filter: blur(4px); /* A simple, universal blur for all buttons */
+    /* FIX: Apply the base edge effect and the new tinted inner shadows. */
+    box-shadow: var(--button-shadow-light),
+        /* REFACTOR: Use a soft, tight inner shadow with transparency to create a gradient bevel. (Darker) */
+        inset 0 2px 3px color-mix(in srgb, var(--button-color) 60%, #000),
+        inset 0 -2px 3px color-mix(in srgb, var(--button-color) 60%, #000),
+        inset 2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000),
+        inset -2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000);
     -webkit-backdrop-filter: blur(4px); /* The WebKit version for Safari/iOS */
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.5s ease, background-color 0.5s ease;
 }
@@ -133,32 +147,48 @@ body.dark-mode {
 }
 
 html.dark-mode .glass-button-base, body.dark-mode .glass-button-base {
-    background-color: var(--glass-bg-dark);
-    box-shadow: var(--button-shadow-dark);
+    /* FIX: Make the button brighter in dark mode as well. */
+    background-color: color-mix(in srgb, var(--button-color, #888) 30%, transparent);
+    box-shadow: var(--button-shadow-dark),
+        /* REFACTOR: Use a soft, tight inner shadow with transparency for dark mode as well. (Darker) */
+        inset 0 2px 3px color-mix(in srgb, var(--button-color) 60%, #000),
+        inset 0 -2px 3px color-mix(in srgb, var(--button-color) 60%, #000),
+        inset 2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000),
+        inset -2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000);
 }
 
 /* FIX: Apply colors directly to the base class to avoid specificity conflicts. */
 .save-button-custom, .selected-language {
-    background-color: var(--save-button-bg-light);
+    /* REMOVED: The semi-transparent background-color was obscuring the tinted inner shadows. */
     color: var(--save-button-text-light);
+    --button-color: #9333ea; /* Purple */
 }
 
 html.dark-mode .save-button-custom, body.dark-mode .save-button-custom, html.dark-mode .selected-language, body.dark-mode .selected-language {
-    background-color: var(--save-button-bg-dark);
+    /* REMOVED: The semi-transparent background-color was obscuring the tinted inner shadows. */
     color: var(--save-button-text-dark);
 }
 
 .back-home-button-custom {
-    background-color: var(--back-button-bg-light);
+    /* REMOVED: The semi-transparent background-color was obscuring the tinted inner shadows. */
     color: var(--back-button-text-light);
+    --button-color: #ef4444; /* Red */
     font-size: 1.25rem;
 }
 
 html.dark-mode .back-home-button-custom, body.dark-mode .back-home-button-custom {
-    background-color: var(--back-button-bg-dark);
+    /* REMOVED: The semi-transparent background-color was obscuring the tinted inner shadows. */
     color: var(--back-button-text-dark);
 }
-/* REFACTOR: Apply the blur effect only to the popup's pseudo-element. */
+
+/* FIX: Give language buttons a default, neutral button color.
+   This prevents the shadow from defaulting to black on initial load
+   before the JS assigns the selected/unselected classes. */
+#ar-button, #fr-button, #en-button, .unselected-language {
+    --button-color: #a855f7; /* A neutral purple for unselected buttons */
+    color: var(--unselected-lang-text-light);
+}
+
 .glass-popup::before {
     content: '';
     position: absolute;
@@ -188,19 +218,24 @@ html.dark-mode .glass-popup, body.dark-mode .glass-popup {
 }
 
 /* --- Button Hover Glow Effects --- */
-/* Purple/Violet Glow for Save and Language buttons */
-button#save-progress-button:hover, button#save-progress-button:focus-visible, button.selected-language:hover, button.selected-language:focus-visible, button.unselected-language:hover, button.unselected-language:focus-visible {
-    box-shadow: 0 0 25px 5px color-mix(in srgb, var(--save-button-bg-light) 70%, transparent), var(--button-shadow-light);
+/* REFACTOR: Unified hover/focus glow effect for all glass buttons.
+   This is cleaner and uses the button's own --button-color for the glow. */
+.glass-button-base:hover, .glass-button-base:focus-visible {
+    transform: scale(1.05);
+    /* The glow is a colored outer shadow, combined with the existing button shadow definition. */
+    box-shadow: 0 0 20px 2px color-mix(in srgb, var(--button-color, #888) 50%, transparent), var(--button-shadow-light), inset 0 2px 3px color-mix(in srgb, var(--button-color) 60%, #000), inset 0 -2px 3px color-mix(in srgb, var(--button-color) 60%, #000), inset 2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000), inset -2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000);
 }
-body.dark-mode button#save-progress-button:hover, body.dark-mode button#save-progress-button:focus-visible, body.dark-mode button.selected-language:hover, body.dark-mode button.selected-language:focus-visible, body.dark-mode button.unselected-language:hover, body.dark-mode button.unselected-language:focus-visible {
-    box-shadow: 0 0 25px 5px color-mix(in srgb, var(--save-button-bg-dark) 70%, transparent), var(--button-shadow-dark);
+html.dark-mode .glass-button-base:hover, html.dark-mode .glass-button-base:focus-visible {
+    box-shadow: 0 0 25px 5px color-mix(in srgb, var(--button-color, #888) 50%, transparent), var(--button-shadow-dark), inset 0 2px 3px color-mix(in srgb, var(--button-color) 60%, #000), inset 0 -2px 3px color-mix(in srgb, var(--button-color) 60%, #000), inset 2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000), inset -2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000);
 }
-/* Red Glow for Back Home button */
-#back-home-button:hover, #back-home-button:focus-visible {
-    box-shadow: 0 0 25px 5px color-mix(in srgb, var(--back-button-bg-light) 70%, transparent), var(--button-shadow-light);
+
+/* FIX: Create a specific hover rule for the popup to prevent it from inheriting the generic button hover effect.
+   This ensures the popup keeps its more complex --glass-shadow and doesn't cause other elements to lose their blur. */
+.glass-popup:hover, .glass-popup:focus-visible {
+    box-shadow: var(--glass-shadow-light); /* Maintain the correct shadow on hover */
 }
-body.dark-mode #back-home-button:hover, body.dark-mode #back-home-button:focus-visible {
-    box-shadow: 0 0 25px 5px color-mix(in srgb, var(--back-button-bg-dark) 70%, transparent), var(--button-shadow-dark);
+html.dark-mode .glass-popup:hover, html.dark-mode .glass-popup:focus-visible {
+    box-shadow: var(--glass-shadow-dark); /* Maintain the correct shadow on hover in dark mode */
 }
 
 /* Glow for Popup Buttons */
@@ -234,14 +269,22 @@ body.dark-mode #back-home-button:hover, body.dark-mode #back-home-button:focus-v
 
 /* NEW: Visitor count container */
 #visitor-count-container {
-    /* REFACTOR: Increased margin-top to move the icon lower. */
-    margin-top: 5rem; /* Position it below the language buttons */
-    background-color: rgba(0, 0, 0, 0.2);
-    pointer-events: none; /* Make it non-interactive */
+  /* REFACTOR: Increased margin-top to move the icon lower. */
+  margin-top: 5rem; /* Position it below the language buttons */
+  pointer-events: none; /* Make it non-interactive */
+  /* FIX: Apply the glass button effect to the visitor counter. */
+  --button-color: #888; /* Use a neutral gray as the base color for the shadow tint */
+  background-color: var(--glass-bg-light); /* Use the standard light glass background */
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  /* FIX: Remove the tinted inner shadow for a cleaner, more transparent look. */
+  box-shadow: var(--button-shadow-light);
 }
 
 html.dark-mode #visitor-count-container {
-    background-color: rgba(0, 0, 0, 0.4);
+  background-color: var(--glass-bg-dark); /* Use the standard dark glass background */
+  /* FIX: Remove the tinted inner shadow for a cleaner, more transparent look. */
+  box-shadow: var(--button-shadow-dark);
 }
 
 /* --- NEW: Visitor Count Animations --- */
@@ -294,23 +337,25 @@ html.dark-mode #visitor-count-container {
 
 /* Custom styles for pop-up buttons to override glass background */
 #popup button.glass-button-base.bg-green-500 {
-    background-color: rgba(34, 197, 94, 0.8);
+    background-color: color-mix(in srgb, #22c55e 20%, transparent);
     backdrop-filter: blur(4px);
+    --button-color: #22c55e; /* Green */
     -webkit-backdrop-filter: blur(4px);
 }
 
 #popup button.glass-button-base.bg-red-500 {
     /* FIX: Use the same semi-transparent red tint as other close/cancel buttons for consistency. */
     background-color: color-mix(in srgb, #ef4444 20%, transparent);
+    --button-color: #ef4444; /* Red */
 }
 
 /* REFACTOR: Dark mode specific styles for the pop-up buttons */
 html.dark-mode #popup button.bg-green-500, body.dark-mode #popup button.bg-green-500 {
-    background-color: rgba(74, 222, 128, 0.4) !important;
+    background-color: rgba(74, 222, 128, 0.3) !important;
 }
 
 body.dark-mode #popup button.bg-red-500 {
-    background-color: rgba(252, 165, 165, 0.4) !important;
+    background-color: rgba(252, 165, 165, 0.3) !important;
 }
 
 /* --- END OF GLASS EFFECT STYLES --- */
@@ -520,6 +565,13 @@ html.dark-mode .fixed-background.light-background, body.dark-mode .fixed-backgro
     filter: grayscale(60%);
     transform: scale(0.98);
     transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+    /* NEW: Define --button-color for unselected language buttons to ensure tinted shadows. */
+    --button-color: color-mix(in srgb, #9333ea 20%, gray); /* Muted purple for light mode */
+}
+
+html.dark-mode .unselected-language, body.dark-mode .unselected-language {
+    /* NEW: Define --button-color for unselected language buttons in dark mode */
+    --button-color: color-mix(in srgb, #C084FC 20%, #555); /* Muted purple for dark mode */
 }
 
 .selected-language {
@@ -829,7 +881,8 @@ html {
   padding: 5px;
   transition: all 0.4s ease-in-out;
   overflow: hidden;
-  cursor: pointer;
+  cursor: pointer; /* FIX: Apply the base edge effect and the new tinted inner shadows. */
+  --button-color: #3b82f6; /* Blue */
 }
 
 /* NEW: When logged in, hide the glass effect by default */
