@@ -444,6 +444,7 @@ async function fetchAndBuildGrid() {
       const commentBtn = addedCard.querySelector('.comment-btn');
       addTapAnimation(commentBtn);
       commentBtn.addEventListener('click', (e) => {
+          e.stopPropagation(); // Prevent the event from bubbling up to the parent series card
           e.preventDefault();
           openCommentsModal(storyKey, story.title);
       });
