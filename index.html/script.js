@@ -1169,8 +1169,8 @@ async function fetchAndBuildGrid() {
                                 </div>
                                 <p class="comment-text">${comment.text}</p>
                             </div>
+                            ${(user && comment.uid === user.uid) ? `<button class="delete-comment-btn" data-comment-id="${commentId}">Delete</button>` : ''}
                         </div>
-                        ${(user && comment.uid === user.uid) ? `<button class="delete-comment-btn" data-comment-id="${commentId}">Delete</button>` : ''}
                     `;
                     commentsList.appendChild(commentEl);
                 });

@@ -1957,6 +1957,7 @@ body.info-panel-open #seriesModal .glass-content {
 /* REFACTOR: Align the header to the right for the user's comment, but keep the natural order of name and date. */
 .comment-item.is-user .comment-header {
   justify-content: flex-end;
+  flex-direction: row-reverse; /* NEW: Reverse the order to show Name then Date from right-to-left */
 }
 
 
@@ -1993,14 +1994,15 @@ body.info-panel-open #seriesModal .glass-content {
 
 /* Delete button styling */
 .delete-comment-btn {
-  align-self: flex-end; /* Align this button to the right within the .comment-item flex container */
-  margin-top: 4px; /* Add some space between the bubble and the button */
+  position: absolute; /* Position absolutely within the comment-body */
+  bottom: 2px; /* Adjust as needed */
+  right: 2px; /* Adjust as needed */
   background: none;
   border: none;
   color: rgba(255, 255, 255, 0.5); /* Make text even more subtle */
-  font-size: 0.75rem; /* Smaller font size for a text button */
+  font-size: 0.65rem; /* Smaller font size for a text button */
   line-height: 1;
-  padding: 2px 6px;
+  padding: 1px 4px;
   cursor: pointer;
   transition: color 0.2s ease, background-color 0.2s ease;
   border-radius: 6px;
