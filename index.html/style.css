@@ -1483,6 +1483,20 @@ body:not(.is-scrolling) .social-link-button:hover, .social-link-button:focus-vis
     transform: scale(1.02);
     box-shadow: 0 0 15px color-mix(in srgb, var(--golden-tint) 30%, transparent), var(--button-edge), inset 0 2px 3px color-mix(in srgb, var(--button-color) 60%, #000), inset 0 -2px 3px color-mix(in srgb, var(--button-color) 60%, #000), inset 2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000), inset -2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000);
 }
+
+/* --- NEW: Social Media Icon Styling --- */
+.social-link-button {
+  gap: 0.75rem; /* Add space between the icon and the text */
+  align-items: center; /* Ensure icon and text are perfectly centered vertically */
+}
+
+/* NEW: Style for the image-based icons */
+.social-icon-img {
+  width: 28px;  /* A slightly larger, explicit size for image icons */
+  height: 28px;
+  object-fit: contain; /* Ensure the image scales correctly */
+}
+
 /* Close button styling */
 .close-button {
   /* FIX: Change position to 'fixed' to keep it from scrolling with the panel content. */
@@ -1730,6 +1744,22 @@ body.info-panel-open #seriesModal .glass-content {
     padding: 0; /* Remove default padding */
 }
 
+/* NEW: Generic styling for fixed modal headers */
+.modal-header-fixed {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    width: 100%;
+    max-width: 800px; /* Match content width */
+    padding: 40px 40px 0;
+    box-sizing: border-box;
+    pointer-events: none;
+    z-index: 101;
+    opacity: 0;
+    transform: translate(-50%, -100%);
+    transition: opacity 0.4s ease-out, transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
 .comments-panel-content {
     width: 100%;
     max-width: 800px; /* Set a max-width for the content area */
@@ -1744,24 +1774,44 @@ body.info-panel-open #seriesModal .glass-content {
 }
 
 /* REFACTOR: New container for the truly fixed title */
-.comments-modal-header-fixed {
-    position: fixed;
-    top: 0;
-    left: 50%;
-    width: 100%;
-    max-width: 800px; /* Match content width */
-    padding: 40px 40px 0; /* Match content padding */
-    box-sizing: border-box;
-    pointer-events: none; /* Allow clicks to pass through */
-    z-index: 101; /* Sit on top of the modal backdrop */
-    /* Animation for appearing/disappearing */
-    opacity: 0;
-    transform: translate(-50%, -100%); /* Start off-screen and centered */
-    transition: opacity 0.4s ease-out, transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-.comments-modal-header-fixed.active {
+.modal-header-fixed.active {
     opacity: 1;
     transform: translate(-50%, 0); /* Slide into view */
+}
+
+/* NEW: Styling for icons within panel buttons */
+.panel-button {
+  gap: 0.5rem; /* Space between icon and text/other icons */
+}
+
+.panel-button .button-icon {
+  width: 1.25em; /* Size relative to font-size */
+  height: 1.25em;
+  fill: currentColor; /* Inherit color from button text */
+  stroke: none; /* For filled icons */
+  flex-shrink: 0;
+}
+
+/* NEW: Add outline style for the mail/send icon */
+#submitStoryBtn .button-icon {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2px;
+}
+
+/* NEW: Styling for inline social media icons */
+.social-icons-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem; /* Small gap between the inline social icons */
+  flex-shrink: 0;
+}
+
+.social-icon-inline {
+  width: 18px; /* Smaller size for inline icons */
+  height: 18px;
+  object-fit: contain;
+  vertical-align: middle; /* Ensure they align with text */
 }
 
 #commentsModalTitle {
@@ -1777,6 +1827,19 @@ body.info-panel-open #seriesModal .glass-content {
     display: flex;
     flex-direction: column;
     gap: 0.25rem; /* Add a small gap between the title and subtitle */
+}
+
+/* NEW: Shared style for main modal titles */
+.modal-main-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--glass-text);
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+#socialModalTitle {
+    text-align: left; /* Align to the top-left */
 }
 
 /* NEW: Style for the main "Comments" heading */

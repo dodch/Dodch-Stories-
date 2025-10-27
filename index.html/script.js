@@ -982,6 +982,8 @@ async function fetchAndBuildGrid() {
     const openSocialButton = document.getElementById('openSocialButton');
     const socialPanel = document.getElementById('socialPanel');
     const closeSocialButton = document.getElementById('closeSocialButton');
+    const contactModalHeaderFixed = document.getElementById('contactModalHeaderFixed'); // NEW
+    const socialModalHeaderFixed = document.getElementById('socialModalHeaderFixed'); // NEW
     
     addTapAnimation(contactBtn);
     // NEW: Add tap animation for comment button
@@ -1007,8 +1009,10 @@ async function fetchAndBuildGrid() {
         contactPanel.classList.remove('active');
         socialPanel.classList.remove('active');
         body.classList.remove('info-panel-open');
+        contactModalHeaderFixed.classList.remove('active'); // NEW
         // Hide all modal-related close buttons
         closeContactButton.classList.remove('active');
+        socialModalHeaderFixed.classList.remove('active'); // NEW
         closeSocialButton.classList.remove('active');
         // NEW: Also close the series modal if it's open
         closeCommentsModal();
@@ -1018,6 +1022,7 @@ async function fetchAndBuildGrid() {
     contactBtn.addEventListener('click', () => {
         closeAllPanels(); // Ensure no other panels are open
         contactPanel.classList.add('active');
+        contactModalHeaderFixed.classList.add('active'); // NEW
         closeContactButton.classList.add('active');
         body.classList.add('info-panel-open');
     });
@@ -1025,7 +1030,9 @@ async function fetchAndBuildGrid() {
     openSocialButton.addEventListener('click', () => {
         contactPanel.classList.remove('active');
         closeContactButton.classList.remove('active');
+        contactModalHeaderFixed.classList.remove('active'); // FIX: Hide Contact title when opening Social Media
         setTimeout(() => {
+            socialModalHeaderFixed.classList.add('active'); // NEW
             socialPanel.classList.add('active');
             closeSocialButton.classList.add('active');
         }, 300); // Small delay to allow the first panel to fade out

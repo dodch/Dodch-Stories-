@@ -211,6 +211,8 @@ html.dark-mode .glass-popup, body.dark-mode .glass-popup {
 .glass-popup {
      border-radius: 2rem;
      padding: 1.5rem;
+     /* NEW: Add a transition for the transform property to enable smooth scaling. */
+     transition: transform 0.3s ease-out;
 }
 
 .glass-button-base:hover, .glass-button-base:focus-visible {
@@ -232,10 +234,12 @@ html.dark-mode .glass-button-base:hover, html.dark-mode .glass-button-base:focus
 /* FIX: Create a specific hover rule for the popup to prevent it from inheriting the generic button hover effect.
    This ensures the popup keeps its more complex --glass-shadow and doesn't cause other elements to lose their blur. */
 .glass-popup:hover, .glass-popup:focus-visible {
-    box-shadow: var(--glass-shadow-light); /* Maintain the correct shadow on hover */
+    box-shadow: var(--glass-shadow-light); /* Maintain the correct shadow on hover */    
+    transform: scale(0.98); /* NEW: Add a slight shrink effect on hover. */
 }
 html.dark-mode .glass-popup:hover, html.dark-mode .glass-popup:focus-visible {
-    box-shadow: var(--glass-shadow-dark); /* Maintain the correct shadow on hover in dark mode */
+    box-shadow: var(--glass-shadow-dark); /* Maintain the correct shadow on hover in dark mode */    
+    transform: scale(0.98); /* NEW: Add a slight shrink effect on hover for dark mode. */
 }
 
 /* Glow for Popup Buttons */

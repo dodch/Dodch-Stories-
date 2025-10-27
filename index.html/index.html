@@ -291,13 +291,27 @@
     <line x1="6" y1="6" x2="18" y2="18"></line>
   </svg>
 </div>
+<!-- NEW: Add a fixed header for the Contact panel -->
+<div class="modal-header-fixed" id="contactModalHeaderFixed">
+    <h2 class="modal-main-title" id="contactModalTitle">Contact</h2>
+</div>
+
 <div class="modal-panel" id="contactPanel">
     <div class="contact-panel-content">
       <a class="panel-button" id="submitStoryBtn" href="mailto:dodchstories@gmail.com">
-        Submit Your Story
+        <span>Submit Your Story</span>
+        <!-- REFACTOR: Replaced the old mail icon with a cleaner "send" (paper plane) icon. -->
+        <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
       </a>
       <button class="panel-button social" id="openSocialButton">
-        Social Media
+        <span>Social Media</span>
+        <div class="social-icons-inline">
+          <img src="https://img.icons8.com/ios-filled/50/ffffff/tiktok--v1.png" alt="TikTok" class="social-icon-inline">
+          <img src="https://img.icons8.com/fluency/48/instagram-new.png" alt="Instagram" class="social-icon-inline">
+          <img src="https://img.icons8.com/fluency/48/facebook-new.png" alt="Facebook" class="social-icon-inline">
+        </div>
       </button>
     </div>
 </div>
@@ -307,16 +321,24 @@
     <line x1="6" y1="6" x2="18" y2="18"></line>
   </svg>
 </div>
+<!-- NEW: Add a fixed header for the Social Media panel -->
+<div class="modal-header-fixed" id="socialModalHeaderFixed">
+    <h2 class="modal-main-title" id="socialModalTitle">Social Media</h2>
+</div>
+
 <div class="modal-panel" id="socialPanel">
     <div class="social-links-content">
-      <a class="panel-button social-link-button" id="tiktokBtn" href="https://www.tiktok.com/@dodchadam?_t=ZM-8zxCtYC2iXj&_r=1" target="_blank">
-        Tiktok
+      <a class="panel-button social-link-button" id="tiktokBtn" href="https://www.tiktok.com/@dodchadam?_t=ZM-8zxCtYC2iXj&_r=1" target="_blank" rel="noopener noreferrer">
+        <img src="https://img.icons8.com/ios-filled/50/ffffff/tiktok--v1.png" alt="TikTok" class="social-icon-img">
+        <span>Tiktok</span>
       </a>
-      <a class="panel-button social-link-button" id="instagramBtn" href="https://www.instagram.com/adamdodch?igsh=eng4Z3h4NGpjczVo&utm_source=qr" target="_blank">
-        Instagram
+      <a class="panel-button social-link-button" id="instagramBtn" href="https://www.instagram.com/adamdodch?igsh=eng4Z3h4NGpjczVo&utm_source=qr" target="_blank" rel="noopener noreferrer">
+        <img src="https://img.icons8.com/fluency/48/instagram-new.png" alt="Instagram" class="social-icon-img">
+        <span>Instagram</span>
       </a>
-      <a class="panel-button social-link-button" id="facebookBtn" href="https://www.facebook.com/share/17YCuswrPL/?mibextid=wwXIfr" target="_blank">
-        Facebook
+      <a class="panel-button social-link-button" id="facebookBtn" href="https://www.facebook.com/share/17YCuswrPL/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer">
+        <img src="https://img.icons8.com/fluency/48/facebook-new.png" alt="Facebook" class="social-icon-img">
+        <span>Facebook</span>
       </a>
     </div>
 </div>
@@ -352,11 +374,11 @@
         </div>
     </div>
 </div>
+
 <!-- REFACTOR: Move title completely outside the modal to make it truly fixed. -->
-<div class="comments-modal-header-fixed" id="commentsModalHeaderFixed">
+<div class="modal-header-fixed" id="commentsModalHeaderFixed">
     <h2 id="commentsModalTitle">Comments <span id="commentsModalCount">(0)</span></h2>
 </div>
-
 <!-- REFACTOR: Move input area completely outside the modal to make it truly fixed. -->
 <div class="comment-input-area" id="commentInputArea">
     <textarea id="commentTextarea" class="glass-button-base" placeholder="Add a comment (50 words max)..." maxlength="350"></textarea>
