@@ -1871,7 +1871,6 @@ body.info-panel-open #seriesModal .glass-content {
   flex-direction: row-reverse; /* Reverse the order of items (pic on right, bubble on left) */
   justify-content: flex-start; /* Align to the right side of the container */
   align-self: flex-end; /* Align the whole item to the right */
-  /* REMOVED: flex-direction: row-reverse; was causing a double-reversal issue. */
 }
 
 /* Main container for each comment */
@@ -1926,11 +1925,6 @@ body.info-panel-open #seriesModal .glass-content {
   min-width: 0;
   border: 1px solid rgba(255, 255, 255, 0.2); /* REFACTOR: Slightly brighter border for a crisper edge. */
   box-shadow: 0 4px 12px rgba(0,0,0,0.3); /* NEW: Add a stronger shadow to lift the bubble more. */
-}
-
-/* NEW: For user's own comments, reverse the order of the picture and the content wrapper */
-.comment-item.is-user .comment-content-wrapper {
-  order: -1; /* This moves the comment bubble to the left of the profile picture */
 }
 
 /* NEW: Style for the current user's comment bubble */
