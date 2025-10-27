@@ -1933,6 +1933,17 @@ body.info-panel-open #seriesModal .glass-content {
   border-color: color-mix(in srgb, var(--blue-tint) 50%, transparent);
 }
 
+/* NEW: Align text to the right for the current user's comment bubble */
+.comment-item.is-user .comment-text {
+  text-align: right;
+}
+
+/* NEW: Reverse the header items (name, date) for the current user's comment */
+.comment-item.is-user .comment-header {
+  flex-direction: row-reverse;
+}
+
+
 /* Comment header with author name and date */
 .comment-header {
   display: flex;
