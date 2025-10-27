@@ -1152,6 +1152,8 @@ async function fetchAndBuildGrid() {
                     
                     const commentEl = document.createElement('div');
                     commentEl.className = 'comment-item';
+                    // NEW: Add a class if the comment is from the current user for special styling.
+                    if (user && comment.uid === user.uid) commentEl.classList.add('is-user');
                     // Add a data attribute to the element for easier selection later
                     commentEl.dataset.commentId = commentId;
                     const commentDate = new Date(comment.timestamp).toLocaleString();

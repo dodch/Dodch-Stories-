@@ -1626,7 +1626,7 @@ body.info-panel-open #seriesModal .glass-content {
     scroll-behavior: smooth; /* NEW: Enable smooth scrolling for this container */
     overflow-x: hidden;
     height: 100%;
-    padding: 170px 40px 140px 40px; /* Add even more padding for fixed title and input */
+    padding: 170px 0 140px 0; /* REFACTOR: Remove horizontal padding to allow comments to align to the edges. */
 }
 
 /* REFACTOR: New container for the truly fixed title */
@@ -1866,6 +1866,13 @@ body.info-panel-open #seriesModal .glass-content {
   animation: comment-fade-out 0.4s ease-out forwards;
 }
 
+/* NEW: Style for comments made by the current user (right-aligned) */
+.comment-item.is-user {
+  flex-direction: row-reverse; /* Reverse the order of items (pic on right, bubble on left) */
+  justify-content: flex-start; /* Align to the right side of the container */
+  align-self: flex-end; /* Align the whole item to the right */
+}
+
 /* Main container for each comment */
 .comment-item {
   display: flex;
@@ -1876,6 +1883,8 @@ body.info-panel-open #seriesModal .glass-content {
   /* REFACTOR: Apply the new jello-in animation. It will be triggered by the staggered delay in JS. */
   opacity: 0; /* Start hidden */
   animation: comment-jello-in 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  /* NEW: Align all comments to the left by default */
+  align-self: flex-start;
 }
 
 .comment-item {
@@ -1916,6 +1925,12 @@ body.info-panel-open #seriesModal .glass-content {
   min-width: 0;
   border: 1px solid rgba(255, 255, 255, 0.2); /* REFACTOR: Slightly brighter border for a crisper edge. */
   box-shadow: 0 4px 12px rgba(0,0,0,0.3); /* NEW: Add a stronger shadow to lift the bubble more. */
+}
+
+/* NEW: Style for the current user's comment bubble */
+.comment-item.is-user .comment-body {
+  background: color-mix(in srgb, var(--blue-tint) 30%, rgba(0,0,0,0.4)); /* Blue tint for user's own comments */
+  border-color: color-mix(in srgb, var(--blue-tint) 50%, transparent);
 }
 
 /* Comment header with author name and date */
