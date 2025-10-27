@@ -1940,7 +1940,8 @@ body.info-panel-open #seriesModal .glass-content {
 
 /* NEW: Reverse the header items (name, date) for the current user's comment */
 .comment-item.is-user .comment-header {
-  flex-direction: row-reverse;
+  /* REFACTOR: Instead of reversing, just align the content to the end (right). */
+  justify-content: flex-end;
 }
 
 
