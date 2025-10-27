@@ -1881,7 +1881,7 @@ body.info-panel-open #seriesModal .glass-content {
 .comment-item {
   display: flex;
   align-items: flex-start; /* Align items to the top */
-  /* Removed flex-shrink: 0 to allow comment items to shrink if necessary */
+  flex-shrink: 0; /* NEW: Prevent items from shrinking, which helps with smooth layout shifts */
   gap: 12px;
   padding: 12px 4px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -1918,12 +1918,6 @@ body.info-panel-open #seriesModal .glass-content {
   box-shadow: 0 4px 12px rgba(0,0,0,0.3); /* NEW: Add a stronger shadow to lift the bubble more. */
 }
 
-/* NEW: Ensure the comment content wrapper takes available space and allows its content to wrap */
-.comment-content-wrapper {
-  flex-grow: 1;
-  min-width: 0; /* Allow the flex item to shrink below its content size */
-}
-
 /* Comment header with author name and date */
 .comment-header {
   display: flex;
@@ -1949,7 +1943,7 @@ body.info-panel-open #seriesModal .glass-content {
   font-size: 0.95rem;
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.9);
-  /* Ensure long words/strings wrap and prevent horizontal overflow. */
+  /* REFACTOR: Use modern properties to force long words/strings to wrap and prevent horizontal overflow. */
   overflow-wrap: break-word;
   word-break: break-word;
   margin: 0;
