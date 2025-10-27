@@ -1951,18 +1951,18 @@ body.info-panel-open #seriesModal .glass-content {
 
 /* Delete button styling */
 .delete-comment-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
+  align-self: flex-end; /* Align this button to the right within the .comment-item flex container */
+  margin-top: 4px; /* Add some space between the bubble and the button */
   background: none;
   border: none;
-  color: var(--glass-text);
-  font-size: 22px;
+  color: rgba(255, 255, 255, 0.5); /* Make text even more subtle */
+  font-size: 0.75rem; /* Smaller font size for a text button */
   line-height: 1;
   padding: 2px 6px;
   cursor: pointer;
-  transition: color 0.2s ease;
-  border-radius: 50%;
+  transition: color 0.2s ease, background-color 0.2s ease;
+  border-radius: 6px;
+  z-index: 1;
 }
 
 .delete-comment-btn:hover {
