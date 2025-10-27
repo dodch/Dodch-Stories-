@@ -1928,6 +1928,12 @@ body.info-panel-open #seriesModal .glass-content {
   border: 2px solid rgba(255, 255, 255, 0.3);
   flex-shrink: 0; /* Prevent image from shrinking */
 }
+/* NEW: Wrapper for comment content to establish a positioning context for the delete button. */
+.comment-content-wrapper {
+  position: relative; /* This is the new positioning context */
+  display: flex;
+  flex-direction: column;
+}
 
 /* Container for the comment text and header */
 .comment-body {
@@ -1994,10 +2000,10 @@ body.info-panel-open #seriesModal .glass-content {
 
 /* Delete button styling */
 .delete-comment-btn {
-  position: absolute; /* Position absolutely within the comment-body */
-  bottom: 2px; /* Adjust as needed */
-  right: 2px; /* Adjust as needed */
-  background: none;
+  position: relative; /* Change from absolute to relative */
+  align-self: flex-end; /* Align to the right */
+  margin-top: 4px; /* Add some space above the button */
+  background: rgba(0,0,0,0.2); /* Add a subtle background */
   border: none;
   color: rgba(255, 255, 255, 0.5); /* Make text even more subtle */
   font-size: 0.65rem; /* Smaller font size for a text button */
@@ -2005,13 +2011,12 @@ body.info-panel-open #seriesModal .glass-content {
   padding: 1px 4px;
   cursor: pointer;
   transition: color 0.2s ease, background-color 0.2s ease;
-  border-radius: 6px;
-  z-index: 1;
+  border-radius: 6px; /* Keep the rounded corners */
 }
 
 .delete-comment-btn:hover {
   color: var(--red-tint);
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0,0,0,0.4);
 }
 
 
