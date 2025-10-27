@@ -1,0 +1,1008 @@
+
+/***************************************************************************************************
+ *                                   ** DO NOT COPY - ALL RIGHTS RESERVED **
+ *
+ * This code is the exclusive property of Dodch Stories and its owner. Unauthorized copying,
+ * reproduction, modification, distribution, or any form of use of this code, in whole or in part,
+ * is strictly prohibited.
+ *
+ * The intellectual property rights, including copyright, for this software are protected by
+ * international laws and treaties. Any infringement of these rights will be pursued to the
+ * fullest extent of the law, which may include civil and criminal charges.
+ *
+ * Copyright (c) 2024 Dodch Stories. All rights reserved.
+ ***************************************************************************************************/
+/* --- GLASS EFFECT VARIABLES & STYLES --- */
+:root {
+    --glass-bg-light: rgba(255, 255, 255, 0.05);
+    --glass-text-light: #ffffff;
+    /* REFACTOR: Update story page glass to match the advanced, multi-layered edge from the main page for consistency. */
+    /* REFACTOR: Enhanced glass edge with a high-contrast "double edge" highlight for a more defined, glassy feel. */
+    --glass-shadow-light: 
+        /* 1. The primary, sharp inner highlight for the top edge. */
+        inset 0 1.5px 1px color-mix(in srgb, #fff 90%, transparent),
+        /* 2. A secondary, softer inner highlight to create a beveled look. */
+        inset 0 2.5px 3px color-mix(in srgb, #9333EA 20%, transparent), /* Using purple as a fallback */        
+        /* 3. A sharp highlight on the bottom edge to complete the glass look. */
+        inset 0 -1.5px 1.5px color-mix(in srgb, #fff 70%, transparent), /* 4. Dark Inner Edges (all sides for curved look) */
+        inset 0 2.5px 3px color-mix(in srgb, #000 15%, transparent), /* Top */
+        inset 0 -2.5px 3px color-mix(in srgb, #000 15%, transparent), /* Bottom */
+        inset 2.5px 0 3px color-mix(in srgb, #000 15%, transparent), /* Left */
+        inset -2.5px 0 3px color-mix(in srgb, #000 15%, transparent), /* Right */
+        /* 5. Soft Inner Shadows (all sides for smooth depth) */
+        inset 0 4px 5px -3px color-mix(in srgb, #000 20%, transparent), /* Top */
+        inset 0 -4px 5px -3px color-mix(in srgb, #000 20%, transparent), /* Bottom */
+        inset 4px 0 5px -3px color-mix(in srgb, #000 20%, transparent), /* Left */
+        inset -4px 0 5px -3px color-mix(in srgb, #000 20%, transparent), /* Right */
+        /* Outer Drop Shadows (now centered) */ 0px 0px 20px 0px color-mix(in srgb, #000 25%, transparent),
+        0px 0px 40px 0px color-mix(in srgb, #000 20%, transparent);
+    /* REFACTOR: Final overhaul for a hyper-realistic, 3D machined glass button edge with defined top/bottom bevels. */
+    --button-shadow-light:
+        /* 1. Top Highlight: A sharper, brighter light-catching edge. (Increased opacity) */
+        inset 0 1.5px 0 color-mix(in srgb, #fff 95%, transparent),
+        /* 2. Bottom Highlight: A softer, more visible reflected light on the bottom inner edge. (Increased opacity) */
+        inset 0 -1.5px 0 color-mix(in srgb, #fff 45%, transparent),
+        /* 3. Outer Border & Drop Shadow */
+        0 0 0 1px color-mix(in srgb, #000 15%, transparent),
+        0px 5px 15px -5px color-mix(in srgb, #000 35%, transparent);
+    --pop-up-bg-light: rgba(255, 255, 255, 0.7);
+    --pop-up-text-light: #1f2937;
+    /* --main-bg-url-light will be defined in each story's inline style */
+    /* --main-bg-url-dark will be defined in each story's inline style */
+    --main-text-color-light: #f0f0f0;
+    --main-text-color-dark: #f0f0f0;
+    --text-on-glass-light: #9333ea;
+    --save-button-bg-light: rgba(147, 51, 234, 0.6);
+    --save-button-bg-dark: rgba(192, 132, 252, 0.25);
+    --save-button-text-light: #ffffff;
+    --save-button-text-dark: #ffffff;
+    /* NEW: Solid color variables for performance level 1 */
+    --save-button-solid-light: #9333ea; /* Solid purple */
+    --save-button-solid-dark: #7e22ce; /* Darker solid purple */
+    --back-button-solid-light: #ef4444; /* Solid red */
+    --back-button-solid-dark: #dc2626; /* Darker solid red */
+    --back-button-bg-light: rgba(239, 68, 68, 0.6);
+    --back-button-bg-dark: rgba(252, 165, 165, 0.25);
+    --back-button-text-light: #ffffff;
+    --back-button-text-dark: #ffffff;
+    --content-bg-light: rgba(0, 0, 0, 0.4);
+    --selected-lang-button-text: var(--save-button-text-light);
+    --unselected-lang-text-light: #f0f0f0;
+}
+
+/* REFACTOR: Apply dark mode styles based on a class on the <html> element. */
+html.dark-mode {
+    --glass-bg-dark: rgba(0, 0, 0, 0.25);
+    --glass-text-dark: #f0f0f0;
+    /* REFACTOR: Update story page glass to match the advanced, multi-layered edge from the main page for consistency. */
+    /* REFACTOR: Enhanced glass edge with a high-contrast "double edge" highlight for a more defined, glassy feel (dark mode). */
+    --glass-shadow-dark: 
+        /* 1. The primary, sharp inner highlight for the top edge. */
+        inset 0 1.5px 1px color-mix(in srgb, #fff 70%, transparent),
+        /* 2. A secondary, softer inner highlight to create a beveled look. */
+        inset 0 2.5px 4px color-mix(in srgb, #C084FC 25%, transparent), /* Using purple as a fallback */        
+        /* 3. A sharp highlight on the bottom edge to complete the glass look. */
+        inset 0 -1.5px 1.5px color-mix(in srgb, #fff 50%, transparent), /* 4. Dark Inner Edges (all sides for curved look) */
+        inset 0 2.5px 3px color-mix(in srgb, #000 20%, transparent), /* Top */
+        inset 0 -2.5px 3px color-mix(in srgb, #000 20%, transparent), /* Bottom */
+        inset 2.5px 0 3px color-mix(in srgb, #000 20%, transparent), /* Left */
+        inset -2.5px 0 3px color-mix(in srgb, #000 20%, transparent), /* Right */
+        /* 5. Soft Inner Shadows (all sides for smooth depth) */
+        inset 0 4px 5px -3px color-mix(in srgb, #000 35%, transparent), /* Top */
+        inset 0 -4px 5px -3px color-mix(in srgb, #000 35%, transparent), /* Bottom */
+        inset 4px 0 5px -3px color-mix(in srgb, #000 35%, transparent), /* Left */
+        inset -4px 0 5px -3px color-mix(in srgb, #000 35%, transparent), /* Right */
+        /* Outer Drop Shadows (now centered) */ 0px 0px 20px 0px color-mix(in srgb, #000 40%, transparent),
+        0px 0px 45px 0px color-mix(in srgb, #000 35%, transparent);
+    /* REFACTOR: Final overhaul for a hyper-realistic, 3D machined glass button edge (dark mode). */
+    --button-shadow-dark:
+        inset 0 1.5px 0 color-mix(in srgb, #fff 80%, transparent),
+        inset 0 -1.5px 0 color-mix(in srgb, #fff 40%, transparent),
+        0 0 0 1px color-mix(in srgb, #000 25%, transparent),
+        0px 6px 18px -5px color-mix(in srgb, #000 50%, transparent);
+    --pop-up-bg-dark: rgba(31, 41, 55, 0.9);
+    --pop-up-text-dark: #f0f0f0; /* REVERT: Revert to original color */
+    --text-on-glass-dark: #C084FC;
+    --content-bg-dark: rgba(0, 0, 0, 0.4);
+    --selected-lang-button-text: var(--save-button-text-dark);
+    --unselected-lang-text-dark: #C084FC;
+}
+
+/* For backwards compatibility with the JS that adds the class to the body */
+body.dark-mode {
+    --dark-mode-properties: ; /* This is just a placeholder, the main logic is on html.dark-mode */
+}
+
+.glass-button-base {
+    /* FIX: Make the button brighter by increasing the color mix percentage.
+       This gives the button a more solid, vibrant appearance. */
+    background-color: color-mix(in srgb, var(--button-color, #888) 20%, transparent);
+    backdrop-filter: blur(4px); /* A simple, universal blur for all buttons */
+    /* FIX: Apply the base edge effect and the new tinted inner shadows. */
+    box-shadow: var(--button-shadow-light),
+        /* REFACTOR: Use a soft, tight inner shadow with transparency to create a gradient bevel. (Darker) */
+        inset 0 2px 3px color-mix(in srgb, var(--button-color) 60%, #000),
+        inset 0 -2px 3px color-mix(in srgb, var(--button-color) 60%, #000),
+        inset 2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000),
+        inset -2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000);
+    -webkit-backdrop-filter: blur(4px); /* The WebKit version for Safari/iOS */
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.5s ease, background-color 0.5s ease;
+}
+
+/* --- NEW: Proximity shine effect for all glass buttons on the story page --- */
+.glass-button-base::before {
+  content: ''; /* Required for pseudo-element */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* FIX: Use a simpler, circular gradient for a cleaner button shine. */
+  background: radial-gradient(120px circle at var(--pointer-x) var(--pointer-y), rgba(255, 255, 255, 0.5), transparent 40%);
+  border-radius: inherit; opacity: var(--spotlight-opacity, 0); pointer-events: none; transition: opacity 0.4s ease-out;
+}
+
+/* NEW: Disable expensive pseudo-elements on lower performance tiers */
+.perf-level-1 .glass-button-base::before {
+    display: none;
+}
+
+html.dark-mode .glass-button-base, body.dark-mode .glass-button-base {
+    /* FIX: Make the button brighter in dark mode as well. */
+    background-color: color-mix(in srgb, var(--button-color, #888) 30%, transparent);
+    box-shadow: var(--button-shadow-dark),
+        /* REFACTOR: Use a soft, tight inner shadow with transparency for dark mode as well. (Darker) */
+        inset 0 2px 3px color-mix(in srgb, var(--button-color) 60%, #000),
+        inset 0 -2px 3px color-mix(in srgb, var(--button-color) 60%, #000),
+        inset 2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000),
+        inset -2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000);
+}
+
+/* FIX: Apply colors directly to the base class to avoid specificity conflicts. */
+.save-button-custom, .selected-language {
+    /* REMOVED: The semi-transparent background-color was obscuring the tinted inner shadows. */
+    color: var(--save-button-text-light);
+    --button-color: #9333ea; /* Purple */
+}
+
+html.dark-mode .save-button-custom, body.dark-mode .save-button-custom, html.dark-mode .selected-language, body.dark-mode .selected-language {
+    /* REMOVED: The semi-transparent background-color was obscuring the tinted inner shadows. */
+    color: var(--save-button-text-dark);
+}
+
+.back-home-button-custom {
+    /* REMOVED: The semi-transparent background-color was obscuring the tinted inner shadows. */
+    color: var(--back-button-text-light);
+    --button-color: #ef4444; /* Red */
+    font-size: 1.25rem;
+}
+
+html.dark-mode .back-home-button-custom, body.dark-mode .back-home-button-custom {
+    /* REMOVED: The semi-transparent background-color was obscuring the tinted inner shadows. */
+    color: var(--back-button-text-dark);
+}
+
+/* FIX: Give language buttons a default, neutral button color.
+   This prevents the shadow from defaulting to black on initial load
+   before the JS assigns the selected/unselected classes. */
+#ar-button, #fr-button, #en-button, .unselected-language {
+    --button-color: #a855f7; /* A neutral purple for unselected buttons */
+    color: var(--unselected-lang-text-light);
+}
+
+.glass-popup::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -1;
+    border-radius: inherit; /* Match the parent's border-radius */
+    background-color: inherit; /* Inherit the semi-transparent background */
+    backdrop-filter: blur(4px); /* The SVG filter itself */
+    -webkit-backdrop-filter: blur(4px);
+    transform: translateZ(0);
+}
+/* NEW: Override the popup's shadow to use the more complex grid glass effect instead of the button edge. */
+.glass-popup {
+    box-shadow: var(--glass-shadow-light);
+}
+html.dark-mode .glass-popup, body.dark-mode .glass-popup {
+    box-shadow: var(--glass-shadow-dark);
+}
+
+.glass-popup {
+     border-radius: 2rem;
+     padding: 1.5rem;
+     /* NEW: Add a transition for the transform property to enable smooth scaling. */
+     transition: transform 0.3s ease-out;
+}
+
+.glass-button-base:hover, .glass-button-base:focus-visible {
+    transform: scale(1.05);
+}
+
+/* --- Button Hover Glow Effects --- */
+/* REFACTOR: Unified hover/focus glow effect for all glass buttons.
+   This is cleaner and uses the button's own --button-color for the glow. */
+.glass-button-base:hover, .glass-button-base:focus-visible {
+    transform: scale(1.05);
+    /* The glow is a colored outer shadow, combined with the existing button shadow definition. */
+    box-shadow: 0 0 20px 2px color-mix(in srgb, var(--button-color, #888) 50%, transparent), var(--button-shadow-light), inset 0 2px 3px color-mix(in srgb, var(--button-color) 60%, #000), inset 0 -2px 3px color-mix(in srgb, var(--button-color) 60%, #000), inset 2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000), inset -2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000);
+}
+html.dark-mode .glass-button-base:hover, html.dark-mode .glass-button-base:focus-visible {
+    box-shadow: 0 0 25px 5px color-mix(in srgb, var(--button-color, #888) 50%, transparent), var(--button-shadow-dark), inset 0 2px 3px color-mix(in srgb, var(--button-color) 60%, #000), inset 0 -2px 3px color-mix(in srgb, var(--button-color) 60%, #000), inset 2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000), inset -2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000);
+}
+
+/* FIX: Create a specific hover rule for the popup to prevent it from inheriting the generic button hover effect.
+   This ensures the popup keeps its more complex --glass-shadow and doesn't cause other elements to lose their blur. */
+.glass-popup:hover, .glass-popup:focus-visible {
+    box-shadow: var(--glass-shadow-light); /* Maintain the correct shadow on hover */    
+    transform: scale(0.98); /* NEW: Add a slight shrink effect on hover. */
+}
+html.dark-mode .glass-popup:hover, html.dark-mode .glass-popup:focus-visible {
+    box-shadow: var(--glass-shadow-dark); /* Maintain the correct shadow on hover in dark mode */    
+    transform: scale(0.98); /* NEW: Add a slight shrink effect on hover for dark mode. */
+}
+
+/* Glow for Popup Buttons */
+#popup button.bg-green-500:hover, #popup button.bg-green-500:focus-visible {
+    box-shadow: 0 0 15px 2px rgba(34, 197, 94, 0.7), var(--button-shadow-light);
+}
+
+#popup button.bg-red-500:hover, #popup button.bg-red-500:focus-visible {
+    box-shadow: 0 0 15px 2px rgba(239, 68, 68, 0.7), var(--button-shadow-light);
+}
+
+/* NEW: Style for the SVG icon inside the bookmark button. */
+#save-progress-button svg {
+    color: var(--save-button-text-light);
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.5));
+    transition: color 0.3s ease;
+}
+
+/* NEW: Style for the active (saved) state of the bookmark icon. */
+#save-progress-button svg.active {
+    color: #ef4444; /* A vibrant red color */
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.5)) drop-shadow(0 0 5px rgba(239, 68, 68, 0.7));
+}
+
+/* NEW: Style for the SVG icon inside the home button. */
+#back-home-button svg {
+    color: var(--back-button-text-light);
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.5));
+    transition: color 0.3s ease;
+}
+
+/* NEW: Visitor count container */
+#visitor-count-container {
+  /* REFACTOR: Increased margin-top to move the icon lower. */
+  margin-top: 5rem; /* Position it below the language buttons */
+  pointer-events: none; /* Make it non-interactive */
+  /* FIX: Apply the glass button effect to the visitor counter. */
+  --button-color: #888; /* Use a neutral gray as the base color for the shadow tint */
+  background-color: var(--glass-bg-light); /* Use the standard light glass background */
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  /* FIX: Remove the tinted inner shadow for a cleaner, more transparent look. */
+  box-shadow: var(--button-shadow-light);
+}
+
+html.dark-mode #visitor-count-container {
+  background-color: var(--glass-bg-dark); /* Use the standard dark glass background */
+  /* FIX: Remove the tinted inner shadow for a cleaner, more transparent look. */
+  box-shadow: var(--button-shadow-dark);
+}
+
+/* --- NEW: Visitor Count Animations --- */
+@keyframes glow-green {
+  0% {
+    color: #4ade80; /* Start green */
+    filter: drop-shadow(0 0 8px rgba(74, 222, 128, 0.8));
+  }
+  100% {
+    color: #ffffff; /* Fade back to white */
+    filter: drop-shadow(0 0 0 rgba(74, 222, 128, 0));
+  }
+}
+
+/* Class to trigger the eye icon glow */
+.visitor-join-glow {
+  animation: glow-green 1.5s ease-out;
+}
+
+@keyframes glow-red {
+  0% {
+    color: #ef4444; /* Start red */
+    filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.8));
+  }
+  100% {
+    color: #ffffff; /* Fade back to white */
+    filter: drop-shadow(0 0 0 rgba(239, 68, 68, 0));
+  }
+}
+
+/* Class to trigger the eye icon glow red */
+.visitor-leave-glow {
+  animation: glow-red 1.5s ease-out;
+}
+
+@keyframes count-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
+/* Class to trigger the number pop animation */
+.count-pop-animation {
+  display: inline-block; /* Required for transform to work correctly */
+  animation: count-pop 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+/* --- End of Visitor Count Animations --- */
+
+
+
+/* Custom styles for pop-up buttons to override glass background */
+#popup button.glass-button-base.bg-green-500 {
+    background-color: color-mix(in srgb, #22c55e 20%, transparent);
+    backdrop-filter: blur(4px);
+    --button-color: #22c55e; /* Green */
+    -webkit-backdrop-filter: blur(4px);
+}
+
+#popup button.glass-button-base.bg-red-500 {
+    /* FIX: Use the same semi-transparent red tint as other close/cancel buttons for consistency. */
+    background-color: color-mix(in srgb, #ef4444 20%, transparent);
+    --button-color: #ef4444; /* Red */
+}
+
+/* REFACTOR: Dark mode specific styles for the pop-up buttons */
+html.dark-mode #popup button.bg-green-500, body.dark-mode #popup button.bg-green-500 {
+    background-color: rgba(74, 222, 128, 0.3) !important;
+}
+
+body.dark-mode #popup button.bg-red-500 {
+    background-color: rgba(252, 165, 165, 0.3) !important;
+}
+
+/* --- END OF GLASS EFFECT STYLES --- */
+/* --- Basic Styling --- */
+* {
+    box-sizing: border-box;
+}
+
+body, html {
+    position: relative;
+    z-index: 1;
+    transition: color 0.5s ease;
+    color: var(--main-text-color-light);
+}
+
+html.dark-mode, body.dark-mode {
+    color: var(--main-text-color-dark);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    /* FIX: Add padding to the bottom of the body to create scroll space below the footer, preventing overlap with fixed buttons. */
+    padding-bottom: 5rem;
+    min-height: 100vh;
+    color: var(--main-text-color-light); /* FIX: Set the default text color for light mode */
+}
+
+/* --- NEW: Global Content Protection --- */
+body {
+    /* Disable text selection across the entire page */
+    user-select: none;
+    -webkit-user-select: none; /* For Safari */
+    -moz-user-select: none;    /* For Firefox */
+    -ms-user-select: none;     /* For Internet Explorer/Edge */
+}
+
+/* --- LOADING SCREEN OVERLAY (fixed on top) --- */
+#loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  transition: opacity 0.5s ease;
+}
+
+#loading-screen.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* --- LOADING INDICATOR CONTAINER (holds hearts) --- */
+.loading-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+/* --- LOADING HEART ANIMATION --- */
+.loading-indicator span {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin: 0 5px;
+    color: white;
+    font-size: 15px;
+    opacity: 0;
+    transform: scale(0.5);
+    animation: pulse-heart 1.4s ease-in-out infinite;
+}
+
+/* Add delays to create the trailing effect */
+.loading-indicator span:nth-child(1) { animation-delay: 0s; }
+.loading-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.loading-indicator span:nth-child(3) { animation-delay: 0.4s; }
+.loading-indicator span:nth-child(4) { animation-delay: 0.6s; }
+.loading-indicator span:nth-child(5) { animation-delay: 0.8s; }
+
+@keyframes pulse-heart {
+    0% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 1; transform: scale(1.1); }
+    100% { opacity: 0; transform: scale(0.5); }
+}
+
+/* --- LOADING PERCENTAGE TEXT --- */
+.loading-percentage {
+  color: #fff;
+  font-size: 24px;
+  font-family: "Ubuntu", sans-serif;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+ /* --- Wrapper for main page content --- */
+
+/* --- NEW: Performance Level Adjustments for Story Pages --- */
+
+/* Level 1 (Weak): No blur, simple transparency. */
+/* FIX: Increase specificity to only target buttons on the story page, not globally. */
+/* FIX: Increase specificity by adding 'body' to ensure these rules override the 'body.svg-filter-supported' rule. */
+/* REFACTOR: Create an even more specific selector to win the specificity war against the .svg-filter-supported rule. */
+/* FIX: Remove .glass-button-base from this rule. Buttons have their own specific solid colors for level 1. */
+body.perf-level-1 #popup > div,
+body.perf-level-1.svg-filter-supported #popup > div {
+    background: linear-gradient(145deg, #4a5568, #2d3748) !important;
+}
+/* FIX: Definitive solid backgrounds for story page buttons on level 1 */
+body.perf-level-1 button.selected-language, body.perf-level-1 button.unselected-language, body.perf-level-1 button.save-button-custom {
+    background-color: var(--save-button-solid-light) !important;
+}
+body.perf-level-1 button.back-home-button-custom {
+    background-color: var(--back-button-solid-light) !important;
+}
+
+html.dark-mode.perf-level-1 .glass-button-base, body.dark-mode.perf-level-1 .glass-button-base,
+html.dark-mode.perf-level-1 #popup > div,
+body.dark-mode.perf-level-1 #popup > div {
+    background: linear-gradient(145deg, #2d3748, #1a202c) !important; /* NEW: Darker solid gradient */
+}
+html.dark-mode.perf-level-1 button.selected-language, body.dark-mode.perf-level-1 button.selected-language, html.dark-mode.perf-level-1 button.unselected-language, body.dark-mode.perf-level-1 button.unselected-language, html.dark-mode.perf-level-1 button.save-button-custom, body.dark-mode.perf-level-1 button.save-button-custom {
+    background-color: var(--save-button-solid-dark) !important;
+}
+html.dark-mode.perf-level-1 button.back-home-button-custom, body.dark-mode.perf-level-1 button.back-home-button-custom {
+    background-color: var(--back-button-solid-dark) !important;
+}
+
+/* NEW: Hide vignette on lowest performance level for story pages */
+.perf-level-1 .top-vignette {
+    display: none;
+}
+
+/* --- NEW: CSS Anti-Tampering ---
+   This is a honeypot. If a script or extension tries to override the 'user-select'
+   property by setting it on the body, this rule will trigger and hide everything. */
+body[style*="user-select: text"],
+body[style*="user-select: auto"] {
+    display: none !important;
+}
+
+#page-content-wrapper {
+    transition: filter 0.5s ease-in-out;
+    position: relative;
+    z-index: 0;
+    width: 100%;
+    /* REFACTOR: Use a larger, more reliable padding value to prevent content from hiding under the fixed header. */
+    padding-top: 9rem;
+    min-height: 100vh;
+}
+
+body.loading #page-content-wrapper {
+    filter: blur(15px);
+    pointer-events: none;
+}
+
+/* FIX: Isolate the blur effect to the background only during load.
+   This prevents the main #content div from being blurred into invisibility. */
+body.loading .fixed-background {
+    filter: blur(15px);
+}
+
+.fixed-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1;
+    transition: opacity 0.5s ease;
+}
+
+.fixed-background.light-background {
+     background-image: var(--main-bg-url-light);
+     opacity: 1;
+}
+
+.fixed-background.dark-background {
+     background-image: var(--main-bg-url-dark);
+     opacity: 0;
+}
+
+html.dark-mode .fixed-background.light-background, body.dark-mode .fixed-background.light-background {
+    opacity: 0;
+}
+
+ html.dark-mode .fixed-background.dark-background, body.dark-mode .fixed-background.dark-background {
+    opacity: 1;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+}
+
+/* New styles for unselected language buttons */
+.unselected-language {
+    opacity: 0.8;
+    filter: grayscale(60%);
+    transform: scale(0.98);
+    transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+    /* NEW: Define --button-color for unselected language buttons to ensure tinted shadows. */
+    --button-color: color-mix(in srgb, #9333ea 20%, gray); /* Muted purple for light mode */
+}
+
+html.dark-mode .unselected-language, body.dark-mode .unselected-language {
+    /* NEW: Define --button-color for unselected language buttons in dark mode */
+    --button-color: color-mix(in srgb, #C084FC 20%, #555); /* Muted purple for dark mode */
+}
+
+.selected-language {
+     background-color: var(--save-button-bg-light);
+     color: var(--selected-lang-button-text);
+     transform: scale(1.05);
+     opacity: 1;
+     filter: grayscale(0%);
+     box-shadow: var(--button-shadow-light);
+}
+/* FIX: Add a slightly larger hover scale for the selected button to make the hover effect visible. */
+.selected-language:hover, .selected-language:focus-visible {
+    transform: scale(1.1);
+}
+
+
+html.dark-mode .selected-language, body.dark-mode .selected-language {
+     background-color: var(--save-button-bg-dark);
+}
+
+button {
+     transition: color 0.3s ease, background-color 0.3s ease, transform 0.1s ease-out, box-shadow 0.3s ease;
+}
+
+button.tapped {
+    transform: scale(0.97);
+}
+
+.glow-word {
+    /* REFACTOR: Use a more performant text-shadow animation instead of box-shadow. */
+    animation: glow-text-animation 2s ease-in-out infinite;
+}
+
+
+#content {
+    padding: 2rem;
+    /* REFACTOR: Padding is now handled by the parent wrapper. */
+    position: relative;
+    z-index: 1;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 800px;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    transition: opacity 0.5s ease-in-out;
+    opacity: 1;
+    background-color: var(--content-bg-light);
+    /* REVERT: Restore the original, simple blur implementation that correctly animates with opacity. */
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+}
+
+html.dark-mode #content, body.dark-mode #content {
+    background-color: var(--content-bg-dark);
+}
+
+/* FIX: Add a highly specific rule to ensure the light mode background is always applied correctly on initial load.
+   This prevents the content from inheriting a transparent background from other, less specific rules. */
+html:not(.dark-mode) #content {
+    background-color: var(--content-bg-light);
+}
+
+#content.content-fading {
+    opacity: 0;
+}
+
+#text-container span {
+    cursor: pointer;
+    display: inline; /* Revert to inline to fix spacing */
+    position: relative; /* Allow positioning for hover effect */
+    transition: text-shadow 0.3s ease, color 0.3s ease, -webkit-text-fill-color 0.3s ease, top 0.2s ease-out;
+    opacity: 1;
+    top: 0; /* Initial position */
+}
+
+#text-container span:hover {
+    color: var(--text-on-glass-light) !important;
+    text-shadow: 0 0 8px color-mix(in srgb, var(--text-on-glass-light) 80%, transparent) !important;
+    top: -2px;
+}
+
+html.dark-mode #text-container span:hover, body.dark-mode #text-container span:hover {
+    color: var(--text-on-glass-dark) !important;
+    text-shadow: 0 0 10px color-mix(in srgb, var(--text-on-glass-dark) 80%, transparent) !important;
+    top: -2px;
+}
+
+#save-progress-button {
+    z-index: 60;
+}
+
+/* New styles for pop-up */
+#popup {
+    /* REFACTOR: Control visibility with display property, not opacity. */
+    display: none;
+}
+
+#popup > div {
+    /* REFACTOR: The bouncy animation is now on the inner div. */
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.3s ease-out;
+    transform: scale(0.85);
+    opacity: 0;
+    pointer-events: none;
+}
+
+#content h1 {
+    /* FIX: Make title bigger and golden for better visual hierarchy. */
+    font-size: 2.75rem; /* Increased from text-3xl (1.875rem) */
+    color: gold;
+    font-family: 'Cinzel', serif;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.8), 0 0 15px rgba(255,215,0,0.5);
+}
+
+#popup > div.active {
+    transform: scale(1);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+html.dark-mode #popup button.bg-green-500:hover, body.dark-mode #popup button.bg-green-500:hover, html.dark-mode #popup button.bg-green-500:focus-visible, body.dark-mode #popup button.bg-green-500:focus-visible {
+    box-shadow: 0 0 15px 2px rgba(74, 222, 128, 0.7), var(--button-shadow-dark);
+}
+html.dark-mode #popup button.bg-red-500:hover, body.dark-mode #popup button.bg-red-500:hover, html.dark-mode #popup button.bg-red-500:focus-visible, body.dark-mode #popup button.bg-red-500:focus-visible {
+    box-shadow: 0 0 15px 2px rgba(252, 165, 165, 0.7), var(--button-shadow-dark);
+}
+
+#popup button.bg-green-500, #popup button.bg-red-500 {
+     transition: background-color 0.3s ease;
+}
+
+#text-container {
+    font-family: 'Lora', serif;
+    line-height: 1.75;
+    /* FIX: Use a refined, multi-layered shadow for maximum readability and contrast without blurriness. */
+    text-shadow: 0 1px 1px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.6);
+}
+
+/* --- NEW: Robust Drop Cap Styling --- */
+.drop-cap {
+    /* REFACTOR: Use the 'Licorice' script font for a fancier, handwritten feel. */
+    font-family: 'Licorice', cursive;
+    font-size: 7.5rem; /* Script fonts need to be larger to have impact */
+    font-weight: 400;
+    color: inherit; /* FIX: Revert to parent color. It will now be purple ONLY on hover. */
+    text-shadow: 0 2px 3px rgba(0,0,0,0.5);
+    float: left; /* Allow text to wrap around the letter */
+    line-height: 0.7; /* Adjust vertical alignment for the new font */
+    padding-right: 0.8rem; /* FIX: Increase padding to prevent text overlap. */
+    padding-top: 0.4rem;
+    margin-bottom: -0.5rem; /* Fine-tune vertical spacing */
+    text-indent: 0; /* Ensure the drop-cap itself is not indented */
+    transition: text-shadow 0.3s ease, color 0.3s ease, top 0.2s ease-out; /* Add transition */
+    cursor: pointer; /* Add pointer cursor */
+}
+
+/* NEW: Add hover effect specifically for the drop cap */
+.drop-cap:hover {
+    color: var(--text-on-glass-light);
+    text-shadow: 0 0 10px color-mix(in srgb, var(--text-on-glass-light) 80%, transparent);
+}
+
+html.dark-mode .drop-cap:hover, body.dark-mode .drop-cap:hover {
+    color: var(--text-on-glass-dark);
+    text-shadow: 0 0 12px color-mix(in srgb, var(--text-on-glass-dark) 80%, transparent);
+}
+/* --- End of Drop Cap Styling --- */
+
+/* --- Arabic Font Styling --- */
+/* Apply Amiri font when the content is in Arabic (RTL) */
+#content[dir="rtl"] #text-container {
+    font-family: 'Amiri', serif;
+    font-size: 1.3rem; /* Slightly larger for better readability in Arabic */
+    /* FIX: Apply the same refined, multi-layered shadow for Arabic text. */
+    text-shadow: 0 1px 1px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.6);
+    line-height: 2;
+}
+
+/* Adjust the drop cap for the Amiri font */
+#content[dir="rtl"] .drop-cap {
+    font-family: 'Amiri', serif;
+}
+
+#text-container p {
+    margin-bottom: 1rem;
+}
+
+/* Jello Button Effect */
+.squash {
+  transform: scale(0.85, 0.9);
+}
+@keyframes jello-wobble {
+  0%   { transform: scale(1,1); }
+  25%  { transform: scale(0.9, 1.15) rotate(-1deg); }
+  50%  { transform: scale(1.1, 0.9) rotate(1deg); }
+  75%  { transform: scale(0.95, 1.05) rotate(-0.5deg); }
+  100% { transform: scale(1,1) rotate(0); }
+}
+.jello {
+  /* A custom cubic-bezier for a more 'bouncy' and realistic feel */
+  animation: jello-wobble 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Animation for story paragraphs */
+.story-anim-item {
+    opacity: 0;
+    /* REFACTOR: Add back the blur effect for a smoother animation. */
+    filter: blur(5px);
+    transform: translateY(20px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out, filter 0.5s ease-out;
+}
+
+.story-anim-item.in-view {
+    opacity: 1;
+    /* FIX: Add transform and filter to complete the animation. */
+    transform: translateY(0);
+    filter: blur(0);
+}
+
+/* REFACTOR: New, more performant keyframe animation for glowing text. */
+@keyframes glow-text-animation {
+  /* FIX: Animate only the text-shadow to avoid conflicts with other color properties. */
+  0%   { text-shadow: 0 0 8px rgba(255, 215, 0, 0.6), 0 1px 1px rgba(0,0,0,0.8); }
+  50%  { text-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 1px 1px rgba(0,0,0,0.8); }
+  100% { text-shadow: 0 0 8px rgba(255, 215, 0, 0.6), 0 1px 1px rgba(0,0,0,0.8); }
+}
+
+/* --- NEW: Custom Scrollbar Styling --- */
+/* For Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #4c1d95; /* FIX: Use a contrasting dark purple for the track. */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #a78bfa; /* FIX: Use a very bright, high-contrast purple for the thumb. */
+  border-radius: 10px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  box-shadow: var(--glass-shadow-light);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #c4b5fd; /* FIX: Make hover state even brighter. */
+}
+
+/* For Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #a78bfa #4c1d95; /* thumb color, track color */
+}
+
+/* --- NEW: Top Gradient Blur Vignette --- */
+.top-vignette {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 150px; /* The height of the gradient effect */
+    z-index: 40; /* Position it behind the buttons (z-50) but above the content */
+    pointer-events: none; /* Make sure it doesn't block any clicks */
+    /* NEW: Add a background gradient to create the shadow effect. */
+    background: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, transparent 100%);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    /* 
+      FIX: Use a mask with a linear gradient to make the backdrop-filter fade out.
+      The blur will be fully visible where the mask is black and fade to invisible where the mask is transparent.
+    */
+    mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+}
+
+/* --- NEW: Bookmark for Highlighted Word --- */
+.bookmarked-word {
+    position: relative; /* Needed to position the pseudo-element */
+}
+
+.bookmarked-word::after {
+    content: '';
+    position: absolute;
+    top: -8px; /* Position it above the word */
+    right: -2px; /* Position it to the right */
+    width: 12px; /* REFACTOR: Slightly larger for better visibility */
+    height: 14px;
+    /* REFACTOR: Use a gradient for more depth */
+    background: linear-gradient(135deg, #ff6b6b, #ee4d4d);
+    /* REFACTOR: Change to a dark border for high contrast against the highlight. */
+    border: 1px solid rgba(0, 0, 0, 0.6);
+    /* Create the classic bookmark shape */
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%);
+    /* REFACTOR: Use a layered shadow for maximum contrast and depth. */
+    box-shadow: 0 1px 1px rgba(0,0,0,0.7), 0 3px 6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.4);
+    /* Add a subtle animation */
+    animation: materialize-and-settle 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform-origin: bottom center; /* Keep the origin for the settle rotation */
+}
+
+/* --- NEW: Auth Container & Login Button Styles (mirrors main page) --- */
+.auth-container {
+  display: flex;
+  align-items: center;
+  border-radius: 30px;
+  padding: 5px;
+  transition: all 0.4s ease-in-out;
+  overflow: hidden;
+  cursor: pointer; /* FIX: Apply the base edge effect and the new tinted inner shadows. */
+  --button-color: #3b82f6; /* Blue */
+}
+
+/* NEW: When logged in, hide the glass effect by default */
+.auth-container.logged-in {
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 0; /* Remove padding to only show the picture */
+}
+
+.login-button {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  color: var(--glass-text-light); /* Use story page variable */
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+.login-button .login-text {
+  margin: 0 10px;
+  font-size: 0.9rem;
+}
+
+.login-button .profile-pic {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.auth-container.logged-in .profile-pic {
+  width: 45px; /* Make the picture slightly larger when it's the only element */
+  height: 45px;
+  border: none; /* Remove the border in the default state */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.4); /* Add a subtle shadow for depth */
+}
+
+.logout-button {
+  background: none;
+  border: none;
+  color: var(--glass-text-light); /* Use story page variable */
+  font-weight: bold;
+  cursor: pointer;
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  opacity: 0.7;
+  /* NEW: Hide logout button by default */
+  display: none;
+}
+
+/* NEW: Show logout button and re-apply glass styles on hover */
+.auth-container.logged-in:hover {
+    background: var(--glass-bg-light);
+    box-shadow: var(--button-shadow-light);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    padding: 5px;
+}
+
+.auth-container.logged-in:hover .logout-button {
+    display: block;
+}
+/* --- REFACTOR: Dark Mode Bookmark Style --- */
+html.dark-mode .bookmarked-word::after, body.dark-mode .bookmarked-word::after {
+    /* REFACTOR: Use a vibrant blue gradient for better contrast in dark mode. */
+    background: linear-gradient(135deg, #4f46e5, #3b82f6);
+    /* REFACTOR: Use a light border for a crisp edge against the dark highlight. */
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    /* REFACTOR: Adjust the shadow to have a subtle blue glow. */
+    box-shadow: 
+        0 1px 1px rgba(0,0,0,0.7), /* Sharp inner shadow for depth */
+        0 3px 8px rgba(0,0,0,0.6),   /* Softer outer shadow */
+        0 0 10px rgba(79, 70, 229, 0.5), /* Blue glow */
+        inset 0 1px 0 rgba(255,255,255,0.4); /* Inner highlight */
+}
+
+/* --- REFACTOR: New keyframe animation for the bookmark --- */
+@keyframes materialize-and-settle {
+    0% {
+        opacity: 0;
+        transform: scale(0.7) translateY(-10px);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.1) translateY(0);
+    }
+    75% { transform: scale(0.95) rotate(-5deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+/* --- NEW: reCAPTCHA Badge Fix --- */
+/* Hide the reCAPTCHA badge. Per Google's policy, the required branding and links have been added to the site footer. */
+.grecaptcha-badge {
+    visibility: hidden !important;
+}
