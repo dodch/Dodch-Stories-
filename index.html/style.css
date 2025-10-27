@@ -1867,10 +1867,26 @@ body.info-panel-open #seriesModal .glass-content {
 }
 
 /* NEW: Style for comments made by the current user (right-aligned) */
+/* REFACTOR: Use 'order' property to correctly position elements for user's own comments. */
 .comment-item.is-user {
-  flex-direction: row-reverse; /* Reverse the order of items (pic on right, bubble on left) */
-  justify-content: flex-start; /* Align to the right side of the container */
+  /* REMOVE: flex-direction: row-reverse; This was causing the profile picture to be on the left. */
+  justify-content: flex-end; /* Align the content of the comment item to the right */
   align-self: flex-end; /* Align the whole item to the right */
+}
+
+/* NEW: Order the profile picture to be on the right for user's own comments */
+.comment-item.is-user .comment-author-pic {
+  order: 2;
+}
+
+/* NEW: Order the comment content wrapper to be to the left of the profile picture */
+.comment-item.is-user .comment-content-wrapper {
+  order: 1;
+}
+
+/* NEW: Order the delete button to be to the left of the comment bubble */
+.comment-item.is-user .delete-comment-btn {
+  order: 0;
 }
 
 /* Main container for each comment */
@@ -1938,9 +1954,9 @@ body.info-panel-open #seriesModal .glass-content {
   text-align: right;
 }
 
-/* NEW: Reverse the header items (name, date) for the current user's comment */
+/* REFACTOR: Align the header to the right for the user's comment, but keep the natural order of name and date. */
 .comment-item.is-user .comment-header {
-  flex-direction: row-reverse;
+  justify-content: flex-end;
 }
 
 
