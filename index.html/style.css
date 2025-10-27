@@ -22,6 +22,7 @@
   --tint-color:#fff;
   --blue-tint:#00aaff;
   --purple-tint:#a366ff;
+  --pink-tint: #f750a0; /* NEW: A more vibrant pink for heart buttons */
   --red-tint:#ff477e; /* A slightly softer, more pinkish hue */
   --green-tint: #4ade80; /* A nice, vibrant light green */
   --golden-tint:gold;
@@ -92,6 +93,7 @@
     --moon-color:#fce38a;
     --notification-text:#f0f0f0;
     --search-placeholder:rgba(255,255,255,0.8);
+    --pink-tint: #f750a0; /* NEW: A more vibrant pink for heart buttons */
     --tint-color:#888;
     --blue-tint:#00aaff;
     --purple-tint:#a366ff;
@@ -155,6 +157,7 @@ body.dark-mode {
   --moon-color:#fce38a;
   --notification-text:#f0f0f0;
   --search-placeholder:rgba(255,255,255,0.8);
+  --pink-tint: #f750a0; /* NEW: A more vibrant pink for heart buttons */
   --tint-color:#888;
   --blue-tint:#00aaff;
   --purple-tint:#a366ff;
@@ -768,8 +771,8 @@ body:not(.is-scrolling) .search-button.active:hover, .search-button.active:focus
   border-radius:50%;
   opacity:1;
   transform:scale(1);
-  background-color: color-mix(in srgb,var(--red-tint) 30%,transparent);
-  --button-color: var(--red-tint);
+  background-color: color-mix(in srgb,var(--pink-tint) 30%,transparent);
+  --button-color: var(--pink-tint);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -785,7 +788,7 @@ body:not(.is-scrolling) .search-button.active:hover, .search-button.active:focus
 body:not(.is-scrolling) .favorite-btn:hover, .favorite-btn:focus-visible {
   /* REFACTOR: Combine the glow with the base button shadow for a more integrated look. */
   transform: scale(1.05);
-  box-shadow: 0 0 20px 5px color-mix(in srgb, var(--red-tint) 50%, transparent), var(--button-edge), inset 0 2px 3px color-mix(in srgb, var(--button-color) 60%, #000), inset 0 -2px 3px color-mix(in srgb, var(--button-color) 60%, #000), inset 2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000), inset -2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000);
+  box-shadow: 0 0 20px 5px color-mix(in srgb, var(--pink-tint) 50%, transparent), var(--button-edge), inset 0 2px 3px color-mix(in srgb, var(--button-color) 60%, #000), inset 0 -2px 3px color-mix(in srgb, var(--button-color) 60%, #000), inset 2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000), inset -2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000);
 }
 .favorite-btn svg{
   position:relative;
@@ -843,14 +846,14 @@ body.search-active .floating-buttons-container {
   transform: scale(0.95);
 }
 #filterBtn.floating-button {
-    background-color: color-mix(in srgb,var(--red-tint) 30%,transparent);
-    --button-color: var(--red-tint);
+    background-color: color-mix(in srgb,var(--pink-tint) 30%,transparent);
+    --button-color: var(--pink-tint);
 }
 /* FIX: Remove generic hover rule that was causing color conflicts.
    Each button now has its own specific hover rule. */
 body:not(.is-scrolling) #filterBtn.floating-button:hover, #filterBtn.floating-button:focus-visible {
     transform: scale(1.05);
-    box-shadow: 0 0 25px 5px color-mix(in srgb, var(--red-tint) 50%, transparent), var(--button-edge), inset 0 2px 3px color-mix(in srgb, var(--button-color) 60%, #000), inset 0 -2px 3px color-mix(in srgb, var(--button-color) 60%, #000), inset 2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000), inset -2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000);
+    box-shadow: 0 0 25px 5px color-mix(in srgb, var(--pink-tint) 50%, transparent), var(--button-edge), inset 0 2px 3px color-mix(in srgb, var(--button-color) 60%, #000), inset 0 -2px 3px color-mix(in srgb, var(--button-color) 60%, #000), inset 2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000), inset -2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000);
 }
 /* FIX: Change contact button to use the new green tint. */
 #contactBtn.floating-button {
