@@ -48,38 +48,52 @@
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <!-- NEW: Immediate Anti-Inspection Script.
          Placing this script in the <head> ensures it runs before the page content is rendered,
-         making it impossible to open DevTools without an immediate page reload. -->
+         making it nearly impossible to open DevTools without an immediate page reload. -->
     <script>
-        // FIX: Add a pre-rendering script to prevent "flash of incorrect theme" (FOIT).
-        // This runs before the body is rendered, checks for the 'dark' preference,
-        // and applies a class to the <html> element immediately.
         (function() {
+            // Prevent "flash of incorrect theme" (FOIT)
             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 document.documentElement.classList.add('dark-mode');
             }
-        })();
-        // Disable right-click context menu globally.
-        document.addEventListener('contextmenu', event => event.preventDefault());
 
-        (function() {
-            const check = () => {
-                const startTime = performance.now();
-                debugger;
-                const endTime = performance.now();
-                if (endTime - startTime > 160) {
-                    window.location.reload();
+            // --- EXTREME SECURITY V2 ---
+            const devToolsActive = () => {
+                // Blank the page to prevent inspection.
+                document.documentElement.innerHTML = '';
+            };
+
+            const securityCheck = {
+                threshold: 160,
+                checkDebugger: function() {
+                    const start = performance.now();
+                    debugger;
+                    const end = performance.now();
+                    if (end - start > this.threshold) devToolsActive();
+                },
+                checkDimensions: function() {
+                    if (window.outerWidth - window.innerWidth > this.threshold || window.outerHeight - window.innerHeight > this.threshold) {
+                        devToolsActive();
+                    }
+                },
+                checkSelf: function() {
+                    if (this.checkDebugger.toString().length < 100 || this.checkDimensions.toString().length < 100) {
+                        devToolsActive();
+                    }
                 }
             };
-            // Run the check immediately and on a fast interval.
-            check();
-            setInterval(check, 250);
+
+            setInterval(() => { securityCheck.checkDebugger(); securityCheck.checkDimensions(); securityCheck.checkSelf(); }, 500);
 
             // Block common keyboard shortcuts for DevTools.
             window.addEventListener('keydown', e => {
                 if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
-                    window.location.reload();
+                    e.preventDefault();
+                    devToolsActive();
                 }
             });
+
+            // Disable right-click context menu globally.
+            document.addEventListener('contextmenu', event => event.preventDefault());
         })();
     </script>
 </head>
