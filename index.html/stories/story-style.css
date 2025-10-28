@@ -1,3 +1,4 @@
+
 /***************************************************************************************************
  *                                   ** DO NOT COPY - ALL RIGHTS RESERVED **
  *
@@ -389,6 +390,15 @@ body {
     color: var(--main-text-color-light); /* FIX: Set the default text color for light mode */
 }
 
+/* --- NEW: Global Content Protection --- */
+body {
+    /* Disable text selection across the entire page */
+    user-select: none;
+    -webkit-user-select: none; /* For Safari */
+    -moz-user-select: none;    /* For Firefox */
+    -ms-user-select: none;     /* For Internet Explorer/Edge */
+}
+
 /* --- LOADING SCREEN OVERLAY (fixed on top) --- */
 #loading-screen {
   position: fixed;
@@ -487,6 +497,14 @@ html.dark-mode.perf-level-1 button.back-home-button-custom, body.dark-mode.perf-
 /* NEW: Hide vignette on lowest performance level for story pages */
 .perf-level-1 .top-vignette {
     display: none;
+}
+
+/* --- NEW: CSS Anti-Tampering ---
+   This is a honeypot. If a script or extension tries to override the 'user-select'
+   property by setting it on the body, this rule will trigger and hide everything. */
+body[style*="user-select: text"],
+body[style*="user-select: auto"] {
+    display: none !important;
 }
 
 #page-content-wrapper {
