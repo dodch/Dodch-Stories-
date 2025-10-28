@@ -14,39 +14,14 @@
 // Disable right-click menu
 document.addEventListener('contextmenu', event => event.preventDefault());
 
-// --- NEW: Anti-Inspection and DevTools Detection ---
-
-/**
- * This function attempts to detect if the browser's developer tools are open.
- * It works by using a `debugger` statement, which only pauses execution when
- * the developer tools are active. By measuring the time it takes to get past
- * this statement, we can infer if the tools are open and then reload the page.
- */
-function detectAndReloadOnDevTools() {
-    const threshold = 160; // Time in milliseconds to assume DevTools is open.
-
-    function check() {
-        const startTime = performance.now();
-        // This line will only cause a pause if DevTools is open.
-        debugger;
-        const endTime = performance.now();
-
-        if (endTime - startTime > threshold) {
-            // DevTools is open, reload the page immediately.
-            window.location.reload();
-        }
-    }
-
-    // Run the check on an interval to constantly monitor for DevTools.
-    setInterval(check, 1000);
-}
-
-// Block common keyboard shortcuts for opening DevTools.
+// Block common keyboard shortcuts for opening DevTools and blank the page.
 document.addEventListener('keydown', function(e) {
-    // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
-    if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || (e.ctrlKey && e.keyCode === 85)) {
+    // Block F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U
+    if (e.key === 'F12' || 
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || 
+        (e.ctrlKey && e.key === 'U')) {
         e.preventDefault();
-        window.location.reload();
+        document.documentElement.innerHTML = ''; // Blank the page
     }
 });
 
