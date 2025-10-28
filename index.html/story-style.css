@@ -579,12 +579,10 @@ html.dark-mode .unselected-language, body.dark-mode .unselected-language {
 }
 
 .selected-language {
-     background-color: var(--save-button-bg-light);
      color: var(--selected-lang-button-text);
      transform: scale(1.05);
      opacity: 1;
      filter: grayscale(0%);
-     box-shadow: var(--button-shadow-light);
 }
 /* FIX: Add a slightly larger hover scale for the selected button to make the hover effect visible. */
 .selected-language:hover, .selected-language:focus-visible {
@@ -593,7 +591,6 @@ html.dark-mode .unselected-language, body.dark-mode .unselected-language {
 
 
 html.dark-mode .selected-language, body.dark-mode .selected-language {
-     background-color: var(--save-button-bg-dark);
 }
 
 button {

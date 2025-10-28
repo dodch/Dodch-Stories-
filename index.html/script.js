@@ -1,30 +1,3 @@
-/***************************************************************************************************
- *                                   ** DO NOT COPY - ALL RIGHTS RESERVED **
- *
- * This code is the exclusive property of Dodch Stories and its owner. Unauthorized copying,
- * reproduction, modification, distribution, or any form of use of this code, in whole or in part,
- * is strictly prohibited.
- *
- * The intellectual property rights, including copyright, for this software are protected by
- * international laws and treaties. Any infringement of these rights will be pursued to the
- * fullest extent of the law, which may include civil and criminal charges.
- *
- * Copyright (c) 2024 Dodch Stories. All rights reserved.
- ***************************************************************************************************/
-// Disable right-click menu
-document.addEventListener('contextmenu', event => event.preventDefault());
-
-// Block common keyboard shortcuts for opening DevTools and blank the page.
-document.addEventListener('keydown', function(e) {
-    // Block F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U
-    if (e.key === 'F12' || 
-        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || 
-        (e.ctrlKey && e.key === 'U')) {
-        e.preventDefault();
-        document.documentElement.innerHTML = ''; // Blank the page
-    }
-});
-
 // Global variables to store data and grid elements
 let panels = [];
 let allStories = [];
@@ -1384,22 +1357,6 @@ function showTutorialOnFirstVisit() {
   startButton.addEventListener('click', closeTutorial, { once: true });
 }
 
-// --- NEW: Dynamic Background Changer ---
-function changeBackground() {
-  if (!backgroundSet || !backgroundSet.light || !backgroundSet.dark) return;
-  console.log("Changing main page background...");
-
-  const styleElement = document.getElementById('dynamic-styles') || document.createElement('style');
-  styleElement.id = 'dynamic-styles';
-  styleElement.innerHTML = `
-    :root {
-      --bg-url: url("${backgroundSet.light.url}");
-      --bg-url-dark: url("${backgroundSet.dark.url}");
-    }
-  `;
-  document.head.appendChild(styleElement);
-}
-
 /**
  * NEW: A simple and fast hashing function to create a unique signature from the
  * FingerprintJS components. This helps create a more stable user ID.
@@ -1650,18 +1607,6 @@ async function loadDataAndInitialize() {
     await initializePage();
 }
 
-document.addEventListener('DOMContentLoaded', loadDataAndInitialize);
-
-// FIX: Use the 'pageshow' event to handle back/forward cache navigations.
-window.addEventListener('pageshow', function(event) {
-  // If the page is being loaded from the bfcache, event.persisted will be true.
-  // REFACTOR: On bfcache restore, we should NOT re-run the performance benchmark.
-  // The browser state is not reliable for an accurate benchmark in this case.
-  // We will only re-initialize parts of the UI that need refreshing, like animations.
-  if (event.persisted) {
-    console.log("Page restored from bfcache. Skipping performance check.");
-    // Re-trigger animations and ensure the UI is responsive without a full reload.
-    updateGridBounds();
-    ensureAnimating();
-  }
+document.addEventListener('DOMContentLoaded', async () => {
+    await initializePage();
 });

@@ -40,62 +40,9 @@
     <link rel="stylesheet" href="../story-style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Licorice&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-    <!-- NEW: Immediate Anti-Inspection Script.
-         Placing this script in the <head> ensures it runs before the page content is rendered,
-         making it nearly impossible to open DevTools without an immediate page reload. -->
-    <script>
-        (function() {
-            // Prevent "flash of incorrect theme" (FOIT)
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                document.documentElement.classList.add('dark-mode');
-            }
-
-            // --- EXTREME SECURITY V2 ---
-            const devToolsActive = () => {
-                // Blank the page to prevent inspection.
-                document.documentElement.innerHTML = '';
-            };
-
-            const securityCheck = {
-                threshold: 160,
-                checkDebugger: function() {
-                    const start = performance.now();
-                    debugger;
-                    const end = performance.now();
-                    if (end - start > this.threshold) devToolsActive();
-                },
-                checkDimensions: function() {
-                    if (window.outerWidth - window.innerWidth > this.threshold || window.outerHeight - window.innerHeight > this.threshold) {
-                        devToolsActive();
-                    }
-                },
-                checkSelf: function() {
-                    if (this.checkDebugger.toString().length < 100 || this.checkDimensions.toString().length < 100) {
-                        devToolsActive();
-                    }
-                }
-            };
-
-            setInterval(() => { securityCheck.checkDebugger(); securityCheck.checkDimensions(); securityCheck.checkSelf(); }, 500);
-
-            // Block common keyboard shortcuts for DevTools.
-            window.addEventListener('keydown', e => {
-                if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
-                    e.preventDefault();
-                    devToolsActive();
-                }
-            });
-
-            // Disable right-click context menu globally.
-            document.addEventListener('contextmenu', event => event.preventDefault());
-        })();
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Ubuntu:wght@400;700&family=Cinzel:wght@700&family=Lora:ital,wght@0,400;1,400&family=Licorice&family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <!-- NEW: Unified script for security, theme, and background loading. -->
+    <script src="../shared-init.js" defer></script>
 </head>
 <body class="loading">
     <div id="loading-screen">

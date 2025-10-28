@@ -26,7 +26,7 @@
     default-src 'self' https://*.google.com https://*.gstatic.com https://*.firebaseio.com https-*.googleapis.com;
     script-src 'self' 'unsafe-inline' https://www.google.com/recaptcha/ https://www.gstatic.com/ https://cdnjs.cloudflare.com;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/ https://cdnjs.cloudflare.com;
-    img-src 'self' https://img.icons8.com https://lh3.googleusercontent.com data:;
+    img-src 'self' https://img.icons8.com https://lh3.googleusercontent.com https://i.ibb.co data:;
     font-src 'self' https://fonts.gstatic.com;
     connect-src 'self' wss://*.firebaseio.com https://www.google-analytics.com https://firebase.googleapis.com https://identitytoolkit.googleapis.com;
     frame-src 'self' https://www.google.com/recaptcha/;
@@ -75,53 +75,16 @@
   
   <!-- NEW: Add reCAPTCHA v3 script for Firebase App Check -->
   <script src="https://www.google.com/recaptcha/api.js?render=6Ldj7O8rAAAAAO5rRT1GqGzVN3vXjL54Mlw0mpX6" async defer></script>
-  <!-- NEW: Immediate Anti-Inspection Script.
-       This runs before the page content is rendered, making it nearly impossible
-       to open DevTools without an immediate page reload. -->
-  <script>
-    (function() {
-      // --- EXTREME SECURITY V2 ---
-      const devToolsActive = () => {
-        // Blank the page to prevent inspection.
-        document.documentElement.innerHTML = '';
-      };
-
-      const securityCheck = {
-        threshold: 160,
-        // 1. Debugger check
-        checkDebugger: function() {
-          const start = performance.now();
-          debugger;
-          const end = performance.now();
-          if (end - start > this.threshold) {
-            devToolsActive();
-          }
-        },
-        // 2. Window dimension check
-        checkDimensions: function() {
-          const widthThreshold = window.outerWidth - window.innerWidth > this.threshold;
-          const heightThreshold = window.outerHeight - window.innerHeight > this.threshold;
-          if (widthThreshold || heightThreshold) {
-            devToolsActive();
-          }
-        },
-        // 3. Self-integrity check
-        checkSelf: function() {
-          // If the functions are tampered with (e.g., toString is overridden), this will fail.
-          if (this.checkDebugger.toString().length < 100 || this.checkDimensions.toString().length < 100) {
-            devToolsActive();
-          }
-        }
-      };
-
-      setInterval(() => { securityCheck.checkDebugger(); securityCheck.checkDimensions(); securityCheck.checkSelf(); }, 500);
-    })();
-  </script>
-
+  <!-- NEW: Unified script for security, theme, and background loading. -->
+  <script src="shared-init.js" defer></script>
 
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<!-- NEW: Add dedicated background divs, mirroring the working story pages. -->
+<div class="fixed-background light-background"></div>
+<div class="fixed-background dark-background"></div>
+
 <!-- NEW: Add the top and bottom gradient blur vignettes -->
 <div class="top-vignette-main"></div>
 <div class="bottom-vignette-main"></div>
@@ -503,6 +466,37 @@
         browserSessionPersistence: browserSessionPersistence,
         browserLocalPersistence: browserLocalPersistence // FIX: Expose local persistence
     };
+</script>
+<!--
+  NEW: The Definitive Fix for the Main Page Background.
+  This module script mirrors the working logic of the story pages. It runs after the DOM is ready
+  and is completely isolated, ensuring there are no conflicts with other scripts. It fetches the
+  backgrounds.json file and injects the correct CSS variables for the main page background.
+-->
+<script type="module">
+  (async () => {
+    try {
+      const response = await fetch('backgrounds.json');
+      if (!response.ok) return;
+      const allBackgrounds = await response.json();
+      const mainPageBackgrounds = allBackgrounds.find(item => item.type === 'mainPage');
+      const bgSet = mainPageBackgrounds?.backgrounds;
+
+      if (bgSet && bgSet.light && bgSet.dark) {
+        const styleElement = document.createElement('style');
+        styleElement.id = 'dynamic-main-bg-styles'; // Use a unique ID
+        styleElement.innerHTML = `
+          :root {
+            --main-bg-url-light: url("${bgSet.light.url}");
+            --main-bg-url-dark: url("${bgSet.dark.url}");
+          }
+        `;
+        document.head.appendChild(styleElement);
+      }
+    } catch (error) {
+      console.error("Failed to load main page background:", error);
+    }
+  })();
 </script>
 <script src="script.js" type="module"></script>
 </body>
