@@ -1,30 +1,3 @@
-/***************************************************************************************************
- *                                   ** DO NOT COPY - ALL RIGHTS RESERVED **
- *
- * This code is the exclusive property of Dodch Stories and its owner. Unauthorized copying,
- * reproduction, modification, distribution, or any form of use of this code, in whole or in part,
- * is strictly prohibited.
- *
- * The intellectual property rights, including copyright, for this software are protected by
- * international laws and treaties. Any infringement of these rights will be pursued to the
- * fullest extent of the law, which may include civil and criminal charges.
- *
- * Copyright (c) 2024 Dodch Stories. All rights reserved.
- ***************************************************************************************************/
-// Disable right-click menu
-document.addEventListener('contextmenu', event => event.preventDefault());
-
-// Block common keyboard shortcuts for opening DevTools and blank the page.
-document.addEventListener('keydown', function(e) {
-    // Block F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U
-    if (e.key === 'F12' || 
-        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || 
-        (e.ctrlKey && e.key === 'U')) {
-        e.preventDefault();
-        document.documentElement.innerHTML = ''; // Blank the page
-    }
-});
-
 // Global variables to store data and grid elements
 let panels = [];
 let allStories = [];
@@ -219,6 +192,73 @@ function filterAndRenderPanels() {
   saveState();
 }
 
+/**
+ * NEW: Sets up Firebase listeners for all story cards.
+ * This function is now called AFTER the user is authenticated, ensuring `currentUserId` is available.
+ * This is the definitive fix for the missing like/comment counts.
+ */
+function setupFirebaseListenersForGrid() {
+    if (!window.firebaseServices || !currentUserId) {
+        console.log("Firebase services or user ID not ready. Skipping listener setup.");
+        return;
+    }
+
+    document.querySelectorAll('.grid > .glass-container, .grid > .series-stack').forEach(card => {
+        const storyKey = card.dataset.storyKey;
+        if (!storyKey) return;
+
+        const { ref, onValue } = window.firebaseServices;
+        const storyRef = ref(window.firebaseServices.db, 'stories/' + storyKey);
+        const commentsRef = ref(window.firebaseServices.db, 'comments/' + storyKey);
+
+        // --- Listener for Favorites ---
+        const countSpan = card.querySelector('.favorite-count');
+        if (countSpan) {
+            onValue(storyRef, (snapshot) => {
+                const storyData = snapshot.val();
+                const count = storyData?.favoritesCount || 0;
+                const favoritedBy = storyData?.favoritedBy || {};
+                const isFavorited = favoritedBy[currentUserId] === true;
+
+                const currentCount = parseInt(countSpan.textContent, 10);
+                if (count !== currentCount) {
+                    countSpan.textContent = count;
+                    // Trigger animations
+                    const countGlowClass = count > currentCount ? 'count-join-glow' : 'count-leave-glow';
+                    countSpan.classList.remove('count-join-glow', 'count-leave-glow');
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => countSpan.classList.add(countGlowClass));
+                    });
+                    countSpan.classList.add('count-pop-animation');
+                    countSpan.addEventListener('animationend', (event) => {
+                        if (event.animationName === 'count-pop') {
+                            countSpan.classList.remove('count-pop-animation');
+                        }
+                    }, { once: true });
+                    setTimeout(() => {
+                        countSpan.classList.remove('count-join-glow', 'count-leave-glow');
+                    }, 1500);
+                }
+
+                const favoriteBtn = card.querySelector('.favorite-btn');
+                favoriteBtn.classList.toggle('active', isFavorited);
+                card.classList.toggle('favorited', isFavorited);
+            });
+        }
+
+        // --- Listener for Comments ---
+        const commentCountSpan = card.querySelector('.comment-count');
+        if (commentCountSpan) {
+            onValue(commentsRef, (snapshot) => {
+                const comments = snapshot.val() || {};
+                const commentCount = Object.keys(comments).length;
+                commentCountSpan.textContent = commentCount;
+            });
+        }
+    });
+}
+
+
 function loadSavedState() {
   // This function now only loads UI state like search and filter view.
   // The "favorited" status of each card is now handled by the real-time Firebase listener.
@@ -353,67 +393,6 @@ async function fetchAndBuildGrid() {
       const addedCard = grid.lastElementChild;
       const storyKey = title.replace(/[^a-zA-Z0-9]/g, '_');
       addedCard.dataset.storyKey = storyKey;
-
-      // --- NEW: Firebase Realtime Database Integration for Favorites ---
-      const countSpan = addedCard.querySelector('.favorite-count');
-      const commentCountSpan = addedCard.querySelector('.comment-count');
-      if (countSpan && window.firebaseServices) {
-          const heartIcon = addedCard.querySelector('.favorite-btn svg');
-          const storyRef = window.firebaseServices.ref(window.firebaseServices.db, 'stories/' + storyKey);
-
-          // Listen for real-time updates to the favorite count
-          const unsubscribe = window.firebaseServices.onValue(storyRef, (snapshot) => {
-              const storyData = snapshot.val();
-              const count = storyData?.favoritesCount || 0;
-              const favoritedBy = storyData?.favoritedBy || {};
-              
-              const currentCount = parseInt(countSpan.textContent, 10);
-              const isFavorited = currentUserId ? favoritedBy[currentUserId] === true : false;
-
-              // Animate only when the count actually changes.
-              if (count !== currentCount) {
-                  countSpan.textContent = count;
-                  
-                  // Animate the count number (pop and glow effect)
-                  const countGlowClass = count > currentCount ? 'count-join-glow' : 'count-leave-glow';
-                  countSpan.classList.remove('count-join-glow', 'count-leave-glow');
-                  requestAnimationFrame(() => {
-                    requestAnimationFrame(() => countSpan.classList.add(countGlowClass));
-                  });
-                  
-                  countSpan.classList.add('count-pop-animation');
-                  
-                  // FIX: Make the event listener specific to the pop animation to prevent it from removing the glow class.
-                  const popListener = (event) => {
-                      if (event.animationName === 'count-pop') {
-                          countSpan.classList.remove('count-pop-animation');
-                      }
-                  };
-                  countSpan.addEventListener('animationend', popListener, { once: true });
-                  // 2. Clean up the glow animation after its duration (1.5s) has passed.
-                  setTimeout(() => {
-                      countSpan.classList.remove('count-join-glow', 'count-leave-glow');
-                  }, 1500);
-              }
-
-              const favoriteBtn = addedCard.querySelector('.favorite-btn');
-              favoriteBtn.classList.toggle('active', isFavorited);
-              addedCard.classList.toggle('favorited', isFavorited);
-          });
-
-          // Store the unsubscribe function to clean up later if needed
-          addedCard.dataset.unsubscribe = unsubscribe;
-      }
-      // NEW: Firebase Realtime Database Integration for Comments Count
-      if (commentCountSpan && window.firebaseServices) {
-        const commentsRef = window.firebaseServices.ref(window.firebaseServices.db, 'comments/' + storyKey);
-        window.firebaseServices.onValue(commentsRef, (snapshot) => {
-            const comments = snapshot.val() || {};
-            const commentCount = Object.keys(comments).length;
-            commentCountSpan.textContent = commentCount;
-            // You can add animations here later if desired
-        });
-      }
 
       // --- NEW: Comment Button Logic ---
       const commentBtn = addedCard.querySelector('.comment-btn');
@@ -1329,23 +1308,6 @@ function setupScrollPerformance() {
 }
 
 /**
- * Checks if the browser truly supports SVG filters in backdrop-filter.
- * iOS Safari incorrectly reports 'true' for CSS @supports, so a JS check is more reliable.
- * We will explicitly block Apple mobile devices from getting this feature to avoid the bug.
- * If supported, it adds a class to the body to enable enhanced filters via CSS.
- */
-function detectSVGFilterSupport() {
-  // FIX: Explicitly block Apple devices from getting the SVG filter to prevent rendering bugs.
-  // The 'vendor' property is a reliable way to detect Safari on both macOS and iOS.
-  const isApple = /Apple/.test(navigator.vendor);
-
-  // Only apply the SVG filter if the browser supports it AND it's not an Apple device.
-  if (!isApple && CSS.supports('backdrop-filter', 'url("#filter-hq")')) {
-      document.body.classList.add('svg-filter-supported');
-  }
-}
-
-/**
  * Shows a tutorial panel on the user's first visit.
  * Uses localStorage to track if the tutorial has been seen.
  */
@@ -1384,22 +1346,6 @@ function showTutorialOnFirstVisit() {
   startButton.addEventListener('click', closeTutorial, { once: true });
 }
 
-// --- NEW: Dynamic Background Changer ---
-function changeBackground() {
-  if (!backgroundSet || !backgroundSet.light || !backgroundSet.dark) return;
-  console.log("Changing main page background...");
-
-  const styleElement = document.getElementById('dynamic-styles') || document.createElement('style');
-  styleElement.id = 'dynamic-styles';
-  styleElement.innerHTML = `
-    :root {
-      --bg-url: url("${backgroundSet.light.url}");
-      --bg-url-dark: url("${backgroundSet.dark.url}");
-    }
-  `;
-  document.head.appendChild(styleElement);
-}
-
 /**
  * NEW: A simple and fast hashing function to create a unique signature from the
  * FingerprintJS components. This helps create a more stable user ID.
@@ -1415,125 +1361,6 @@ async function hashString(str) {
     return hashHex;
 }
 
-async function initializeUser() {
-    const { auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, setPersistence, browserLocalPersistence, db, ref, push, serverTimestamp } = window.firebaseServices;
-    const loginButton = document.getElementById('loginButton');
-    const authContainer = document.getElementById('auth-container');
-    const adminPanel = document.getElementById('adminPanel');
-    const closeAdminPanelButton = document.getElementById('closeAdminPanelButton');
-
-    onAuthStateChanged(auth, user => {
-        // NEW: Add the glass effect class to the auth container for consistent styling.
-        authContainer.classList.add('glass-button-base');
-
-        // Hide admin button by default on auth state change
-        const adminBtn = document.getElementById('adminOpenPanelBtn');
-        if (adminBtn) {
-            adminBtn.style.display = 'none';
-        }
-
-        if (user) {
-            // User is signed in
-            currentUserId = user.uid;
-            // NEW: Add a class to the container when the user is logged in
-            authContainer.classList.add('logged-in');
-            console.log("User signed in:", currentUserId);
-            loginButton.innerHTML = `
-                <img src="${user.photoURL}" alt="Profile" class="profile-pic">
-                <button class="logout-button">Logout</button>
-            `;
-            authContainer.querySelector('.logout-button').addEventListener('click', (e) => {
-                e.stopPropagation();
-                signOut(auth);
-            });
-
-            // NEW: Check for admin custom claim
-            user.getIdTokenResult().then((idTokenResult) => {
-                if (idTokenResult.claims.admin) {
-                    console.log("Admin user detected. Showing admin controls.");
-                    if (adminBtn) {
-                        adminBtn.style.display = 'flex';
-                        addTapAnimation(adminBtn);
-                        adminBtn.onclick = () => {
-                            adminPanel.classList.add('active');
-                            closeAdminPanelButton.classList.add('active');
-                            body.classList.add('info-panel-open');
-                        };
-                    }
-                }
-            });
-        } else {
-            // User is signed out
-            currentUserId = localStorage.getItem('anonymousUserId');
-            // NEW: Remove the class when the user is logged out
-            authContainer.classList.remove('logged-in');
-            if (!currentUserId) {
-                currentUserId = 'anon-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('anonymousUserId', currentUserId);
-            }
-            console.log("User is anonymous:", currentUserId);
-            loginButton.innerHTML = `<span class="login-text">Login</span>`;
-        }
-        // NEW: If the comments modal is open, refresh the listener with the new user state.
-        if (commentsModal.classList.contains('active')) {
-            console.log("Auth state changed while comments modal is open. Refreshing listener.");
-            listenForComments();
-        }
-        // Re-filter/render panels to update their favorited state for the new user
-        filterAndRenderPanels();
-    });
-
-    authContainer.addEventListener('click', () => {
-        if (!auth.currentUser) {
-            // FIX: Use local persistence to keep the user signed in across page reloads.
-            // This ensures the auth state is correctly maintained after the popup flow.
-            setPersistence(auth, browserLocalPersistence)
-              .then(() => {
-                  const provider = new GoogleAuthProvider();
-                  return signInWithPopup(auth, provider);
-              })
-              .catch((error) => {
-                  console.error("Google Sign-In Error:", error);
-                  // Provide more user-friendly error messages
-                  const errorMessage = error.code === 'auth/popup-closed-by-user' ? 'Login cancelled.' : `Login failed: ${error.message}`;
-                  alert(errorMessage);
-              });
-        }
-    });
-
-    addTapAnimation(authContainer);
-
-    // NEW: Logic for the Admin Panel
-    if (adminPanel) {
-        const sendBtn = document.getElementById('sendNotificationBtn');
-        const titleInput = document.getElementById('notificationTitle');
-        const bodyInput = document.getElementById('notificationBody');
-
-        addTapAnimation(sendBtn);
-
-        sendBtn.addEventListener('click', async () => {
-            const title = titleInput.value.trim();
-            const bodyText = bodyInput.value.trim();
-
-            if (!title || !bodyText) {
-                alert('Please enter a title and body for the notification.');
-                return;
-            }
-
-            // This is where we write to the database, which triggers the service worker
-            const latestNotificationRef = ref(db, 'notifications/latest');
-            await push(latestNotificationRef, {
-                title: title,
-                body: bodyText,
-                timestamp: serverTimestamp() // Use server timestamp to prevent duplicates
-            });
-    
-            alert('Notification has been sent to the queue!');
-            closeAdminPanelButton.click(); // Close the panel
-        });
-
-        closeAdminPanelButton.addEventListener('click', () => {
-            adminPanel.classList.remove('active');
             closeAdminPanelButton.classList.remove('active');
             body.classList.remove('info-panel-open');
         });
@@ -1576,6 +1403,133 @@ async function initializeMessaging() {
     });
 }
 
+/**
+ * NEW: This function now returns a Promise that resolves with the user ID.
+ * This is the core fix to prevent the race condition.
+ */
+function initializeUser() {
+    return new Promise(resolve => {
+        const { auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, setPersistence, browserLocalPersistence, signInAnonymously, db, ref, push, serverTimestamp } = window.firebaseServices;
+        const loginButton = document.getElementById('loginButton');
+        const authContainer = document.getElementById('auth-container');
+        const adminPanel = document.getElementById('adminPanel');
+        const closeAdminPanelButton = document.getElementById('closeAdminPanelButton');
+
+        const unsubscribe = onAuthStateChanged(auth, user => {
+            unsubscribe(); // We only need the initial state to proceed.
+
+            if (user) {
+                // User is already signed in (Google or anonymous)
+                console.log("User is ready:", user.uid);
+                resolve(user);
+            } else {
+                // No user, sign in anonymously to get a UID.
+                signInAnonymously(auth)
+                    .then(userCredential => {
+                        console.log("New anonymous user signed in:", userCredential.user.uid);
+                        resolve(userCredential.user);
+                    })
+                    .catch(error => {
+                        console.error("Anonymous sign-in failed:", error);
+                        resolve(null); // Resolve with null on failure
+                    });
+            }
+        });
+
+        // This listener will handle all subsequent auth changes (login, logout)
+        onAuthStateChanged(auth, user => {
+            authContainer.classList.add('glass-button-base');
+            const adminBtn = document.getElementById('adminOpenPanelBtn');
+            if (adminBtn) adminBtn.style.display = 'none';
+
+            if (user && !user.isAnonymous) {
+                // User is signed in with Google
+                currentUserId = user.uid;
+                authContainer.classList.add('logged-in');
+                loginButton.innerHTML = `
+                    <img src="${user.photoURL}" alt="Profile" class="profile-pic">
+                    <button class="logout-button">Logout</button>
+                `;
+                authContainer.querySelector('.logout-button').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    signOut(auth);
+                });
+
+                user.getIdTokenResult().then((idTokenResult) => {
+                    if (idTokenResult.claims.admin) {
+                        if (adminBtn) {
+                            adminBtn.style.display = 'flex';
+                            addTapAnimation(adminBtn);
+                            adminBtn.onclick = () => {
+                                adminPanel.classList.add('active');
+                                closeAdminPanelButton.classList.add('active');
+                                body.classList.add('info-panel-open');
+                            };
+                        }
+                    }
+                });
+            } else {
+                // User is anonymous or signed out
+                currentUserId = user ? user.uid : null;
+                authContainer.classList.remove('logged-in');
+                loginButton.innerHTML = `<span class="login-text">Login</span>`;
+            }
+
+            if (commentsModal.classList.contains('active')) {
+                listenForComments();
+            }
+
+            // NEW: Setup grid listeners now that we have a user.
+            setupFirebaseListenersForGrid();
+
+            // Re-filter panels to update favorite status for the new user
+            if (panels.length > 0) {
+                filterAndRenderPanels();
+            }
+        });
+
+        authContainer.addEventListener('click', () => {
+            if (!auth.currentUser || auth.currentUser.isAnonymous) {
+                setPersistence(auth, browserLocalPersistence)
+                  .then(() => {
+                      const provider = new GoogleAuthProvider();
+                      return signInWithPopup(auth, provider);
+                  })
+                  .catch((error) => {
+                      console.error("Google Sign-In Error:", error);
+                      const errorMessage = error.code === 'auth/popup-closed-by-user' ? 'Login cancelled.' : `Login failed: ${error.message}`;
+                      alert(errorMessage);
+                  });
+            }
+        });
+
+        addTapAnimation(authContainer);
+
+        if (adminPanel) {
+            const sendBtn = document.getElementById('sendNotificationBtn');
+            const titleInput = document.getElementById('notificationTitle');
+            const bodyInput = document.getElementById('notificationBody');
+            addTapAnimation(sendBtn);
+            sendBtn.addEventListener('click', async () => {
+                const title = titleInput.value.trim();
+                const bodyText = bodyInput.value.trim();
+                if (!title || !bodyText) {
+                    alert('Please enter a title and body for the notification.');
+                    return;
+                }
+                const latestNotificationRef = ref(db, 'notifications/latest');
+                await push(latestNotificationRef, {
+                    title: title,
+                    body: bodyText,
+                    timestamp: serverTimestamp()
+                });
+                alert('Notification has been sent to the queue!');
+                closeAdminPanelButton.click();
+            });
+        }
+    });
+}
+
 
 let isInitialized = false; // FIX: Add a flag to prevent double initialization.
 async function initializePage(manualLevelOverride = null) {
@@ -1601,29 +1555,20 @@ async function initializePage(manualLevelOverride = null) {
     }
     applyPerformanceStyles(performanceLevel);
 
-    if (performanceLevel === 2) detectSVGFilterSupport();
-
-    // FIX: Initialize the user ID *before* fetching the grid.
-    await initializeUser();
+    // FIX: Await the user initialization to get a valid user object.
+    // This is the core fix for the race condition.
+    const user = await initializeUser();
+    if (!user) {
+        console.error("Failed to get a user. Likes and comments will not work.");
+        // Handle this case gracefully, maybe show a message.
+    }
+    currentUserId = user.uid; // Set the global user ID
 
     // NEW: After the user is initialized, ask for notification permissions.
     await initializeMessaging();
 
     const loadingScreen = document.getElementById('loadingScreen');
     animateButtonsOnLoad();
-
-    // Preload the current background images
-    const bgLight = getComputedStyle(document.documentElement).getPropertyValue('--bg-url').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
-    const bgDark = getComputedStyle(document.documentElement).getPropertyValue('--bg-url-dark').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
-    const imagesToPreload = [bgLight, bgDark].filter(url => url && url.startsWith('http'));
-
-    if (imagesToPreload.length > 0) {
-      await Promise.all(imagesToPreload.map(url => new Promise((resolve) => {
-        const img = new Image();
-        img.onload = img.onerror = resolve;
-        img.src = url;
-      })));
-    }
 
     // Once images are preloaded, hide loading screen and build grid
     setTimeout(() => {
@@ -1635,33 +1580,6 @@ async function initializePage(manualLevelOverride = null) {
     }, 500); // FIX: Added missing duration and closing parenthesis
 };
 
-async function loadDataAndInitialize() {
-    try {
-        const response = await fetch('backgrounds.json');
-        const allBackgrounds = await response.json();
-        const mainPageBackgrounds = allBackgrounds.find(item => item.type === 'mainPage');
-        if (mainPageBackgrounds) {
-            backgroundSet = mainPageBackgrounds.backgrounds;
-            changeBackground(); // Call the function to set the background
-        }
-    } catch (error) {
-        console.error("Failed to load backgrounds.json:", error);
-    }
+document.addEventListener('DOMContentLoaded', async () => {
     await initializePage();
-}
-
-document.addEventListener('DOMContentLoaded', loadDataAndInitialize);
-
-// FIX: Use the 'pageshow' event to handle back/forward cache navigations.
-window.addEventListener('pageshow', function(event) {
-  // If the page is being loaded from the bfcache, event.persisted will be true.
-  // REFACTOR: On bfcache restore, we should NOT re-run the performance benchmark.
-  // The browser state is not reliable for an accurate benchmark in this case.
-  // We will only re-initialize parts of the UI that need refreshing, like animations.
-  if (event.persisted) {
-    console.log("Page restored from bfcache. Skipping performance check.");
-    // Re-trigger animations and ensure the UI is responsive without a full reload.
-    updateGridBounds();
-    ensureAnimating();
-  }
 });

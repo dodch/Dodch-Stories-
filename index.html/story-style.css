@@ -489,6 +489,12 @@ html.dark-mode.perf-level-1 button.back-home-button-custom, body.dark-mode.perf-
     display: none;
 }
 
+/* NEW: Disable blur on all buttons for performance level 1 */
+body.perf-level-1 .glass-button-base {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
 #page-content-wrapper {
     transition: filter 0.5s ease-in-out;
     position: relative;
@@ -579,12 +585,10 @@ html.dark-mode .unselected-language, body.dark-mode .unselected-language {
 }
 
 .selected-language {
-     background-color: var(--save-button-bg-light);
      color: var(--selected-lang-button-text);
      transform: scale(1.05);
      opacity: 1;
      filter: grayscale(0%);
-     box-shadow: var(--button-shadow-light);
 }
 /* FIX: Add a slightly larger hover scale for the selected button to make the hover effect visible. */
 .selected-language:hover, .selected-language:focus-visible {
@@ -593,7 +597,6 @@ html.dark-mode .unselected-language, body.dark-mode .unselected-language {
 
 
 html.dark-mode .selected-language, body.dark-mode .selected-language {
-     background-color: var(--save-button-bg-dark);
 }
 
 button {
