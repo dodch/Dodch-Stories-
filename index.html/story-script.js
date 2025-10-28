@@ -870,11 +870,11 @@ export function initializeAuth(firebaseServices) {
             // User is signed in (Google or Anonymous)
             currentUserId = user.uid;
             
-            if (user.isAnonymous) {
+            if (user.isAnonymous || !user.displayName) { // FIX: Also handle cases where displayName is null
                 // User is anonymous
                 authContainer.classList.remove('logged-in');
                 console.log("Story page user changed to (Anonymous):", currentUserId);
-                loginButton.innerHTML = `<span class="login-text">Login</span>`;
+                loginButton.innerHTML = `<span class="login-text">Login</span>`; // Ensure login text is shown
             } else {
                 // User is signed in with Google
                 authContainer.classList.add('logged-in');
