@@ -1582,4 +1582,20 @@ async function initializePage(manualLevelOverride = null) {
 
 document.addEventListener('DOMContentLoaded', async () => {
     await initializePage();
+}
+
+document.addEventListener('DOMContentLoaded', loadDataAndInitialize);
+
+// FIX: Use the 'pageshow' event to handle back/forward cache navigations.
+window.addEventListener('pageshow', function(event) {
+  // If the page is being loaded from the bfcache, event.persisted will be true.
+  // REFACTOR: On bfcache restore, we should NOT re-run the performance benchmark.
+  // The browser state is not reliable for an accurate benchmark in this case.
+  // We will only re-initialize parts of the UI that need refreshing, like animations.
+  if (event.persisted) {
+    console.log("Page restored from bfcache. Skipping performance check.");
+    // Re-trigger animations and ensure the UI is responsive without a full reload.
+    updateGridBounds();
+    ensureAnimating();
+  }
 });
