@@ -1963,7 +1963,7 @@ body.dark-mode .comment-input-area #commentTextarea::placeholder {
 
 /* FIX: Set a dark color for the "no comments" message in light mode. */
 .no-comments-message {
-    color: #374151; /* A dark gray color */
+    color: var(--glass-text); /* Default to light text */
 }
 body.dark-mode .no-comments-message {
     color: var(--glass-text); /* Revert to light text in dark mode */
