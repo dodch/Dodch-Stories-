@@ -27,7 +27,7 @@
   <!-- FIX: Add preconnect hints for Google Fonts to improve loading speed and reliability on all systems, including Windows. -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quattrocento+Sans:ital,wght@1,400&family=Open+Sans:wght@400;700&family=Playfair+Display:wght@900&family=Montserrat:wght@900&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quattrocento+Sans:ital,wght@1,400&family=Open+Sans:wght@400;700&family=Playfair+Display:wght@900&family=Montserrat:wght@900&family=Licorice&display=swap">
   <!-- FIX: Prioritize the .ico file for Windows and provide the SVG as a modern alternative. -->
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
@@ -131,11 +131,19 @@
 
 <div class="loading" id="loadingScreen">
   <div class="loading-text">
-    <span class="loading-text-words">D</span>
-    <span class="loading-text-words">O</span>
-    <span class="loading-text-words">D</span>
-    <span class="loading-text-words">C</span>
-    <span class="loading-text-words">H</span>
+    <!-- NEW: Wrapper for the "DODCH" text to keep it on one line -->
+    <div class="loading-dodch-wrapper">
+      <span class="loading-text-words">D</span>
+      <span class="loading-text-words">O</span>
+      <span class="loading-text-words">D</span>
+      <span class="loading-text-words">C</span>
+      <span class="loading-text-words">H</span>
+    </div>
+    <svg class="loading-stories-svg" viewBox="0 0 400 100">
+      <text x="50%" y="60%" dy=".1em" text-anchor="middle">
+        Stories
+      </text>
+    </svg>
   </div>
 </div>
 

@@ -302,23 +302,30 @@ h1{margin:0 0 20px;}
   cursor:pointer;
   text-decoration: none;
   color: var(--glass-text);
-  /* --- REFACTOR: Layered Backdrop-Filter --- */
-  /* Layer 1: The Universal WebKit Blur (FOR iOS/SAFARI)
-     This is a WebKit-only rule that provides the simple blur. iOS will apply this
-     and ignore the standard 'backdrop-filter' rule below because this one is more specific to its engine. */
-  -webkit-backdrop-filter: blur(var(--blur-radius));
+}
 
-  /* Layer 2: The Standard Blur (Fallback for Firefox/other non-SVG browsers) */
+/* --- NEW: Performance-Optimized Backdrop Filter --- */
+/* The filter is now ONLY applied when the card is visible to save performance. */
+.glass-container.is-visible {
+  -webkit-backdrop-filter: blur(var(--blur-radius));
   backdrop-filter: blur(var(--blur-radius));
 }
 
 /* RECONSTRUCTION: The Definitive SVG Enhancement Layer.
    This rule is now only applied if the body has BOTH svg-filter-supported
-   AND perf-level-2. This prevents iOS from ever trying to parse this rule on page load,
-   solving the race condition that made grids transparent. The JS check is now reliable. */
-body.svg-filter-supported.perf-level-2 .glass-container {
+   AND perf-level-2. This prevents iOS from ever trying to parse this rule on page load.
+   FIX: Add the .is-visible class to ensure the filter is only applied to on-screen cards. */
+body.svg-filter-supported.perf-level-2 .glass-container.is-visible {
   -webkit-backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
   backdrop-filter: blur(var(--blur-radius)) url(#filter-hq);
+}
+
+/* --- NEW: Fast Scroll Performance Boost --- */
+/* When the user is scrolling, temporarily disable the expensive backdrop-filter on grid cards
+   that are NOT currently visible to ensure smooth performance. */
+body.is-scrolling .grid > .glass-container:not(.is-visible) {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
 }
 
 /* --- NEW: 3-Tier Performance Level Adjustments --- */
@@ -909,18 +916,55 @@ body:not(.is-scrolling) #perfBtn.floating-button:hover, #perfBtn.floating-button
   opacity:0;pointer-events:none;
 }
 .loading-text{
-  text-align:center;width:100%;line-height:100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
-.loading-text span{
+
+/* NEW: Wrapper for the "DODCH" text to keep it on one line */
+.loading-dodch-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-text-words{
   display:inline-block;margin:0 5px;color:#fff;font-family:'Quattrocento Sans',sans-serif;
-  font-size:2rem;filter:blur(0);animation:blur-text 1.5s infinite linear alternate;
+  font-size:3rem;filter:blur(0);animation:blur-text 1.5s infinite linear alternate;
 }
-.loading-text span:nth-child(1){animation-delay:0s}
-.loading-text span:nth-child(2){animation-delay:.2s}
-.loading-text span:nth-child(3){animation-delay:.4s}
-.loading-text span:nth-child(4){animation-delay:.6s}
-.loading-text span:nth-child(5){animation-delay:.8s}
+.loading-dodch-wrapper .loading-text-words:nth-child(1){animation-delay:0s}
+.loading-dodch-wrapper .loading-text-words:nth-child(2){animation-delay:.2s}
+.loading-dodch-wrapper .loading-text-words:nth-child(3){animation-delay:.4s}
+.loading-dodch-wrapper .loading-text-words:nth-child(4) {animation-delay:.6s}
+.loading-dodch-wrapper .loading-text-words:nth-child(5) {animation-delay:.8s}
 @keyframes blur-text{0%{filter:blur(0)}100%{filter:blur(4px)}}
+
+/* --- NEW: Handwritten "Stories" Animation --- */
+.loading-stories-svg {
+  width: 100%;
+  max-width: 250px; /* Adjust size as needed */
+  margin-top: 10px; /* Position it a bit lower */
+  overflow: visible; /* Ensure glow isn't clipped */
+}
+
+.loading-stories-svg text {
+  font-family: 'Licorice', cursive;
+  font-size: 4.5rem;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1;
+  stroke-dasharray: 450; /* Approximate length of the text path */
+  stroke-dashoffset: 450;
+  animation: draw-in 2.5s ease-out 1s forwards; /* Start after 1s delay */
+}
+
+@keyframes draw-in {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
 .notifications-container{
   position:fixed;top:3.5rem;right:100px;display:flex;align-items:center;overflow:hidden;
   white-space:nowrap;z-index:7;height:60px;width:calc(100% - 100px);pointer-events:none;

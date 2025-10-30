@@ -684,12 +684,12 @@ async function fetchAndBuildGrid() {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         const card = entry.target;
-        // FIX: Always keep the animation running, but only add intersecting panels to the set for physics calculations.
-        // This ensures the animation loop doesn't stop, providing a smoother scroll experience.
         if (entry.isIntersecting) {
           visiblePanels.add(card);
+          card.classList.add('is-visible'); // NEW: Add class to enable SVG filter
         } else {
           visiblePanels.delete(card);
+          card.classList.remove('is-visible'); // NEW: Remove class to disable SVG filter
         }
         // FIX: Ensure spotlight is off for elements that are not visible or being animated.
         card.style.setProperty('--spotlight-opacity', 0);
