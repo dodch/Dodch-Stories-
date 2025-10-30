@@ -728,6 +728,21 @@ function updateLoadingText() {
   }
 }
 
+/**
+ * NEW: Definitive fix for mobile viewport height issues.
+ * This function sets a CSS variable `--vh` to the actual inner height of the window.
+ * Using `calc(var(--vh, 1vh) * 100)` in CSS provides a stable height that doesn't
+ * change when the mobile browser's UI (like the address bar or keyboard) appears.
+ */
+function setViewportHeight() {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+// Set the viewport height on initial load and on resize.
+window.addEventListener('resize', setViewportHeight);
+setViewportHeight(); // Initial call
+
 window.addEventListener('load', () => {
      if (load < 100) {
          loadPercentageText.innerText = '100%';

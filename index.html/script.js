@@ -778,37 +778,6 @@ async function fetchAndBuildGrid() {
         }
     });
 
-    // NEW: Add a fix for mobile keyboard behavior.
-    // When the search input is focused, add a class to the body to adjust fixed element positioning.
-    // REFACTOR: Implement a more robust iOS keyboard layout fix.
-    searchBar.addEventListener('focus', () => {
-        const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-        if (isTouchDevice) {
-            // 1. Immediately capture the current scroll position.
-            const scrollY = window.scrollY;
-            
-            // 2. Instantly apply the scroll position as an inline style to the fixed elements.
-            // This "locks" them in place *before* the browser can reflow the page due to the keyboard.
-            document.querySelectorAll('.top-left-fixed-wrapper, .top-right-fixed-wrapper, .floating-buttons-container').forEach(el => {
-                el.style.top = `${scrollY}px`;
-            });
-
-            // 3. Use requestAnimationFrame to apply the class change on the next paint cycle.
-            // This ensures the visual transition is smooth and avoids race conditions.
-            requestAnimationFrame(() => {
-                document.body.classList.add('keyboard-active');
-            });
-        }
-    });
-    // When the search input is blurred, remove the class.
-    searchBar.addEventListener('blur', () => {
-        document.body.classList.remove('keyboard-active');
-        // Clean up the inline styles when the keyboard is dismissed.
-        document.querySelectorAll('.top-left-fixed-wrapper, .top-right-fixed-wrapper, .floating-buttons-container').forEach(el => {
-            el.style.top = '';
-        });
-    });
-
     searchBar.addEventListener('input', filterAndRenderPanels);
 
     filterBtn.addEventListener('click', () => {
@@ -972,8 +941,6 @@ async function fetchAndBuildGrid() {
       // OPTIMIZATION: Update grid bounds here, outside the rAF loop, to prevent layout thrashing.
       updateGridBounds();
       ensureAnimating(); // Restart animation on scroll
-      // FIX: Update the scroll-y variable for the mobile keyboard fix.
-      document.documentElement.style.setProperty('--scroll-y', `${window.scrollY}px`);
     }, { passive: true });
 
     // New logic for the Contact and Social Media pop-ups
@@ -1675,6 +1642,20 @@ async function loadDataAndInitialize() {
     await initializePage();
 }
 
+/**
+ * NEW: Definitive fix for mobile viewport height issues.
+ * This function sets a CSS variable `--vh` to the actual inner height of the window.
+ * Using `calc(var(--vh, 1vh) * 100)` in CSS provides a stable height that doesn't
+ * change when the mobile browser's UI (like the address bar or keyboard) appears.
+ */
+function setViewportHeight() {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+// Set the viewport height on initial load and on resize.
+window.addEventListener('resize', setViewportHeight);
+setViewportHeight(); // Initial call
 document.addEventListener('DOMContentLoaded', loadDataAndInitialize);
 
 // FIX: Use the 'pageshow' event to handle back/forward cache navigations.
