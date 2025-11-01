@@ -91,6 +91,10 @@
             <!-- NEW: Login Button for Story Page -->
             <div id="auth-container" class="auth-container glass-button-base">
                 <button id="loginButton" class="login-button">
+                    <!-- NEW: Add login icon -->
+                    <svg class="login-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line>
+                    </svg>
                     <span class="login-text">Login</span>
                 </button>
             </div>
@@ -103,6 +107,21 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
         </svg>
         <span id="visitor-count" class="text-white font-bold text-sm">1</span>
+    </div>
+    <!-- NEW: Login Prompt Overlay -->
+    <div id="login-prompt" style="display: none; position: fixed; inset: 0; background-color: rgba(0,0,0,0.8); z-index: 10000; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; padding: 2rem;">
+        <h2 class="text-3xl font-bold mb-4">Login Required</h2>
+        <p class="text-lg mb-6">You need to be logged in to read this story.</p>
+        <!-- The login button will be initialized by the auth script -->
+        <div id="auth-container-prompt" class="auth-container glass-button-base" style="transform: scale(1.2);">
+            <button id="loginButton-prompt" class="login-button">
+                <!-- NEW: Add login icon to prompt -->
+                <svg class="login-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line>
+                </svg>
+                <span class="login-text">Login with Google</span>
+            </button>
+        </div>
     </div>
     <div id="page-content-wrapper">
         <div id="raw-ar-text" style="display: none;">
@@ -817,7 +836,21 @@ THE END.
     <!-- NEW: Add reCAPTCHA v3 script for Firebase App Check. This is required on every page using App Check. -->
     <script src="https://www.google.com/recaptcha/api.js?render=6Ldj7O8rAAAAAO5rRT1GqGzVN3vXjL54Mlw0mpX6" async defer></script>
 
-    <!-- FIX: Consolidate all story initialization logic into a single module script to resolve loading race conditions. -->
+    <!-- FIX: Add the missing logout confirmation modal to the story page. -->
+    <div class="modal-panel" id="logoutConfirmModal">
+        <div class="contact-panel-content" style="text-align: center;">
+          <h2 id="logoutModalTitle" style="color: var(--glass-text); font-size: 1.5rem; margin-bottom: 1rem;">Confirm Logout</h2>
+          <p id="logoutModalText" style="color: var(--glass-text-p); margin-bottom: 2rem;">Are you sure you want to log out?</p>
+          <div style="display: flex; justify-content: center; gap: 1rem;">
+            <button id="logoutConfirmBtn" class="panel-button" style="background-color: var(--red-tint);">Logout</button>
+            <button id="logoutCancelBtn" class="panel-button">Cancel</button>
+          </div>
+        </div>
+    </div>
+    <div class="close-button" id="closeLogoutModalButton">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </div>
+
     <script type="module">
         // --- Firebase Initialization ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
@@ -850,13 +883,12 @@ THE END.
         const auth = getAuth(app);
 
         // Make Firebase services globally available for the imported script.
-        const firebaseServices = { 
-            db: database, 
-            auth: auth, 
-            onAuthStateChanged: onAuthStateChanged, 
+        const firebaseServices = {
+            db: database,
+            auth: auth,
+            onAuthStateChanged: onAuthStateChanged,
             ref, onValue, off, onDisconnect, serverTimestamp, push, set,
-            // FIX: Pass all required auth functions, including local persistence and signInAnonymously
-            GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence, browserLocalPersistence, signInAnonymously
+            GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence, browserLocalPersistence
         };
 
         // Story-specific configuration
@@ -908,11 +940,27 @@ THE END.
             // This also ensures all initialization happens in the correct, sequential order to prevent race conditions.
             
             // 1. Initialize the story content and get the user ID.
-            const userId = await initializeStoryContent(contentMap, firebaseServices);
-            // 2. Initialize the authentication button.
-            initializeAuth(firebaseServices);
-
-            const visitorCountElement = document.getElementById('visitor-count');
+            let userId;
+            try {
+                userId = await initializeStoryContent(contentMap, firebaseServices);
+            } catch (error) {
+                // If initialization fails (user is not logged in), initialize the auth button on the prompt.
+                if (error === 'anonymous' || error === 'logged_out') {
+                    const authContainerPrompt = document.getElementById('auth-container-prompt');
+                    const loginButtonPrompt = document.getElementById('loginButton-prompt');
+                    authContainerPrompt.addEventListener('click', () => {
+                        const provider = new GoogleAuthProvider();
+                        setPersistence(auth, browserLocalPersistence)
+                            .then(() => signInWithPopup(auth, provider))
+                            .then(() => window.location.reload())
+                            .catch(err => console.error("Login failed:", err));
+                    });
+                }
+                return; // Stop execution if user is not logged in
+            }
+            
+            // 2. Initialize the main authentication button in the header.
+            initializeAuth(firebaseServices);            const visitorCountElement = document.getElementById('visitor-count');
             const storyId = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
             const storyVisitorsRef = ref(database, `presence/${storyId}`);            
             // NEW: Get the eye icon to animate it.
