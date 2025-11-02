@@ -499,21 +499,6 @@ html.dark-mode.perf-level-1 button.back-home-button-custom, body.dark-mode.perf-
     min-height: 100vh;
 }
 
-/* FIX: Add styles to correctly center the main content wrapper, matching the main page. */
-#page-content-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
-    min-height: 100vh;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    box-sizing: border-box;
-    position: relative;
-    z-index: 1;
-}
-
 body.loading #page-content-wrapper {
     filter: blur(15px);
     pointer-events: none;
@@ -565,35 +550,6 @@ html.dark-mode .fixed-background.light-background, body.dark-mode .fixed-backgro
         opacity: 1;
         transform: scale(1);
     }
-/* --- NEW: Full-Page Modal for Logout Confirmation --- */
-.full-page-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--glass-bg-light);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    z-index: 100;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.5s ease-in-out;
-}
-
-.full-page-modal.active {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.full-page-modal-content {
-    display: flex;
-    gap: 1rem;
-}
-
 }
 
 @keyframes fadeOut {
@@ -1031,90 +987,4 @@ html.dark-mode .bookmarked-word::after, body.dark-mode .bookmarked-word::after {
 /* Hide the reCAPTCHA badge. Per Google's policy, the required branding and links have been added to the site footer. */
 .grecaptcha-badge {
     visibility: hidden !important;
-}
-
-/* --- FIX: Add missing modal panel styles for logout confirmation --- */
-.modal-panel {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 101; /* Below the close button */
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease-out;
-  padding: 1rem;
-}
-
-.modal-panel.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-html.dark-mode .modal-panel .contact-panel-content {
-    background-color: var(--glass-bg-dark);
-    box-shadow: var(--glass-shadow-dark);
-}
-
-.modal-panel.active .contact-panel-content {
-  transform: scale(1);
-}
-
-/* FIX: Add missing panel-button styles for the logout modal buttons. */
-.panel-button {
-    padding: 1rem 2rem;
-    border-radius: 2rem;
-    font-size: 1.25rem;
-    font-weight: bold;
-    text-decoration: none;
-    color: var(--glass-text-light);
-    box-shadow: var(--button-shadow-light),
-    inset 0 2px 3px color-mix(in srgb, var(--button-color) 60%, #000),
-    inset 0 -2px 3px color-mix(in srgb, var(--button-color) 60%, #000),
-    inset 2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000),
-    inset -2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000);
-    transition: all 0.3s ease-in-out;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: color-mix(in srgb, var(--button-color, #888) 30%, transparent);
-    cursor: pointer;
-    border: none;
-}
-
-html.dark-mode .panel-button {
-    color: var(--glass-text-dark);
-}
-
-.panel-button:hover, .panel-button:focus-visible {
-    transform: scale(1.02);
-    box-shadow: 0 0 15px color-mix(in srgb, var(--button-color) 30%, transparent), var(--button-shadow-light),
-        inset 0 2px 3px color-mix(in srgb, var(--button-color) 60%, #000),
-        inset 0 -2px 3px color-mix(in srgb, var(--button-color) 60%, #000),
-        inset 2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000),
-        inset -2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000);
-}
-.close-button {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  width: 44px;
-  height: 44px;
-  z-index: 102; /* Above the panel */
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-  transform: scale(0.8);
-  cursor: pointer;
-  --button-color: #ef4444; /* Red tint for close button */
-}
-
-.close-button.active {
-  opacity: 1;
-  pointer-events: auto;
-  transform: scale(1);
 }
