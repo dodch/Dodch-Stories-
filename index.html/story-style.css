@@ -1032,6 +1032,7 @@ html.dark-mode .bookmarked-word::after, body.dark-mode .bookmarked-word::after {
 .grecaptcha-badge {
     visibility: hidden !important;
 }
+<<<<<<< HEAD
 
 /* --- FIX: Add missing modal panel styles for logout confirmation --- */
 .modal-panel {
@@ -1118,3 +1119,5 @@ html.dark-mode .panel-button {
   pointer-events: auto;
   transform: scale(1);
 }
+=======
+>>>>>>> 68388a5bf2ffd99abc27a154de47ff8768d0c21c
