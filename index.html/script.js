@@ -1647,39 +1647,6 @@ async function initializePage(manualLevelOverride = null) {
 
     // FIX: Initialize the user ID *before* fetching the grid.
     await initializeUser();
-
-    // --- REFACTORED: First-time visit agreement logic ---
-    const agreementPopup = document.getElementById('agreement-popup');
-    const agreeButton = document.getElementById('agreement-agree-button');
-    const disagreeButton = document.getElementById('agreement-disagree-button');
-    const currentAgreementVersion = '1.1'; // Increment this to show the popup again
-    const agreedVersion = localStorage.getItem('agreedToCommunityGuidelinesVersion');
-
-    if (agreedVersion !== currentAgreementVersion) {
-        if (agreementPopup) {
-            // Wait for the loading screen to be fully gone before showing the popup.
-            setTimeout(() => {
-                agreementPopup.style.display = 'flex';
-            }, 600);
-        }
-
-        if (agreeButton) {
-            agreeButton.addEventListener('click', () => {
-                localStorage.setItem('agreedToCommunityGuidelinesVersion', currentAgreementVersion);
-                agreementPopup.style.display = 'none';
-            });
-        }
-
-        if (disagreeButton) {
-            disagreeButton.addEventListener('click', () => {
-                document.body.innerHTML = `
-                    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #000; color: #fff; font-family: sans-serif; font-size: 1.2rem; text-align: center; padding: 2rem;">
-                        You can respectfully leave.
-                    </div>
-                `;
-            });
-        }
-    }
     // NEW: After the user is initialized, ask for notification permissions.
     await initializeMessaging();
 
