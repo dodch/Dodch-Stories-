@@ -131,10 +131,6 @@
             <!-- NEW: Login Button for Story Page -->
             <div id="auth-container" class="auth-container glass-button-base">
                 <button id="loginButton" class="login-button">
-                    <!-- NEW: Add login icon -->
-                    <svg class="login-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line>
-                    </svg>
                     <span class="login-text">Login</span>
                 </button>
             </div>
@@ -148,22 +144,6 @@
         </svg>
         <span id="visitor-count" class="text-white font-bold text-sm">1</span>
     </div>
-    <!-- FIX: Add the missing login prompt overlay. -->
-    <div id="login-prompt" style="display: none; position: fixed; inset: 0; background-color: rgba(0,0,0,0.8); z-index: 10000; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; padding: 2rem;">
-        <h2 class="text-3xl font-bold mb-4">Login Required</h2>
-        <p class="text-lg mb-6">You need to be logged in to read this story.</p>
-        <!-- The login button will be initialized by the auth script -->
-        <div id="auth-container-prompt" class="auth-container glass-button-base" style="transform: scale(1.2);">
-            <button id="loginButton-prompt" class="login-button">
-                <!-- NEW: Add login icon to prompt -->
-                <svg class="login-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line>
-                </svg>
-                <span class="login-text">Login with Google</span>
-            </button>
-        </div>
-    </div>
-
     <div id="page-content-wrapper">
         <div id="raw-ar-text" style="display: none;">
             العربية غير متوفرة حاليا، يمكنك استعمال خاصية الترجمة للمواقع
