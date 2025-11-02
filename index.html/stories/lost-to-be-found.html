@@ -148,6 +148,22 @@
         </svg>
         <span id="visitor-count" class="text-white font-bold text-sm">1</span>
     </div>
+    <!-- FIX: Add the missing login prompt overlay. -->
+    <div id="login-prompt" style="display: none; position: fixed; inset: 0; background-color: rgba(0,0,0,0.8); z-index: 10000; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; padding: 2rem;">
+        <h2 class="text-3xl font-bold mb-4">Login Required</h2>
+        <p class="text-lg mb-6">You need to be logged in to read this story.</p>
+        <!-- The login button will be initialized by the auth script -->
+        <div id="auth-container-prompt" class="auth-container glass-button-base" style="transform: scale(1.2);">
+            <button id="loginButton-prompt" class="login-button">
+                <!-- NEW: Add login icon to prompt -->
+                <svg class="login-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line>
+                </svg>
+                <span class="login-text">Login with Google</span>
+            </button>
+        </div>
+    </div>
+
     <div id="page-content-wrapper">
         <div id="raw-ar-text" style="display: none;">
             العربية غير متوفرة حاليا، يمكنك استعمال خاصية الترجمة للمواقع
@@ -213,21 +229,6 @@ Français est actuellement indisponible, vous pouvez utiliser la fonction de tra
     </footer>
     <!-- NEW: Add reCAPTCHA v3 script for Firebase App Check. This is required on every page using App Check. -->
     <script src="https://www.google.com/recaptcha/api.js?render=6Ldj7O8rAAAAAO5rRT1GqGzVN3vXjL54Mlw0mpX6" async defer></script>
-
-    <!-- FIX: Add the missing logout confirmation modal to the story page. -->
-    <div class="modal-panel" id="logoutConfirmModal">
-        <div class="contact-panel-content" style="text-align: center;">
-          <h2 id="logoutModalTitle" style="color: var(--glass-text); font-size: 1.5rem; margin-bottom: 1rem;">Confirm Logout</h2>
-          <p id="logoutModalText" style="color: var(--glass-text-p); margin-bottom: 2rem;">Are you sure you want to log out?</p>
-          <div style="display: flex; justify-content: center; gap: 1rem;">
-            <button id="logoutConfirmBtn" class="panel-button" style="background-color: var(--red-tint);">Logout</button>
-            <button id="logoutCancelBtn" class="panel-button">Cancel</button>
-          </div>
-        </div>
-    </div>
-    <div class="close-button" id="closeLogoutModalButton">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-    </div>
 
     <!-- FIX: Consolidate all story initialization logic into a single module script to resolve loading race conditions. -->
     <script type="module">

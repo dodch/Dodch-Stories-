@@ -822,10 +822,27 @@ export async function initializeStoryContent(storyContentMap, fbServices) {
     try {
         currentUserId = await getUserId();
     } catch (error) {
-        // If getUserId rejects, it means the user is not authenticated.
-        // Show the login prompt and stop further execution.
-        document.getElementById('login-prompt').style.display = 'flex';
-        return; // Stop initialization
+        // FIX: If getUserId rejects, it means the user is not authenticated.
+        // Wait for the page to load, then show the login prompt and attach the login handler.
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('login-prompt').style.display = 'flex';
+                
+                // Attach the login handler directly here.
+                const authContainerPrompt = document.getElementById('auth-container-prompt');
+                if (authContainerPrompt) {
+                    authContainerPrompt.addEventListener('click', () => {
+                        const { auth, GoogleAuthProvider, setPersistence, browserLocalPersistence, signInWithPopup } = firebaseServices;
+                        const provider = new GoogleAuthProvider();
+                        setPersistence(auth, browserLocalPersistence)
+                            .then(() => signInWithPopup(auth, provider))
+                            .then(() => window.location.reload())
+                            .catch(err => console.error("Login from prompt failed:", err));
+                    });
+                }
+            }, 600); // This delay should be slightly longer than the loading screen fade-out.
+        });
+        throw error; // Re-throw the error to stop the initialization in the calling module.
     }
 
     const manualLevel = sessionStorage.getItem('manualPerformanceLevel');
@@ -916,29 +933,12 @@ export function initializeAuth(firebaseServices) {
                 `;
                 authContainer.querySelector('.logout-button').addEventListener('click', (e) => {
                     e.stopPropagation();
-                    // NEW: Show custom logout confirmation modal.
-                    const logoutModal = document.getElementById('logoutConfirmModal');
-                    const closeLogoutModalButton = document.getElementById('closeLogoutModalButton');
-                    const body = document.body;
-
-                    logoutModal.classList.add('active');
-                    closeLogoutModalButton.classList.add('active');
-                    body.classList.add('info-panel-open');
-
-                    const confirmBtn = document.getElementById('logoutConfirmBtn');
-                    const cancelBtn = document.getElementById('logoutCancelBtn');
-
-                    const closeLogoutModal = () => {
-                        logoutModal.classList.remove('active');
-                        closeLogoutModalButton.classList.remove('active');
-                        body.classList.remove('info-panel-open');
-                    };
-
-                    confirmBtn.onclick = () => signOut(auth).then(() => window.location.reload()).catch(error => console.error("Logout failed:", error));
-                    cancelBtn.onclick = closeLogoutModal;
-                    closeLogoutModalButton.onclick = closeLogoutModal;
-                    addTapAnimation(confirmBtn);
-                    addTapAnimation(cancelBtn);
+                    // FIX: Revert to a simple browser confirmation dialog for logout.
+                    if (confirm("Are you sure you want to log out?")) {
+                        signOut(auth)
+                            .then(() => window.location.reload())
+                            .catch(error => console.error("Logout failed:", error));
+                    }
                 });
             }
         } else {

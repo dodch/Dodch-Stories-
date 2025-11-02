@@ -565,6 +565,35 @@ html.dark-mode .fixed-background.light-background, body.dark-mode .fixed-backgro
         opacity: 1;
         transform: scale(1);
     }
+/* --- NEW: Full-Page Modal for Logout Confirmation --- */
+.full-page-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--glass-bg-light);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.full-page-modal.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.full-page-modal-content {
+    display: flex;
+    gap: 1rem;
+}
+
 }
 
 @keyframes fadeOut {
@@ -1024,19 +1053,6 @@ html.dark-mode .bookmarked-word::after, body.dark-mode .bookmarked-word::after {
 .modal-panel.active {
   opacity: 1;
   pointer-events: auto;
-}
-
-.modal-panel .contact-panel-content {
-  background-color: var(--glass-bg-light);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: var(--glass-shadow-light);
-  border-radius: 2rem;
-  padding: 2rem;
-  max-width: 400px;
-  width: 100%;
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  transform: scale(0.9);
 }
 
 html.dark-mode .modal-panel .contact-panel-content {

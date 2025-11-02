@@ -836,21 +836,6 @@ THE END.
     <!-- NEW: Add reCAPTCHA v3 script for Firebase App Check. This is required on every page using App Check. -->
     <script src="https://www.google.com/recaptcha/api.js?render=6Ldj7O8rAAAAAO5rRT1GqGzVN3vXjL54Mlw0mpX6" async defer></script>
 
-    <!-- FIX: Add the missing logout confirmation modal to the story page. -->
-    <div class="modal-panel" id="logoutConfirmModal">
-        <div class="contact-panel-content" style="text-align: center;">
-          <h2 id="logoutModalTitle" style="color: var(--glass-text); font-size: 1.5rem; margin-bottom: 1rem;">Confirm Logout</h2>
-          <p id="logoutModalText" style="color: var(--glass-text-p); margin-bottom: 2rem;">Are you sure you want to log out?</p>
-          <div style="display: flex; justify-content: center; gap: 1rem;">
-            <button id="logoutConfirmBtn" class="panel-button" style="background-color: var(--red-tint);">Logout</button>
-            <button id="logoutCancelBtn" class="panel-button">Cancel</button>
-          </div>
-        </div>
-    </div>
-    <div class="close-button" id="closeLogoutModalButton">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-    </div>
-
     <script type="module">
         // --- Firebase Initialization ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
