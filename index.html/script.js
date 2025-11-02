@@ -373,6 +373,19 @@ async function fetchAndBuildGrid() {
           grid.appendChild(singleStoryCard);
       }
 
+      // NEW: Add a click listener to every card to enforce login.
+      const cardElement = grid.lastElementChild;
+      if (cardElement) {
+          cardElement.addEventListener('click', (e) => {
+              const user = window.firebaseServices.auth.currentUser;
+              if (!user || user.isAnonymous) {
+                  e.preventDefault(); // Prevent navigation
+                  alert("You need to log in to read stories.");
+                  document.getElementById('loginButton').click(); // Trigger login flow
+              }
+          });
+      }
+
       // --- Local Favorite State ---
       const title = story.title;
       const addedCard = grid.lastElementChild;
@@ -684,12 +697,12 @@ async function fetchAndBuildGrid() {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         const card = entry.target;
-        // FIX: Always keep the animation running, but only add intersecting panels to the set for physics calculations.
-        // This ensures the animation loop doesn't stop, providing a smoother scroll experience.
         if (entry.isIntersecting) {
           visiblePanels.add(card);
+          card.classList.add('is-visible'); // NEW: Add class to enable SVG filter
         } else {
           visiblePanels.delete(card);
+          card.classList.remove('is-visible'); // NEW: Remove class to disable SVG filter
         }
         // FIX: Ensure spotlight is off for elements that are not visible or being animated.
         card.style.setProperty('--spotlight-opacity', 0);
@@ -1432,11 +1445,37 @@ async function initializeUser() {
             console.log("User signed in:", currentUserId);
             loginButton.innerHTML = `
                 <img src="${user.photoURL}" alt="Profile" class="profile-pic">
-                <button class="logout-button">Logout</button>
+                <button class="logout-button">
+                    <!-- NEW: Add logout icon -->
+                    <svg class="logout-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Logout
+                </button>
             `;
             authContainer.querySelector('.logout-button').addEventListener('click', (e) => {
                 e.stopPropagation();
-                signOut(auth);
+                // NEW: Show custom logout confirmation modal.
+                const logoutModal = document.getElementById('logoutConfirmModal');
+                const closeLogoutModalButton = document.getElementById('closeLogoutModalButton');
+                const body = document.body;
+
+                logoutModal.classList.add('active');
+                closeLogoutModalButton.classList.add('active');
+                body.classList.add('info-panel-open');
+
+                const confirmBtn = document.getElementById('logoutConfirmBtn');
+                const cancelBtn = document.getElementById('logoutCancelBtn');
+
+                const closeLogoutModal = () => {
+                    logoutModal.classList.remove('active');
+                    closeLogoutModalButton.classList.remove('active');
+                    body.classList.remove('info-panel-open');
+                };
+
+                confirmBtn.onclick = () => signOut(auth).then(() => window.location.reload()).catch(error => console.error("Logout failed:", error));
+                cancelBtn.onclick = closeLogoutModal;
+                closeLogoutModalButton.onclick = closeLogoutModal;
+                addTapAnimation(confirmBtn);
+                addTapAnimation(cancelBtn);
             });
 
             // NEW: Check for admin custom claim
@@ -1464,7 +1503,13 @@ async function initializeUser() {
                 localStorage.setItem('anonymousUserId', currentUserId);
             }
             console.log("User is anonymous:", currentUserId);
-            loginButton.innerHTML = `<span class="login-text">Login</span>`;
+            loginButton.innerHTML = `
+                <!-- NEW: Add login icon -->
+                <svg class="login-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line>
+                </svg>
+                <span class="login-text">Login</span>
+            `;
         }
         // NEW: If the comments modal is open, refresh the listener with the new user state.
         if (commentsModal.classList.contains('active')) {
@@ -1475,15 +1520,20 @@ async function initializeUser() {
         filterAndRenderPanels();
     });
 
+    // FIX: Set persistence *before* the click listener is ever triggered.
+    // This resolves the "login fails on first try" issue by ensuring the
+    // persistence is correctly set to 'local' before the popup is opened.
+    setPersistence(auth, browserLocalPersistence)
+      .catch((error) => {
+          console.error("Setting auth persistence failed:", error);
+      });
+
     authContainer.addEventListener('click', () => {
         if (!auth.currentUser) {
             // FIX: Use local persistence to keep the user signed in across page reloads.
             // This ensures the auth state is correctly maintained after the popup flow.
-            setPersistence(auth, browserLocalPersistence)
-              .then(() => {
-                  const provider = new GoogleAuthProvider();
-                  return signInWithPopup(auth, provider);
-              })
+            const provider = new GoogleAuthProvider();
+            signInWithPopup(auth, provider)
               .catch((error) => {
                   console.error("Google Sign-In Error:", error);
                   // Provide more user-friendly error messages
@@ -1597,7 +1647,6 @@ async function initializePage(manualLevelOverride = null) {
 
     // FIX: Initialize the user ID *before* fetching the grid.
     await initializeUser();
-
     // NEW: After the user is initialized, ask for notification permissions.
     await initializeMessaging();
 
