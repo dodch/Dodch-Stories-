@@ -845,6 +845,38 @@ export async function initializeStoryContent(storyContentMap, fbServices) {
         throw error; // Re-throw the error to stop the initialization in the calling module.
     }
 
+    // --- REFACTORED: First-time visit agreement logic ---
+    // This now runs *after* the user is successfully logged in.
+    const agreementPopup = document.getElementById('agreement-popup');
+    const agreeButton = document.getElementById('agreement-agree-button');
+    const disagreeButton = document.getElementById('agreement-disagree-button');
+    const hasAgreed = localStorage.getItem('hasAgreedToCommunityGuidelines');
+
+    if (!hasAgreed) {
+        if (agreementPopup) {
+            // Wait for the loading screen to be fully gone before showing the popup.
+            setTimeout(() => {
+                agreementPopup.style.display = 'flex';
+            }, 600);
+        }
+
+        if (agreeButton) {
+            agreeButton.addEventListener('click', () => {
+                localStorage.setItem('hasAgreedToCommunityGuidelines', 'true');
+                agreementPopup.style.display = 'none';
+            });
+        }
+
+        if (disagreeButton) {
+            disagreeButton.addEventListener('click', () => {
+                document.body.innerHTML = `
+                    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #000; color: #fff; font-family: sans-serif; font-size: 1.2rem; text-align: center; padding: 2rem;">
+                        You can respectfully leave.
+                    </div>
+                `;
+            });
+        }
+    }
     const manualLevel = sessionStorage.getItem('manualPerformanceLevel');
     if (manualLevel) {
         performanceLevel = parseInt(manualLevel, 10);
