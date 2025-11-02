@@ -850,9 +850,10 @@ export async function initializeStoryContent(storyContentMap, fbServices) {
     const agreementPopup = document.getElementById('agreement-popup');
     const agreeButton = document.getElementById('agreement-agree-button');
     const disagreeButton = document.getElementById('agreement-disagree-button');
-    const hasAgreed = localStorage.getItem('hasAgreedToCommunityGuidelines');
+    const currentAgreementVersion = '1.1'; // Increment this to re-show the popup on changes.
+    const agreedVersion = localStorage.getItem('agreedToCommunityGuidelinesVersion');
 
-    if (!hasAgreed) {
+    if (agreedVersion !== currentAgreementVersion) {
         if (agreementPopup) {
             // Wait for the loading screen to be fully gone before showing the popup.
             setTimeout(() => {
@@ -862,7 +863,7 @@ export async function initializeStoryContent(storyContentMap, fbServices) {
 
         if (agreeButton) {
             agreeButton.addEventListener('click', () => {
-                localStorage.setItem('hasAgreedToCommunityGuidelines', 'true');
+                localStorage.setItem('agreedToCommunityGuidelinesVersion', currentAgreementVersion);
                 agreementPopup.style.display = 'none';
             });
         }
