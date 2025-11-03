@@ -1,4 +1,3 @@
-
 /***************************************************************************************************
  *                                   ** DO NOT COPY - ALL RIGHTS RESERVED **
  *
@@ -380,33 +379,14 @@ html.dark-mode, body.dark-mode {
     color: var(--main-text-color-dark);
 }
 
-/* --- NEW: Global Content Protection --- */
-body {
-    /* Disable text selection across the entire page */
-    user-select: none;
-    -webkit-user-select: none; /* For Safari */
-    -moz-user-select: none;    /* For Firefox */
-    -ms-user-select: none;     /* For Internet Explorer/Edge */
-}
-
 body {
     margin: 0;
     padding: 0;
     font-family: 'Roboto', sans-serif;
     /* FIX: Add padding to the bottom of the body to create scroll space below the footer, preventing overlap with fixed buttons. */
     padding-bottom: 5rem;
-    /* Use a CSS variable for viewport height, controlled by JS */
-    min-height: calc(var(--vh, 1vh) * 100);
+    min-height: 100vh;
     color: var(--main-text-color-light); /* FIX: Set the default text color for light mode */
-}
-
-/* --- NEW: Global Content Protection --- */
-body {
-    /* Disable text selection across the entire page */
-    user-select: none;
-    -webkit-user-select: none; /* For Safari */
-    -moz-user-select: none;    /* For Firefox */
-    -ms-user-select: none;     /* For Internet Explorer/Edge */
 }
 
 /* --- LOADING SCREEN OVERLAY (fixed on top) --- */
@@ -423,14 +403,6 @@ body {
   justify-content: center;
   z-index: 10000;
   transition: opacity 0.5s ease;
-}
-
-/* --- NEW: CSS Anti-Tampering ---
-   This is a honeypot. If a script or extension tries to override the 'user-select'
-   property by setting it on the body, this rule will trigger and hide everything. */
-body[style*="user-select: text"],
-body[style*="user-select: auto"] {
-    display: none !important;
 }
 
 #loading-screen.hidden {
@@ -517,22 +489,29 @@ html.dark-mode.perf-level-1 button.back-home-button-custom, body.dark-mode.perf-
     display: none;
 }
 
-/* --- NEW: CSS Anti-Tampering ---
-   This is a honeypot. If a script or extension tries to override the 'user-select'
-   property by setting it on the body, this rule will trigger and hide everything. */
-body[style*="user-select: text"],
-body[style*="user-select: auto"] {
-    display: none !important;
-}
-
 #page-content-wrapper {
     transition: filter 0.5s ease-in-out;
     position: relative;
     z-index: 0;
     width: 100%;
     /* REFACTOR: Use a larger, more reliable padding value to prevent content from hiding under the fixed header. */
-    padding-top: 9rem; /* Use a CSS variable for viewport height, controlled by JS */
-    min-height: calc(var(--vh, 1vh) * 100);
+    padding-top: 9rem;
+    min-height: 100vh;
+}
+
+/* FIX: Add styles to correctly center the main content wrapper, matching the main page. */
+#page-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 100vh;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
 }
 
 body.loading #page-content-wrapper {
@@ -586,6 +565,35 @@ html.dark-mode .fixed-background.light-background, body.dark-mode .fixed-backgro
         opacity: 1;
         transform: scale(1);
     }
+/* --- NEW: Full-Page Modal for Logout Confirmation --- */
+.full-page-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--glass-bg-light);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.full-page-modal.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.full-page-modal-content {
+    display: flex;
+    gap: 1rem;
+}
+
 }
 
 @keyframes fadeOut {
@@ -989,7 +997,7 @@ html {
 }
 
 .auth-container.logged-in:hover .logout-button {
-    display: block;
+    display: block; /* FIX: Ensure the logout button is visible on hover */
 }
 /* --- REFACTOR: Dark Mode Bookmark Style --- */
 html.dark-mode .bookmarked-word::after, body.dark-mode .bookmarked-word::after {
@@ -1023,4 +1031,92 @@ html.dark-mode .bookmarked-word::after, body.dark-mode .bookmarked-word::after {
 /* Hide the reCAPTCHA badge. Per Google's policy, the required branding and links have been added to the site footer. */
 .grecaptcha-badge {
     visibility: hidden !important;
+}
+
+/* --- FIX: Add missing modal panel styles for logout confirmation --- */
+.modal-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 101; /* Below the close button */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease-out;
+  padding: 1rem;
+}
+
+.modal-panel.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* v1.0.1 */
+
+html.dark-mode .modal-panel .contact-panel-content {
+    background-color: var(--glass-bg-dark);
+    box-shadow: var(--glass-shadow-dark);
+}
+
+.modal-panel.active .contact-panel-content {
+  transform: scale(1);
+}
+
+/* FIX: Add missing panel-button styles for the logout modal buttons. */
+.panel-button {
+    padding: 1rem 2rem;
+    border-radius: 2rem;
+    font-size: 1.25rem;
+    font-weight: bold;
+    text-decoration: none;
+    color: var(--glass-text-light);
+    box-shadow: var(--button-shadow-light),
+    inset 0 2px 3px color-mix(in srgb, var(--button-color) 60%, #000),
+    inset 0 -2px 3px color-mix(in srgb, var(--button-color) 60%, #000),
+    inset 2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000),
+    inset -2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000);
+    transition: all 0.3s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: color-mix(in srgb, var(--button-color, #888) 30%, transparent);
+    cursor: pointer;
+    border: none;
+}
+
+html.dark-mode .panel-button {
+    color: var(--glass-text-dark);
+}
+
+.panel-button:hover, .panel-button:focus-visible {
+    transform: scale(1.02);
+    box-shadow: 0 0 15px color-mix(in srgb, var(--button-color) 30%, transparent), var(--button-shadow-light),
+        inset 0 2px 3px color-mix(in srgb, var(--button-color) 60%, #000),
+        inset 0 -2px 3px color-mix(in srgb, var(--button-color) 60%, #000),
+        inset 2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000),
+        inset -2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000);
+}
+.close-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  z-index: 102; /* Above the panel */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+  transform: scale(0.8);
+  cursor: pointer;
+  --button-color: #ef4444; /* Red tint for close button */
+}
+
+.close-button.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
 }
