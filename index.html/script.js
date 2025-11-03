@@ -1,4 +1,3 @@
-
 /***************************************************************************************************
  *                                   ** DO NOT COPY - ALL RIGHTS RESERVED **
  *
@@ -12,1015 +11,1663 @@
  *
  * Copyright (c) 2024 Dodch Stories. All rights reserved.
  ***************************************************************************************************/
-/* --- GLASS EFFECT VARIABLES & STYLES --- */
-:root {
-    --glass-bg-light: rgba(255, 255, 255, 0.05);
-    --glass-text-light: #ffffff;
-    /* REFACTOR: Update story page glass to match the advanced, multi-layered edge from the main page for consistency. */
-    /* REFACTOR: Enhanced glass edge with a high-contrast "double edge" highlight for a more defined, glassy feel. */
-    --glass-shadow-light: 
-        /* 1. The primary, sharp inner highlight for the top edge. */
-        inset 0 1.5px 1px color-mix(in srgb, #fff 90%, transparent),
-        /* 2. A secondary, softer inner highlight to create a beveled look. */
-        inset 0 2.5px 3px color-mix(in srgb, #9333EA 20%, transparent), /* Using purple as a fallback */        
-        /* 3. A sharp highlight on the bottom edge to complete the glass look. */
-        inset 0 -1.5px 1.5px color-mix(in srgb, #fff 70%, transparent), /* 4. Dark Inner Edges (all sides for curved look) */
-        inset 0 2.5px 3px color-mix(in srgb, #000 15%, transparent), /* Top */
-        inset 0 -2.5px 3px color-mix(in srgb, #000 15%, transparent), /* Bottom */
-        inset 2.5px 0 3px color-mix(in srgb, #000 15%, transparent), /* Left */
-        inset -2.5px 0 3px color-mix(in srgb, #000 15%, transparent), /* Right */
-        /* 5. Soft Inner Shadows (all sides for smooth depth) */
-        inset 0 4px 5px -3px color-mix(in srgb, #000 20%, transparent), /* Top */
-        inset 0 -4px 5px -3px color-mix(in srgb, #000 20%, transparent), /* Bottom */
-        inset 4px 0 5px -3px color-mix(in srgb, #000 20%, transparent), /* Left */
-        inset -4px 0 5px -3px color-mix(in srgb, #000 20%, transparent), /* Right */
-        /* Outer Drop Shadows (now centered) */ 0px 0px 20px 0px color-mix(in srgb, #000 25%, transparent),
-        0px 0px 40px 0px color-mix(in srgb, #000 20%, transparent);
-    /* REFACTOR: Final overhaul for a hyper-realistic, 3D machined glass button edge with defined top/bottom bevels. */
-    --button-shadow-light:
-        /* 1. Top Highlight: A sharper, brighter light-catching edge. (Increased opacity) */
-        inset 0 1.5px 0 color-mix(in srgb, #fff 95%, transparent),
-        /* 2. Bottom Highlight: A softer, more visible reflected light on the bottom inner edge. (Increased opacity) */
-        inset 0 -1.5px 0 color-mix(in srgb, #fff 45%, transparent),
-        /* 3. Outer Border & Drop Shadow */
-        0 0 0 1px color-mix(in srgb, #000 15%, transparent),
-        0px 5px 15px -5px color-mix(in srgb, #000 35%, transparent);
-    --pop-up-bg-light: rgba(255, 255, 255, 0.7);
-    --pop-up-text-light: #1f2937;
-    /* --main-bg-url-light will be defined in each story's inline style */
-    /* --main-bg-url-dark will be defined in each story's inline style */
-    --main-text-color-light: #f0f0f0;
-    --main-text-color-dark: #f0f0f0;
-    --text-on-glass-light: #9333ea;
-    --save-button-bg-light: rgba(147, 51, 234, 0.6);
-    --save-button-bg-dark: rgba(192, 132, 252, 0.25);
-    --save-button-text-light: #ffffff;
-    --save-button-text-dark: #ffffff;
-    /* NEW: Solid color variables for performance level 1 */
-    --save-button-solid-light: #9333ea; /* Solid purple */
-    --save-button-solid-dark: #7e22ce; /* Darker solid purple */
-    --back-button-solid-light: #ef4444; /* Solid red */
-    --back-button-solid-dark: #dc2626; /* Darker solid red */
-    --back-button-bg-light: rgba(239, 68, 68, 0.6);
-    --back-button-bg-dark: rgba(252, 165, 165, 0.25);
-    --back-button-text-light: #ffffff;
-    --back-button-text-dark: #ffffff;
-    --content-bg-light: rgba(0, 0, 0, 0.4);
-    --selected-lang-button-text: var(--save-button-text-light);
-    --unselected-lang-text-light: #f0f0f0;
+// Disable right-click menu
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+// --- NEW: Anti-Inspection and DevTools Detection ---
+
+/**
+ * This function attempts to detect if the browser's developer tools are open.
+ * It works by using a `debugger` statement, which only pauses execution when
+ * the developer tools are active. By measuring the time it takes to get past
+ * this statement, we can infer if the tools are open and then reload the page.
+ */
+function detectAndReloadOnDevTools() {
+    const threshold = 160; // Time in milliseconds to assume DevTools is open.
+
+    function check() {
+        const startTime = performance.now();
+        // This line will only cause a pause if DevTools is open.
+        debugger;
+        const endTime = performance.now();
+
+        if (endTime - startTime > threshold) {
+            // DevTools is open, reload the page immediately.
+            window.location.reload();
+        }
+    }
+
+    // Run the check on an interval to constantly monitor for DevTools.
+    setInterval(check, 1000);
 }
 
-/* REFACTOR: Apply dark mode styles based on a class on the <html> element. */
-html.dark-mode {
-    --glass-bg-dark: rgba(0, 0, 0, 0.25);
-    --glass-text-dark: #f0f0f0;
-    /* REFACTOR: Update story page glass to match the advanced, multi-layered edge from the main page for consistency. */
-    /* REFACTOR: Enhanced glass edge with a high-contrast "double edge" highlight for a more defined, glassy feel (dark mode). */
-    --glass-shadow-dark: 
-        /* 1. The primary, sharp inner highlight for the top edge. */
-        inset 0 1.5px 1px color-mix(in srgb, #fff 70%, transparent),
-        /* 2. A secondary, softer inner highlight to create a beveled look. */
-        inset 0 2.5px 4px color-mix(in srgb, #C084FC 25%, transparent), /* Using purple as a fallback */        
-        /* 3. A sharp highlight on the bottom edge to complete the glass look. */
-        inset 0 -1.5px 1.5px color-mix(in srgb, #fff 50%, transparent), /* 4. Dark Inner Edges (all sides for curved look) */
-        inset 0 2.5px 3px color-mix(in srgb, #000 20%, transparent), /* Top */
-        inset 0 -2.5px 3px color-mix(in srgb, #000 20%, transparent), /* Bottom */
-        inset 2.5px 0 3px color-mix(in srgb, #000 20%, transparent), /* Left */
-        inset -2.5px 0 3px color-mix(in srgb, #000 20%, transparent), /* Right */
-        /* 5. Soft Inner Shadows (all sides for smooth depth) */
-        inset 0 4px 5px -3px color-mix(in srgb, #000 35%, transparent), /* Top */
-        inset 0 -4px 5px -3px color-mix(in srgb, #000 35%, transparent), /* Bottom */
-        inset 4px 0 5px -3px color-mix(in srgb, #000 35%, transparent), /* Left */
-        inset -4px 0 5px -3px color-mix(in srgb, #000 35%, transparent), /* Right */
-        /* Outer Drop Shadows (now centered) */ 0px 0px 20px 0px color-mix(in srgb, #000 40%, transparent),
-        0px 0px 45px 0px color-mix(in srgb, #000 35%, transparent);
-    /* REFACTOR: Final overhaul for a hyper-realistic, 3D machined glass button edge (dark mode). */
-    --button-shadow-dark:
-        inset 0 1.5px 0 color-mix(in srgb, #fff 80%, transparent),
-        inset 0 -1.5px 0 color-mix(in srgb, #fff 40%, transparent),
-        0 0 0 1px color-mix(in srgb, #000 25%, transparent),
-        0px 6px 18px -5px color-mix(in srgb, #000 50%, transparent);
-    --pop-up-bg-dark: rgba(31, 41, 55, 0.9);
-    --pop-up-text-dark: #f0f0f0; /* REVERT: Revert to original color */
-    --text-on-glass-dark: #C084FC;
-    --content-bg-dark: rgba(0, 0, 0, 0.4);
-    --selected-lang-button-text: var(--save-button-text-dark);
-    --unselected-lang-text-dark: #C084FC;
+// Block common keyboard shortcuts for opening DevTools.
+document.addEventListener('keydown', function(e) {
+    // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+    if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || (e.ctrlKey && e.keyCode === 85)) {
+        e.preventDefault();
+        window.location.reload();
+    }
+});
+
+// Global variables to store data and grid elements
+let panels = [];
+let allStories = [];
+let showingFavorites = false;
+let currentUserId = null; // REFACTOR: To store the user's unique ID (anonymous or authenticated)
+const body = document.body;
+let backgroundSet = {}; // To store background image data
+let performanceLevel = 3; // Default to highest
+
+// --- NEW: Simplified 3-Tier Performance System ---
+async function benchmarkPerformance() {
+    // REFACTOR: Run the benchmark multiple times and average the result for more stability.
+    // This prevents one-off stutters from unfairly lowering the performance level.
+    const runs = 3;
+    let totalFps = 0;
+
+    for (let i = 0; i < runs; i++) {
+        const fps = await new Promise(resolve => {
+            const testElement = document.createElement('div');
+            testElement.style.cssText = 'position:absolute;top:0;left:0;width:1px;height:1px;opacity:0;pointer-events:none;';
+            document.body.appendChild(testElement);
+
+            let frameCount = 0;
+            const duration = 500; // Shorter duration, but run multiple times.
+
+            function animate(time) {
+                const progress = (time % duration) / duration;
+                testElement.style.transform = `translate(${progress * 10}px, ${progress * 10}px)`;
+                frameCount++;
+            }
+
+            const startTime = performance.now();
+            function runTest(now) {
+                if (now - startTime < duration) {
+                    animate(now);
+                    requestAnimationFrame(runTest);
+                } else {
+                    const averageFps = frameCount / (duration / 1000);
+                    document.body.removeChild(testElement);
+                    resolve(averageFps);
+                }
+            }
+            requestAnimationFrame(runTest);
+        });
+        totalFps += fps;
+        // Brief pause between runs to let the system settle.
+        if (i < runs - 1) {
+            await new Promise(res => setTimeout(res, 100));
+        }
+    }
+
+    const averageFps = totalFps / runs;
+    return averageFps;
 }
 
-/* For backwards compatibility with the JS that adds the class to the body */
-body.dark-mode {
-    --dark-mode-properties: ; /* This is just a placeholder, the main logic is on html.dark-mode */
+async function determinePerformanceLevel() {
+    // --- Step 1: Check for system-level user preferences ---
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        console.log("Performance Level 1 (Low): User prefers reduced motion.");
+        return 1;
+    }
+    if (navigator.connection && navigator.connection.saveData) {
+        console.log("Performance Level 1 (Low): Data saver enabled.");
+        return 1;
+    }
+
+    // --- Step 2: Run the benchmark for an objective performance score ---
+    const averageFps = await benchmarkPerformance();
+    console.log(`Benchmark Result: ~${Math.round(averageFps)} FPS`);
+
+    // --- REFACTOR: Revert to a simpler 2-tier system (Low/High) for clarity. ---
+    let level;
+    if (averageFps < 48) { // A single threshold for Low vs. High.
+        level = 1; // Low (struggles to maintain a high frame rate)
+    } else {
+        level = 2; // High (generally smooth)
+    }
+
+    console.log(`Auto-determined Performance Level: ${level} (1=Low, 2=High)`);
+    return level;
 }
 
-.glass-button-base {
-    /* FIX: Make the button brighter by increasing the color mix percentage.
-       This gives the button a more solid, vibrant appearance. */
-    background-color: color-mix(in srgb, var(--button-color, #888) 20%, transparent);
-    backdrop-filter: blur(4px); /* A simple, universal blur for all buttons */
-    /* FIX: Apply the base edge effect and the new tinted inner shadows. */
-    box-shadow: var(--button-shadow-light),
-        /* REFACTOR: Use a soft, tight inner shadow with transparency to create a gradient bevel. (Darker) */
-        inset 0 2px 3px color-mix(in srgb, var(--button-color) 60%, #000),
-        inset 0 -2px 3px color-mix(in srgb, var(--button-color) 60%, #000),
-        inset 2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000),
-        inset -2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000);
-    -webkit-backdrop-filter: blur(4px); /* The WebKit version for Safari/iOS */
-    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 2.2), box-shadow 0.5s ease, background-color 0.5s ease;
+function applyPerformanceStyles(level) {
+    // Remove any existing performance level classes before adding the new one.
+    for (let i = 1; i <= 3; i++) { // REFACTOR: Loop through all 3 possible levels.
+        document.body.classList.remove(`perf-level-${i}`);
+    }
+    document.body.classList.add(`perf-level-${level}`);
 }
 
-/* --- NEW: Proximity shine effect for all glass buttons on the story page --- */
-.glass-button-base::before {
-  content: ''; /* Required for pseudo-element */
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  /* FIX: Use a simpler, circular gradient for a cleaner button shine. */
-  background: radial-gradient(120px circle at var(--pointer-x) var(--pointer-y), rgba(255, 255, 255, 0.5), transparent 40%);
-  border-radius: inherit; opacity: var(--spotlight-opacity, 0); pointer-events: none; transition: opacity 0.4s ease-out;
+// New function to add tap animation
+function addTapAnimation(element) {
+  element.addEventListener('pointerdown', () => {
+    element.classList.add('squash');
+  });
+  element.addEventListener('pointerup', () => {
+    element.classList.remove('squash');
+    element.classList.remove('jello');
+    void element.offsetWidth; // force reflow to restart animation
+    element.classList.add('jello');
+  });
+  element.addEventListener('pointerleave', () => {
+    element.classList.remove('squash');
+  });
 }
 
-/* NEW: Disable expensive pseudo-elements on lower performance tiers */
-.perf-level-1 .glass-button-base::before {
-    display: none;
+// Helper function to highlight matching text
+function highlightText(text, query) {
+  if (!query) return text;
+  const regex = new RegExp(query, 'gi');
+  return text.replace(regex, (match) => `<span class="highlight">${match}</span>`);
 }
 
-html.dark-mode .glass-button-base, body.dark-mode .glass-button-base {
-    /* FIX: Make the button brighter in dark mode as well. */
-    background-color: color-mix(in srgb, var(--button-color, #888) 30%, transparent);
-    box-shadow: var(--button-shadow-dark),
-        /* REFACTOR: Use a soft, tight inner shadow with transparency for dark mode as well. (Darker) */
-        inset 0 2px 3px color-mix(in srgb, var(--button-color) 60%, #000),
-        inset 0 -2px 3px color-mix(in srgb, var(--button-color) 60%, #000),
-        inset 2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000),
-        inset -2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000);
-}
-
-/* FIX: Apply colors directly to the base class to avoid specificity conflicts. */
-.save-button-custom, .selected-language {
-    /* REMOVED: The semi-transparent background-color was obscuring the tinted inner shadows. */
-    color: var(--save-button-text-light);
-    --button-color: #9333ea; /* Purple */
-}
-
-html.dark-mode .save-button-custom, body.dark-mode .save-button-custom, html.dark-mode .selected-language, body.dark-mode .selected-language {
-    /* REMOVED: The semi-transparent background-color was obscuring the tinted inner shadows. */
-    color: var(--save-button-text-dark);
-}
-
-.back-home-button-custom {
-    /* REMOVED: The semi-transparent background-color was obscuring the tinted inner shadows. */
-    color: var(--back-button-text-light);
-    --button-color: #ef4444; /* Red */
-    font-size: 1.25rem;
-}
-
-html.dark-mode .back-home-button-custom, body.dark-mode .back-home-button-custom {
-    /* REMOVED: The semi-transparent background-color was obscuring the tinted inner shadows. */
-    color: var(--back-button-text-dark);
-}
-
-/* FIX: Give language buttons a default, neutral button color.
-   This prevents the shadow from defaulting to black on initial load
-   before the JS assigns the selected/unselected classes. */
-#ar-button, #fr-button, #en-button, .unselected-language {
-    --button-color: #a855f7; /* A neutral purple for unselected buttons */
-    color: var(--unselected-lang-text-light);
-}
-
-.glass-popup::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    z-index: -1;
-    border-radius: inherit; /* Match the parent's border-radius */
-    background-color: inherit; /* Inherit the semi-transparent background */
-    backdrop-filter: blur(4px); /* The SVG filter itself */
-    -webkit-backdrop-filter: blur(4px);
-    transform: translateZ(0);
-}
-/* NEW: Override the popup's shadow to use the more complex grid glass effect instead of the button edge. */
-.glass-popup {
-    box-shadow: var(--glass-shadow-light);
-}
-html.dark-mode .glass-popup, body.dark-mode .glass-popup {
-    box-shadow: var(--glass-shadow-dark);
-}
-
-.glass-popup {
-     border-radius: 2rem;
-     padding: 1.5rem;
-     /* NEW: Add a transition for the transform property to enable smooth scaling. */
-     transition: transform 0.3s ease-out;
-}
-
-.glass-button-base:hover, .glass-button-base:focus-visible {
-    transform: scale(1.05);
-}
-
-/* --- Button Hover Glow Effects --- */
-/* REFACTOR: Unified hover/focus glow effect for all glass buttons.
-   This is cleaner and uses the button's own --button-color for the glow. */
-.glass-button-base:hover, .glass-button-base:focus-visible {
-    transform: scale(1.05);
-    /* The glow is a colored outer shadow, combined with the existing button shadow definition. */
-    box-shadow: 0 0 20px 2px color-mix(in srgb, var(--button-color, #888) 50%, transparent), var(--button-shadow-light), inset 0 2px 3px color-mix(in srgb, var(--button-color) 60%, #000), inset 0 -2px 3px color-mix(in srgb, var(--button-color) 60%, #000), inset 2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000), inset -2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000);
-}
-html.dark-mode .glass-button-base:hover, html.dark-mode .glass-button-base:focus-visible {
-    box-shadow: 0 0 25px 5px color-mix(in srgb, var(--button-color, #888) 50%, transparent), var(--button-shadow-dark), inset 0 2px 3px color-mix(in srgb, var(--button-color) 60%, #000), inset 0 -2px 3px color-mix(in srgb, var(--button-color) 60%, #000), inset 2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000), inset -2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000);
-}
-
-/* FIX: Create a specific hover rule for the popup to prevent it from inheriting the generic button hover effect.
-   This ensures the popup keeps its more complex --glass-shadow and doesn't cause other elements to lose their blur. */
-.glass-popup:hover, .glass-popup:focus-visible {
-    box-shadow: var(--glass-shadow-light); /* Maintain the correct shadow on hover */    
-    transform: scale(0.98); /* NEW: Add a slight shrink effect on hover. */
-}
-html.dark-mode .glass-popup:hover, html.dark-mode .glass-popup:focus-visible {
-    box-shadow: var(--glass-shadow-dark); /* Maintain the correct shadow on hover in dark mode */    
-    transform: scale(0.98); /* NEW: Add a slight shrink effect on hover for dark mode. */
-}
-
-/* Glow for Popup Buttons */
-#popup button.bg-green-500:hover, #popup button.bg-green-500:focus-visible {
-    box-shadow: 0 0 15px 2px rgba(34, 197, 94, 0.7), var(--button-shadow-light);
-}
-
-#popup button.bg-red-500:hover, #popup button.bg-red-500:focus-visible {
-    box-shadow: 0 0 15px 2px rgba(239, 68, 68, 0.7), var(--button-shadow-light);
-}
-
-/* NEW: Style for the SVG icon inside the bookmark button. */
-#save-progress-button svg {
-    color: var(--save-button-text-light);
-    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.5));
-    transition: color 0.3s ease;
-}
-
-/* NEW: Style for the active (saved) state of the bookmark icon. */
-#save-progress-button svg.active {
-    color: #ef4444; /* A vibrant red color */
-    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.5)) drop-shadow(0 0 5px rgba(239, 68, 68, 0.7));
-}
-
-/* NEW: Style for the SVG icon inside the home button. */
-#back-home-button svg {
-    color: var(--back-button-text-light);
-    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.5));
-    transition: color 0.3s ease;
-}
-
-/* NEW: Visitor count container */
-#visitor-count-container {
-  /* REFACTOR: Increased margin-top to move the icon lower. */
-  margin-top: 5rem; /* Position it below the language buttons */
-  pointer-events: none; /* Make it non-interactive */
-  /* FIX: Apply the glass button effect to the visitor counter. */
-  --button-color: #888; /* Use a neutral gray as the base color for the shadow tint */
-  background-color: var(--glass-bg-light); /* Use the standard light glass background */
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  /* FIX: Remove the tinted inner shadow for a cleaner, more transparent look. */
-  box-shadow: var(--button-shadow-light);
-}
-
-html.dark-mode #visitor-count-container {
-  background-color: var(--glass-bg-dark); /* Use the standard dark glass background */
-  /* FIX: Remove the tinted inner shadow for a cleaner, more transparent look. */
-  box-shadow: var(--button-shadow-dark);
-}
-
-/* --- NEW: Visitor Count Animations --- */
-@keyframes glow-green {
-  0% {
-    color: #4ade80; /* Start green */
-    filter: drop-shadow(0 0 8px rgba(74, 222, 128, 0.8));
-  }
-  100% {
-    color: #ffffff; /* Fade back to white */
-    filter: drop-shadow(0 0 0 rgba(74, 222, 128, 0));
+function updateNoFavoritesMessageState() {
+  const favoritePanels = document.querySelectorAll('.glass-container.favorited');
+  const noFavoritesMessage = document.getElementById('no-favorites-message');
+  if (showingFavorites && favoritePanels.length === 0) {
+    noFavoritesMessage.classList.add('show');
+  } else {
+    noFavoritesMessage.classList.remove('show');
   }
 }
 
-/* Class to trigger the eye icon glow */
-.visitor-join-glow {
-  animation: glow-green 1.5s ease-out;
-}
+function updatePanelVisibility(panel, shouldShow, searchQuery) {
+  const titleEl = panel.querySelector('.title');
+  const descriptionEl = panel.querySelector('.description');
+  const creatorEl = panel.querySelector('.story-creator');
+  const dateEl = panel.querySelector('.creation-date');
+  const pillEl = panel.querySelector('.new-pill');
 
-@keyframes glow-red {
-  0% {
-    color: #ef4444; /* Start red */
-    filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.8));
+  // Store original text in a data attribute if it doesn't exist
+  if (!titleEl.dataset.originalTitle) {
+      titleEl.dataset.originalTitle = titleEl.textContent;
   }
-  100% {
-    color: #ffffff; /* Fade back to white */
-    filter: drop-shadow(0 0 0 rgba(239, 68, 68, 0));
+  if (!descriptionEl.dataset.originalDescription) {
+      descriptionEl.dataset.originalDescription = descriptionEl.textContent;
+  }
+  if (!creatorEl.dataset.originalCreator) {
+      creatorEl.dataset.originalCreator = creatorEl.textContent;
+  }
+  if (!dateEl.dataset.originalDate) {
+      dateEl.dataset.originalDate = dateEl.textContent;
+  }
+  if (pillEl && !pillEl.dataset.originalStatus) {
+      pillEl.dataset.originalStatus = pillEl.textContent;
+  }
+
+  // Apply highlighting to all searchable fields
+  titleEl.innerHTML = highlightText(titleEl.dataset.originalTitle, searchQuery);
+  descriptionEl.innerHTML = highlightText(descriptionEl.dataset.originalDescription, searchQuery);
+  creatorEl.innerHTML = highlightText(creatorEl.dataset.originalCreator, searchQuery);
+  dateEl.innerHTML = highlightText(dateEl.dataset.originalDate, searchQuery);
+  if (pillEl) {
+      pillEl.innerHTML = highlightText(pillEl.dataset.originalStatus, searchQuery);
+  }
+
+  if (shouldShow) {
+    panel.style.display = 'flex';
+    panel.classList.remove('panel-hidden');
+  } else {
+    panel.classList.add('panel-hidden');
+    panel.style.display = 'none';
   }
 }
 
-/* Class to trigger the eye icon glow red */
-.visitor-leave-glow {
-  animation: glow-red 1.5s ease-out;
+// Function to filter and render panels based on search query
+function filterAndRenderPanels() {
+  const searchBar = document.getElementById('searchInput');
+  const searchQuery = searchBar.value.toLowerCase();
+  panels.forEach(panel => {
+    // Get all the content to be searched
+    const title = panel.querySelector('.title').dataset.originalTitle.toLowerCase();
+    const description = panel.querySelector('.description').dataset.originalDescription.toLowerCase();
+    const creator = panel.querySelector('.story-creator').textContent.toLowerCase().replace('made by ', '');
+    const date = panel.querySelector('.creation-date').textContent.toLowerCase();
+    const pillElement = panel.querySelector('.new-pill');
+    const status = pillElement ? pillElement.textContent.toLowerCase() : '';
+
+    const isFavorite = panel.classList.contains('favorited');
+
+    // Update the search logic to check all fields
+    const isMatch = title.includes(searchQuery) || 
+                    description.includes(searchQuery) ||
+                    creator.includes(searchQuery) ||
+                    date.includes(searchQuery) ||
+                    status.includes(searchQuery);
+
+    const shouldShow = isMatch && (!showingFavorites || isFavorite);
+    updatePanelVisibility(panel, shouldShow, searchQuery);
+  });
+  updateNoFavoritesMessageState();
+  saveState();
 }
 
-@keyframes count-pop {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.4); }
-  100% { transform: scale(1); }
+function loadSavedState() {
+  // This function now only loads UI state like search and filter view.
+  // The "favorited" status of each card is now handled by the real-time Firebase listener.
+  const savedShowingFavorites = localStorage.getItem('showingFavorites');
+  const savedSearchValue = localStorage.getItem('searchValue');
+  showingFavorites = savedShowingFavorites === 'true';
+  if (showingFavorites) {
+    document.getElementById('filterBtn').classList.add('active');
+  }
+  const searchBar = document.getElementById('searchInput');
+  if (savedSearchValue) {
+    searchBar.value = savedSearchValue;
+  }
 }
 
-/* Class to trigger the number pop animation */
-.count-pop-animation {
-  display: inline-block; /* Required for transform to work correctly */
-  animation: count-pop 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-/* --- End of Visitor Count Animations --- */
-
-
-
-/* Custom styles for pop-up buttons to override glass background */
-#popup button.glass-button-base.bg-green-500 {
-    background-color: color-mix(in srgb, #22c55e 20%, transparent);
-    backdrop-filter: blur(4px);
-    --button-color: #22c55e; /* Green */
-    -webkit-backdrop-filter: blur(4px);
+function saveState() {
+  // This function now only saves UI state.
+  const searchBar = document.getElementById('searchInput');
+  localStorage.setItem('showingFavorites', showingFavorites);
+  localStorage.setItem('searchValue', searchBar.value);
 }
 
-#popup button.glass-button-base.bg-red-500 {
-    /* FIX: Use the same semi-transparent red tint as other close/cancel buttons for consistency. */
-    background-color: color-mix(in srgb, #ef4444 20%, transparent);
-    --button-color: #ef4444; /* Red */
+function initializeHeartColor() {
+  const filterBtn = document.getElementById('filterBtn');
+  const heartSvg = filterBtn.querySelector('svg');
+  if (showingFavorites) {
+    heartSvg.style.fill = 'var(--heart-active)';
+  } else {
+    heartSvg.style.fill = 'var(--heart-color)';
+  }
 }
 
-/* REFACTOR: Dark mode specific styles for the pop-up buttons */
-html.dark-mode #popup button.bg-green-500, body.dark-mode #popup button.bg-green-500 {
-    background-color: rgba(74, 222, 128, 0.3) !important;
-}
-
-body.dark-mode #popup button.bg-red-500 {
-    background-color: rgba(252, 165, 165, 0.3) !important;
-}
-
-/* --- END OF GLASS EFFECT STYLES --- */
-/* --- Basic Styling --- */
-* {
-    box-sizing: border-box;
-}
-
-body, html {
-    position: relative;
-    z-index: 1;
-    transition: color 0.5s ease;
-    color: var(--main-text-color-light);
-}
-
-html.dark-mode, body.dark-mode {
-    color: var(--main-text-color-dark);
-}
-
-/* --- NEW: Global Content Protection --- */
-body {
-    /* Disable text selection across the entire page */
-    user-select: none;
-    -webkit-user-select: none; /* For Safari */
-    -moz-user-select: none;    /* For Firefox */
-    -ms-user-select: none;     /* For Internet Explorer/Edge */
-}
-
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Roboto', sans-serif;
-    /* FIX: Add padding to the bottom of the body to create scroll space below the footer, preventing overlap with fixed buttons. */
-    padding-bottom: 5rem;
-    /* Use a CSS variable for viewport height, controlled by JS */
-    min-height: calc(var(--vh, 1vh) * 100);
-    color: var(--main-text-color-light); /* FIX: Set the default text color for light mode */
-}
-
-/* --- NEW: Global Content Protection --- */
-body {
-    /* Disable text selection across the entire page */
-    user-select: none;
-    -webkit-user-select: none; /* For Safari */
-    -moz-user-select: none;    /* For Firefox */
-    -ms-user-select: none;     /* For Internet Explorer/Edge */
-}
-
-/* --- LOADING SCREEN OVERLAY (fixed on top) --- */
-#loading-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.9);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-  transition: opacity 0.5s ease;
-}
-
-/* --- NEW: CSS Anti-Tampering ---
-   This is a honeypot. If a script or extension tries to override the 'user-select'
-   property by setting it on the body, this rule will trigger and hide everything. */
-body[style*="user-select: text"],
-body[style*="user-select: auto"] {
-    display: none !important;
-}
-
-#loading-screen.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* --- LOADING INDICATOR CONTAINER (holds hearts) --- */
-.loading-indicator {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 15px;
-}
-
-/* --- LOADING HEART ANIMATION --- */
-.loading-indicator span {
-    display: inline-block;
-    width: 15px;
-    height: 15px;
-    margin: 0 5px;
-    color: white;
-    font-size: 15px;
-    opacity: 0;
-    transform: scale(0.5);
-    animation: pulse-heart 1.4s ease-in-out infinite;
-}
-
-/* Add delays to create the trailing effect */
-.loading-indicator span:nth-child(1) { animation-delay: 0s; }
-.loading-indicator span:nth-child(2) { animation-delay: 0.2s; }
-.loading-indicator span:nth-child(3) { animation-delay: 0.4s; }
-.loading-indicator span:nth-child(4) { animation-delay: 0.6s; }
-.loading-indicator span:nth-child(5) { animation-delay: 0.8s; }
-
-@keyframes pulse-heart {
-    0% { opacity: 0; transform: scale(0.5); }
-    50% { opacity: 1; transform: scale(1.1); }
-    100% { opacity: 0; transform: scale(0.5); }
-}
-
-/* --- LOADING PERCENTAGE TEXT --- */
-.loading-percentage {
-  color: #fff;
-  font-size: 24px;
-  font-family: "Ubuntu", sans-serif;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-}
- /* --- Wrapper for main page content --- */
-
-/* --- NEW: Performance Level Adjustments for Story Pages --- */
-
-/* Level 1 (Weak): No blur, simple transparency. */
-/* FIX: Increase specificity to only target buttons on the story page, not globally. */
-/* FIX: Increase specificity by adding 'body' to ensure these rules override the 'body.svg-filter-supported' rule. */
-/* REFACTOR: Create an even more specific selector to win the specificity war against the .svg-filter-supported rule. */
-/* FIX: Remove .glass-button-base from this rule. Buttons have their own specific solid colors for level 1. */
-body.perf-level-1 #popup > div,
-body.perf-level-1.svg-filter-supported #popup > div {
-    background: linear-gradient(145deg, #4a5568, #2d3748) !important;
-}
-/* FIX: Definitive solid backgrounds for story page buttons on level 1 */
-body.perf-level-1 button.selected-language, body.perf-level-1 button.unselected-language, body.perf-level-1 button.save-button-custom {
-    background-color: var(--save-button-solid-light) !important;
-}
-body.perf-level-1 button.back-home-button-custom {
-    background-color: var(--back-button-solid-light) !important;
-}
-
-html.dark-mode.perf-level-1 .glass-button-base, body.dark-mode.perf-level-1 .glass-button-base,
-html.dark-mode.perf-level-1 #popup > div,
-body.dark-mode.perf-level-1 #popup > div {
-    background: linear-gradient(145deg, #2d3748, #1a202c) !important; /* NEW: Darker solid gradient */
-}
-html.dark-mode.perf-level-1 button.selected-language, body.dark-mode.perf-level-1 button.selected-language, html.dark-mode.perf-level-1 button.unselected-language, body.dark-mode.perf-level-1 button.unselected-language, html.dark-mode.perf-level-1 button.save-button-custom, body.dark-mode.perf-level-1 button.save-button-custom {
-    background-color: var(--save-button-solid-dark) !important;
-}
-html.dark-mode.perf-level-1 button.back-home-button-custom, body.dark-mode.perf-level-1 button.back-home-button-custom {
-    background-color: var(--back-button-solid-dark) !important;
-}
-
-/* NEW: Hide vignette on lowest performance level for story pages */
-.perf-level-1 .top-vignette {
-    display: none;
-}
-
-/* --- NEW: CSS Anti-Tampering ---
-   This is a honeypot. If a script or extension tries to override the 'user-select'
-   property by setting it on the body, this rule will trigger and hide everything. */
-body[style*="user-select: text"],
-body[style*="user-select: auto"] {
-    display: none !important;
-}
-
-#page-content-wrapper {
-    transition: filter 0.5s ease-in-out;
-    position: relative;
-    z-index: 0;
-    width: 100%;
-    /* REFACTOR: Use a larger, more reliable padding value to prevent content from hiding under the fixed header. */
-    padding-top: 9rem; /* Use a CSS variable for viewport height, controlled by JS */
-    min-height: calc(var(--vh, 1vh) * 100);
-}
-
-body.loading #page-content-wrapper {
-    filter: blur(15px);
-    pointer-events: none;
-}
-
-/* FIX: Isolate the blur effect to the background only during load.
-   This prevents the main #content div from being blurred into invisibility. */
-body.loading .fixed-background {
-    filter: blur(15px);
-}
-
-.fixed-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    z-index: -1;
-    transition: opacity 0.5s ease;
-}
-
-.fixed-background.light-background {
-     background-image: var(--main-bg-url-light);
-     opacity: 1;
-}
-
-.fixed-background.dark-background {
-     background-image: var(--main-bg-url-dark);
-     opacity: 0;
-}
-
-html.dark-mode .fixed-background.light-background, body.dark-mode .fixed-background.light-background {
-    opacity: 0;
-}
-
- html.dark-mode .fixed-background.dark-background, body.dark-mode .fixed-background.dark-background {
-    opacity: 1;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
+async function fetchAndBuildGrid() {
+  try {
+    const response = await fetch('stories.json');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
-    to {
-        opacity: 1;
-        transform: scale(1);
+    const storiesData = await response.json();
+    allStories = storiesData; 
+    const grid = document.getElementById('grid');
+
+    grid.innerHTML = '';
+
+    // --- NEW: Function to create a story card (used for both single stories and series parts) ---
+    function createStoryCard(storyData, options = {}) {
+        const card = document.createElement('a');
+        card.className = "glass-container";
+        // Use a special class for series parts to prevent them from being added to the main `panels` array for physics
+        if (storyData.isPart) {
+            card.classList.add('series-part-card');
+        }
+        if (options.simpleBlur) {
+            card.classList.add('simple-blur');
+        }
+
+        card.href = (storyData.path || '') + storyData.file;
+        // FIX: Only apply 'no-link' to actual stories, not to the series cover card.
+        if ((!storyData.file || storyData.file.trim() === '') && storyData.type !== 'series') {
+            card.classList.add('no-link');
+            card.removeAttribute('href');
+        }
+
+        card.innerHTML = `
+            <div class="favorite-overlay"></div>
+            <div class="glass-content">
+              <h3 class="title" data-original-title="${storyData.title}">${storyData.title}</h3>
+              <p class="description" data-original-description="${storyData.description}">${storyData.description}</p>
+            </div>
+            <span class="story-length">${storyData.length || ''}</span>
+            <span class="creation-date">${storyData.date}</span>
+            <p class="story-creator">made by ${storyData.creator}</p>
+            <div class="favorite-container">
+              <span class="comment-count">0</span>
+              <div class="comment-btn glass-button-base">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
+              <div class="action-separator"></div>
+              <span class="favorite-count">0</span>
+              <div class="favorite-btn glass-button-base">
+                <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
+              </div>
+            </div>
+        `;
+
+        const status = storyData.status ? storyData.status : '';
+        const statusColor = storyData.status_color ? storyData.status_color.toLowerCase() : '';
+        if (status) {
+            const newPill = document.createElement('span');
+            newPill.className = "new-pill";
+            newPill.textContent = status;
+            if (statusColor.includes('red')) newPill.classList.add('red');
+            else if (statusColor.includes('purple')) newPill.classList.add('purple');
+            else if (statusColor.includes('golden')) newPill.classList.add('golden');
+            card.appendChild(newPill);
+        }
+
+        return card;
+    }
+
+
+    storiesData.forEach(story => {
+      // --- NEW: Handle series and single stories differently ---
+      if (story.type === 'series') {
+          // Create a container for the stack
+          // Create a single element that is both the card and the stack container.
+          const seriesCard = createStoryCard(story);
+          seriesCard.classList.add('series-stack');
+          seriesCard.removeAttribute('href'); // The container itself isn't a direct link.
+          seriesCard.id = story.id; // Use the new ID from JSON
+
+          // Add click listener to the whole stack
+          seriesCard.addEventListener('click', (e) => {
+              // Find the card that was actually clicked on
+              const clickedCard = e.target.closest('a.glass-container');
+              // If the clicked element is a valid link, let the browser handle it and do nothing else.
+              if (clickedCard && clickedCard.hasAttribute('href')) return;
+              e.preventDefault(); // Prevent any default behavior for non-link clicks
+              openSeriesModal(story);
+          });
+          grid.appendChild(seriesCard); // Add the unified card/stack to the grid
+      } else {
+          // This is a regular, single story
+          const singleStoryCard = createStoryCard(story);
+          grid.appendChild(singleStoryCard);
+      }
+
+      // --- Local Favorite State ---
+      const title = story.title;
+      const addedCard = grid.lastElementChild;
+      const storyKey = title.replace(/[^a-zA-Z0-9]/g, '_');
+      addedCard.dataset.storyKey = storyKey;
+
+      // --- NEW: Firebase Realtime Database Integration for Favorites ---
+      const countSpan = addedCard.querySelector('.favorite-count');
+      const commentCountSpan = addedCard.querySelector('.comment-count');
+      if (countSpan && window.firebaseServices) {
+          const heartIcon = addedCard.querySelector('.favorite-btn svg');
+          const storyRef = window.firebaseServices.ref(window.firebaseServices.db, 'stories/' + storyKey);
+
+          // Listen for real-time updates to the favorite count
+          const unsubscribe = window.firebaseServices.onValue(storyRef, (snapshot) => {
+              const storyData = snapshot.val();
+              const count = storyData?.favoritesCount || 0;
+              const favoritedBy = storyData?.favoritedBy || {};
+              
+              const currentCount = parseInt(countSpan.textContent, 10);
+              const isFavorited = currentUserId ? favoritedBy[currentUserId] === true : false;
+
+              // Animate only when the count actually changes.
+              if (count !== currentCount) {
+                  countSpan.textContent = count;
+                  
+                  // Animate the count number (pop and glow effect)
+                  const countGlowClass = count > currentCount ? 'count-join-glow' : 'count-leave-glow';
+                  countSpan.classList.remove('count-join-glow', 'count-leave-glow');
+                  requestAnimationFrame(() => {
+                    requestAnimationFrame(() => countSpan.classList.add(countGlowClass));
+                  });
+                  
+                  countSpan.classList.add('count-pop-animation');
+                  
+                  // FIX: Make the event listener specific to the pop animation to prevent it from removing the glow class.
+                  const popListener = (event) => {
+                      if (event.animationName === 'count-pop') {
+                          countSpan.classList.remove('count-pop-animation');
+                      }
+                  };
+                  countSpan.addEventListener('animationend', popListener, { once: true });
+                  // 2. Clean up the glow animation after its duration (1.5s) has passed.
+                  setTimeout(() => {
+                      countSpan.classList.remove('count-join-glow', 'count-leave-glow');
+                  }, 1500);
+              }
+
+              const favoriteBtn = addedCard.querySelector('.favorite-btn');
+              favoriteBtn.classList.toggle('active', isFavorited);
+              addedCard.classList.toggle('favorited', isFavorited);
+          });
+
+          // Store the unsubscribe function to clean up later if needed
+          addedCard.dataset.unsubscribe = unsubscribe;
+      }
+      // NEW: Firebase Realtime Database Integration for Comments Count
+      if (commentCountSpan && window.firebaseServices) {
+        const commentsRef = window.firebaseServices.ref(window.firebaseServices.db, 'comments/' + storyKey);
+        window.firebaseServices.onValue(commentsRef, (snapshot) => {
+            const comments = snapshot.val() || {};
+            const commentCount = Object.keys(comments).length;
+            commentCountSpan.textContent = commentCount;
+            // You can add animations here later if desired
+        });
+      }
+
+      // --- NEW: Comment Button Logic ---
+      const commentBtn = addedCard.querySelector('.comment-btn');
+      addTapAnimation(commentBtn);
+      commentBtn.addEventListener('click', (e) => {
+          e.stopPropagation(); // Prevent the event from bubbling up to the parent series card
+          e.preventDefault();
+          openCommentsModal(storyKey, story.title);
+      });
+
+    });
+    // Correctly select panels for physics, excluding those inside a series stack
+    panels = [...document.querySelectorAll('.grid > .glass-container, .grid > .series-stack')];
+    // Also add the series stacks to the physics simulation
+
+    // Load saved state *after* panels are created in the DOM
+    loadSavedState();
+
+    // --- PERFORMANCE OPTIMIZATION: Use a Map for direct state lookup ---
+    // This is much faster than using an array and indexOf.
+    const state = new Map();
+    panels.forEach(card => {
+      // NEW: Disable physics for performance levels 1 and 2
+      if (performanceLevel < 2) { // Now only disable for level 1
+          card.classList.add('physics-disabled');
+      }
+
+      card.style.opacity = '0';
+      state.set(card, {
+        scaleX: 0.95, scaleY: 0.95, // Start slightly smaller for a grow effect
+        vx: 0, vy: 0,
+        rotX: 0, rotY: 0,
+        vrX: 0, vrY: 0, 
+        yOffset: 0, vyOffset: 0,
+        // TUNED: Damping is crucial for the feel. A slightly lower value makes it more "springy".
+        damping: 0.85 + Math.random() * 0.05
+      });
+    });
+
+    // --- PERFORMANCE OPTIMIZATION: Use a Set to track only visible panels ---
+    // The IntersectionObserver will add/remove panels from this set.
+    const visiblePanels = new Set();
+
+    // Helper function to clamp a value between a min and max
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(value, max));
+    }
+
+    // --- PERFORMANCE OPTIMIZATION: Pre-calculate static properties ---
+    // We'll store properties that don't change every frame to avoid re-calculating.
+    function updateCardStaticProps() {
+      panels.forEach(card => {
+        const s = state.get(card);
+        if (s) {
+          s.height = card.offsetHeight; // card's height
+          s.offsetTop = card.offsetTop; // card's distance from the top of the document
+          s.offsetLeft = card.offsetLeft; // card's distance from the left of the document
+          s.width = card.offsetWidth; // card's width
+        }
+      });
+    }
+    // Initial calculations
+    updateCardStaticProps();
+
+    // FIX: Create a dedicated function to update grid bounds and call it on load and resize.
+    // This ensures the hover effect works immediately without needing to scroll first.
+    function updateGridBounds() {
+        const gridRect = document.getElementById('grid').getBoundingClientRect();
+        gridBounds.top = gridRect.top + window.scrollY;
+        gridBounds.bottom = gridRect.bottom + window.scrollY;
+    }
+
+    // NEW: Staggered fade-in and gentle physics kick on load
+    window.addEventListener('resize', () => {
+        updateCardStaticProps();
+        updateGridBounds();
+    });
+    panels.forEach((card, i) => {
+        setTimeout(() => {
+            card.style.opacity = '1'; // Trigger the CSS fade-in
+            const s = state.get(card);
+            if (s) { 
+              // Apply a very gentle impulse to make the card "settle"
+              s.vy -= 0.05 + Math.random() * 0.05; 
+            }
+        }, i * 50);
+    });
+
+    // FIX: Delay the tutorial until after the grid card animations have finished.
+    // The animations take about 2 seconds to fully settle.
+    setTimeout(() => {
+      showTutorialOnFirstVisit();
+    }, 1900); // Wait 1.9 seconds before showing the tutorial.
+
+    let lastScroll = window.scrollY;
+    let lastTime = performance.now();
+    let pointer = { x: -9999, y: -9999 };
+    let gridBounds = { top: 0, bottom: 0 }; // To cache grid position
+    let isAnimating = true; // Control the animation loop
+    // REFACTOR: This will now be used to intelligently stop the animation loop when nothing is moving.
+    let canStopAnimating = false;
+
+    // NEW: Detect if it's a touch device to adjust hover logic
+    const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    let isTouching = false; // Track if a touch is currently active
+
+    function frame(now) {
+      const dt = (now - lastTime) / 1000;
+      lastTime = now;
+      const scrollY = window.scrollY;
+      let delta = scrollY - lastScroll; // TUNED: Reduced springiness for a smoother feel.
+      lastScroll = scrollY;
+
+      // --- PERFORMANCE FIX: Clamp delta to prevent jumps on sudden scrolls --- // TUNED: Reduced springiness for a smoother feel.
+      // This prevents the animation from overreacting to extreme scroll gestures. // TUNED: Reduced springiness for a smoother feel.
+      delta = clamp(delta, -150, 150);
+
+      const vh = window.innerHeight;
+      const center = scrollY + vh / 2;
+
+      const isPointerNearGrid = pointer.y > gridBounds.top - 200 - scrollY && pointer.y < gridBounds.bottom + 200 - scrollY;
+
+      let totalVelocity = 0;
+      visiblePanels.forEach((card) => {
+        const s = state.get(card);
+        if (!s || card.classList.contains('physics-disabled')) return; // Skip physics if disabled
+
+        const cardTop = typeof s.offsetTop === 'number' ? s.offsetTop : 0;
+        const cardHeight = typeof s.height === 'number' ? s.height : 0;
+        const cardCenter = cardTop + cardHeight / 2;
+        const distFromCenter = Math.abs(cardCenter - center);
+
+        if (distFromCenter < vh) {
+          const dist = distFromCenter / vh;
+          const scrollSpeed = Math.abs(delta);
+          const speedFactor = clamp(1 + scrollSpeed / 150, 1, 1.5);
+
+          // REFACTOR: Implement a "Jello" scroll effect instead of the complex physics.
+          // 1. Calculate a "squash" factor based on scroll velocity (delta).
+          // A negative delta (scrolling down) squashes vertically, a positive delta (scrolling up) squashes horizontally.
+          const squashFactor = delta * -0.0015 * speedFactor * (1 - dist);
+
+          // 2. Define the target scales. The card squashes on one axis and stretches on the other.
+          let targetScaleX = 1 + squashFactor;
+          let targetScaleY = 1 - squashFactor;
+
+          let influence = 0;
+
+          // 3. Calculate Hover Effect (only if not scrolling to save performance)
+          if (!body.classList.contains('is-scrolling') && ((isTouchDevice && isTouching) || (!isTouchDevice && isPointerNearGrid))) {
+            const cardWidth = typeof s.width === 'number' ? s.width : 0;
+            const dx = pointer.x - (s.offsetLeft + cardWidth / 2.0);
+            const dy = pointer.y - (cardTop - scrollY + cardHeight / 2.0);
+            const pointerDist = Math.sqrt(dx * dx + dy * dy);
+            influence = Math.max(0, 1 - pointerDist / 275);
+
+            // On hover, slightly increase the scale.
+            targetScaleX += 0.05 * influence;
+            targetScaleY += 0.05 * influence;
+
+            card.style.setProperty('--pointer-x', `${pointer.x - s.offsetLeft}px`);
+            card.style.setProperty('--pointer-y', `${pointer.y - (s.offsetTop - scrollY)}px`);
+            card.style.setProperty('--spotlight-opacity', influence);
+          } else {
+            card.style.setProperty('--spotlight-opacity', 0);
+          }
+          
+          // 4. Apply Physics Simulation (Spring animation towards the target)
+          const springiness = 0.1;
+          const d = s.damping;
+
+          s.vx += (targetScaleX - s.scaleX) * springiness; s.vx *= d; s.scaleX += s.vx;
+          s.vy += (targetScaleY - s.scaleY) * springiness; s.vy *= d; s.scaleY += s.vy;
+          
+          // Reset rotation and parallax offset as they are no longer used.
+          s.rotX = 0; s.rotY = 0; s.yOffset = 0;
+
+          if (influence > 0) {
+            card.style.setProperty('--pointer-x', `${pointer.x - s.offsetLeft}px`);
+            card.style.setProperty('--pointer-y', `${pointer.y - (s.offsetTop - scrollY)}px`);
+            card.style.setProperty('--spotlight-opacity', influence);
+          }
+
+          totalVelocity += Math.abs(s.vx) + Math.abs(s.vy);
+
+          const finalScaleX = clamp(s.scaleX, 0.8, 1.05);
+          const finalScaleY = clamp(s.scaleY, 0.8, 1.05);
+          card.style.transform = `scale(${finalScaleX}, ${finalScaleY})`;
+        }
+      });
+
+      // NEW: Animate button shine based on proximity
+      document.querySelectorAll('.shine-button').forEach(button => {
+        const rect = button.getBoundingClientRect();
+        const dx = pointer.x - (rect.left + rect.width / 2);
+        const dy = pointer.y - (rect.top + rect.height / 2);
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        const influence = Math.max(0, 1 - dist / 150); // 150px is the influence radius
+
+        button.style.setProperty('--pointer-x', `${pointer.x - rect.left}px`);
+        button.style.setProperty('--pointer-y', `${pointer.y - rect.top}px`);
+        button.style.setProperty('--spotlight-opacity', influence);
+      });
+
+      // FIX: Add shine effect for cards inside the series modal.
+      if (seriesModal.classList.contains('active')) {
+        document.querySelectorAll('#seriesModal .glass-container').forEach(card => {
+            const rect = card.getBoundingClientRect();
+            const dx = pointer.x - (rect.left + rect.width / 2);
+            const dy = pointer.y - (rect.top + rect.height / 2);
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            // Use the same large influence radius as the main grid cards.
+            const influence = Math.max(0, 1 - dist / 275);
+
+            card.style.setProperty('--pointer-x', `${pointer.x - rect.left}px`);
+            card.style.setProperty('--pointer-y', `${pointer.y - rect.top}px`);
+            card.style.setProperty('--spotlight-opacity', influence);
+        });
+      }
+
+      // --- REFACTOR: Smart Animation Loop ---
+      // If total velocity is very low and we're allowed to stop, then stop the loop.
+      // FIX: Add a check for pointer influence. Keep animating for a short while after the pointer leaves
+      // to allow the cards to smoothly settle back to their resting state.
+      const isPointerInfluencing = document.querySelector('.glass-container[style*="--spotlight-opacity: 0;"]') === null;
+      if (canStopAnimating && totalVelocity < 0.001 && delta === 0 && !isTouching && !isPointerInfluencing) {
+        isAnimating = false;
+      } else {
+        // Otherwise, keep the animation going.
+        requestAnimationFrame(frame);
+      }
+    }
+    requestAnimationFrame(frame);
+
+    // Allow the animation to stop only after the initial entrance effect has had time to run
+    setTimeout(() => {
+      canStopAnimating = true;
+    }, 2000); // 2 seconds
+
+    // --- PERFORMANCE OPTIMIZATION: Setup IntersectionObserver ---
+    // This observer watches which cards are on screen and adds them to the `visiblePanels` set.
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const card = entry.target;
+        if (entry.isIntersecting) {
+          visiblePanels.add(card);
+          card.classList.add('is-visible'); // NEW: Add class to enable SVG filter
+        } else {
+          visiblePanels.delete(card);
+          card.classList.remove('is-visible'); // NEW: Remove class to disable SVG filter
+        }
+        // FIX: Ensure spotlight is off for elements that are not visible or being animated.
+        card.style.setProperty('--spotlight-opacity', 0);
+      });
+    }, {
+      rootMargin: '200px 0px 200px 0px' // Start animating cards 200px before they enter the screen
+    });
+    panels.forEach(card => observer.observe(card));
+
+    // --- Smart Animation Triggering: Only run the loop when needed ---
+    function ensureAnimating() {
+      if (!isAnimating) {
+        isAnimating = true;
+        requestAnimationFrame(frame); // Restart the loop
+      }
+    }
+
+    // Add a listener to update the pointer coordinates for the hover effect
+    window.addEventListener('pointermove', (e) => {
+        pointer.x = e.clientX;
+        pointer.y = e.clientY;
+        ensureAnimating();
+    }, { passive: true });
+
+    // NEW: Add touch event listeners to handle the effect on mobile
+    if (isTouchDevice) {
+        window.addEventListener('touchstart', (e) => {
+            isTouching = true;
+            pointer.x = e.touches[0].clientX;
+            pointer.y = e.touches[0].clientY;
+            ensureAnimating();
+        }, { passive: true });
+
+        window.addEventListener('touchend', () => {
+            isTouching = false; // When the finger is lifted, the touch ends
+        }, { passive: true });
+    }
+
+    window.addEventListener('pointerleave', () => { 
+        // FIX: Reset pointer and run the animation loop one last time to ensure all hover effects are gracefully removed.
+        // This prevents the "stuck" light effect if the mouse leaves the window quickly.
+        pointer.x = -9999; 
+        pointer.y = -9999; 
+        ensureAnimating();
+    });
+    // --- End Animation Setup ---
+
+    const searchButton = document.getElementById('searchButton');
+    const searchBar = document.getElementById('searchInput');
+    const filterBtn = document.getElementById('filterBtn');
+    const contactBtn = document.getElementById('contactBtn');
+    const infoContainerWrapper = document.getElementById('infoContainerWrapper'); 
+    
+    addTapAnimation(contactBtn);
+    addTapAnimation(filterBtn);
+    addTapAnimation(searchButton);
+
+    searchButton.addEventListener('click', () => {
+      const isActive = searchBar.classList.toggle('active');
+      searchButton.classList.toggle('active', isActive);
+      body.classList.toggle('search-active', isActive);
+      
+      if (isActive) {
+        searchBar.focus();
+        // infoContainerWrapper.classList.add('hidden'); // This is now handled by CSS
+      } else {
+        // FIX: Ensure search is fully reset when closed
+        searchBar.value = '';
+        searchBar.blur();
+        // infoContainerWrapper.classList.remove('hidden'); // This is now handled by CSS
+        filterAndRenderPanels();
+      }
+      saveState();
+    });
+
+    // NEW: Easter egg to show the performance button
+    searchBar.addEventListener('input', () => {
+        const perfBtn = document.getElementById('perfBtn');
+        if (searchBar.value.toLowerCase() === 'celexo5') {
+            perfBtn.style.opacity = '1';
+            perfBtn.style.pointerEvents = 'auto';
+            perfBtn.classList.add('jello');
+            setTimeout(() => {
+                perfBtn.classList.remove('jello');
+            }, 800);
+        }
+    });
+
+    searchBar.addEventListener('input', filterAndRenderPanels);
+
+    filterBtn.addEventListener('click', () => {
+      showingFavorites = !showingFavorites;
+      const heartSvg = filterBtn.querySelector('svg');
+      if (showingFavorites) {
+        heartSvg.style.fill = 'var(--heart-active)';
+        document.getElementById('favorites-section').scrollIntoView({ behavior: 'smooth' });
+      } else {
+        heartSvg.style.fill = 'var(--heart-color)';
+      }
+      filterAndRenderPanels();
+      updateNoFavoritesMessageState();
+      saveState();
+    });
+
+    document.querySelectorAll('.favorite-btn').forEach((btn) => {
+      addTapAnimation(btn);
+      btn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        event.preventDefault(); 
+        
+        // NEW: Check for authenticated user before allowing a like
+        if (!window.firebaseServices.auth.currentUser) {
+            alert("Please log in to save your favorites!");
+            // Trigger the login flow
+            document.getElementById('loginButton').click();
+            return;
+        }
+        if (!currentUserId) return; // Should not happen if user is logged in
+
+        const panel = btn.closest('.glass-container');
+        const title = panel.querySelector('.title').dataset.originalTitle;
+        const countSpan = panel.querySelector('.favorite-count');
+        const storyKey = panel.dataset.storyKey;
+
+        // --- NEW: Firebase Transaction for Likes ---
+        if (window.firebaseServices) {
+            const storyRef = window.firebaseServices.ref(window.firebaseServices.db, 'stories/' + storyKey);
+
+            // Use a transaction to safely update the count and user list
+            window.firebaseServices.runTransaction(storyRef, (currentData) => {
+                // Initialize data if the story node doesn't exist yet
+                if (!currentData) {
+                    currentData = { favoritesCount: 0, favoritedBy: {} };
+                }
+                currentData.favoritedBy = currentData.favoritedBy || {};
+
+                const isFavorited = currentData.favoritedBy[currentUserId] === true;
+
+                if (isFavorited) { // User is un-favoriting
+                    currentData.favoritesCount = (currentData.favoritesCount || 1) - 1;
+                    currentData.favoritedBy[currentUserId] = null; // Use null to delete the key in Firebase
+                } else { // User is favoriting
+                    currentData.favoritesCount = (currentData.favoritesCount || 0) + 1;
+                    currentData.favoritedBy[currentUserId] = true;
+                }
+                return currentData;
+            });
+        } else {
+            console.error("Firebase not available. Cannot update favorite status.");
+        }
+
+        updateNoFavoritesMessageState();
+      });
+    });
+
+    initializeHeartColor();
+    if (searchBar.classList.contains('active') || showingFavorites) {
+      filterAndRenderPanels();
+    }
+
+    // NEW: Efficient function to apply a jello animation to a grid panel on click.
+    function applyJelloToGrid(panel) {
+      // PERFORMANCE: Prevent re-triggering the animation if it's already running.
+      if (panel.classList.contains('jello-grid')) {
+        return;
+      }
+      panel.classList.add('jello-grid');
+      // EFFICIENCY: Use 'animationend' to automatically clean up the class when the animation is done.
+      panel.addEventListener('animationend', () => {
+        panel.classList.remove('jello-grid');
+      }, { once: true }); // The { once: true } option removes the event listener automatically.
+    }
+
+    // Add jello effect on click to each grid panel
+    panels.forEach(panel => {
+      // TOUCH OPTIMIZATION: Use 'pointerdown' with `{ passive: true }` for maximum responsiveness on tap.
+      panel.addEventListener('pointerdown', () => applyJelloToGrid(panel), { passive: true });
+    });
+
+    const infoButton = document.getElementById('infoButton');
+    const infoPanel = document.getElementById('infoPanel');
+    const closeInfoButton = document.getElementById('closeInfoButton');
+    addTapAnimation(infoButton);
+    addTapAnimation(closeInfoButton);
+
+    // NEW: Add shine effect element to all relevant buttons
+    document.querySelectorAll('.search-button, .floating-button, .info-button, .auth-container').forEach(button => {
+        button.classList.add('shine-button');
+        button.insertAdjacentHTML('beforeend', '<div class="shine-effect"></div>');
+    });
+
+    // REFACTOR: Use IntersectionObserver for panel animations.
+    let panelObserver;
+
+    function toggleInfoPanel() {
+      const isActive = infoPanel.classList.toggle('active');
+      body.classList.toggle('info-panel-open', isActive);
+      // FIX: Toggle the close button's visibility since it's now outside the panel.
+      closeInfoButton.classList.toggle('active', isActive);
+      const animItems = infoPanel.querySelectorAll('.panel-anim-item');
+      
+      if (isActive) {
+        // Ensure panel is scrollable to the top before observing
+        infoPanel.scrollTop = 0;
+
+        panelObserver = new IntersectionObserver((entries, observer) => {
+          entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+              // Add a staggered delay for a nice effect as they appear
+              entry.target.style.transitionDelay = `${index * 50}ms`;
+              entry.target.classList.add('in-view');
+              observer.unobserve(entry.target); // Stop observing once animated
+            }
+          });
+        }, {
+          root: infoPanel, // Animate within the panel itself
+          rootMargin: '0px',
+          threshold: 0.1   // Trigger when 10% of the item is visible
+        });
+
+        animItems.forEach(item => panelObserver.observe(item));
+      } else {
+        if (panelObserver) panelObserver.disconnect();
+        animItems.forEach(item => item.classList.remove('in-view'));
+      }
+    }
+
+    infoButton.addEventListener('click', toggleInfoPanel);
+    closeInfoButton.addEventListener('click', toggleInfoPanel);
+
+    // FIX: Add event listener to close the panel when clicking on the background/empty space.
+    infoPanel.addEventListener('click', (event) => {
+      // If the click target is the panel itself (the background) and not a child element...
+      if (event.target === infoPanel) {
+        toggleInfoPanel(); // ...close the panel.
+      }
+    });
+
+    // Initial check for Info button visibility if search was active on load (from saved state)
+    if (searchBar.classList.contains('active')) {
+      infoContainerWrapper.classList.add('hidden');
+    }
+
+    // OPTIMIZATION: Use passive listener for scroll events.
+    window.addEventListener('scroll', () => { 
+      if (document.activeElement === searchBar) {
+        searchBar.blur();
+      }
+      // OPTIMIZATION: Update grid bounds here, outside the rAF loop, to prevent layout thrashing.
+      updateGridBounds();
+      ensureAnimating(); // Restart animation on scroll
+    }, { passive: true });
+
+    // New logic for the Contact and Social Media pop-ups
+    const contactPanel = document.getElementById('contactPanel');
+    const closeContactButton = document.getElementById('closeContactButton');
+    const openSocialButton = document.getElementById('openSocialButton');
+    const socialPanel = document.getElementById('socialPanel');
+    const closeSocialButton = document.getElementById('closeSocialButton');
+    const contactModalHeaderFixed = document.getElementById('contactModalHeaderFixed'); // NEW
+    const socialModalHeaderFixed = document.getElementById('socialModalHeaderFixed'); // NEW
+    
+    addTapAnimation(contactBtn);
+    // NEW: Add tap animation for comment button
+    document.querySelectorAll('.comment-btn').forEach(btn => {
+        addTapAnimation(btn);
+    });
+    addTapAnimation(closeContactButton);
+    addTapAnimation(openSocialButton);
+    addTapAnimation(closeSocialButton);
+
+    const submitStoryBtn = document.getElementById('submitStoryBtn');
+    const tiktokBtn = document.getElementById('tiktokBtn');
+    const instagramBtn = document.getElementById('instagramBtn');
+    const facebookBtn = document.getElementById('facebookBtn');
+    addTapAnimation(submitStoryBtn);
+    addTapAnimation(openSocialButton);
+    addTapAnimation(tiktokBtn);
+    addTapAnimation(instagramBtn);
+    addTapAnimation(facebookBtn);
+
+    // FIX: Refactor panel logic to handle independent close buttons and click-outside-to-close.
+    function closeAllPanels() {
+        contactPanel.classList.remove('active');
+        socialPanel.classList.remove('active');
+        body.classList.remove('info-panel-open');
+        contactModalHeaderFixed.classList.remove('active'); // NEW
+        // Hide all modal-related close buttons
+        closeContactButton.classList.remove('active');
+        socialModalHeaderFixed.classList.remove('active'); // NEW
+        closeSocialButton.classList.remove('active');
+        // NEW: Also close the series modal if it's open
+        closeCommentsModal();
+        closeSeriesModal();
+    }
+
+    contactBtn.addEventListener('click', () => {
+        closeAllPanels(); // Ensure no other panels are open
+        contactPanel.classList.add('active');
+        contactModalHeaderFixed.classList.add('active'); // NEW
+        closeContactButton.classList.add('active');
+        body.classList.add('info-panel-open');
+    });
+
+    openSocialButton.addEventListener('click', () => {
+        contactPanel.classList.remove('active');
+        closeContactButton.classList.remove('active');
+        contactModalHeaderFixed.classList.remove('active'); // FIX: Hide Contact title when opening Social Media
+        setTimeout(() => {
+            socialModalHeaderFixed.classList.add('active'); // NEW
+            socialPanel.classList.add('active');
+            closeSocialButton.classList.add('active');
+        }, 300); // Small delay to allow the first panel to fade out
+    });
+
+    // Add listeners for all close buttons
+    closeContactButton.addEventListener('click', closeAllPanels);
+    closeSocialButton.addEventListener('click', () => {
+        closeAllPanels();
+    });
+
+    // Add listeners to close panels when clicking on the background
+    contactPanel.addEventListener('click', (event) => {
+      if (event.target === contactPanel) {
+        closeAllPanels();
+      }
+    });
+    socialPanel.addEventListener('click', (event) => {
+      if (event.target === socialPanel) {
+        closeAllPanels();
+      }
+    });
+
+    // FIX: Initial call to get the animation loop started on load.
+    // FIX: Initial calculation of grid bounds on load.
+    updateGridBounds();
+    ensureAnimating();
+
+    // --- NEW: Series Modal Logic (re-implemented cleanly) ---
+    const seriesModal = document.getElementById('seriesModal');
+    const closeSeriesModalButton = document.getElementById('closeSeriesModalButton');
+    const seriesModalTitle = document.getElementById('seriesModalTitle');
+    const seriesPartsGrid = document.getElementById('seriesPartsGrid');
+
+    addTapAnimation(closeSeriesModalButton);
+
+    function openSeriesModal(seriesData) {
+        closeAllPanels(); // Close any other open panels
+
+        seriesModalTitle.textContent = seriesData.title;
+        seriesPartsGrid.innerHTML = ''; // Clear previous parts
+
+        seriesData.parts.forEach(partData => {
+            partData.isPart = true; // Mark as a part to apply correct classes
+            const partCard = createStoryCard(partData);
+            // The cards inside the modal should not be affected by physics and have no transform.
+            partCard.style.transform = 'none';
+            seriesPartsGrid.appendChild(partCard);
+            addTapAnimation(partCard); // Add jello effect on tap
+            
+            // FIX: Remove the favorite button container from cards inside the series modal.
+            const favoriteContainer = partCard.querySelector('.favorite-container');
+            if (favoriteContainer) {
+                favoriteContainer.remove();
+            }
+        });
+
+        seriesModal.classList.add('active');
+        closeSeriesModalButton.classList.add('active');
+        body.classList.add('info-panel-open');
+    }
+
+    function closeSeriesModal() {
+        seriesModal.classList.remove('active');
+        closeSeriesModalButton.classList.remove('active');
+        body.classList.remove('info-panel-open');
+    }
+
+    closeSeriesModalButton.addEventListener('click', closeSeriesModal);
+    seriesModal.addEventListener('click', (event) => {
+        if (event.target === seriesModal) {
+            closeSeriesModal();
+        }
+    });
+
+    // --- NEW: Comments Modal Logic ---
+    const commentsModal = document.getElementById('commentsModal');
+    const closeCommentsModalButton = document.getElementById('closeCommentsModalButton');
+    const commentsModalTitle = document.getElementById('commentsModalTitle'); // This is the correct H2 element for the title.
+    const commentsModalHeaderFixed = document.getElementById('commentsModalHeaderFixed');
+    const commentsList = document.getElementById('commentsList');
+    const commentInputArea = document.getElementById('commentInputArea');
+    const commentTextarea = document.getElementById('commentTextarea');
+    const postCommentBtn = document.getElementById('postCommentBtn');
+    let currentStoryKeyForComments = null;
+    let commentsListenerOff = null;
+    const topVignette = document.querySelector('.top-vignette-modal');
+    const bottomVignette = document.querySelector('.bottom-vignette-modal');
+
+    addTapAnimation(closeCommentsModalButton);
+    addTapAnimation(postCommentBtn);
+
+    /**
+     * NEW: Centralized function to listen for comments.
+     * This function sets up the real-time listener for a given story. It's called
+     * when the modal opens and when the auth state changes, ensuring the view
+     * is always correct for the current user.
+     */
+    function listenForComments() {
+        if (!currentStoryKeyForComments) return; // Don't run if no story is selected
+
+        // Detach any previous listener to prevent duplicates
+        if (commentsListenerOff) commentsListenerOff();
+
+        const { db, ref, onValue, auth } = window.firebaseServices;
+        const user = auth.currentUser;
+        const commentsRef = ref(db, `comments/${currentStoryKeyForComments}`);
+
+        // Set up the real-time listener
+        commentsListenerOff = onValue(commentsRef, (snapshot) => {
+            commentsList.innerHTML = '';
+            const comments = snapshot.val() || {};
+            const commentCount = Object.keys(comments).length;
+            let userHasCommented = false;
+
+            document.getElementById('commentsModalCount').textContent = `(${commentCount})`;
+
+            if (commentCount === 0) {
+                commentsList.innerHTML = '<p class="no-comments-message" style="text-align: center; opacity: 0.7;">No comments yet. Be the first!</p>';
+            } else {
+                const sortedComments = Object.entries(comments).sort(([, a], [, b]) => b.timestamp - a.timestamp);
+                sortedComments.forEach(([commentId, comment]) => {
+                    if (user && comment.uid === user.uid) userHasCommented = true;
+                    
+                    const commentEl = document.createElement('div');
+                    commentEl.className = 'comment-item';
+                    // NEW: Add a class if the comment is from the current user for special styling.
+                    if (user && comment.uid === user.uid) commentEl.classList.add('is-user');
+                    // Add a data attribute to the element for easier selection later
+                    commentEl.dataset.commentId = commentId;
+                    const commentDate = new Date(comment.timestamp).toLocaleString();
+
+                    // REFACTOR: Move the delete button outside the main comment body for better layout control.
+                    commentEl.innerHTML = `
+                        <img src="${comment.photoURL}" alt="${comment.displayName}" class="comment-author-pic">
+                        <div class="comment-content-wrapper">
+                            <div class="comment-body">
+                                <div class="comment-header">
+                                    <span class="comment-author-name">${comment.displayName}</span>
+                                    <span class="comment-date">${commentDate}</span>
+                                </div>
+                                <p class="comment-text">${comment.text}</p>
+                            </div>
+                            ${(user && comment.uid === user.uid) ? `<button class="delete-comment-btn" data-comment-id="${commentId}">Delete</button>` : ''}
+                        </div>
+                    `;
+                    commentsList.appendChild(commentEl);
+                });
+            }
+
+            // Update input state based on whether the current user has commented
+            if (user) {
+                const hasCommented = userHasCommented;
+                postCommentBtn.disabled = hasCommented;
+                commentTextarea.disabled = hasCommented;
+                commentTextarea.placeholder = hasCommented 
+                    ? "You have already commented on this story." 
+                    : "Add a comment (50 words max)...";
+            }
+        });
+    }
+
+    function openCommentsModal(storyKey, storyTitle) {
+        closeAllPanels();
+        currentStoryKeyForComments = storyKey; // Set the current story key
+        const { auth: currentAuth } = window.firebaseServices;
+        const currentUser = currentAuth.currentUser;
+        commentsModalHeaderFixed.classList.add('active'); // NEW: Show the fixed header
+        commentInputArea.classList.add('active'); // Make the input area visible
+
+        if (!currentUser) {
+            // User is not logged in at all.
+            postCommentBtn.disabled = true;
+            commentTextarea.disabled = true;
+            commentTextarea.placeholder = "Please log in to comment.";
+        } else {
+            // User is logged in (either with Google or anonymously).
+            // The check for `userHasCommented` will happen inside the listener.
+            postCommentBtn.disabled = false;
+            commentTextarea.disabled = false;
+            commentTextarea.placeholder = "Add a comment (50 words max)...";
+        }
+        // FIX: Add the active class to show the vignettes
+        topVignette.classList.add('active');
+        bottomVignette.classList.add('active');
+        // REFACTOR: Update the title structure to have a main title and a subtitle for the story name.
+        commentsModalTitle.innerHTML = `
+            <div class="main-comment-title">Comments <span id="commentsModalCount">(0)</span></div>
+            <div class="story-title-for-comments">${storyTitle}</div>`;
+        
+        listenForComments(); // Call the new centralized listener function
+        commentsModal.classList.add('active');
+        closeCommentsModalButton.classList.add('active');
+        body.classList.add('info-panel-open');
+    }
+
+    function closeCommentsModal() {
+        commentsModal.classList.remove('active');
+        commentsModalHeaderFixed.classList.remove('active'); // NEW: Hide the fixed header
+        commentInputArea.classList.remove('active'); // Hide the input area
+        closeCommentsModalButton.classList.remove('active');
+        body.classList.remove('info-panel-open');
+        // FIX: Remove the active class to hide the vignettes
+        topVignette.classList.remove('active');
+        bottomVignette.classList.remove('active');
+        if (commentsListenerOff) {
+            commentsListenerOff();
+            commentsListenerOff = null;
+        }
+        currentStoryKeyForComments = null;
+        commentTextarea.value = '';
+    }
+
+    closeCommentsModalButton.addEventListener('click', closeCommentsModal);
+    commentsModal.addEventListener('click', (e) => {
+        if (e.target === commentsModal) closeCommentsModal();
+    });
+
+    postCommentBtn.addEventListener('click', () => {
+        const { auth, db, ref, push, serverTimestamp } = window.firebaseServices;
+        const user = auth.currentUser;
+        const text = commentTextarea.value.trim();
+        const wordCount = text.split(/\s+/).filter(Boolean).length;
+
+        if (!user) { alert("You must be logged in to comment."); return; }
+        if (!text) { return; } // Don't post empty comments
+        if (wordCount > 50) { alert(`Your comment is ${wordCount} words. Please limit it to 50 words.`); return; }
+
+        const commentsRef = ref(db, `comments/${currentStoryKeyForComments}`);
+        push(commentsRef, {
+            uid: user.uid,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            text: text,
+            timestamp: serverTimestamp()
+        }).then(() => {
+            commentTextarea.value = '';
+            // Manually trigger input event to resize textarea
+            commentTextarea.dispatchEvent(new Event('input'));
+        }).catch(err => console.error("Error posting comment:", err));
+    });
+
+    commentsList.addEventListener('click', (e) => {
+        if (e.target.classList.contains('delete-comment-btn')) {
+            const commentId = e.target.dataset.commentId;
+            if (confirm("Are you sure you want to delete this comment?")) {
+                const commentElement = document.querySelector(`.comment-item[data-comment-id="${commentId}"]`);
+                const { db, ref, set } = window.firebaseServices;
+                const commentRef = ref(db, `comments/${currentStoryKeyForComments}/${commentId}`);
+                if (commentElement) {
+                    // FIX: Add the animation class first, then wait for it to finish
+                    // before deleting the data. This ensures the animation is smooth.
+                    commentElement.classList.add('fading-out');
+                    setTimeout(() => {
+                        set(commentRef, null).catch(err => console.error("Error deleting comment:", err)); // The onValue listener will handle the removal
+                    }, 400); // This duration MUST match the animation duration in the CSS.
+                }
+            }
+        }
+    });
+  } catch (error) {
+    console.error('Failed to load grid ', error);
+    document.getElementById('grid').innerHTML = '<p style="color:#fff;">Failed to load stories. Check that stories.json exists.</p>';
+  }
+}
+
+function animateButtonsOnLoad() {
+    const searchButton = document.getElementById('searchButton');
+    const filterBtn = document.getElementById('filterBtn');
+    const contactBtn = document.getElementById('contactBtn');
+    const infoButton = document.getElementById('infoButton');
+    const perfBtn = document.getElementById('perfBtn'); // FIX: Get the new performance button
+    const buttonsToAnimate = [infoButton, searchButton, filterBtn, contactBtn]; // FIX: Remove perfBtn from default animation
+    buttonsToAnimate.forEach((button, i) => {
+    // REFACTOR: Add a staggered fade-in effect similar to the grid cards.
+    setTimeout(() => {
+      button.style.opacity = '1';
+      // FIX: Remove inline transform. CSS will now handle the initial state and animation.
+      button.classList.add('jello');
+      setTimeout(() => {
+        button.classList.remove('jello');
+      }, 800); // Remove jello class after animation
+    }, i * 150 + 200); // Stagger the animation start time
+    });
+
+    // NEW: Logic for the performance button
+    if (perfBtn) {
+        addTapAnimation(perfBtn);
+        perfBtn.addEventListener('click', () => {
+            // REFACTOR: Simplify to toggle between level 1 and 2.
+            let nextLevel = performanceLevel === 1 ? 2 : 1;
+            console.log(`Manually setting Performance Level to: ${nextLevel}`);
+
+            // Store the manual override in sessionStorage so it persists on the story pages.
+            sessionStorage.setItem('manualPerformanceLevel', nextLevel);
+
+            // Re-initialize the page to apply the new setting and rebuild the grid.
+            isInitialized = false;
+            // FIX: Pass the new level directly to initializePage to avoid race conditions.
+            // This also requires rebuilding the grid after initialization.
+            initializePage(nextLevel).then(() => {
+                fetchAndBuildGrid();
+            });
+        });
     }
 }
 
-@keyframes fadeOut {
-    from {
-        opacity: 1;
-        transform: scale(1);
+function setupScrollPerformance() {
+  let scrollTimeout;
+  const body = document.body;
+
+  window.addEventListener('scroll', () => {
+    body.classList.add('is-scrolling');
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      body.classList.remove('is-scrolling');
+    }, 150); // Adjust timeout as needed
+  }, { passive: true });
+}
+
+/**
+ * Checks if the browser truly supports SVG filters in backdrop-filter.
+ * iOS Safari incorrectly reports 'true' for CSS @supports, so a JS check is more reliable.
+ * We will explicitly block Apple mobile devices from getting this feature to avoid the bug.
+ * If supported, it adds a class to the body to enable enhanced filters via CSS.
+ */
+function detectSVGFilterSupport() {
+  // FIX: Explicitly block Apple devices from getting the SVG filter to prevent rendering bugs.
+  // The 'vendor' property is a reliable way to detect Safari on both macOS and iOS.
+  const isApple = /Apple/.test(navigator.vendor);
+
+  // Only apply the SVG filter if the browser supports it AND it's not an Apple device.
+  if (!isApple && CSS.supports('backdrop-filter', 'url("#filter-hq")')) {
+      document.body.classList.add('svg-filter-supported');
+  }
+}
+
+/**
+ * Shows a tutorial panel on the user's first visit.
+ * Uses localStorage to track if the tutorial has been seen.
+ */
+function showTutorialOnFirstVisit() {
+  const hasVisited = localStorage.getItem('hasVisitedBefore');
+  if (hasVisited) {
+    return; // Don't show tutorial if they've visited
+  }
+
+  const tutorialPanel = document.getElementById('tutorialPanel');
+  const startButton = document.getElementById('tutorialStartButton');
+
+  // Add tap animation to the start button
+  addTapAnimation(startButton);
+
+  // FIX: Set a staggered transition delay and add the 'in-view' class to trigger the animation.
+  const animItems = tutorialPanel.querySelectorAll('.panel-anim-item');
+  animItems.forEach((item, index) => {
+    item.style.transitionDelay = `${index * 50}ms`;
+    item.classList.add('in-view'); // This makes the item visible and starts the transition.
+  });
+
+  tutorialPanel.classList.add('active');
+  document.body.classList.add('info-panel-open');
+
+  function closeTutorial() {
+    tutorialPanel.classList.remove('active');
+    document.body.classList.remove('info-panel-open');
+    localStorage.setItem('hasVisitedBefore', 'true');
+    // FIX: Smoothly scroll to the main grid after closing the tutorial.
+    // This moves focus away from the bottom of the screen, preventing the button
+    // from being hidden by the browser's UI on mobile.
+    document.getElementById('grid').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  startButton.addEventListener('click', closeTutorial, { once: true });
+}
+
+// --- NEW: Dynamic Background Changer ---
+function changeBackground() {
+  if (!backgroundSet || !backgroundSet.light || !backgroundSet.dark) return;
+  console.log("Changing main page background...");
+
+  const styleElement = document.getElementById('dynamic-styles') || document.createElement('style');
+  styleElement.id = 'dynamic-styles';
+  styleElement.innerHTML = `
+    :root {
+      --bg-url: url("${backgroundSet.light.url}");
+      --bg-url-dark: url("${backgroundSet.dark.url}");
     }
-    to {
-        opacity: 0;
-        transform: scale(0.9);
+  `;
+  document.head.appendChild(styleElement);
+}
+
+/**
+ * NEW: A simple and fast hashing function to create a unique signature from the
+ * FingerprintJS components. This helps create a more stable user ID.
+ * @param {string} str The string to hash.
+ * @returns {Promise<string>} A promise that resolves to the hex-encoded hash.
+ */
+async function hashString(str) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(str);
+    const hashBuffer = await crypto.subtle.digest('SHA-1', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+}
+
+async function initializeUser() {
+    const { auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, setPersistence, browserLocalPersistence, db, ref, push, serverTimestamp } = window.firebaseServices;
+    const loginButton = document.getElementById('loginButton');
+    const authContainer = document.getElementById('auth-container');
+    const adminPanel = document.getElementById('adminPanel');
+    const closeAdminPanelButton = document.getElementById('closeAdminPanelButton');
+
+    onAuthStateChanged(auth, user => {
+        // NEW: Add the glass effect class to the auth container for consistent styling.
+        authContainer.classList.add('glass-button-base');
+
+        // Hide admin button by default on auth state change
+        const adminBtn = document.getElementById('adminOpenPanelBtn');
+        if (adminBtn) {
+            adminBtn.style.display = 'none';
+        }
+
+        if (user) {
+            // User is signed in
+            currentUserId = user.uid;
+            // NEW: Add a class to the container when the user is logged in
+            authContainer.classList.add('logged-in');
+            console.log("User signed in:", currentUserId);
+            loginButton.innerHTML = `
+                <img src="${user.photoURL}" alt="Profile" class="profile-pic">
+                <button class="logout-button">Logout</button>
+            `;
+            authContainer.querySelector('.logout-button').addEventListener('click', (e) => {
+                e.stopPropagation();
+                signOut(auth);
+            });
+
+            // NEW: Check for admin custom claim
+            user.getIdTokenResult().then((idTokenResult) => {
+                if (idTokenResult.claims.admin) {
+                    console.log("Admin user detected. Showing admin controls.");
+                    if (adminBtn) {
+                        adminBtn.style.display = 'flex';
+                        addTapAnimation(adminBtn);
+                        adminBtn.onclick = () => {
+                            adminPanel.classList.add('active');
+                            closeAdminPanelButton.classList.add('active');
+                            body.classList.add('info-panel-open');
+                        };
+                    }
+                }
+            });
+        } else {
+            // User is signed out
+            currentUserId = localStorage.getItem('anonymousUserId');
+            // NEW: Remove the class when the user is logged out
+            authContainer.classList.remove('logged-in');
+            if (!currentUserId) {
+                currentUserId = 'anon-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('anonymousUserId', currentUserId);
+            }
+            console.log("User is anonymous:", currentUserId);
+            loginButton.innerHTML = `<span class="login-text">Login</span>`;
+        }
+        // NEW: If the comments modal is open, refresh the listener with the new user state.
+        if (commentsModal.classList.contains('active')) {
+            console.log("Auth state changed while comments modal is open. Refreshing listener.");
+            listenForComments();
+        }
+        // Re-filter/render panels to update their favorited state for the new user
+        filterAndRenderPanels();
+    });
+
+    authContainer.addEventListener('click', () => {
+        if (!auth.currentUser) {
+            // FIX: Use local persistence to keep the user signed in across page reloads.
+            // This ensures the auth state is correctly maintained after the popup flow.
+            setPersistence(auth, browserLocalPersistence)
+              .then(() => {
+                  const provider = new GoogleAuthProvider();
+                  return signInWithPopup(auth, provider);
+              })
+              .catch((error) => {
+                  console.error("Google Sign-In Error:", error);
+                  // Provide more user-friendly error messages
+                  const errorMessage = error.code === 'auth/popup-closed-by-user' ? 'Login cancelled.' : `Login failed: ${error.message}`;
+                  alert(errorMessage);
+              });
+        }
+    });
+
+    addTapAnimation(authContainer);
+
+    // NEW: Logic for the Admin Panel
+    if (adminPanel) {
+        const sendBtn = document.getElementById('sendNotificationBtn');
+        const titleInput = document.getElementById('notificationTitle');
+        const bodyInput = document.getElementById('notificationBody');
+
+        addTapAnimation(sendBtn);
+
+        sendBtn.addEventListener('click', async () => {
+            const title = titleInput.value.trim();
+            const bodyText = bodyInput.value.trim();
+
+            if (!title || !bodyText) {
+                alert('Please enter a title and body for the notification.');
+                return;
+            }
+
+            // This is where we write to the database, which triggers the service worker
+            const latestNotificationRef = ref(db, 'notifications/latest');
+            await push(latestNotificationRef, {
+                title: title,
+                body: bodyText,
+                timestamp: serverTimestamp() // Use server timestamp to prevent duplicates
+            });
+    
+            alert('Notification has been sent to the queue!');
+            closeAdminPanelButton.click(); // Close the panel
+        });
+
+        closeAdminPanelButton.addEventListener('click', () => {
+            adminPanel.classList.remove('active');
+            closeAdminPanelButton.classList.remove('active');
+            body.classList.remove('info-panel-open');
+        });
     }
 }
 
-/* New styles for unselected language buttons */
-.unselected-language {
-    opacity: 0.8;
-    filter: grayscale(60%);
-    transform: scale(0.98);
-    transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
-    /* NEW: Define --button-color for unselected language buttons to ensure tinted shadows. */
-    --button-color: color-mix(in srgb, #9333ea 20%, gray); /* Muted purple for light mode */
-}
+/**
+ * NEW: Requests notification permission and saves the FCM token.
+ * This function is called after the user is initialized.
+ */
+async function initializeMessaging() {
+    const { messaging, getToken, onMessage, db, ref, set } = window.firebaseServices;
+    
+    try {
+        // The VAPID key is a security measure for web push notifications.
+        // You get this from your Firebase project settings.
+        const vapidKey = "BET7hEivc6W1NzGKhD1cv3laQ8cu5IKK1I0dwG0zPjYbPw3wJzvfMwlEHIfzkH4RGsz02qUuS6fMu_ZquJqByps";
+        const currentToken = await getToken(messaging, { vapidKey: vapidKey });
 
-html.dark-mode .unselected-language, body.dark-mode .unselected-language {
-    /* NEW: Define --button-color for unselected language buttons in dark mode */
-    --button-color: color-mix(in srgb, #C084FC 20%, #555); /* Muted purple for dark mode */
-}
-
-.selected-language {
-     background-color: var(--save-button-bg-light);
-     color: var(--selected-lang-button-text);
-     transform: scale(1.05);
-     opacity: 1;
-     filter: grayscale(0%);
-     box-shadow: var(--button-shadow-light);
-}
-/* FIX: Add a slightly larger hover scale for the selected button to make the hover effect visible. */
-.selected-language:hover, .selected-language:focus-visible {
-    transform: scale(1.1);
-}
-
-
-html.dark-mode .selected-language, body.dark-mode .selected-language {
-     background-color: var(--save-button-bg-dark);
-}
-
-button {
-     transition: color 0.3s ease, background-color 0.3s ease, transform 0.1s ease-out, box-shadow 0.3s ease;
-}
-
-button.tapped {
-    transform: scale(0.97);
-}
-
-.glow-word {
-    /* REFACTOR: Use a more performant text-shadow animation instead of box-shadow. */
-    animation: glow-text-animation 2s ease-in-out infinite;
-}
-
-
-#content {
-    padding: 2rem;
-    /* REFACTOR: Padding is now handled by the parent wrapper. */
-    position: relative;
-    z-index: 1;
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 800px;
-    border-radius: 0.5rem;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    transition: opacity 0.5s ease-in-out;
-    opacity: 1;
-    background-color: var(--content-bg-light);
-    /* REVERT: Restore the original, simple blur implementation that correctly animates with opacity. */
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-}
-
-html.dark-mode #content, body.dark-mode #content {
-    background-color: var(--content-bg-dark);
-}
-
-/* FIX: Add a highly specific rule to ensure the light mode background is always applied correctly on initial load.
-   This prevents the content from inheriting a transparent background from other, less specific rules. */
-html:not(.dark-mode) #content {
-    background-color: var(--content-bg-light);
-}
-
-#content.content-fading {
-    opacity: 0;
-}
-
-#text-container span {
-    cursor: pointer;
-    display: inline; /* Revert to inline to fix spacing */
-    position: relative; /* Allow positioning for hover effect */
-    transition: text-shadow 0.3s ease, color 0.3s ease, -webkit-text-fill-color 0.3s ease, top 0.2s ease-out;
-    opacity: 1;
-    top: 0; /* Initial position */
-}
-
-#text-container span:hover {
-    color: var(--text-on-glass-light) !important;
-    text-shadow: 0 0 8px color-mix(in srgb, var(--text-on-glass-light) 80%, transparent) !important;
-    top: -2px;
-}
-
-html.dark-mode #text-container span:hover, body.dark-mode #text-container span:hover {
-    color: var(--text-on-glass-dark) !important;
-    text-shadow: 0 0 10px color-mix(in srgb, var(--text-on-glass-dark) 80%, transparent) !important;
-    top: -2px;
-}
-
-#save-progress-button {
-    z-index: 60;
-}
-
-/* New styles for pop-up */
-#popup {
-    /* REFACTOR: Control visibility with display property, not opacity. */
-    display: none;
-}
-
-#popup > div {
-    /* REFACTOR: The bouncy animation is now on the inner div. */
-    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.3s ease-out;
-    transform: scale(0.85);
-    opacity: 0;
-    pointer-events: none;
-}
-
-#content h1 {
-    /* FIX: Make title bigger and golden for better visual hierarchy. */
-    font-size: 2.75rem; /* Increased from text-3xl (1.875rem) */
-    color: gold;
-    font-family: 'Cinzel', serif;
-    text-shadow: 0 2px 5px rgba(0,0,0,0.8), 0 0 15px rgba(255,215,0,0.5);
-}
-
-#popup > div.active {
-    transform: scale(1);
-    opacity: 1;
-    pointer-events: auto;
-}
-
-html.dark-mode #popup button.bg-green-500:hover, body.dark-mode #popup button.bg-green-500:hover, html.dark-mode #popup button.bg-green-500:focus-visible, body.dark-mode #popup button.bg-green-500:focus-visible {
-    box-shadow: 0 0 15px 2px rgba(74, 222, 128, 0.7), var(--button-shadow-dark);
-}
-html.dark-mode #popup button.bg-red-500:hover, body.dark-mode #popup button.bg-red-500:hover, html.dark-mode #popup button.bg-red-500:focus-visible, body.dark-mode #popup button.bg-red-500:focus-visible {
-    box-shadow: 0 0 15px 2px rgba(252, 165, 165, 0.7), var(--button-shadow-dark);
-}
-
-#popup button.bg-green-500, #popup button.bg-red-500 {
-     transition: background-color 0.3s ease;
-}
-
-#text-container {
-    font-family: 'Lora', serif;
-    line-height: 1.75;
-    /* FIX: Use a refined, multi-layered shadow for maximum readability and contrast without blurriness. */
-    text-shadow: 0 1px 1px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.6);
-}
-
-/* --- NEW: Robust Drop Cap Styling --- */
-.drop-cap {
-    /* REFACTOR: Use the 'Licorice' script font for a fancier, handwritten feel. */
-    font-family: 'Licorice', cursive;
-    font-size: 7.5rem; /* Script fonts need to be larger to have impact */
-    font-weight: 400;
-    color: inherit; /* FIX: Revert to parent color. It will now be purple ONLY on hover. */
-    text-shadow: 0 2px 3px rgba(0,0,0,0.5);
-    float: left; /* Allow text to wrap around the letter */
-    line-height: 0.7; /* Adjust vertical alignment for the new font */
-    padding-right: 0.8rem; /* FIX: Increase padding to prevent text overlap. */
-    padding-top: 0.4rem;
-    margin-bottom: -0.5rem; /* Fine-tune vertical spacing */
-    text-indent: 0; /* Ensure the drop-cap itself is not indented */
-    transition: text-shadow 0.3s ease, color 0.3s ease, top 0.2s ease-out; /* Add transition */
-    cursor: pointer; /* Add pointer cursor */
-}
-
-/* NEW: Add hover effect specifically for the drop cap */
-.drop-cap:hover {
-    color: var(--text-on-glass-light);
-    text-shadow: 0 0 10px color-mix(in srgb, var(--text-on-glass-light) 80%, transparent);
-}
-
-html.dark-mode .drop-cap:hover, body.dark-mode .drop-cap:hover {
-    color: var(--text-on-glass-dark);
-    text-shadow: 0 0 12px color-mix(in srgb, var(--text-on-glass-dark) 80%, transparent);
-}
-/* --- End of Drop Cap Styling --- */
-
-/* --- Arabic Font Styling --- */
-/* Apply Amiri font when the content is in Arabic (RTL) */
-#content[dir="rtl"] #text-container {
-    font-family: 'Amiri', serif;
-    font-size: 1.3rem; /* Slightly larger for better readability in Arabic */
-    /* FIX: Apply the same refined, multi-layered shadow for Arabic text. */
-    text-shadow: 0 1px 1px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.6);
-    line-height: 2;
-}
-
-/* Adjust the drop cap for the Amiri font */
-#content[dir="rtl"] .drop-cap {
-    font-family: 'Amiri', serif;
-}
-
-#text-container p {
-    margin-bottom: 1rem;
-}
-
-/* Jello Button Effect */
-.squash {
-  transform: scale(0.85, 0.9);
-}
-@keyframes jello-wobble {
-  0%   { transform: scale(1,1); }
-  25%  { transform: scale(0.9, 1.15) rotate(-1deg); }
-  50%  { transform: scale(1.1, 0.9) rotate(1deg); }
-  75%  { transform: scale(0.95, 1.05) rotate(-0.5deg); }
-  100% { transform: scale(1,1) rotate(0); }
-}
-.jello {
-  /* A custom cubic-bezier for a more 'bouncy' and realistic feel */
-  animation: jello-wobble 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* Animation for story paragraphs */
-.story-anim-item {
-    opacity: 0;
-    /* REFACTOR: Add back the blur effect for a smoother animation. */
-    filter: blur(5px);
-    transform: translateY(20px);
-    transition: opacity 0.5s ease-out, transform 0.5s ease-out, filter 0.5s ease-out;
-}
-
-.story-anim-item.in-view {
-    opacity: 1;
-    /* FIX: Add transform and filter to complete the animation. */
-    transform: translateY(0);
-    filter: blur(0);
-}
-
-/* REFACTOR: New, more performant keyframe animation for glowing text. */
-@keyframes glow-text-animation {
-  /* FIX: Animate only the text-shadow to avoid conflicts with other color properties. */
-  0%   { text-shadow: 0 0 8px rgba(255, 215, 0, 0.6), 0 1px 1px rgba(0,0,0,0.8); }
-  50%  { text-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 1px 1px rgba(0,0,0,0.8); }
-  100% { text-shadow: 0 0 8px rgba(255, 215, 0, 0.6), 0 1px 1px rgba(0,0,0,0.8); }
-}
-
-/* --- NEW: Custom Scrollbar Styling --- */
-/* For Webkit browsers (Chrome, Safari, Edge) */
-::-webkit-scrollbar {
-  width: 12px;
-}
-
-::-webkit-scrollbar-track {
-  background: #4c1d95; /* FIX: Use a contrasting dark purple for the track. */
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #a78bfa; /* FIX: Use a very bright, high-contrast purple for the thumb. */
-  border-radius: 10px;
-  border: 2px solid rgba(0, 0, 0, 0.2);
-  box-shadow: var(--glass-shadow-light);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #c4b5fd; /* FIX: Make hover state even brighter. */
-}
-
-/* For Firefox */
-html {
-  scrollbar-width: thin;
-  scrollbar-color: #a78bfa #4c1d95; /* thumb color, track color */
-}
-
-/* --- NEW: Top Gradient Blur Vignette --- */
-.top-vignette {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 150px; /* The height of the gradient effect */
-    z-index: 40; /* Position it behind the buttons (z-50) but above the content */
-    pointer-events: none; /* Make sure it doesn't block any clicks */
-    /* NEW: Add a background gradient to create the shadow effect. */
-    background: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, transparent 100%);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    /* 
-      FIX: Use a mask with a linear gradient to make the backdrop-filter fade out.
-      The blur will be fully visible where the mask is black and fade to invisible where the mask is transparent.
-    */
-    mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
-}
-
-/* --- NEW: Bookmark for Highlighted Word --- */
-.bookmarked-word {
-    position: relative; /* Needed to position the pseudo-element */
-}
-
-.bookmarked-word::after {
-    content: '';
-    position: absolute;
-    top: -8px; /* Position it above the word */
-    right: -2px; /* Position it to the right */
-    width: 12px; /* REFACTOR: Slightly larger for better visibility */
-    height: 14px;
-    /* REFACTOR: Use a gradient for more depth */
-    background: linear-gradient(135deg, #ff6b6b, #ee4d4d);
-    /* REFACTOR: Change to a dark border for high contrast against the highlight. */
-    border: 1px solid rgba(0, 0, 0, 0.6);
-    /* Create the classic bookmark shape */
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%);
-    /* REFACTOR: Use a layered shadow for maximum contrast and depth. */
-    box-shadow: 0 1px 1px rgba(0,0,0,0.7), 0 3px 6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.4);
-    /* Add a subtle animation */
-    animation: materialize-and-settle 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    transform-origin: bottom center; /* Keep the origin for the settle rotation */
-}
-
-/* --- NEW: Auth Container & Login Button Styles (mirrors main page) --- */
-.auth-container {
-  display: flex;
-  align-items: center;
-  border-radius: 30px;
-  padding: 5px;
-  transition: all 0.4s ease-in-out;
-  overflow: hidden;
-  cursor: pointer; /* FIX: Apply the base edge effect and the new tinted inner shadows. */
-  --button-color: #3b82f6; /* Blue */
-}
-
-/* NEW: When logged in, hide the glass effect by default */
-.auth-container.logged-in {
-  background: transparent;
-  box-shadow: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  padding: 0; /* Remove padding to only show the picture */
-}
-
-.login-button {
-  display: flex;
-  align-items: center;
-  background: none;
-  border: none;
-  color: var(--glass-text-light); /* Use story page variable */
-  font-weight: bold;
-  cursor: pointer;
-  padding: 0;
-  transition: all 0.3s ease;
-}
-
-.login-button .login-text {
-  margin: 0 10px;
-  font-size: 0.9rem;
-}
-
-.login-button .profile-pic {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-}
-
-.auth-container.logged-in .profile-pic {
-  width: 45px; /* Make the picture slightly larger when it's the only element */
-  height: 45px;
-  border: none; /* Remove the border in the default state */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.4); /* Add a subtle shadow for depth */
-}
-
-.logout-button {
-  background: none;
-  border: none;
-  color: var(--glass-text-light); /* Use story page variable */
-  font-weight: bold;
-  cursor: pointer;
-  padding: 5px 10px;
-  font-size: 0.8rem;
-  opacity: 0.7;
-  /* NEW: Hide logout button by default */
-  display: none;
-}
-
-/* NEW: Show logout button and re-apply glass styles on hover */
-.auth-container.logged-in:hover {
-    background: var(--glass-bg-light);
-    box-shadow: var(--button-shadow-light);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    padding: 5px;
-}
-
-.auth-container.logged-in:hover .logout-button {
-    display: block;
-}
-/* --- REFACTOR: Dark Mode Bookmark Style --- */
-html.dark-mode .bookmarked-word::after, body.dark-mode .bookmarked-word::after {
-    /* REFACTOR: Use a vibrant blue gradient for better contrast in dark mode. */
-    background: linear-gradient(135deg, #4f46e5, #3b82f6);
-    /* REFACTOR: Use a light border for a crisp edge against the dark highlight. */
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    /* REFACTOR: Adjust the shadow to have a subtle blue glow. */
-    box-shadow: 
-        0 1px 1px rgba(0,0,0,0.7), /* Sharp inner shadow for depth */
-        0 3px 8px rgba(0,0,0,0.6),   /* Softer outer shadow */
-        0 0 10px rgba(79, 70, 229, 0.5), /* Blue glow */
-        inset 0 1px 0 rgba(255,255,255,0.4); /* Inner highlight */
-}
-
-/* --- REFACTOR: New keyframe animation for the bookmark --- */
-@keyframes materialize-and-settle {
-    0% {
-        opacity: 0;
-        transform: scale(0.7) translateY(-10px);
+        if (currentToken) {
+            console.log('FCM Token:', currentToken);
+            // Save the token to the database, so we can send notifications to this user.
+            // We'll store it under a 'fcmTokens' node.
+            const tokenRef = ref(db, `fcmTokens/${currentToken}`);
+            await set(tokenRef, true); // Store the token as a key for easy lookup
+        } else {
+            // Show permission request UI.
+            console.log('No registration token available. Requesting permission...');
+            // This will typically trigger the browser's permission prompt.
+        }
+    } catch (err) {
+        console.error('An error occurred while retrieving token. ', err);
     }
-    50% {
-        opacity: 1;
-        transform: scale(1.1) translateY(0);
-    }
-    75% { transform: scale(0.95) rotate(-5deg); }
-    100% { transform: scale(1) rotate(0deg); }
+
+    // Handle token refresh
+    onMessage(messaging, (payload) => {
+        console.log('Message received. ', payload);
+        // You can handle foreground messages here if you want.
+        // For example, show a custom in-app notification.
+    });
 }
 
-/* --- NEW: reCAPTCHA Badge Fix --- */
-/* Hide the reCAPTCHA badge. Per Google's policy, the required branding and links have been added to the site footer. */
-.grecaptcha-badge {
-    visibility: hidden !important;
+
+let isInitialized = false; // FIX: Add a flag to prevent double initialization.
+async function initializePage(manualLevelOverride = null) {
+    if (isInitialized) return; // Prevent this from running more than once.
+    isInitialized = true;
+
+    // FIX: If a manual level is passed from the button click, use it directly.
+    // Otherwise, check sessionStorage (for reloads) or run the benchmark.
+    if (manualLevelOverride) {
+        performanceLevel = manualLevelOverride;
+        console.log(`Applying manually selected Performance Level: ${performanceLevel}`);
+    } else {
+        // FIX: On a normal page load, clear any manual setting from other pages to force a fresh benchmark.
+        // This prevents the back-forward cache on iOS from incorrectly applying a level set on a story page.
+        sessionStorage.removeItem('manualPerformanceLevel'); 
+        const sessionLevel = sessionStorage.getItem('manualPerformanceLevel');
+        if (sessionLevel) {
+            performanceLevel = parseInt(sessionLevel, 10);
+            console.log(`Using manually set Performance Level from session: ${performanceLevel}`);
+        } else {
+            performanceLevel = await determinePerformanceLevel();
+        }
+    }
+    applyPerformanceStyles(performanceLevel);
+
+    if (performanceLevel === 2) detectSVGFilterSupport();
+
+    // FIX: Initialize the user ID *before* fetching the grid.
+    await initializeUser();
+
+    // NEW: After the user is initialized, ask for notification permissions.
+    await initializeMessaging();
+
+    const loadingScreen = document.getElementById('loadingScreen');
+    animateButtonsOnLoad();
+
+    // Preload the current background images
+    const bgLight = getComputedStyle(document.documentElement).getPropertyValue('--bg-url').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
+    const bgDark = getComputedStyle(document.documentElement).getPropertyValue('--bg-url-dark').replace(/url\(['"]?([^'"]+)['"]?\)/, '$1').trim();
+    const imagesToPreload = [bgLight, bgDark].filter(url => url && url.startsWith('http'));
+
+    if (imagesToPreload.length > 0) {
+      await Promise.all(imagesToPreload.map(url => new Promise((resolve) => {
+        const img = new Image();
+        img.onload = img.onerror = resolve;
+        img.src = url;
+      })));
+    }
+
+    // Once images are preloaded, hide loading screen and build grid
+    setTimeout(() => {
+      loadingScreen.classList.add('hidden');
+      setupScrollPerformance();
+      setTimeout(() => {
+        fetchAndBuildGrid(); // This will now handle showing the tutorial internally.
+      }, 500);
+    }, 500); // FIX: Added missing duration and closing parenthesis
+};
+
+async function loadDataAndInitialize() {
+    try {
+        const response = await fetch('backgrounds.json');
+        const allBackgrounds = await response.json();
+        const mainPageBackgrounds = allBackgrounds.find(item => item.type === 'mainPage');
+        if (mainPageBackgrounds) {
+            backgroundSet = mainPageBackgrounds.backgrounds;
+            changeBackground(); // Call the function to set the background
+        }
+    } catch (error) {
+        console.error("Failed to load backgrounds.json:", error);
+    }
+    await initializePage();
 }
+
+/**
+ * NEW: Definitive fix for mobile viewport height issues.
+ * This function sets a CSS variable `--vh` to the actual inner height of the window.
+ * Using `calc(var(--vh, 1vh) * 100)` in CSS provides a stable height that doesn't
+ * change when the mobile browser's UI (like the address bar or keyboard) appears.
+ */
+function setViewportHeight() {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+// Set the viewport height on initial load and on resize.
+window.addEventListener('resize', setViewportHeight);
+setViewportHeight(); // Initial call
+document.addEventListener('DOMContentLoaded', loadDataAndInitialize);
+
+// FIX: Use the 'pageshow' event to handle back/forward cache navigations.
+window.addEventListener('pageshow', function(event) {
+  // If the page is being loaded from the bfcache, event.persisted will be true.
+  // REFACTOR: On bfcache restore, we should NOT re-run the performance benchmark.
+  // The browser state is not reliable for an accurate benchmark in this case.
+  // We will only re-initialize parts of the UI that need refreshing, like animations.
+  if (event.persisted) {
+    console.log("Page restored from bfcache. Skipping performance check.");
+    // Re-trigger animations and ensure the UI is responsive without a full reload.
+    updateGridBounds();
+    ensureAnimating();
+  }
+});
