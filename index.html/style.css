@@ -2498,3 +2498,5 @@ body:not(.is-scrolling) .series-stack:hover .favorite-container {
 .grecaptcha-badge {
     visibility: hidden !important;
 }
+
+/* v1.0.1 */
