@@ -997,7 +997,7 @@ html {
 }
 
 .auth-container.logged-in:hover .logout-button {
-    display: block;
+    display: block; /* FIX: Ensure the logout button is visible on hover */
 }
 /* --- REFACTOR: Dark Mode Bookmark Style --- */
 html.dark-mode .bookmarked-word::after, body.dark-mode .bookmarked-word::after {
@@ -1054,6 +1054,8 @@ html.dark-mode .bookmarked-word::after, body.dark-mode .bookmarked-word::after {
   opacity: 1;
   pointer-events: auto;
 }
+
+/* v1.0.1 */
 
 html.dark-mode .modal-panel .contact-panel-content {
     background-color: var(--glass-bg-dark);

@@ -1707,6 +1707,8 @@ window.addEventListener('resize', setViewportHeight);
 setViewportHeight(); // Initial call
 document.addEventListener('DOMContentLoaded', loadDataAndInitialize);
 
+// v1.0.1
+
 // FIX: Use the 'pageshow' event to handle back/forward cache navigations.
 window.addEventListener('pageshow', function(event) {
   // If the page is being loaded from the bfcache, event.persisted will be true.
