@@ -1,3 +1,4 @@
+
 /***************************************************************************************************
  *                                   ** DO NOT COPY - ALL RIGHTS RESERVED **
  *
@@ -379,14 +380,33 @@ html.dark-mode, body.dark-mode {
     color: var(--main-text-color-dark);
 }
 
+/* --- NEW: Global Content Protection --- */
+body {
+    /* Disable text selection across the entire page */
+    user-select: none;
+    -webkit-user-select: none; /* For Safari */
+    -moz-user-select: none;    /* For Firefox */
+    -ms-user-select: none;     /* For Internet Explorer/Edge */
+}
+
 body {
     margin: 0;
     padding: 0;
     font-family: 'Roboto', sans-serif;
     /* FIX: Add padding to the bottom of the body to create scroll space below the footer, preventing overlap with fixed buttons. */
     padding-bottom: 5rem;
-    min-height: 100vh;
+    /* Use a CSS variable for viewport height, controlled by JS */
+    min-height: calc(var(--vh, 1vh) * 100);
     color: var(--main-text-color-light); /* FIX: Set the default text color for light mode */
+}
+
+/* --- NEW: Global Content Protection --- */
+body {
+    /* Disable text selection across the entire page */
+    user-select: none;
+    -webkit-user-select: none; /* For Safari */
+    -moz-user-select: none;    /* For Firefox */
+    -ms-user-select: none;     /* For Internet Explorer/Edge */
 }
 
 /* --- LOADING SCREEN OVERLAY (fixed on top) --- */
@@ -403,6 +423,14 @@ body {
   justify-content: center;
   z-index: 10000;
   transition: opacity 0.5s ease;
+}
+
+/* --- NEW: CSS Anti-Tampering ---
+   This is a honeypot. If a script or extension tries to override the 'user-select'
+   property by setting it on the body, this rule will trigger and hide everything. */
+body[style*="user-select: text"],
+body[style*="user-select: auto"] {
+    display: none !important;
 }
 
 #loading-screen.hidden {
@@ -489,14 +517,22 @@ html.dark-mode.perf-level-1 button.back-home-button-custom, body.dark-mode.perf-
     display: none;
 }
 
+/* --- NEW: CSS Anti-Tampering ---
+   This is a honeypot. If a script or extension tries to override the 'user-select'
+   property by setting it on the body, this rule will trigger and hide everything. */
+body[style*="user-select: text"],
+body[style*="user-select: auto"] {
+    display: none !important;
+}
+
 #page-content-wrapper {
     transition: filter 0.5s ease-in-out;
     position: relative;
     z-index: 0;
     width: 100%;
     /* REFACTOR: Use a larger, more reliable padding value to prevent content from hiding under the fixed header. */
-    padding-top: 9rem;
-    min-height: 100vh;
+    padding-top: 9rem; /* Use a CSS variable for viewport height, controlled by JS */
+    min-height: calc(var(--vh, 1vh) * 100);
 }
 
 body.loading #page-content-wrapper {
