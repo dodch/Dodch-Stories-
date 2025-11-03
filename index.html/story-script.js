@@ -797,28 +797,87 @@ export async function initializeStoryContent(storyContentMap, fbServices) {
     contentMap = storyContentMap;
     firebaseServices = fbServices; // Use the passed-in services
 
-    const getUserId = () => new Promise(resolve => {
-        // FIX: Use signInAnonymously for users who are not logged in.
-        // This provides a real, temporary UID that works with Firebase security rules.
-        const { auth, onAuthStateChanged, signInAnonymously } = firebaseServices; 
+    const getUserId = () => new Promise((resolve, reject) => {
+        const { auth, onAuthStateChanged } = firebaseServices;
         const unsubscribe = onAuthStateChanged(auth, user => {
             unsubscribe();
             if (user) {
-                // User is signed in (either with Google or anonymously).
-                console.log("User is ready (authenticated or anonymous):", user.uid);
-                resolve(user.uid);
+                // User is signed in (either with Google or was anonymous).
+                // We must reject anonymous users from reading.
+                if (user.isAnonymous) {
+                    console.log("Anonymous user detected. Access denied.");
+                    reject("anonymous");
+                } else {
+                    console.log("Authenticated user is ready:", user.uid);
+                    resolve(user.uid);
+                }
             } else {
-                // No user is signed in, so sign them in anonymously.
-                signInAnonymously(auth).then(userCredential => {
-                    console.log("New anonymous user signed in:", userCredential.user.uid);
-                    resolve(userCredential.user.uid);
-                }).catch(error => console.error("Anonymous sign-in failed:", error));
+                // No user is signed in at all.
+                console.log("No user logged in. Access denied.");
+                reject("logged_out");
             }
         });
     });
 
-    currentUserId = await getUserId();
+    try {
+        currentUserId = await getUserId();
+    } catch (error) {
+        // FIX: If getUserId rejects, it means the user is not authenticated.
+        // Wait for the page to load, then show the login prompt and attach the login handler.
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('login-prompt').style.display = 'flex';
+                
+                // Attach the login handler directly here.
+                const authContainerPrompt = document.getElementById('auth-container-prompt');
+                if (authContainerPrompt) {
+                    authContainerPrompt.addEventListener('click', () => {
+                        const { auth, GoogleAuthProvider, setPersistence, browserLocalPersistence, signInWithPopup } = firebaseServices;
+                        const provider = new GoogleAuthProvider();
+                        setPersistence(auth, browserLocalPersistence)
+                            .then(() => signInWithPopup(auth, provider))
+                            .then(() => window.location.reload())
+                            .catch(err => console.error("Login from prompt failed:", err));
+                    });
+                }
+            }, 600); // This delay should be slightly longer than the loading screen fade-out.
+        });
+        throw error; // Re-throw the error to stop the initialization in the calling module.
+    }
 
+    // --- REFACTORED: First-time visit agreement logic ---
+    // This now runs *after* the user is successfully logged in.
+    const agreementPopup = document.getElementById('agreement-popup');
+    const agreeButton = document.getElementById('agreement-agree-button');
+    const disagreeButton = document.getElementById('agreement-disagree-button');
+    const currentAgreementVersion = '1.1'; // Increment this to re-show the popup on changes.
+    const agreedVersion = localStorage.getItem('agreedToCommunityGuidelinesVersion');
+
+    if (agreedVersion !== currentAgreementVersion) {
+        if (agreementPopup) {
+            // Wait for the loading screen to be fully gone before showing the popup.
+            setTimeout(() => {
+                agreementPopup.style.display = 'flex';
+            }, 600);
+        }
+
+        if (agreeButton) {
+            agreeButton.addEventListener('click', () => {
+                localStorage.setItem('agreedToCommunityGuidelinesVersion', currentAgreementVersion);
+                agreementPopup.style.display = 'none';
+            });
+        }
+
+        if (disagreeButton) {
+            disagreeButton.addEventListener('click', () => {
+                document.body.innerHTML = `
+                    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #000; color: #fff; font-family: sans-serif; font-size: 1.2rem; text-align: center; padding: 2rem;">
+                        You can respectfully leave.
+                    </div>
+                `;
+            });
+        }
+    }
     const manualLevel = sessionStorage.getItem('manualPerformanceLevel');
     if (manualLevel) {
         performanceLevel = parseInt(manualLevel, 10);
@@ -874,52 +933,75 @@ export async function initializeStoryContent(storyContentMap, fbServices) {
  * @param {object} firebaseServices The imported Firebase functions.
  */
 export function initializeAuth(firebaseServices) {
-    const { auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, setPersistence, browserLocalPersistence, signInAnonymously } = firebaseServices;
+    const { auth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, setPersistence, browserLocalPersistence } = firebaseServices;
     const authContainer = document.getElementById('auth-container');
     const loginButton = document.getElementById('loginButton');
 
     if (!authContainer || !loginButton) return;
 
     onAuthStateChanged(auth, user => {
-        if (user) {
+        if (user && !user.isAnonymous) {
             // User is signed in (Google or Anonymous)
             currentUserId = user.uid;
             
             if (user.isAnonymous || !user.displayName) { // FIX: Also handle cases where displayName is null
                 // User is anonymous
                 authContainer.classList.remove('logged-in');
-                console.log("Story page user changed to (Anonymous):", currentUserId);
-                loginButton.innerHTML = `<span class="login-text">Login</span>`; // Ensure login text is shown
+                console.log("Story page user changed to (Anonymous):", currentUserId); // Ensure login text is shown
+                loginButton.innerHTML = `
+                    <svg class="login-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+                    <span class="login-text">Login</span>
+                `;
             } else {
                 // User is signed in with Google
                 authContainer.classList.add('logged-in');
                 console.log("Story page user changed to (Authenticated with Google):", currentUserId);
                 loginButton.innerHTML = `
                     <img src="${user.photoURL}" alt="Profile" class="profile-pic">
-                    <button class="logout-button">Logout</button>
+                    <button class="logout-button">
+                        <!-- NEW: Add logout icon -->
+                        <svg class="logout-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        Logout
+                    </button>
                 `;
                 authContainer.querySelector('.logout-button').addEventListener('click', (e) => {
                     e.stopPropagation();
-                    signOut(auth);
+                    // FIX: Revert to a simple browser confirmation dialog for logout.
+                    if (confirm("Are you sure you want to log out?")) {
+                        signOut(auth)
+                            .then(() => window.location.reload())
+                            .catch(error => console.error("Logout failed:", error));
+                    }
                 });
             }
         } else {
             // This block should ideally not be hit now, as getUserId ensures an anonymous session.
             // But as a fallback, we ensure an anonymous session is created.
-            console.log("No user found, attempting to sign in anonymously as a fallback.");
-            signInAnonymously(auth);
+            authContainer.classList.remove('logged-in');
+            loginButton.innerHTML = `
+                <!-- NEW: Add login icon -->
+                <svg class="login-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+                <span class="login-text">Login</span>
+            `;
         }
     });
 
+    // FIX: Set persistence before the click listener to prevent the "login fails on first try" bug.
+    setPersistence(auth, browserLocalPersistence)
+      .catch((error) => {
+          console.error("Setting story page auth persistence failed:", error);
+      });
+
     authContainer.addEventListener('click', () => {
         if (!auth.currentUser || auth.currentUser.isAnonymous) {
-            setPersistence(auth, browserLocalPersistence)
+            const provider = new GoogleAuthProvider();
+            // When an anonymous user signs in with a permanent account,
+            // Firebase automatically links the accounts. Their UID remains the same,
+            // and their anonymous data (like bookmarks) is preserved.
+            signInWithPopup(auth, provider)
               .then(() => {
-                  const provider = new GoogleAuthProvider();
-                  // When an anonymous user signs in with a permanent account,
-                  // Firebase automatically links the accounts. Their UID remains the same,
-                  // and their anonymous data (like bookmarks) is preserved.
-                  return signInWithPopup(auth, provider);
+                  // After successful login, reload the page to show the content.
+                  window.location.reload();
               })
               .catch((error) => {
                   console.error("Google Sign-In Error:", error);
@@ -931,3 +1013,5 @@ export function initializeAuth(firebaseServices) {
 
     addTapAnimation(authContainer);
 }
+
+// v1.0.1
