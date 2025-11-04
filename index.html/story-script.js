@@ -978,6 +978,24 @@ export async function initializeStoryContent(storyContentMap, fbServices) {
 }
 
 /**
+ * NEW: Shows the story loading screen with a custom message and reloads the page.
+ * @param {string} message The message to display (e.g., "Logging in...", "Logging out...").
+ */
+function showStoryLoadingAndReload(message) {
+    const loadingScreen = document.getElementById('loading-screen');
+    const percentageText = document.querySelector(".loading-percentage");
+
+    if (percentageText) {
+        percentageText.textContent = message;
+        percentageText.classList.add('loading-status-text'); // Use the new style
+    }
+    if (loadingScreen) {
+        loadingScreen.classList.remove('hidden');
+    }
+    setTimeout(() => window.location.reload(), 500); // Wait a bit before reloading
+}
+
+/**
  * NEW: Initializes the authentication button on the story page.
  * This function mirrors the login/logout logic from the main `script.js`.
  * @param {object} firebaseServices The imported Firebase functions.
@@ -1019,7 +1037,7 @@ export function initializeAuth(firebaseServices) {
                     // FIX: Revert to a simple browser confirmation dialog for logout.
                     if (confirm("Are you sure you want to log out?")) {
                         signOut(auth)
-                            .then(() => window.location.reload())
+                            .then(() => showStoryLoadingAndReload("Logging out..."))
                             .catch(error => console.error("Logout failed:", error));
                     }
                 });
@@ -1050,8 +1068,7 @@ export function initializeAuth(firebaseServices) {
             // and their anonymous data (like bookmarks) is preserved.
             signInWithPopup(auth, provider)
               .then(() => {
-                  // After successful login, reload the page to show the content.
-                  window.location.reload();
+                  showStoryLoadingAndReload("Logging in...");
               })
               .catch((error) => {
                   console.error("Google Sign-In Error:", error);

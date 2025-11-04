@@ -50,6 +50,23 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
+/**
+ * NEW: Shows the loading screen with a custom message and reloads the page.
+ * @param {string} message The message to display (e.g., "Logging in...", "Logging out...").
+ */
+function showLoadingAndReload(message) {
+    const loadingScreen = document.getElementById('loadingScreen');
+    const statusText = document.getElementById('loadingStatusText');
+
+    if (statusText) {
+        statusText.textContent = message;
+    }
+    if (loadingScreen) {
+        loadingScreen.classList.remove('hidden');
+    }
+    setTimeout(() => window.location.reload(), 500); // Wait a bit before reloading
+}
+
 // Global variables to store data and grid elements
 let panels = [];
 let allStories = [];
@@ -1471,7 +1488,7 @@ async function initializeUser() {
                     body.classList.remove('info-panel-open');
                 };
 
-                confirmBtn.onclick = () => signOut(auth).then(() => window.location.reload()).catch(error => console.error("Logout failed:", error));
+                confirmBtn.onclick = () => signOut(auth).then(() => showLoadingAndReload("Logging out...")).catch(error => console.error("Logout failed:", error));
                 cancelBtn.onclick = closeLogoutModal;
                 closeLogoutModalButton.onclick = closeLogoutModal;
                 addTapAnimation(confirmBtn);
@@ -1534,6 +1551,7 @@ async function initializeUser() {
             // This ensures the auth state is correctly maintained after the popup flow.
             const provider = new GoogleAuthProvider();
             signInWithPopup(auth, provider)
+              .then(() => showLoadingAndReload("Logging in..."))
               .catch((error) => {
                   console.error("Google Sign-In Error:", error);
                   // Provide more user-friendly error messages
