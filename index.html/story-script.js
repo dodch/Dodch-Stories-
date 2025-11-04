@@ -12,6 +12,24 @@
  * Copyright (c) 2024 Dodch Stories. All rights reserved.
  ***************************************************************************************************/
 const loadingScreen = document.getElementById("loading-screen");
+
+// --- NEW: Anti-Copy Protection ---
+document.addEventListener('copy', (event) => {
+    const selection = document.getSelection();
+    // Only intervene if the user is trying to copy a significant amount of text.
+    if (selection.toString().length > 50) {
+        event.preventDefault();
+        const copyrightMessage = `All content on Dodch Stories is the exclusive property of its owner and is protected by international copyright laws. Unauthorized copying, reproduction, modification, or distribution of this text, in whole or in part, is strictly prohibited and may result in civil and criminal charges.\n\nCopyright (c) 2024 Dodch Stories. All rights reserved.`;
+        
+        try {
+            // Modern asynchronous clipboard API
+            navigator.clipboard.writeText(copyrightMessage);
+        } catch (err) {
+            // Fallback for older browsers
+            event.clipboardData.setData('text/plain', copyrightMessage);
+        }
+    }
+});
 const loadPercentageText = document.querySelector(".loading-percentage");
 const body = document.body;
 // FIX: Create a unique key for each story to namespace saved progress.

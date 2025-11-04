@@ -1055,6 +1055,16 @@ html.dark-mode .bookmarked-word::after, body.dark-mode .bookmarked-word::after {
   pointer-events: auto;
 }
 
+/* --- NEW: Anti-Copy Text Selection --- */
+/* Prevent text selection on the main story content to deter copying. */
+#content {
+  user-select: none; /* Standard syntax */
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+}
+
+
 /* v1.0.1 */
 
 html.dark-mode .modal-panel .contact-panel-content {
