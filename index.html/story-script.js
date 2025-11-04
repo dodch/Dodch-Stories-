@@ -757,6 +757,35 @@ function setViewportHeight() {
     document.documentElement.style.setProperty('--vh', `${vh}px`);
 }
 
+/**
+ * NEW: Creates and manages a dynamic watermark to deter screenshots.
+ * The watermark displays a copyright notice and the user's unique ID.
+ * @param {string} userId - The unique identifier for the current user.
+ */
+function manageWatermark(userId) {
+    let watermark = document.getElementById('dynamic-watermark');
+    if (!watermark) {
+        watermark = document.createElement('div');
+        watermark.id = 'dynamic-watermark';
+        watermark.className = 'watermark-overlay';
+        document.body.appendChild(watermark);
+    }
+
+    if (userId) {
+        // Create multiple text nodes for a repeating pattern
+        const watermarkText = `© 2024 Dodch Stories - User: ${userId.substring(0, 8)}`;
+        let content = '';
+        for (let i = 0; i < 30; i++) { // Repeat the text to fill the screen
+            content += `<span>${watermarkText}</span>`;
+        }
+        watermark.innerHTML = content;
+        // Fade the watermark in
+        setTimeout(() => { watermark.style.opacity = '1'; }, 1000);
+    } else {
+        // If no user, ensure the watermark is hidden
+        watermark.style.opacity = '0';
+    }
+}
 // Set the viewport height on initial load and on resize.
 window.addEventListener('resize', setViewportHeight);
 setViewportHeight(); // Initial call
@@ -862,6 +891,9 @@ export async function initializeStoryContent(storyContentMap, fbServices) {
         });
         throw error; // Re-throw the error to stop the initialization in the calling module.
     }
+
+    // NEW: Activate the watermark with the authenticated user's ID.
+    manageWatermark(currentUserId);
 
     // --- REFACTORED: First-time visit agreement logic ---
     // This now runs *after* the user is successfully logged in.

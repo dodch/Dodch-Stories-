@@ -1064,6 +1064,29 @@ html.dark-mode .bookmarked-word::after, body.dark-mode .bookmarked-word::after {
   -ms-user-select: none; /* Internet Explorer/Edge */
 }
 
+/* --- NEW: Dynamic Watermark for Screenshot Deterrence --- */
+.watermark-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none; /* Allows clicks to pass through to the content below */
+  z-index: 9999; /* Ensures it's on top of content but below modals */
+  opacity: 0; /* Hidden by default, activated by script */
+  transition: opacity 0.5s ease-in-out;
+  color: rgba(255, 255, 255, 0.08); /* Very faint white text */
+  font-size: 1.5vw; /* Scales with viewport width */
+  font-weight: bold;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 5vw;
+  padding: 5vw;
+  transform: rotate(-20deg); /* Angled text */
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
 
 /* v1.0.1 */
 
