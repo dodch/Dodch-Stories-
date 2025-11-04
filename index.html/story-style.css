@@ -1055,8 +1055,6 @@ html.dark-mode .bookmarked-word::after, body.dark-mode .bookmarked-word::after {
   pointer-events: auto;
 }
 
-<<<<<<< HEAD
-=======
 /* --- NEW: Anti-Copy Text Selection --- */
 /* Prevent text selection on the main story content to deter copying. */
 #content {
@@ -1066,7 +1064,6 @@ html.dark-mode .bookmarked-word::after, body.dark-mode .bookmarked-word::after {
   -ms-user-select: none; /* Internet Explorer/Edge */
 }
 
-<<<<<<< Updated upstream
 /* --- NEW: Dynamic Watermark for Screenshot Deterrence --- */
 .watermark-overlay {
   position: fixed;
@@ -1090,10 +1087,7 @@ html.dark-mode .bookmarked-word::after, body.dark-mode .bookmarked-word::after {
   transform: rotate(-20deg); /* Angled text */
   text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
-=======
->>>>>>> Stashed changes
 
->>>>>>> new
 /* v1.0.1 */
 
 html.dark-mode .modal-panel .contact-panel-content {

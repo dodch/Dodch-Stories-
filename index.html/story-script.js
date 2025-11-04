@@ -1063,3 +1063,5 @@ export function initializeAuth(firebaseServices) {
 
     addTapAnimation(authContainer);
 }
+
+// v1.0.1
