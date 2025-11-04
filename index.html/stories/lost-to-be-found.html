@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<!--
+/***************************************************************************************************
+ *                                   ** DO NOT COPY - ALL RIGHTS RESERVED **
+ *
+ * This code is the exclusive property of Dodch Stories and its owner. Unauthorized copying,
+ * reproduction, modification, distribution, or any form of use of this code, in whole or in part,
+ * is strictly prohibited.
+ *
+ * The intellectual property rights, including copyright, for this software are protected by
+ * international laws and treaties. Any infringement of these rights will be pursued to the
+ * fullest extent of the law, which may include civil and criminal charges.
+ *
+ * Copyright (c) 2024 Dodch Stories. All rights reserved.
+ ***************************************************************************************************/
+-->
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Favicon links -->
+    <link rel="icon" href="../../favicon.ico" sizes="any">
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml" />
+    <link rel="icon" type="image/png" sizes="16x16" href="../../favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="../../favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="../../favicon-96x96.png" />
+    <!-- FIX: Add 192x192 icon for high-DPI screens and Chrome UI elements. -->
+    <link rel="icon" type="image/png" sizes="192x192" href="../../web-app-manifest-192x192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="../../apple-touch-icon.png" />
+    <link rel="manifest" href="../../site.webmanifest" />
+    <title>Lost to be found</title>
+    <meta name="description" content="A story about getting lost in life's struggles and finding your way back through unexpected connections.">
+    <!-- SEO: Add a canonical link to specify the preferred URL for this page. -->
+    <link rel="canonical" href="https://www.dodchstories.com/stories/lost-to-be-found.html" />
+    <!-- Hreflang tags for multilingual SEO -->
+    <link rel="alternate" hreflang="en" href="https://www.dodchstories.com/stories/lost-to-be-found.html" />
+    <link rel="alternate" hreflang="fr" href="https://www.dodchstories.com/stories/lost-to-be-found.html" />
+    <link rel="alternate" hreflang="ar" href="https://www.dodchstories.com/stories/lost-to-be-found.html" />
+    <link rel="alternate" hreflang="x-default" href="https://www.dodchstories.com/stories/lost-to-be-found.html" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../story-style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Licorice&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <!-- NEW: Immediate Anti-Inspection Script.
+         Placing this script in the <head> ensures it runs before the page content is rendered,
+         making it nearly impossible to open DevTools without an immediate page reload. -->
+    <script>
+        (function() {
+            // Prevent "flash of incorrect theme" (FOIT)
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark-mode');
+            }
+
+            // Aggressive DevTools detection
+            const devtools = { open: false };
+            const threshold = 160;
+            const check = () => {
+                const start = performance.now();
+                debugger; // This statement pauses execution only when DevTools is open.
+                const end = performance.now();
+                if (end - start > threshold) {
+                    devtools.open = true;
+                    window.location.reload(); // Reload if DevTools is detected
+                }
+            };
+            
+            // Run the check on a fast, continuous interval.
+            setInterval(check, 400);
+
+            // Block common keyboard shortcuts for DevTools.
+            window.addEventListener('keydown', e => {
+                if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
+                    window.location.reload();
+                }
+            });
+
+            // Disable right-click context menu globally.
+            document.addEventListener('contextmenu', event => event.preventDefault());
+        })();
+    </script>
+</head>
+<body class="loading">
+    <div id="loading-screen">
+        <div class="loading-indicator">
+            <span>⭐️</span> <span>⭐️</span> <span>⭐️</span> <span>⭐️</span> <span>⭐️</span>
+        </div>
+        <div class="loading-percentage">0%</div>
+    </div>
+    <div class="fixed-background light-background"></div>
+    <div class="fixed-background dark-background"></div>
+    <!-- SVG Filter for HQ Glass Effect -->
+    <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" aria-hidden="true">
+        <filter id="filter-popup">
+            <feTurbulence type="fractalNoise" baseFrequency="0.015 0.025" numOctaves="1" result="warp" />
+            <feDisplacementMap xChannelSelector="R" yChannelSelector="G" scale="30" in="SourceGraphic" in2="warp" />
+        </filter>
+    </svg>
+
+    <!-- NEW: Add the top gradient blur vignette -->
+    <div class="top-vignette"></div>
+    <!-- FIX: Move the fixed buttons OUTSIDE the page-content-wrapper to prevent them from scrolling with the page. -->
+    <div class="fixed top-0 left-0 right-0 flex flex-col items-start p-4 space-y-2 z-50">
+        <div class="flex justify-center space-x-4 mb-2">
+            <button
+               id="ar-button"                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base shine-button"
+           >
+               العربية
+           </button>
+           <button
+               id="fr-button"                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base shine-button"
+           >
+               Français
+           </button>
+           <button
+               id="en-button"                    class="px-6 py-2 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base shine-button"
+           >
+               English
+            </button>
+        </div>
+        <!-- REFACTOR: Changed the home button to use a cleaner SVG icon. -->
+        <div class="flex items-center space-x-2">
+            <button id="back-home-button" class="w-10 h-10 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base back-home-button-custom inline-flex items-center justify-center shine-button" aria-label="Back to Home">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+            </button>
+            <!-- NEW: Login Button for Story Page -->
+            <div id="auth-container" class="auth-container glass-button-base">
+                <button id="loginButton" class="login-button">
+                    <!-- NEW: Add login icon -->
+                    <svg class="login-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line>
+                    </svg>
+                    <span class="login-text">Login</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- NEW: Live Visitor Count (moved to the right) -->
+    <div id="visitor-count-container" class="fixed top-0 right-0 p-4 z-50 glass-button-base flex items-center px-3 py-1 rounded-full mr-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        </svg>
+        <span id="visitor-count" class="text-white font-bold text-sm">1</span>
+    </div>
+    <!-- FIX: Add the missing login prompt overlay. -->
+    <div id="login-prompt" style="display: none; position: fixed; inset: 0; background-color: rgba(0,0,0,0.8); z-index: 10000; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; padding: 2rem;">
+        <h2 class="text-3xl font-bold mb-4">Login Required</h2>
+        <p class="text-lg mb-6">You need to be logged in to read this story.</p>
+        <!-- The login button will be initialized by the auth script -->
+        <div id="auth-container-prompt" class="auth-container glass-button-base" style="transform: scale(1.2);">
+            <button id="loginButton-prompt" class="login-button">
+                <!-- NEW: Add login icon to prompt -->
+                <svg class="login-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line>
+                </svg>
+                <span class="login-text">Login with Google</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="page-content-wrapper">
+        <div id="raw-ar-text" style="display: none;">
+            العربية غير متوفرة حاليا، يمكنك استعمال خاصية الترجمة للمواقع
+        </div>
+        <div id="raw-fr-text" style="display: none;">
+
+Français est actuellement indisponible, vous pouvez utiliser la fonction de traduction pour les sites
+        </div>
+        <div id="raw-en-text" style="display: none;">
+            This story is currently being updated and will be available soon. Thank you for your patience!
+        </div>
+        <div id="content" class="rounded-lg mx-auto content-fading">
+            <h1 id="title" class="text-3xl font-bold mb-12"></h1>
+            <div id="text-container" class="text-lg leading-relaxed">
+                <!-- This content is now dynamically generated by story-script.js -->
+            </div>
+        </div>
+        <!-- REFACTOR: Changed the save button to a circular icon button. -->
+        <button
+            id="save-progress-button"
+            class="fixed bottom-4 left-4 w-14 h-14 rounded-full flex items-center justify-center transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none glass-button-base save-button-custom"
+            style="z-index: 60;"
+            aria-label="Scroll to saved progress"
+        >
+            <!-- Bookmark Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>
+        </button>
+        <div id="popup" class="fixed inset-0 flex items-center justify-center z-50">
+            <div class="glass-button-base glass-popup shadow-lg w-64 fade-in">
+                <!-- REFACTOR: Add a flex container to align the icon and title text. -->
+                <div class="flex items-center justify-center mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                    <h2 id="popup-title" class="text-lg font-bold">Save Position</h2>
+                </div>
+                <p id="popup-text" class="mb-4 text-sm"></p>
+                <div class="flex justify-end space-x-2">
+                    <button
+                        id="popup-save-button"
+                        class="glass-button-base bg-green-500 text-white px-4 py-2 rounded-full focus:outline-none"
+                    >
+                        Save
+                    </button>
+                    <button
+                        id="popup-exit-button"
+                        class="glass-button-base bg-red-500 text-white px-4 py-2 rounded-full focus:outline-none"
+                    >
+                        Exit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- NEW: Add a footer with reCAPTCHA branding to comply with Google's terms of service. -->
+    <footer class="site-footer story-page-footer">
+        <div class="site-footer-content">
+            <p>&copy; 2024 Dodch Stories. All Rights Reserved.</p>
+            <p class="recaptcha-branding">
+                This site is protected by reCAPTCHA and the Google
+                <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a> and
+                <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a> apply.
+            </p>
+        </div>
+    </footer>
+    <!-- NEW: Add reCAPTCHA v3 script for Firebase App Check. This is required on every page using App Check. -->
+    <script src="https://www.google.com/recaptcha/api.js?render=6Ldj7O8rAAAAAO5rRT1GqGzVN3vXjL54Mlw0mpX6" async defer></script>
+
+    <!-- FIX: Consolidate all story initialization logic into a single module script to resolve loading race conditions. -->
+    <script type="module">
+        // --- Firebase Initialization ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence, browserLocalPersistence, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { getDatabase, ref, onValue, off, onDisconnect, serverTimestamp, push, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+        import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app-check.js";
+        // --- Story Script ---
+        // This imports the main story logic. The functions will be available in this module's scope.
+        import { initializeStoryContent, initializeAuth } from '../story-script.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBIlDy8iaEpCHVc6kPij_zh2zHJYQqiShk",
+            authDomain: "dodchstories-435bb.firebaseapp.com",
+            databaseURL: "https://dodchstories-435bb-default-rtdb.firebaseio.com",
+            projectId: "dodchstories-435bb",
+            storageBucket: "dodchstories-435bb.firebasestorage.app",
+            messagingSenderId: "52323489131",
+            appId: "1:52323489131:web:1ac8292a3953032715682e",
+            measurementId: "G-7MCXBETRYQ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        // NEW: Initialize Firebase App Check with reCAPTCHA v3 to protect backend resources.
+        const appCheck = initializeAppCheck(app, {
+            provider: new ReCaptchaV3Provider('6Ldj7O8rAAAAAO5rRT1GqGzVN3vXjL54Mlw0mpX6'),
+            isTokenAutoRefreshEnabled: true
+        });
+
+        const database = getDatabase(app);
+        const auth = getAuth(app);
+
+        // Make Firebase services globally available for the imported script.
+        const firebaseServices = { 
+            db: database, 
+            auth: auth, 
+            onAuthStateChanged: onAuthStateChanged, 
+            ref, onValue, off, onDisconnect, serverTimestamp, push, set,
+            // FIX: Pass all required auth functions, including local persistence and signInAnonymously
+            GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence, browserLocalPersistence, signInAnonymously
+        };
+
+        // Story-specific configuration
+        const contentMap = {
+            ar: {
+                title: 'ضائع ليُعثَر عليه',
+                rawTextId: 'raw-ar-text',
+                savePosition: 'إضافة علامة مرجعية',
+                save: 'حفظ',
+                exit: 'خروج',
+                bookmarkQuestion: 'هل تريد إضافة علامة مرجعية عند كلمة: "{word}"؟',
+                questionMark: '؟', // FIX: Use Arabic question mark
+                positionSaved: 'تم حفظ الموقع',
+                forWord: 'لكلمة',
+                wordNotFound: 'الكلمة المحفوظة لم يتم العثور عليها في النص الحالي.',
+                noWordSaved: 'لم يتم حفظ أي كلمة لهذه اللغة بعد'
+            },
+            fr: {
+                title: 'Perdu pour être trouvé',
+                rawTextId: 'raw-fr-text',
+                savePosition: 'Ajouter un marque-page',
+                save: 'Enregistrer',
+                exit: 'Sortir',
+                bookmarkQuestion: 'Mettre en favori cette position au mot : "{word}" ?',
+                questionMark: '?',
+                positionSaved: 'Position enregistrée',
+                forWord: 'pour le mot',
+                wordNotFound: 'Le mot enregistré n\'a pas été trouvé dans le texte actuel.',
+                noWordSaved: 'Aucun mot n\'a été enregistré pour cette langue encore'
+            },
+            en: {
+                title: 'Lost to be found',
+                rawTextId: 'raw-en-text',
+                savePosition: 'Bookmark',
+                save: 'Save',
+                exit: 'Exit',
+                bookmarkQuestion: 'Bookmark this position at the word: "{word}"?',
+                questionMark: '?',
+                positionSaved: 'Position saved at',
+                forWord: 'for the word',
+                wordNotFound: 'Saved word not found in current text.',
+                noWordSaved: 'No word has been saved for this language yet'
+            },
+        };
+
+        (async () => {
+            // FIX: The core issue was that `firebaseServices` was not being passed to the initialization function,
+            // causing all database operations (like saving bookmarks) to fail. This is now corrected.
+            // This also ensures all initialization happens in the correct, sequential order to prevent race conditions.
+            
+            // 1. Initialize the story content and get the user ID.
+            const userId = await initializeStoryContent(contentMap, firebaseServices);
+            // 2. Initialize the authentication button.
+            initializeAuth(firebaseServices);
+
+            const visitorCountElement = document.getElementById('visitor-count');
+            const storyId = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
+            const storyVisitorsRef = ref(database, `presence/${storyId}`);            
+            // NEW: Get the eye icon to animate it.
+            const visitorIcon = document.querySelector('#visitor-count-container svg');
+            
+            // Listen for changes and update the UI with the correct visitor count.
+            onValue(storyVisitorsRef, (snapshot) => {
+                if (!visitorCountElement) return;
+                const data = snapshot.val();
+                const count = data ? Object.keys(data).length : 0;
+
+                // FIX: Animate only when the count actually changes.
+                const currentCount = parseInt(visitorCountElement.textContent, 10);
+                if (count !== currentCount) {
+                    visitorCountElement.textContent = count;
+                    // Trigger animations
+                    if (visitorIcon) {
+                        // Determine which glow to use: green for join, red for leave.
+                        const glowClass = count > currentCount ? 'visitor-join-glow' : 'visitor-leave-glow';
+
+                        // FIX: Use a double requestAnimationFrame for the most reliable animation restart.
+                        // This guarantees a full frame passes between removing and re-adding the class,
+                        // forcing the browser to re-trigger the animation every time.
+                        visitorIcon.classList.remove('visitor-join-glow', 'visitor-leave-glow');
+                        requestAnimationFrame(() => {
+                            requestAnimationFrame(() => {
+                                visitorIcon.classList.add(glowClass);
+                            });
+                        });
+                    }
+                    visitorCountElement.classList.add('count-pop-animation');
+                    visitorCountElement.addEventListener('animationend', () => visitorCountElement.classList.remove('count-pop-animation'), { once: true });
+                }
+            });
+
+            // Use the .info/connected path to manage online status.
+            // This is the official Firebase pattern for robust presence.
+            const connectedRef = ref(database, '.info/connected');
+            onValue(connectedRef, (snap) => {                if (snap.val() === true) {
+                    // We're connected. This user's ID is `userId`.
+                    // Use the user's unique ID as the key to prevent duplicates across devices/tabs.
+                    const myPresenceRef = ref(database, `presence/${storyId}/${userId}`);
+
+                    // When the client disconnects, remove their connection entry.
+                    onDisconnect(myPresenceRef).remove();
+
+                    // Set the value to mark this user as "online".
+                    // If the user is already online on another device, this just updates the timestamp.
+                    set(myPresenceRef, serverTimestamp());
+                }
+            });
+        })();
+
+        // FIX: Handle back-forward cache (bfcache) restores to prevent duplicate visitor counts.
+        // When a page is restored from bfcache (common on mobile), the 'pageshow' event's 'persisted'
+        // property is true. We force a reload to ensure a clean state and a single presence entry.
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+
+    </script>
+    <!-- v1.0.1 -->
+</body>
+</html>

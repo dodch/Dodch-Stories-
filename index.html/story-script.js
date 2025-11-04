@@ -12,6 +12,24 @@
  * Copyright (c) 2024 Dodch Stories. All rights reserved.
  ***************************************************************************************************/
 const loadingScreen = document.getElementById("loading-screen");
+
+// --- NEW: Anti-Copy Protection ---
+document.addEventListener('copy', (event) => {
+    const selection = document.getSelection();
+    // Only intervene if the user is trying to copy a significant amount of text.
+    if (selection.toString().length > 50) {
+        event.preventDefault();
+        const copyrightMessage = `All content on Dodch Stories is the exclusive property of its owner and is protected by international copyright laws. Unauthorized copying, reproduction, modification, or distribution of this text, in whole or in part, is strictly prohibited and may result in civil and criminal charges.\n\nCopyright (c) 2024 Dodch Stories. All rights reserved.`;
+        
+        try {
+            // Modern asynchronous clipboard API
+            navigator.clipboard.writeText(copyrightMessage);
+        } catch (err) {
+            // Fallback for older browsers
+            event.clipboardData.setData('text/plain', copyrightMessage);
+        }
+    }
+});
 const loadPercentageText = document.querySelector(".loading-percentage");
 const body = document.body;
 // FIX: Create a unique key for each story to namespace saved progress.
@@ -739,6 +757,35 @@ function setViewportHeight() {
     document.documentElement.style.setProperty('--vh', `${vh}px`);
 }
 
+/**
+ * NEW: Creates and manages a dynamic watermark to deter screenshots.
+ * The watermark displays a copyright notice and the user's unique ID.
+ * @param {string} userId - The unique identifier for the current user.
+ */
+function manageWatermark(userId) {
+    let watermark = document.getElementById('dynamic-watermark');
+    if (!watermark) {
+        watermark = document.createElement('div');
+        watermark.id = 'dynamic-watermark';
+        watermark.className = 'watermark-overlay';
+        document.body.appendChild(watermark);
+    }
+
+    if (userId) {
+        // Create multiple text nodes for a repeating pattern
+        const watermarkText = `© 2024 Dodch Stories - User: ${userId.substring(0, 8)}`;
+        let content = '';
+        for (let i = 0; i < 30; i++) { // Repeat the text to fill the screen
+            content += `<span>${watermarkText}</span>`;
+        }
+        watermark.innerHTML = content;
+        // Fade the watermark in
+        setTimeout(() => { watermark.style.opacity = '1'; }, 1000);
+    } else {
+        // If no user, ensure the watermark is hidden
+        watermark.style.opacity = '0';
+    }
+}
 // Set the viewport height on initial load and on resize.
 window.addEventListener('resize', setViewportHeight);
 setViewportHeight(); // Initial call
@@ -844,6 +891,9 @@ export async function initializeStoryContent(storyContentMap, fbServices) {
         });
         throw error; // Re-throw the error to stop the initialization in the calling module.
     }
+
+    // NEW: Activate the watermark with the authenticated user's ID.
+    manageWatermark(currentUserId);
 
     // --- REFACTORED: First-time visit agreement logic ---
     // This now runs *after* the user is successfully logged in.
@@ -1013,5 +1063,3 @@ export function initializeAuth(firebaseServices) {
 
     addTapAnimation(authContainer);
 }
-
-// v1.0.1
