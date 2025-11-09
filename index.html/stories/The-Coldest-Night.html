@@ -944,29 +944,18 @@ THE END.
             // 1. Initialize the story content and get the user ID.
             let userId;
             try {
-                userId = await initializeStoryContent(contentMap, firebaseServices);
-            } catch (error) {
-                // If initialization fails (user is not logged in), initialize the auth button on the prompt.
-                if (error === 'anonymous' || error === 'logged_out') {
-                    const authContainerPrompt = document.getElementById('auth-container-prompt');
-                    const loginButtonPrompt = document.getElementById('loginButton-prompt');
-                    authContainerPrompt.addEventListener('click', () => {
-                        const provider = new GoogleAuthProvider();
-                        setPersistence(auth, browserLocalPersistence)
-                            .then(() => signInWithPopup(auth, provider))
-                            .then(() => window.location.reload())
-                            .catch(err => console.error("Login failed:", err));
-                    });
-                }
-                return; // Stop execution if user is not logged in
+                 userId = await initializeStoryContent(contentMap, firebaseServices);
+            } catch (err) {
+                // If initialization fails, check if it's because the user is disabled.
+                 if (err && err.code === 'auth/user-disabled') {
+                     window.location.href = '../banned.html';
+                     return;
+                 }
+                 // Otherwise, assume they are just logged out and show the login prompt.
+                 // The logic for showing the prompt and handling the click is now inside initializeStoryContent.
+                 // We just need to catch the error here to prevent it from stopping the script.
+                 return; // Stop execution if user is not logged in
             }
-            
-            // 2. Initialize the main authentication button in the header.
-            initializeAuth(firebaseServices);            const visitorCountElement = document.getElementById('visitor-count');
-            const storyId = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
-            const storyVisitorsRef = ref(database, `presence/${storyId}`);            
-            // NEW: Get the eye icon to animate it.
-            const visitorIcon = document.querySelector('#visitor-count-container svg');
             
             // Listen for changes and update the UI with the correct visitor count.
             onValue(storyVisitorsRef, (snapshot) => {

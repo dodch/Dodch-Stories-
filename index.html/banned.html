@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<!--
+/***************************************************************************************************
+ *                                   ** DO NOT COPY - ALL RIGHTS RESERVED **
+ *
+ * This code is the exclusive property of Dodch Stories and its owner. Unauthorized copying,
+ * reproduction, modification, distribution, or any form of use of this code, in whole or in part,
+ * is strictly prohibited.
+ *
+ * Copyright (c) 2024 Dodch Stories. All rights reserved.
+ ***************************************************************************************************/
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Disabled - Dodch Stories</title>
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-url: url("https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80");
+            --glass-text: #f0f0f0;
+            --red-tint: #ff477e;
+        }
+        body {
+            margin: 0;
+            font-family: 'Open Sans', sans-serif;
+            color: var(--glass-text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: var(--bg-url);
+            background-position: center;
+            background-size: cover;
+            filter: blur(5px) brightness(0.7);
+            z-index: -1;
+        }
+        .container {
+            max-width: 600px;
+        }
+        .title-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .title-container svg {
+            width: 2.5rem;
+            height: 2.5rem;
+            stroke: var(--red-tint);
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5));
+        }
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--red-tint);
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            /* Remove margin-bottom as it's now on the container */
+            margin: 0;
+        }
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+            margin-bottom: 2rem; /* Add space above the contact link */
+        }
+        .contact-link {
+            font-size: 1rem;
+            color: var(--glass-text);
+            text-decoration: none; /* Remove underline to use icon and text */
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+            display: inline-flex; /* Align icon and text */
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid transparent; /* Add space for hover effect */
+            padding-bottom: 2px;
+            transition: all 0.3s ease;
+        }
+        .contact-link:hover {
+            opacity: 1;
+            color: #fff;
+            border-bottom-color: #fff; /* Underline on hover */
+        }
+        .contact-link svg {
+            width: 1.2rem;
+            height: 1.2rem;
+            stroke: currentColor;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title-container">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+            <h1>Account Disabled</h1>
+        </div>
+        <p>Access to this account has been disabled due to a violation of our community guidelines or terms of service. If you believe this is a mistake, please reach out to us.</p>
+        <a href="mailto:dodchstories@gmail.com" class="contact-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            Contact Support
+        </a>
+    </div>
+</body>
+</html>

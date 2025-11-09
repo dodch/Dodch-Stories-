@@ -1553,10 +1553,15 @@ async function initializeUser() {
             signInWithPopup(auth, provider)
               .then(() => showLoadingAndReload("Logging in..."))
               .catch((error) => {
-                  console.error("Google Sign-In Error:", error);
-                  // Provide more user-friendly error messages
-                  const errorMessage = error.code === 'auth/popup-closed-by-user' ? 'Login cancelled.' : `Login failed: ${error.message}`;
-                  alert(errorMessage);
+                console.error("Google Sign-In Error:", error);
+                // NEW: Handle disabled user account
+                if (error.code === 'auth/user-disabled') {
+                    window.location.href = 'banned.html';
+                    return;
+                }
+                // Provide more user-friendly error messages
+                const errorMessage = error.code === 'auth/popup-closed-by-user' ? 'Login cancelled.' : `Login failed: ${error.message}`;
+                alert(errorMessage);
               });
         }
     });

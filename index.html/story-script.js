@@ -881,10 +881,16 @@ export async function initializeStoryContent(storyContentMap, fbServices) {
                     authContainerPrompt.addEventListener('click', () => {
                         const { auth, GoogleAuthProvider, setPersistence, browserLocalPersistence, signInWithPopup } = firebaseServices;
                         const provider = new GoogleAuthProvider();
-                        setPersistence(auth, browserLocalPersistence)
-                            .then(() => signInWithPopup(auth, provider))
-                            .then(() => window.location.reload())
-                            .catch(err => console.error("Login from prompt failed:", err));
+                        setPersistence(auth, browserLocalPersistence).then(() => signInWithPopup(auth, provider)).then(() => {
+                            // On successful login, show a loading message and reload.
+                            showStoryLoadingAndReload("Logging in...");
+                        }).catch(err => {
+                            console.error("Login from prompt failed:", err);
+                            // This is the crucial fix: Check for the 'auth/user-disabled' error here.
+                            if (err.code === 'auth/user-disabled') {
+                                window.location.href = '../banned.html';
+                            }
+                        });
                     });
                 }
             }, 600); // This delay should be slightly longer than the loading screen fade-out.
