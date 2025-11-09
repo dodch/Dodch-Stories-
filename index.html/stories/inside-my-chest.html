@@ -24,18 +24,19 @@
     <link rel="icon" type="image/png" sizes="16x16" href="../../favicon-16x16.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="../../favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="96x96" href="../../favicon-96x96.png" />
+    <!-- FIX: Add 192x192 icon for high-DPI screens and Chrome UI elements. -->
     <link rel="icon" type="image/png" sizes="192x192" href="../../web-app-manifest-192x192.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="../../apple-touch-icon.png" />
     <link rel="manifest" href="../../site.webmanifest" />
-    <title>Inside my chest</title>
-    <meta name="description" content="A deep dive into the feelings and thoughts hidden within.">
+    <title>The coldest night</title>
+    <meta name="description" content="A story of love, warmth, loss, and hope. A young man named Winter navigates tragedy and finds connection in the coldest of times.">
     <!-- SEO: Add a canonical link to specify the preferred URL for this page. -->
-    <link rel="canonical" href="https://www.dodchstories.com/stories/inside-my-chest.html" />
+    <link rel="canonical" href="https://www.dodchstories.com/stories/The-Coldest-Night.html" />
     <!-- Hreflang tags for multilingual SEO -->
-    <link rel="alternate" hreflang="en" href="https://www.dodchstories.com/stories/inside-my-chest.html" />
-    <link rel="alternate" hreflang="fr" href="https://www.dodchstories.com/stories/inside-my-chest.html" />
-    <link rel="alternate" hreflang="ar" href="https://www.dodchstories.com/stories/inside-my-chest.html" />
-    <link rel="alternate" hreflang="x-default" href="https://www.dodchstories.com/stories/inside-my-chest.html" />
+    <link rel="alternate" hreflang="en" href="https://www.dodchstories.com/stories/The-Coldest-Night.html" />
+    <link rel="alternate" hreflang="fr" href="https://www.dodchstories.com/stories/The-Coldest-Night.html" />
+    <link rel="alternate" hreflang="ar" href="https://www.dodchstories.com/stories/The-Coldest-Night.html" />
+    <link rel="alternate" hreflang="x-default" href="https://www.dodchstories.com/stories/The-Coldest-Night.html" />
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../story-style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -47,7 +48,7 @@
 <body class="loading">
     <div id="loading-screen">
         <div class="loading-indicator">
-            <span>💖</span> <span>💖</span> <span>💖</span> <span>💖</span> <span>💖</span>
+            <span>⭐️</span> <span>⭐️</span> <span>⭐️</span> <span>⭐️</span> <span>⭐️</span>
         </div>
         <div class="loading-percentage">0%</div>
     </div>
@@ -107,7 +108,7 @@
         </svg>
         <span id="visitor-count" class="text-white font-bold text-sm">1</span>
     </div>
-    <!-- FIX: Add the missing login prompt overlay. -->
+    <!-- NEW: Login Prompt Overlay -->
     <div id="login-prompt" style="display: none; position: fixed; inset: 0; background-color: rgba(0,0,0,0.8); z-index: 10000; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; padding: 2rem;">
         <h2 class="text-3xl font-bold mb-4">Login Required</h2>
         <p class="text-lg mb-6">You need to be logged in to read this story.</p>
@@ -139,10 +140,10 @@
             </div>
         </div>
     </div>
-
     <div id="page-content-wrapper">
         <div id="raw-ar-text" style="display: none;">
-        أتمنى أن أبلغ يوماً النسخة التي أستحق أن أكونها.
+          
+أتمنى أن أبلغ يوماً النسخة التي أستحق أن أكونها.
 واقفا أمام مرآة الحمّام المغلق، أحدّق في انعكاسي كأنّي أبحث عني بداخله، هامسا لنفسي بتلك الكلمات.
 أحيانًا أحاول أن أنظر إلى وجهي بعيون لا تشبه عينيّ، بعيون ربما تستطيع أن تراني بعمق مثل ما أرى الآخرين…
 لعلّي أكتشف كيف ينظر الناس إلي، وكيف يقرأون هذا الوجه الذي لا أكاد أستوعبه بنفسي.
@@ -284,10 +285,9 @@
 فتُضخ عبر قلبي إلى دمي
  و تسري نحو أطرافي وكامل جسدي
 فينمو داخل صدري حقل لا ينتهي 
-يلتجئ إليه كل من ينتمي
-جنة لكل من أرى فيه مأمني.
         </div>
         <div id="raw-fr-text" style="display: none;">
+
 Je souhaite qu’un jour, je puisse devenir la version de moi-même que je mérite vraiment d’être.
 Debout devant le miroir de ma salle de bain fermée, je fixe mon reflet comme si je cherchais à 
 m’y retrouver, murmurant doucement ces mots à mon propre visage.
@@ -599,7 +599,7 @@ flowing through my heart into my blood,
 spreading through my veins, to every part of me —
 until an endless field began to bloom inside my chest,
 a sanctuary for every soul that belongs there,
-a paradise for all those who see in me their safe haven.
+a paradise for all those who see in me their safe haven. 
         </div>
         <div id="content" class="rounded-lg mx-auto content-fading">
             <h1 id="title" class="text-3xl font-bold mb-12"></h1>
@@ -656,7 +656,6 @@ a paradise for all those who see in me their safe haven.
     <!-- NEW: Add reCAPTCHA v3 script for Firebase App Check. This is required on every page using App Check. -->
     <script src="https://www.google.com/recaptcha/api.js?render=6Ldj7O8rAAAAAO5rRT1GqGzVN3vXjL54Mlw0mpX6" async defer></script>
 
-    <!-- FIX: Consolidate all story initialization logic into a single module script to resolve loading race conditions. -->
     <script type="module">
         // --- Firebase Initialization ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
@@ -689,31 +688,31 @@ a paradise for all those who see in me their safe haven.
         const auth = getAuth(app);
 
         // Make Firebase services globally available for the imported script.
-        const firebaseServices = { 
-            db: database, 
-            auth: auth, 
-            onAuthStateChanged: onAuthStateChanged, 
+        const firebaseServices = {
+            db: database,
+            auth: auth,
+            onAuthStateChanged: onAuthStateChanged,
             ref, onValue, off, onDisconnect, serverTimestamp, push, set,
-            GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence, browserLocalPersistence, signInAnonymously
+            GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence, browserLocalPersistence
         };
 
         // Story-specific configuration
         const contentMap = {
             ar: {
-                title: 'داخل صدري',
+                title: 'أبرد ليلة',
                 rawTextId: 'raw-ar-text',
                 savePosition: 'إضافة علامة مرجعية',
                 save: 'حفظ',
                 exit: 'خروج',
                 bookmarkQuestion: 'هل تريد إضافة علامة مرجعية عند كلمة: "{word}"؟',
-                questionMark: '؟',
+                questionMark: '؟', // FIX: Use Arabic question mark
                 positionSaved: 'تم حفظ الموقع',
                 forWord: 'لكلمة',
                 wordNotFound: 'الكلمة المحفوظة لم يتم العثور عليها في النص الحالي.',
                 noWordSaved: 'لم يتم حفظ أي كلمة لهذه اللغة بعد'
             },
             fr: {
-                title: 'À l’intérieur de ma poitrine',
+                title: 'La nuit la plus froide',
                 rawTextId: 'raw-fr-text',
                 savePosition: 'Ajouter un marque-page',
                 save: 'Enregistrer',
@@ -726,7 +725,7 @@ a paradise for all those who see in me their safe haven.
                 noWordSaved: 'Aucun mot n\'a été enregistré pour cette langue encore'
             },
             en: {
-                title: 'Inside my chest',
+                title: 'The coldest night',
                 rawTextId: 'raw-en-text',
                 savePosition: 'Bookmark',
                 save: 'Save',
@@ -741,24 +740,55 @@ a paradise for all those who see in me their safe haven.
         };
 
         (async () => {
-            const userId = await initializeStoryContent(contentMap, firebaseServices);
-            initializeAuth(firebaseServices);
-
-            const visitorCountElement = document.getElementById('visitor-count');
+            // FIX: The core issue was that `firebaseServices` was not being passed to the initialization function,
+            // causing all database operations (like saving bookmarks) to fail. This is now corrected.
+            // This also ensures all initialization happens in the correct, sequential order to prevent race conditions.
+            
+            // 1. Initialize the story content and get the user ID.
+            let userId;
+            try {
+                userId = await initializeStoryContent(contentMap, firebaseServices);
+            } catch (error) {
+                // If initialization fails (user is not logged in), initialize the auth button on the prompt.
+                if (error === 'anonymous' || error === 'logged_out') {
+                    const authContainerPrompt = document.getElementById('auth-container-prompt');
+                    const loginButtonPrompt = document.getElementById('loginButton-prompt');
+                    authContainerPrompt.addEventListener('click', () => {
+                        const provider = new GoogleAuthProvider();
+                        setPersistence(auth, browserLocalPersistence)
+                            .then(() => signInWithPopup(auth, provider))
+                            .then(() => window.location.reload())
+                            .catch(err => console.error("Login failed:", err));
+                    });
+                }
+                return; // Stop execution if user is not logged in
+            }
+            
+            // 2. Initialize the main authentication button in the header.
+            initializeAuth(firebaseServices);            const visitorCountElement = document.getElementById('visitor-count');
             const storyId = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
             const storyVisitorsRef = ref(database, `presence/${storyId}`);            
+            // NEW: Get the eye icon to animate it.
             const visitorIcon = document.querySelector('#visitor-count-container svg');
             
+            // Listen for changes and update the UI with the correct visitor count.
             onValue(storyVisitorsRef, (snapshot) => {
                 if (!visitorCountElement) return;
                 const data = snapshot.val();
                 const count = data ? Object.keys(data).length : 0;
 
+                // FIX: Animate only when the count actually changes.
                 const currentCount = parseInt(visitorCountElement.textContent, 10);
                 if (count !== currentCount) {
                     visitorCountElement.textContent = count;
+                    // Trigger animations
                     if (visitorIcon) {
+                        // Determine which glow to use: green for join, red for leave.
                         const glowClass = count > currentCount ? 'visitor-join-glow' : 'visitor-leave-glow';
+
+                        // FIX: Use a double requestAnimationFrame for the most reliable animation restart.
+                        // This guarantees a full frame passes between removing and re-adding the class,
+                        // forcing the browser to re-trigger the animation every time.
                         visitorIcon.classList.remove('visitor-join-glow', 'visitor-leave-glow');
                         requestAnimationFrame(() => {
                             requestAnimationFrame(() => {
@@ -771,15 +801,27 @@ a paradise for all those who see in me their safe haven.
                 }
             });
 
+            // Use the .info/connected path to manage online status.
+            // This is the official Firebase pattern for robust presence.
             const connectedRef = ref(database, '.info/connected');
             onValue(connectedRef, (snap) => {                if (snap.val() === true) {
+                    // We're connected. This user's ID is `userId`.
+                    // Use the user's unique ID as the key to prevent duplicates across devices/tabs.
                     const myPresenceRef = ref(database, `presence/${storyId}/${userId}`);
+
+                    // When the client disconnects, remove their connection entry.
                     onDisconnect(myPresenceRef).remove();
+
+                    // Set the value to mark this user as "online".
+                    // If the user is already online on another device, this just updates the timestamp.
                     set(myPresenceRef, serverTimestamp());
                 }
             });
         })();
 
+        // FIX: Handle back-forward cache (bfcache) restores to prevent duplicate visitor counts.
+        // When a page is restored from bfcache (common on mobile), the 'pageshow' event's 'persisted'
+        // property is true. We force a reload to ensure a clean state and a single presence entry.
         window.addEventListener('pageshow', function(event) {
             if (event.persisted) {
                 window.location.reload();
