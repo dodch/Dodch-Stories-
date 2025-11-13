@@ -941,40 +941,40 @@ THE END.
             // causing all database operations (like saving bookmarks) to fail. This is now corrected.
             // This also ensures all initialization happens in the correct, sequential order to prevent race conditions.
             
-            // 1. Initialize the story content and get the user ID.
+            // 1. Initialize the story content and get the user ID. This will throw an error if the user is not authenticated.
             let userId;
             try {
-                 userId = await initializeStoryContent(contentMap, firebaseServices);
+                userId = await initializeStoryContent(contentMap, firebaseServices);
             } catch (err) {
                 // If initialization fails, check if it's because the user is disabled.
-                 if (err && err.code === 'auth/user-disabled') {
-                     window.location.href = '../banned.html';
-                     return;
-                 }
-                 // Otherwise, assume they are just logged out and show the login prompt.
-                 // The logic for showing the prompt and handling the click is now inside initializeStoryContent.
-                 // We just need to catch the error here to prevent it from stopping the script.
-                 return; // Stop execution if user is not logged in
+                if (err && err.code === 'auth/user-disabled') {
+                    window.location.href = '../banned.html';
+                    return;
+                }
+                // Otherwise, assume they are just logged out and show the login prompt.
+                // The logic for showing the prompt and handling the click is inside initializeStoryContent.
+                // We just need to catch the error here to prevent it from stopping the script.
+                return; // Stop execution if user is not logged in
             }
-            
+
+            // 2. Initialize the main authentication button in the header.
+            initializeAuth(firebaseServices);
+
+            const visitorCountElement = document.getElementById('visitor-count');
+            const storyId = document.title.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/\s+/g, '-');
+            const storyVisitorsRef = ref(database, `presence/${storyId}`);
+            const visitorIcon = document.querySelector('#visitor-count-container svg');
+
             // Listen for changes and update the UI with the correct visitor count.
             onValue(storyVisitorsRef, (snapshot) => {
                 if (!visitorCountElement) return;
                 const data = snapshot.val();
                 const count = data ? Object.keys(data).length : 0;
-
-                // FIX: Animate only when the count actually changes.
                 const currentCount = parseInt(visitorCountElement.textContent, 10);
                 if (count !== currentCount) {
                     visitorCountElement.textContent = count;
-                    // Trigger animations
                     if (visitorIcon) {
-                        // Determine which glow to use: green for join, red for leave.
                         const glowClass = count > currentCount ? 'visitor-join-glow' : 'visitor-leave-glow';
-
-                        // FIX: Use a double requestAnimationFrame for the most reliable animation restart.
-                        // This guarantees a full frame passes between removing and re-adding the class,
-                        // forcing the browser to re-trigger the animation every time.
                         visitorIcon.classList.remove('visitor-join-glow', 'visitor-leave-glow');
                         requestAnimationFrame(() => {
                             requestAnimationFrame(() => {
@@ -990,7 +990,8 @@ THE END.
             // Use the .info/connected path to manage online status.
             // This is the official Firebase pattern for robust presence.
             const connectedRef = ref(database, '.info/connected');
-            onValue(connectedRef, (snap) => {                if (snap.val() === true) {
+            onValue(connectedRef, (snap) => {
+                if (snap.val() === true) {
                     // We're connected. This user's ID is `userId`.
                     // Use the user's unique ID as the key to prevent duplicates across devices/tabs.
                     const myPresenceRef = ref(database, `presence/${storyId}/${userId}`);
