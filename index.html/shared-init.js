@@ -31,13 +31,6 @@
         window.location.reload(); // Use reload for consistency with the working story pages.
     };
 
-    const securityCheck = () => {
-        const start = performance.now();
-        debugger;
-        const end = performance.now();
-        if (end - start > 160) devToolsActive(); // Threshold from working scripts.
-    };
-
     // Block right-click and common DevTools shortcuts
     document.addEventListener('contextmenu', event => event.preventDefault());
     window.addEventListener('keydown', e => {
@@ -45,8 +38,4 @@
             devToolsActive();
         }
     });
-
-    // Run the debugger check on a fast interval, matching the working story pages.
-    setInterval(securityCheck, 250);
-
 })();

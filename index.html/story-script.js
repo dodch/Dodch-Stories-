@@ -13,6 +13,13 @@
  ***************************************************************************************************/
 const loadingScreen = document.getElementById("loading-screen");
 
+// --- NEW: Guard Clause to prevent execution on the main index page ---
+// This script is only for story pages. If the main story container isn't found, stop immediately.
+if (!document.getElementById('text-container')) {
+    console.log("Story script guard: Not a story page. Halting execution.");
+    throw new Error("story-script.js should not run on the index page.");
+}
+
 // --- NEW: Anti-Copy Protection ---
 document.addEventListener('copy', (event) => {
     const selection = document.getSelection();
@@ -844,58 +851,34 @@ export async function initializeStoryContent(storyContentMap, fbServices) {
     contentMap = storyContentMap;
     firebaseServices = fbServices; // Use the passed-in services
 
-    const getUserId = () => new Promise((resolve, reject) => {
-        const { auth, onAuthStateChanged } = firebaseServices;
+    const getUserId = () => new Promise((resolve) => {
+        const { auth, onAuthStateChanged, signInAnonymously } = firebaseServices;
         const unsubscribe = onAuthStateChanged(auth, user => {
             unsubscribe();
             if (user) {
-                // User is signed in (either with Google or was anonymous).
-                // We must reject anonymous users from reading.
-                if (user.isAnonymous) {
-                    console.log("Anonymous user detected. Access denied.");
-                    reject("anonymous");
-                } else {
-                    console.log("Authenticated user is ready:", user.uid);
-                    resolve(user.uid);
-                }
+                console.log("User is ready:", user.uid);
+                resolve(user.uid);
             } else {
-                // No user is signed in at all.
-                console.log("No user logged in. Access denied.");
-                reject("logged_out");
+                // No user is signed in, so sign them in anonymously.
+                signInAnonymously(auth).then(cred => {
+                    console.log("New anonymous user created:", cred.user.uid);
+                    resolve(cred.user.uid);
+                }).catch(error => {
+                    console.error("Anonymous sign-in failed:", error);
+                    // Fallback to a temporary ID if anonymous sign-in fails
+                    resolve('temp-user-' + Date.now());
+                });
             }
         });
     });
 
     try {
         currentUserId = await getUserId();
-    } catch (error) {
-        // FIX: If getUserId rejects, it means the user is not authenticated.
-        // Wait for the page to load, then show the login prompt and attach the login handler.
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('login-prompt').style.display = 'flex';
-                
-                // Attach the login handler directly here.
-                const authContainerPrompt = document.getElementById('auth-container-prompt');
-                if (authContainerPrompt) {
-                    authContainerPrompt.addEventListener('click', () => {
-                        const { auth, GoogleAuthProvider, setPersistence, browserLocalPersistence, signInWithPopup } = firebaseServices;
-                        const provider = new GoogleAuthProvider();
-                        setPersistence(auth, browserLocalPersistence).then(() => signInWithPopup(auth, provider)).then(() => {
-                            // On successful login, show a loading message and reload.
-                            showStoryLoadingAndReload("Logging in...");
-                        }).catch(err => {
-                            console.error("Login from prompt failed:", err);
-                            // This is the crucial fix: Check for the 'auth/user-disabled' error here.
-                            if (err.code === 'auth/user-disabled') {
-                                window.location.href = '../banned.html';
-                            }
-                        });
-                    });
-                }
-            }, 600); // This delay should be slightly longer than the loading screen fade-out.
-        });
-        throw error; // Re-throw the error to stop the initialization in the calling module.
+    } catch (err) {
+        console.error("Failed to initialize user:", err);
+        // If user initialization fails catastrophically, we can still proceed
+        // with a temporary ID so the story can be read.
+        currentUserId = 'temp-user-' + Date.now();
     }
 
     // NEW: Activate the watermark with the authenticated user's ID.

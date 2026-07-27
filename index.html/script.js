@@ -390,19 +390,6 @@ async function fetchAndBuildGrid() {
           grid.appendChild(singleStoryCard);
       }
 
-      // NEW: Add a click listener to every card to enforce login.
-      const cardElement = grid.lastElementChild;
-      if (cardElement) {
-          cardElement.addEventListener('click', (e) => {
-              const user = window.firebaseServices.auth.currentUser;
-              if (!user || user.isAnonymous) {
-                  e.preventDefault(); // Prevent navigation
-                  alert("You need to log in to read stories.");
-                  document.getElementById('loginButton').click(); // Trigger login flow
-              }
-          });
-      }
-
       // --- Local Favorite State ---
       const title = story.title;
       const addedCard = grid.lastElementChild;
@@ -771,11 +758,15 @@ async function fetchAndBuildGrid() {
     const searchBar = document.getElementById('searchInput');
     const filterBtn = document.getElementById('filterBtn');
     const contactBtn = document.getElementById('contactBtn');
-    const infoContainerWrapper = document.getElementById('infoContainerWrapper'); 
+    const infoContainerWrapper = document.getElementById('infoContainerWrapper');
+    const favoritesModalHeaderFixed = document.getElementById('favoritesModalHeaderFixed'); // NEW
     
     addTapAnimation(contactBtn);
     addTapAnimation(filterBtn);
     addTapAnimation(searchButton);
+
+    // NEW: Add tap animation for the favorites header
+    addTapAnimation(favoritesModalHeaderFixed);
 
     searchButton.addEventListener('click', () => {
       const isActive = searchBar.classList.toggle('active');
@@ -815,9 +806,13 @@ async function fetchAndBuildGrid() {
       const heartSvg = filterBtn.querySelector('svg');
       if (showingFavorites) {
         heartSvg.style.fill = 'var(--heart-active)';
+        body.classList.add('favorites-active'); // NEW
+        favoritesModalHeaderFixed.classList.add('active'); // NEW
         document.getElementById('favorites-section').scrollIntoView({ behavior: 'smooth' });
       } else {
         heartSvg.style.fill = 'var(--heart-color)';
+        body.classList.remove('favorites-active'); // NEW
+        favoritesModalHeaderFixed.classList.remove('active'); // NEW
       }
       filterAndRenderPanels();
       updateNoFavoritesMessageState();
@@ -1442,6 +1437,7 @@ async function initializeUser() {
     const loginButton = document.getElementById('loginButton');
     const authContainer = document.getElementById('auth-container');
     const adminPanel = document.getElementById('adminPanel');
+    const profilePicture = document.getElementById('profile-picture');
     const closeAdminPanelButton = document.getElementById('closeAdminPanelButton');
 
     onAuthStateChanged(auth, user => {
@@ -1460,40 +1456,15 @@ async function initializeUser() {
             // NEW: Add a class to the container when the user is logged in
             authContainer.classList.add('logged-in');
             console.log("User signed in:", currentUserId);
-            loginButton.innerHTML = `
-                <img src="${user.photoURL}" alt="Profile" class="profile-pic">
-                <button class="logout-button">
-                    <!-- NEW: Add logout icon -->
-                    <svg class="logout-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                    Logout
-                </button>
-            `;
-            authContainer.querySelector('.logout-button').addEventListener('click', (e) => {
-                e.stopPropagation();
-                // NEW: Show custom logout confirmation modal.
-                const logoutModal = document.getElementById('logoutConfirmModal');
-                const closeLogoutModalButton = document.getElementById('closeLogoutModalButton');
-                const body = document.body;
+            // Show profile picture, hide login button
+            loginButton.style.display = 'none';
+            profilePicture.style.display = 'flex';
+            profilePicture.querySelector('img').src = user.photoURL;
 
-                logoutModal.classList.add('active');
-                closeLogoutModalButton.classList.add('active');
-                body.classList.add('info-panel-open');
-
-                const confirmBtn = document.getElementById('logoutConfirmBtn');
-                const cancelBtn = document.getElementById('logoutCancelBtn');
-
-                const closeLogoutModal = () => {
-                    logoutModal.classList.remove('active');
-                    closeLogoutModalButton.classList.remove('active');
-                    body.classList.remove('info-panel-open');
-                };
-
-                confirmBtn.onclick = () => signOut(auth).then(() => showLoadingAndReload("Logging out...")).catch(error => console.error("Logout failed:", error));
-                cancelBtn.onclick = closeLogoutModal;
-                closeLogoutModalButton.onclick = closeLogoutModal;
-                addTapAnimation(confirmBtn);
-                addTapAnimation(cancelBtn);
-            });
+            // Populate profile panel
+            document.getElementById('panelProfileImg').src = user.photoURL;
+            document.getElementById('profileName').textContent = user.displayName;
+            document.getElementById('profileEmail').textContent = user.email;
 
             // NEW: Check for admin custom claim
             user.getIdTokenResult().then((idTokenResult) => {
@@ -1516,6 +1487,9 @@ async function initializeUser() {
             // NEW: Remove the class when the user is logged out
             authContainer.classList.remove('logged-in');
             if (!currentUserId) {
+                // Hide profile picture, show login button
+                loginButton.style.display = 'flex';
+                profilePicture.style.display = 'none';
                 currentUserId = 'anon-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
                 localStorage.setItem('anonymousUserId', currentUserId);
             }
@@ -1567,6 +1541,67 @@ async function initializeUser() {
     });
 
     addTapAnimation(authContainer);
+
+    // --- NEW: Profile Panel Logic ---
+    const profilePanel = document.getElementById('profilePanel');
+    const closeProfilePanelButton = document.getElementById('closeProfilePanelButton');
+    const profileLogoutBtn = document.getElementById('profileLogoutBtn');
+
+    addTapAnimation(profilePicture);
+    addTapAnimation(closeProfilePanelButton);
+    addTapAnimation(profileLogoutBtn);
+
+    profilePicture.addEventListener('click', () => {
+        profilePanel.classList.add('active');
+        closeProfilePanelButton.classList.add('active');
+        body.classList.add('info-panel-open');
+    });
+
+    function closeProfilePanel() {
+        profilePanel.classList.remove('active');
+        closeProfilePanelButton.classList.remove('active');
+        body.classList.remove('info-panel-open');
+    }
+
+    closeProfilePanelButton.addEventListener('click', closeProfilePanel);
+    profilePanel.addEventListener('click', (e) => {
+        if (e.target === profilePanel) {
+            closeProfilePanel();
+        }
+    });
+
+    profileLogoutBtn.addEventListener('click', () => {
+        const logoutModal = document.getElementById('logoutConfirmModal');
+        const closeLogoutModalButton = document.getElementById('closeLogoutModalButton');
+
+        logoutModal.classList.add('active');
+        closeLogoutModalButton.classList.add('active');
+        body.classList.add('info-panel-open');
+
+        const confirmBtn = document.getElementById('logoutConfirmBtn');
+        const cancelBtn = document.getElementById('logoutCancelBtn');
+
+        const closeLogoutModal = () => {
+            logoutModal.classList.remove('active');
+            closeLogoutModalButton.classList.remove('active');
+            // Don't remove info-panel-open if profile panel is still open
+            if (!profilePanel.classList.contains('active')) {
+                body.classList.remove('info-panel-open');
+            }
+        };
+
+        confirmBtn.onclick = () => signOut(auth).then(() => showLoadingAndReload("Logging out...")).catch(error => console.error("Logout failed:", error));
+        cancelBtn.onclick = closeLogoutModal;
+        closeLogoutModalButton.onclick = closeLogoutModal;
+        addTapAnimation(confirmBtn);
+        addTapAnimation(cancelBtn);
+    });
+
+    // Tab switching logic
+    const tabButtons = profilePanel.querySelectorAll('.tab-button');
+    const tabContents = profilePanel.querySelectorAll('.profile-tab-content');
+
+    tabButtons.forEach(button => addTapAnimation(button));
 
     // NEW: Logic for the Admin Panel
     if (adminPanel) {
@@ -1691,6 +1726,8 @@ async function initializePage(manualLevelOverride = null) {
 
     // Once images are preloaded, hide loading screen and build grid
     setTimeout(() => {
+      // FIX: Restore body visibility (was hidden by critical CSS to prevent FOUC)
+      document.body.classList.add('page-ready');
       loadingScreen.classList.add('hidden');
       setupScrollPerformance();
       setTimeout(() => {

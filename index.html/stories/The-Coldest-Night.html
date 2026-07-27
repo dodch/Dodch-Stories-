@@ -28,7 +28,7 @@
     <link rel="icon" type="image/png" sizes="192x192" href="../../web-app-manifest-192x192.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="../../apple-touch-icon.png" />
     <link rel="manifest" href="../../site.webmanifest" />
-    <title>The coldest night</title>
+    <title>The Coldest Night</title>
     <meta name="description" content="A story of love, warmth, loss, and hope. A young man named Winter navigates tragedy and finds connection in the coldest of times.">
     <!-- SEO: Add a canonical link to specify the preferred URL for this page. -->
     <link rel="canonical" href="https://www.dodchstories.com/stories/The-Coldest-Night.html" />
@@ -140,17 +140,16 @@
             </div>
         </div>
     </div>
-    <div id="page-content-wrapper">
-        <div id="raw-ar-text" style="display: none;">
-            العربية غير متوفرة حاليا، يمكنك استعمال خاصية الترجمة للمواقع
-        </div>
-        <div id="raw-fr-text" style="display: none;">
+    <div id="raw-ar-text" class="language-content" lang="ar" style="display: none;">
+        العربية غير متوفرة حاليا، يمكنك استعمال خاصية الترجمة للمواقع
+    </div>
+    <div id="raw-fr-text" class="language-content" lang="fr" style="display: none;">
 
 Français est actuellement indisponible, vous pouvez utiliser la fonction de traduction pour les sites
-        </div>
-        <div id="raw-en-text" style="display: none;">
-            
-            The air grew colder, and the last orange leaf from the front yard tree drifted to the ground. Soft clouds blanketed the sky as the sun’s fading rays made their way to brighten someone else’s life. The distant hum of birds began to fade, replaced by the gentle whispers of the wind slipping through windows and doors. Inside warm homes, families gathered, their laughter and conversations rising in harmony with the crackling fire, which shared its comforting warmth.
+    </div>
+    <div id="raw-en-text" class="language-content" lang="en" style="display: none;">
+        
+        The air grew colder, and the last orange leaf from the front yard tree drifted to the ground. Soft clouds blanketed the sky as the sun’s fading rays made their way to brighten someone else’s life. The distant hum of birds began to fade, replaced by the gentle whispers of the wind slipping through windows and doors. Inside warm homes, families gathered, their laughter and conversations rising in harmony with the crackling fire, which shared its comforting warmth.
 
 In that quiet town lived a young man named Winter, named so because he was born on a snowy night. But his arrival came with tragedy—his mother passed away while bringing him into the world. From that moment, Winter’s father became his entire world. Despite the loss, their bond was unbreakable, a relationship rooted in love, sacrifice, and understanding.
 
@@ -797,7 +796,8 @@ Winter’s breath hitched.
 He turned.
 
 THE END.
-        </div>
+    </div>
+    <div id="page-content-wrapper">
         <div id="content" class="rounded-lg mx-auto content-fading">
             <h1 id="title" class="text-3xl font-bold mb-12"></h1>
             <div id="text-container" class="text-lg leading-relaxed">
@@ -890,7 +890,8 @@ THE END.
             auth: auth,
             onAuthStateChanged: onAuthStateChanged,
             ref, onValue, off, onDisconnect, serverTimestamp, push, set,
-            GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence, browserLocalPersistence
+            GoogleAuthProvider, signInWithPopup, signOut, setPersistence, browserSessionPersistence, browserLocalPersistence,
+            signInAnonymously // FIX: Add the missing function
         };
 
         // Story-specific configuration
@@ -922,7 +923,7 @@ THE END.
                 noWordSaved: 'Aucun mot n\'a été enregistré pour cette langue encore'
             },
             en: {
-                title: 'The coldest night',
+                title: 'The Coldest Night',
                 rawTextId: 'raw-en-text',
                 savePosition: 'Bookmark',
                 save: 'Save',

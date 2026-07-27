@@ -297,12 +297,29 @@ h1{margin:0 0 20px;}
   transform: translateZ(0);
   will-change: transform, opacity;
   overflow: hidden; /* To contain the shine effect */
-  transition: box-shadow 0.2s, background 0.5s ease-in-out, backdrop-filter 0.4s ease-out, -webkit-backdrop-filter 0.4s ease-out, opacity 0.5s ease-out;
+  transition: box-shadow 0.2s, background 0.5s ease-in-out, backdrop-filter 0.4s ease-out, -webkit-backdrop-filter 0.4s ease-out, opacity 0.5s ease-out, filter 0.5s ease-out, transform 0.5s ease-out;
   transform-style: preserve-3d; /* NEW: Enable 3D transformations for children */
   cursor:pointer;
   text-decoration: none;
   color: var(--glass-text);
 }
+
+
+
+body.favorites-active .glass-container:not(.favorited) {
+  opacity: 0;
+  filter: blur(5px);
+  transform: scale(0.9);
+  pointer-events: none;
+}
+
+body.favorites-active .glass-container.favorited {
+  opacity: 1;
+  filter: blur(0);
+  transform: scale(1);
+  pointer-events: auto;
+}
+
 
 /* --- NEW: Performance-Optimized Backdrop Filter --- */
 /* The filter is now ONLY applied when the card is visible to save performance. */
@@ -990,7 +1007,8 @@ body.search-active > .notifications-container {
 @keyframes slide-left{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
 .panel-hidden{
   pointer-events:none;height:auto;padding:0;margin:0;border:none;min-height:0;
-  overflow:visible;opacity:0;transform:scale(0.9) translateY(20px);display:none;
+  overflow:visible;opacity:0;transform:scale(0.9) translateY(20px);
+  filter: blur(5px);
 }
 .scroll-fix{
   height:1px;
@@ -1278,6 +1296,13 @@ body.search-active .info-container-wrapper {
   transform: scale(0.9);
   pointer-events: none;
 }
+/* NEW: Hide the info/profile buttons when the favorites filter is active. */
+body.favorites-active .info-container-wrapper {
+  opacity: 0;
+  transform: scale(0.9);
+  pointer-events: none;
+}
+
 .info-container-wrapper.hidden {
   opacity: 0;
   pointer-events: none;
@@ -2256,10 +2281,13 @@ body.dark-mode .no-comments-message {
 
 /* --- NEW: Auth Container & Login Button Styles --- */
 .auth-container {
+  /* REFACTOR: Set a fixed size for the container to ensure consistency */
+  width: 45px;
+  height: 45px;
   display: flex;
   align-items: center;
-  border-radius: 30px;
-  padding: 5px;
+  justify-content: center;
+  border-radius: 50%; /* Make the container a circle */
   margin-left: 1rem; /* Space between info and login button */
   transition: all 0.4s ease-in-out;
   overflow: hidden;
@@ -2273,19 +2301,9 @@ body.dark-mode .no-comments-message {
   cursor: pointer;
 }
 
-/* NEW: When logged in, hide the glass effect by default */
-.auth-container.logged-in {
-  background: transparent;
-  box-shadow: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  padding: 0; /* Remove padding to only show the picture */
-  margin-left: 1.5rem; /* Adjust margin to compensate for padding removal */
-}
-
 /* NEW: Add hover effect for the auth container */
 body:not(.is-scrolling) .auth-container:hover, .auth-container:focus-visible,
-.auth-container.logged-in:hover { /* NEW: Re-apply glass effect on hover when logged in */
+.auth-container:hover { /* REFACTOR: Simplify hover to a single rule */
   transform: scale(1.05);
   box-shadow: 0 0 15px color-mix(in srgb, var(--blue-tint) 40%, transparent), var(--button-edge);
 }
@@ -2298,6 +2316,7 @@ body:not(.is-scrolling) .auth-container:hover, .auth-container:focus-visible,
   display: flex;
   align-items: center;
   background: none;
+  justify-content: center; /* Center the icon */
   border: none;
   color: var(--glass-text);
   font-weight: bold;
@@ -2316,13 +2335,6 @@ body:not(.is-scrolling) .auth-container:hover, .auth-container:focus-visible,
   border: 2px solid rgba(255, 255, 255, 0.5);
 }
 
-.auth-container.logged-in .profile-pic {
-  width: 45px; /* Make the picture slightly larger when it's the only element */
-  height: 45px;
-  border: none; /* Remove the border in the default state */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.4); /* Add a subtle shadow for depth */
-}
-
 .logout-button {
   background: none;
   border: none;
@@ -2336,12 +2348,111 @@ body:not(.is-scrolling) .auth-container:hover, .auth-container:focus-visible,
   display: none;
 }
 
-/* NEW: Re-apply glass styles on hover for logged-in state */
-.auth-container.logged-in:hover {
-    background: var(--glass-bg);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    padding: 5px;
+/* NEW: Profile Picture Styling */
+.profile-picture {
+  width: 100%; /* Fill parent auth-container */
+  border-radius: 50%; /* Make it circular */
+  overflow: hidden; /* Clip the image to the circle */
+  display: flex;
+  cursor: pointer;
+}
+
+.profile-picture img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.6); /* Slightly thicker and brighter border */
+
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4); /* Add a subtle shadow for depth */
+  transition: border 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+/* NEW: Profile Panel specific styles */
+#profilePanel .panel-button#profileLogoutBtn {
+  --button-color: var(--red-tint);
+  background-color: color-mix(in srgb, var(--red-tint) 30%, transparent);
+}
+
+/* NEW: Style for the profile picture inside the panel */
+.panel-profile-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+  margin-bottom: 1.5rem; /* Space between picture and name */
+}
+
+/* NEW: Center the content within the profile panel */
+.profile-panel-content {
+    display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* NEW: Style for the profile name in the panel to match grid titles */
+#profilePanel #profileName {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem; /* Adjust to match your grid title size */
+  font-weight: 900;
+}
+
+/* NEW: Profile Panel Tab Styles */
+.profile-tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  padding: 0 1rem; /* Add some horizontal padding */
+  box-sizing: border-box;
+}
+
+.tab-button {
+  flex-grow: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  background-color: color-mix(in srgb, var(--blue-tint) 15%, transparent);
+  color: var(--glass-text);
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  --button-color: var(--blue-tint);
+  box-shadow: var(--button-edge),
+    inset 0 2px 3px color-mix(in srgb, var(--button-color) 60%, #000),
+    inset 0 -2px 3px color-mix(in srgb, var(--button-color) 60%, #000),
+    inset 2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000),
+    inset -2px 0 3px color-mix(in srgb, var(--button-color) 60%, #000);
+}
+
+.tab-button:first-child {
+  border-top-left-radius: 1.5rem;
+  border-bottom-left-radius: 1.5rem;
+}
+
+.tab-button:last-child {
+  border-top-right-radius: 1.5rem;
+  border-bottom-right-radius: 1.5rem;
+}
+
+.tab-button.active {
+  background-color: color-mix(in srgb, var(--purple-tint) 40%, transparent);
+  --button-color: var(--purple-tint);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--purple-tint) 50%, transparent), var(--button-edge);
+}
+
+.profile-tab-content {
+  display: none; /* Hidden by default */
+}
+
+.profile-tab-content.active {
+  display: flex; /* Show when active */
+  flex-direction: column; /* Ensure content stacks vertically */
+  align-items: center; /* Center content horizontally */
 }
 
 /* --- Series Stack Styles --- */

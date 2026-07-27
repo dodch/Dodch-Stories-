@@ -91,6 +91,10 @@
         </svg>
         <span class="login-text">Login</span>
       </button>
+      <!-- NEW: Add profile picture element, hidden by default -->
+      <div id="profile-picture" class="profile-picture" style="display: none;" title="Profile">
+        <img id="profile-img" src="" alt="User Profile">
+      </div>
     </div>
   </div>
 </div>
@@ -197,7 +201,11 @@
     </div>
 </div>
 <div class="notifications-container">
+<<<<<<< HEAD
+  <p class="notification-item"> welcome to my personal website, you can tap on any story grid to read it or add it to favorites, please enjoy ❤️ </p>
+=======
   <p class="notification-item">We are sorry to inform you that our project DODCHstories has been discontinued on the 24th of January,2026 thank you for your support</p>
+>>>>>>> 68b762bfce785e482ec632c98a8f6841fa4ee9b9
 </div>
 <div class="top-right-fixed-wrapper">
   <div class="search-container-wrapper" id="searchContainerWrapper">
@@ -215,6 +223,10 @@
   </div>
 </div>
 <div id="favorites-section"></div>
+<!-- NEW: Add a fixed header for the Favorites view -->
+<div class="modal-header-fixed" id="favoritesModalHeaderFixed">
+    <h2 class="modal-main-title">Favorites</h2>
+</div>
 <div class="grid" id="grid"></div>
 <span id="no-favorites-message">No favorites yet! Click the heart to add some.</span>
 <div class="floating-buttons-container">
@@ -403,6 +415,31 @@
         </svg>
     </button>
 </div>
+<!-- NEW: Profile Panel -->
+<div class="modal-panel" id="profilePanel">
+  <div class="profile-panel-content">
+    <!-- NEW: Tab navigation for Profile Panel -->
+    <div class="profile-tabs">
+      <button class="tab-button active" data-tab="profile">Profile</button>
+      <button class="tab-button" data-tab="settings">Settings</button>
+    </div>
+
+    <!-- NEW: Profile content section -->
+    <div id="profileContent" class="profile-tab-content active">
+      <img id="panelProfileImg" src="" alt="User Profile" class="panel-profile-img">
+      <h2 id="profileName" style="color: var(--glass-text); margin-bottom: 1rem;"></h2>
+      <p id="profileEmail" style="color: var(--glass-text-p); margin-bottom: 2rem;"></p>
+      <button id="profileLogoutBtn" class="panel-button" style="background-color: var(--red-tint);">Logout</button>
+    </div>
+
+    <!-- NEW: Settings content section (currently empty) -->
+    <div id="settingsContent" class="profile-tab-content"></div>
+  </div>
+</div>
+<div class="close-button" id="closeProfilePanelButton">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+</div>
+
 <!-- NEW: Custom Logout Confirmation Modal -->
 <div class="modal-panel" id="logoutConfirmModal">
     <div class="contact-panel-content" style="text-align: center;">
